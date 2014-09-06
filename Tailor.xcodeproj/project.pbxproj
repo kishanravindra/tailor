@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		52870F7B19BB7C00001E4163 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52870F7A19BB7C00001E4163 /* main.swift */; };
+		52D734FD19BBD7060059E612 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D734FC19BBD7060059E612 /* Server.swift */; };
+		52D734FF19BBD8470059E612 /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D734FE19BBD8470059E612 /* Connection.swift */; };
+		52D7350119BBD9290059E612 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D7350019BBD9290059E612 /* Request.swift */; };
+		52D7350319BBD9E80059E612 /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D7350219BBD9E80059E612 /* Response.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +29,10 @@
 /* Begin PBXFileReference section */
 		52870F7719BB7C00001E4163 /* Tailor */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Tailor; sourceTree = BUILT_PRODUCTS_DIR; };
 		52870F7A19BB7C00001E4163 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		52D734FC19BBD7060059E612 /* Server.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Server.swift; path = lib/Server.swift; sourceTree = "<group>"; };
+		52D734FE19BBD8470059E612 /* Connection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Connection.swift; path = lib/Connection.swift; sourceTree = "<group>"; };
+		52D7350019BBD9290059E612 /* Request.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Request.swift; path = lib/Request.swift; sourceTree = "<group>"; };
+		52D7350219BBD9E80059E612 /* Response.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Response.swift; path = lib/Response.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,9 +65,21 @@
 		52870F7919BB7C00001E4163 /* Tailor */ = {
 			isa = PBXGroup;
 			children = (
+				52D734FB19BBD6A80059E612 /* lib */,
 				52870F7A19BB7C00001E4163 /* main.swift */,
 			);
 			path = Tailor;
+			sourceTree = "<group>";
+		};
+		52D734FB19BBD6A80059E612 /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				52D734FC19BBD7060059E612 /* Server.swift */,
+				52D734FE19BBD8470059E612 /* Connection.swift */,
+				52D7350019BBD9290059E612 /* Request.swift */,
+				52D7350219BBD9E80059E612 /* Response.swift */,
+			);
+			name = lib;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -118,6 +138,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52D734FD19BBD7060059E612 /* Server.swift in Sources */,
+				52D7350319BBD9E80059E612 /* Response.swift in Sources */,
+				52D7350119BBD9290059E612 /* Request.swift in Sources */,
+				52D734FF19BBD8470059E612 /* Connection.swift in Sources */,
 				52870F7B19BB7C00001E4163 /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -233,6 +257,7 @@
 				52870F8019BB7C00001E4163 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
