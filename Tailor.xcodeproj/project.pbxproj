@@ -18,6 +18,9 @@
 		52D7351019BC9C010059E612 /* application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D7350F19BC9C010059E612 /* application.swift */; };
 		52D7351319BCA1490059E612 /* Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D7351219BCA1490059E612 /* Controller.swift */; };
 		52D7351519BCA1710059E612 /* ItemsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D7351419BCA1710059E612 /* ItemsController.swift */; };
+		52D7351719BCAC3A0059E612 /* Template.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D7351619BCAC3A0059E612 /* Template.swift */; };
+		52D7352019BD150C0059E612 /* index.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D7351E19BD13790059E612 /* index.swift */; };
+		52D7352119BD150E0059E612 /* show.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D7351F19BD13790059E612 /* show.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -46,6 +49,9 @@
 		52D7350F19BC9C010059E612 /* application.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = application.swift; sourceTree = "<group>"; };
 		52D7351219BCA1490059E612 /* Controller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Controller.swift; path = lib/Controller.swift; sourceTree = "<group>"; };
 		52D7351419BCA1710059E612 /* ItemsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ItemsController.swift; path = app/controllers/ItemsController.swift; sourceTree = "<group>"; };
+		52D7351619BCAC3A0059E612 /* Template.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Template.swift; path = lib/Template.swift; sourceTree = "<group>"; };
+		52D7351E19BD13790059E612 /* index.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = index.swift; sourceTree = "<group>"; };
+		52D7351F19BD13790059E612 /* show.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = show.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +96,7 @@
 			isa = PBXGroup;
 			children = (
 				52D734FC19BBD7060059E612 /* Server.swift */,
+				52D7351619BCAC3A0059E612 /* Template.swift */,
 				52D7351219BCA1490059E612 /* Controller.swift */,
 				52D7350419BC00080059E612 /* RouteSet.swift */,
 				52D734FE19BBD8470059E612 /* Connection.swift */,
@@ -106,6 +113,7 @@
 				52D7350D19BC9B620059E612 /* routes.swift */,
 				52D7350F19BC9C010059E612 /* application.swift */,
 				52D7351119BCA0A60059E612 /* controllers */,
+				52D7351819BCACF10059E612 /* views */,
 			);
 			name = app;
 			sourceTree = "<group>";
@@ -116,6 +124,24 @@
 				52D7351419BCA1710059E612 /* ItemsController.swift */,
 			);
 			name = controllers;
+			sourceTree = "<group>";
+		};
+		52D7351819BCACF10059E612 /* views */ = {
+			isa = PBXGroup;
+			children = (
+				52D7351D19BD13790059E612 /* items */,
+			);
+			name = views;
+			sourceTree = "<group>";
+		};
+		52D7351D19BD13790059E612 /* items */ = {
+			isa = PBXGroup;
+			children = (
+				52D7351E19BD13790059E612 /* index.swift */,
+				52D7351F19BD13790059E612 /* show.swift */,
+			);
+			name = items;
+			path = app/views/items;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -176,6 +202,8 @@
 			files = (
 				52D7350519BC00080059E612 /* RouteSet.swift in Sources */,
 				52D7351519BCA1710059E612 /* ItemsController.swift in Sources */,
+				52D7352119BD150E0059E612 /* show.swift in Sources */,
+				52D7352019BD150C0059E612 /* index.swift in Sources */,
 				52D7350719BC02B40059E612 /* Application.swift in Sources */,
 				52D734FD19BBD7060059E612 /* Server.swift in Sources */,
 				52D7350319BBD9E80059E612 /* Response.swift in Sources */,
@@ -183,6 +211,7 @@
 				52D7351319BCA1490059E612 /* Controller.swift in Sources */,
 				52D734FF19BBD8470059E612 /* Connection.swift in Sources */,
 				52870F7B19BB7C00001E4163 /* main.swift in Sources */,
+				52D7351719BCAC3A0059E612 /* Template.swift in Sources */,
 				52D7351019BC9C010059E612 /* application.swift in Sources */,
 				52D7350E19BC9B620059E612 /* routes.swift in Sources */,
 			);

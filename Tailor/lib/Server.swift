@@ -4,7 +4,11 @@ import Foundation
   This class provides an HTTP server.
   */
 class Server {
-  typealias RequestHandler = (Request, (Response)->())->()
+  /** A callback that can be given a response. */
+  typealias ResponseCallback = (Response)->()
+  
+  /** A closure that can process a request. */
+  typealias RequestHandler = (Request, ResponseCallback)->()
   
   /** The connection that the server is listening on. */
   private(set) var connection: Connection?

@@ -98,7 +98,7 @@ class RouteSet {
       :param: request   The request to handle.
       :param: callback  The callback that the route should give the response to.
       */
-    func handleRequest(request: Request, callback: (Response)->()) {
+    func handleRequest(request: Request, callback: Server.ResponseCallback) {
       NSLog("Processing with %@", self.description)
       var requestCopy = request
       let path = request.path
@@ -220,7 +220,7 @@ class RouteSet {
     :param: request   The request that we should handle.
     :param: callback  The callback that we should give the response to.
     */
-  func handleRequest(request: Request, callback: (Response)->()) {
+  func handleRequest(request: Request, callback: Server.ResponseCallback) {
     NSLog("Processing %@ %@", request.method, request.path)
     for route in self.routes {
       if route.canHandleRequest(request) {

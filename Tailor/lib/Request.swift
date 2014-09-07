@@ -39,10 +39,17 @@ struct Request {
     
     let lines = fullBody.componentsSeparatedByString("\n") as [String]
     let introMatches = Request.extractWithPattern(lines[0], pattern: "^([\\S]*) ([\\S]*) HTTP/([\\d.]*)$")
-    self.method = introMatches[0]
-    self.version = introMatches[2]
     
-    self.fullPath = introMatches[1]
+    if introMatches.isEmpty {
+      self.method = "GET"
+      self.version = "1.1"
+      self.fullPath = "/"
+    }
+    else {
+      self.method = introMatches[0]
+      self.version = introMatches[2]
+      self.fullPath = introMatches[1]
+    }
     
     if let queryStringLocation = self.fullPath.rangeOfString("?", options: NSStringCompareOptions.BackwardsSearch) {
       self.path = self.fullPath.substringToIndex(queryStringLocation.startIndex)
