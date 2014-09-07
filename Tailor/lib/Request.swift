@@ -13,14 +13,20 @@ struct Request {
   /** The HTTP version */
   let version: String
   
-  /** The path that the client is requesting. */
-  let path: NSString
+  /** The full path from the request. */
+  let fullPath: String
+  
+  /** The path that the client is requesting, without the query string. */
+  let path: String
   
   /** The header information from the request. */
   let headers: [String: String]
   
   /** The full request data. */
   let body: NSData
+  
+  /** The request parameters. */
+  var requestParameters: [String:String] = [:]
   
   /**
     This method initializes a request.
@@ -34,10 +40,16 @@ struct Request {
     let lines = fullBody.componentsSeparatedByString("\n") as [String]
     let introMatches = Request.extractWithPattern(lines[0], pattern: "^([\\S]*) ([\\S]*) HTTP/([\\d.]*)$")
     self.method = introMatches[0]
-    self.path = introMatches[1]
-    
-    NSLog("%@ %@", self.method, self.path)
     self.version = introMatches[2]
+    
+    self.fullPath = introMatches[1]
+    
+    if let queryStringLocation = self.fullPath.rangeOfString("?", options: NSStringCompareOptions.BackwardsSearch) {
+      self.path = self.fullPath.substringToIndex(queryStringLocation.startIndex)
+    }
+    else {
+      self.path = self.fullPath
+    }
     
     var lastHeaderLine = lines.count - 1
     var headers : [String:String] = [:]
@@ -59,6 +71,8 @@ struct Request {
     
     self.body = data.subdataWithRange(NSMakeRange(headerLength, data.length - headerLength))
     self.headers = headers
+    
+    self.parseRequestParameters()
   }
   
   //MARK: - Body Parsing
@@ -68,24 +82,25 @@ struct Request {
     return NSString(data: self.body, encoding: NSUTF8StringEncoding)
   } }
   
-  /** The request parameters from the query string and the request body. */
-  var requestParameters: [String:String] { get {
-    var params: [String:String] = [:]
-    let queryStringLocation = self.path.rangeOfString("?", options: NSStringCompareOptions.BackwardsSearch)
-    if queryStringLocation.location != NSNotFound {
-      let queryString = self.path.substringFromIndex(queryStringLocation.location + 1)
+  /**
+    This method extracts the request parameters from the query string and the
+    request body.
+    */
+  mutating func parseRequestParameters() {
+    let queryStringLocation = self.fullPath.rangeOfString("?", options: NSStringCompareOptions.BackwardsSearch)
+    if queryStringLocation != nil {
+      let queryString = self.fullPath.substringFromIndex(queryStringLocation!.startIndex.successor())
       for (key, value) in Request.decodeQueryString(queryString) {
-        params[key] = value
+        self.requestParameters[key] = value
       }
     }
     
     if headers["Content-Type"] != nil && headers["Content-Type"]! == "application/x-www-form-urlencoded" {
       for (key,value) in Request.decodeQueryString(self.bodyText) {
-        params[key] = value
+        self.requestParameters[key] = value
       }
     }
-    return params
-  }}
+  }
   
   //MARK: - Helper Methods
   
@@ -122,12 +137,10 @@ struct Request {
     */
   static func decodeQueryString(string: String) -> [String:String] {
     var params: [String:String] = [:]
-    NSLog("Encoded string is %@", string)
     for param in string.componentsSeparatedByString("&") {
       let components = param.componentsSeparatedByString("=").map {
         $0.stringByReplacingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
       }
-      NSLog("Components are %@", components)
       if components.count == 1 {
         params[components[0]] = ""
       }

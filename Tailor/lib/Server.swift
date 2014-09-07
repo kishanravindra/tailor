@@ -4,6 +4,8 @@ import Foundation
   This class provides an HTTP server.
   */
 class Server {
+  typealias RequestHandler = (Request, (Response)->())->()
+  
   /** The connection that the server is listening on. */
   private(set) var connection: Connection?
 
@@ -29,7 +31,7 @@ class Server {
   
     :returns:         Whether we were able to open the connection.
     */
-  func start(address: (Int,Int,Int,Int), port: Int, handler: (Request, (Response)->())->()) -> Bool {
+  func start(address: (Int,Int,Int,Int), port: Int, handler: RequestHandler) -> Bool {
     let socket = CFSocketCreate(nil, 0, 0, 0, 0, nil, nil)
     
     let fileDescriptor = CFSocketGetNative(socket)

@@ -8,7 +8,7 @@ class Connection : NSObject {
   let listeningHandle : NSFileHandle
   
   /** A callback to the code to provide the request. */
-  let handler: (Request,(Response)->())->()
+  let handler: Server.RequestHandler
   
   /**
     This method creates a new connection.
@@ -17,7 +17,7 @@ class Connection : NSObject {
                               using for the connection.
     :param: handler           A callback that will handle the request.
     */
-  required init(fileDescriptor: Int32, handler: (Request, (Response)->())->()) {
+  required init(fileDescriptor: Int32, handler: Server.RequestHandler) {
     self.listeningHandle = NSFileHandle(fileDescriptor: fileDescriptor, closeOnDealloc: false)
     self.handler = handler
     super.init()
