@@ -1,4 +1,5 @@
 import Foundation
 
-defineRoutes()
-Application.sharedApplication().start()
+SHARED_APPLICATION = HaberdasheryApplication()
+SHARED_APPLICATION.routeSet.printRoutes()
+SHARED_APPLICATION.start()

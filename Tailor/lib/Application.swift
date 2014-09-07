@@ -14,6 +14,15 @@ class Application {
   var routeSet = RouteSet()
   
   /**
+    This method initializes the application.
+  
+    This implementation does nothing, but subclasses can initialize
+    application-specific information like routes.
+    */
+  required init() {
+  }
+  
+  /**
     This method starts the server.
     */
   func start() {
@@ -27,4 +36,4 @@ class Application {
 }
 
 /** The application that we are running. */
-let SHARED_APPLICATION = Application()
+var SHARED_APPLICATION = Application()

@@ -64,7 +64,17 @@ class RouteSet {
       var filteredPathPattern = NSMutableString(string: pathPattern)
       
       parameterPattern.replaceMatchesInString(filteredPathPattern, options: nil, range: NSMakeRange(0, countElements(pathPattern)), withTemplate: "(.*)")
-      self.regex = NSRegularExpression(pattern: filteredPathPattern, options: nil, error: nil)
+      self.regex = NSRegularExpression(pattern: "^" + filteredPathPattern + "$", options: nil, error: nil)
+    }
+    
+    //MARK: - Description
+    
+    /**
+      This method gets a full description of the route for debugging.
+      :returns: The description
+      */
+    func fullDescription() -> String {
+      return NSString(format: "%@ %@", self.pathPattern, self.description)
     }
     
     //MARK: - Request Handling
@@ -108,17 +118,95 @@ class RouteSet {
   
   /** The routes in the set. */
   private(set) var routes : [Route] = []
+
+  /** The prefix for the path that we are adding. */
+  private var currentPathPrefix = ""
   
-  //MARK: - Adding Routes
+  /** The controller that will be handling requests in a block. */
+  private var currentController = Controller()
+  
+  //MARK: - Managing Routes
+
+  /**
+    This method wraps a block for generating routes.
+  
+    :param: pathPrefix    The prefix for the paths of the routes.
+    :param: block         The block that will provide the routes.
+    */
+  func withPrefix(pathPrefix: String, block: ()->()) {
+    let oldPrefix = self.currentPathPrefix
+    self.currentPathPrefix += pathPrefix
+    block()
+    self.currentPathPrefix = oldPrefix
+  }
+  
+  /**
+    This method establishes a block for generating routes.
+
+    :param: pathPrefix    The prefix for the paths of the routes.
+    :param: controller    The controller that will handle the routes.
+    :param: block         The block that will provide the routes.
+    */
+  func withPrefix(pathPrefix: String, controller: Controller, block: ()->()) {
+    let oldPrefix = self.currentPathPrefix
+    let oldController = self.currentController
+    self.currentPathPrefix += pathPrefix
+    self.currentController = controller
+    block()
+    self.currentController = oldController
+    self.currentPathPrefix = oldPrefix
+  }
   
   /**
     This method adds a route with a block.
 
     :param: pathPattern   The pattern for the route.
     :param: handler       The block that will handle the request.
+    :param: description   The description of the route implementation.
     */
+  func addRoute(pathPattern: String, handler: Server.RequestHandler, description: String) {
+    self.routes.append(Route(pathPattern: self.currentPathPrefix + pathPattern, handler: handler, description: description))
+  }
+  
+  /**
+    This method adds a route with a block.
+
+    :param: pathPattern   The pattern for the route.
+    :param: handler       The block that will handle the request.
+  */
   func addRoute(pathPattern: String, handler: Server.RequestHandler) {
-    self.routes.append(Route(pathPattern: pathPattern, handler: handler, description: "custom block"))
+    self.addRoute(pathPattern, handler: handler, description: "custom block")
+  }
+  
+  /**
+    This method adds a route that will be handled by a controller.
+
+    :param: pathPattern   The pattern for the route.
+    :param: controller    The controller that will handle the requests.
+    :param: action        The name of the action in the controller.
+    */
+  func addRoute(pathPattern: String, controller: Controller, action: String) {
+    let description = NSString(format: "%@#%@", controller.name, action)
+    self.addRoute(pathPattern, handler: controller.actions[action]!, description: description)
+  }
+  
+  /**
+    This method adds a route that will be handled by the current controller.
+    
+    :param: pathPattern   The pattern for the route.
+    :param: action        The name of the action in the controller.
+    */
+  func addRoute(pathPattern: String, action: String) {
+    self.addRoute(pathPattern, controller: self.currentController, action: action)
+  }
+  
+  /**
+    This method prints information about all of the routes.
+    */
+  func printRoutes() {
+    for route in self.routes {
+      NSLog("%@", route.fullDescription())
+    }
   }
   
   //MARK: - Handling Requests
