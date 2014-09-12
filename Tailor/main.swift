@@ -7,11 +7,9 @@ MysqlConnection.open([
   "database": "haberdashery"
 ])
 
-let results = DatabaseConnection.sharedConnection().executeQuery("SELECT * FROM hats WHERE color = ?", "black")
-for result in results {
-  let id = result.data["id"]! as Int
-  if let value = result.data["created_at"] as? NSDate {
-    NSLog("%d %@", id, value)
+for record in Hat.find(limit: 1, order: ["color": NSComparisonResult.OrderedDescending]) {
+  if let hat = record as? Hat {
+    NSLog("Hat has %@ %d", hat.color, hat.brimSize)
   }
 }
 /*

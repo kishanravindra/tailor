@@ -20,7 +20,6 @@ class MysqlConnection : DatabaseConnection {
         let fieldType = mysql_fetch_field_direct(metadata, UInt32(index)).memory
         let name = NSString(bytes: fieldType.name, length: Int(fieldType.name_length), encoding: NSASCIIStringEncoding)
 
-        NSLog("Name is %@", name)
         if let value = MysqlRow.extractBindResult(bindResult, type: fieldType.type) {
           data[name] = value
         }
@@ -158,7 +157,7 @@ class MysqlConnection : DatabaseConnection {
                             database side.
     :returns                The interpreted result set.
     */
-  override func executeQuery(query: String, _ bindParameters: String...) -> [DatabaseConnection.Row] {
+  override func executeQuery(query: String, parameters bindParameters: [String]) -> [DatabaseConnection.Row] {
     let statement = mysql_stmt_init(connection)
     let encodedQuery = query.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!
     mysql_stmt_prepare(statement, UnsafePointer<Int8>(encodedQuery.bytes), UInt(encodedQuery.length))

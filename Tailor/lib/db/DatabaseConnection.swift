@@ -8,6 +8,7 @@ import Foundation
   :todo: Inserts and updates
   :todo: Better time zone support.
   :todo: Storing database config in a file.
+  :todo: Add helper methods for sanitization
   */
 class DatabaseConnection {
   /**
@@ -64,6 +65,18 @@ class DatabaseConnection {
     :returns                The interpreted result set.
     */
   func executeQuery(query: String, _ bindParameters: String...) -> [Row] {
+    return self.executeQuery(query, parameters: bindParameters)
+  }
+  
+  /**
+  This method executes a query and returns a result set.
+  
+  :param: query           The text of the query.
+  :param: bindParameters  Parameters to interpolate into the query on the
+  database side.
+  :returns                The interpreted result set.
+  */
+  func executeQuery(query: String, parameters bindParameters: [String]) -> [Row] {
     return []
   }
 }
