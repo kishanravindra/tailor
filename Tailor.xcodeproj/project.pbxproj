@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		524F916919C1099800B16B6E /* MysqlConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 524F916819C1099800B16B6E /* MysqlConnection.swift */; };
+		524F917219C1179800B16B6E /* libmysqlclient.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 524F917119C1179800B16B6E /* libmysqlclient.dylib */; };
+		524F917419C11C3900B16B6E /* DatabaseConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 524F917319C11C3900B16B6E /* DatabaseConnection.swift */; };
+		526858EA19C2698F00557B02 /* NSDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526858E919C2698F00557B02 /* NSDate.swift */; };
+		5271904519C1C16E001A9441 /* mysql_wrappers.c in Sources */ = {isa = PBXBuildFile; fileRef = 5271904419C1C16E001A9441 /* mysql_wrappers.c */; };
 		52870F7B19BB7C00001E4163 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52870F7A19BB7C00001E4163 /* main.swift */; };
 		52D734FD19BBD7060059E612 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D734FC19BBD7060059E612 /* Server.swift */; };
 		52D734FF19BBD8470059E612 /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D734FE19BBD8470059E612 /* Connection.swift */; };
@@ -36,6 +41,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		524F916819C1099800B16B6E /* MysqlConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MysqlConnection.swift; path = lib/MysqlConnection.swift; sourceTree = "<group>"; };
+		524F916A19C10A0000B16B6E /* Tailor-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Tailor-Bridging-Header.h"; sourceTree = "<group>"; };
+		524F917119C1179800B16B6E /* libmysqlclient.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmysqlclient.dylib; path = ../../../../usr/local/Cellar/mysql/5.6.19/lib/libmysqlclient.dylib; sourceTree = "<group>"; };
+		524F917319C11C3900B16B6E /* DatabaseConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DatabaseConnection.swift; path = lib/DatabaseConnection.swift; sourceTree = "<group>"; };
+		526858E919C2698F00557B02 /* NSDate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NSDate.swift; path = lib/NSDate.swift; sourceTree = "<group>"; };
+		5271904319C1C137001A9441 /* mysql_wrappers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = mysql_wrappers.h; path = lib/mysql_wrappers.h; sourceTree = "<group>"; };
+		5271904419C1C16E001A9441 /* mysql_wrappers.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mysql_wrappers.c; path = lib/mysql_wrappers.c; sourceTree = "<group>"; };
 		52870F7719BB7C00001E4163 /* Tailor */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Tailor; sourceTree = BUILT_PRODUCTS_DIR; };
 		52870F7A19BB7C00001E4163 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		52D734FC19BBD7060059E612 /* Server.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Server.swift; path = lib/Server.swift; sourceTree = "<group>"; };
@@ -59,6 +71,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				524F917219C1179800B16B6E /* libmysqlclient.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -68,6 +81,7 @@
 		52870F6E19BB7C00001E4163 = {
 			isa = PBXGroup;
 			children = (
+				524F917119C1179800B16B6E /* libmysqlclient.dylib */,
 				52870F7919BB7C00001E4163 /* Tailor */,
 				52870F7819BB7C00001E4163 /* Products */,
 			);
@@ -103,6 +117,12 @@
 				52D7350019BBD9290059E612 /* Request.swift */,
 				52D7350219BBD9E80059E612 /* Response.swift */,
 				52D7350619BC02B40059E612 /* Application.swift */,
+				524F916819C1099800B16B6E /* MysqlConnection.swift */,
+				526858E919C2698F00557B02 /* NSDate.swift */,
+				524F917319C11C3900B16B6E /* DatabaseConnection.swift */,
+				524F916A19C10A0000B16B6E /* Tailor-Bridging-Header.h */,
+				5271904319C1C137001A9441 /* mysql_wrappers.h */,
+				5271904419C1C16E001A9441 /* mysql_wrappers.c */,
 			);
 			name = lib;
 			sourceTree = "<group>";
@@ -203,15 +223,19 @@
 				52D7350519BC00080059E612 /* RouteSet.swift in Sources */,
 				52D7351519BCA1710059E612 /* ItemsController.swift in Sources */,
 				52D7352119BD150E0059E612 /* show.swift in Sources */,
+				5271904519C1C16E001A9441 /* mysql_wrappers.c in Sources */,
+				526858EA19C2698F00557B02 /* NSDate.swift in Sources */,
 				52D7352019BD150C0059E612 /* index.swift in Sources */,
 				52D7350719BC02B40059E612 /* Application.swift in Sources */,
 				52D734FD19BBD7060059E612 /* Server.swift in Sources */,
 				52D7350319BBD9E80059E612 /* Response.swift in Sources */,
 				52D7350119BBD9290059E612 /* Request.swift in Sources */,
+				524F917419C11C3900B16B6E /* DatabaseConnection.swift in Sources */,
 				52D7351319BCA1490059E612 /* Controller.swift in Sources */,
 				52D734FF19BBD8470059E612 /* Connection.swift in Sources */,
 				52870F7B19BB7C00001E4163 /* main.swift in Sources */,
 				52D7351719BCAC3A0059E612 /* Template.swift in Sources */,
+				524F916919C1099800B16B6E /* MysqlConnection.swift in Sources */,
 				52D7351019BC9C010059E612 /* application.swift in Sources */,
 				52D7350E19BC9B620059E612 /* routes.swift in Sources */,
 			);
@@ -253,6 +277,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Applications/Xcode-Beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include",
+					/usr/local/Cellar/mysql/5.6.19/include/mysql,
+				);
+				LIBRARY_SEARCH_PATHS = /usr/local/Cellar/mysql/5.6.19/lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -289,6 +319,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Applications/Xcode-Beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include",
+					/usr/local/Cellar/mysql/5.6.19/include/mysql,
+				);
+				LIBRARY_SEARCH_PATHS = /usr/local/Cellar/mysql/5.6.19/lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
@@ -298,14 +334,35 @@
 		52870F7F19BB7C00001E4163 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/mysql/5.6.19/lib,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Tailor/Tailor-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		52870F8019BB7C00001E4163 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/mysql/5.6.19/lib,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Tailor/Tailor-Bridging-Header.h";
 			};
 			name = Release;
 		};
