@@ -40,7 +40,8 @@ class Server {
     
     let fileDescriptor = CFSocketGetNative(socket)
     
-    setsockopt(fileDescriptor, SOL_SOCKET, SO_REUSEADDR, nil, UInt32(sizeof(Int)))
+    let flag = [1]
+    setsockopt(fileDescriptor, SOL_SOCKET, SO_REUSEADDR, flag, UInt32(sizeof(Int)))
     
     let length = UInt8(sizeof(sockaddr_in))
     let ipAddress = address.3 << 24 + address.2 << 16 + address.1 << 8 + address.0

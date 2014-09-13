@@ -3,10 +3,6 @@ import Foundation
 /**
   This method provides an abstract base class for managing database connections
   and executing queries.
-
-  :todo: Better time zone support.
-  :todo: Storing database config in a file.
-  :todo: Add helper methods for sanitization
   */
 class DatabaseConnection {
   /**

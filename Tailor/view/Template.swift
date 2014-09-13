@@ -10,14 +10,17 @@ class Template {
     The first argument is the template itself, and the second argument is a
     hash of parameters from the controller.
     */
-  let body: (Template, [String: Any])->String
+  let body: (Template, [String: Any])->()
+  
+  /** The buffer that we use to build our result. */
+  private var buffer = NSMutableString()
   
   /**
     This method creates a template.
 
     :param: body    The closure for the body.
     */
-  required init(body: (Template, [String: Any])->String){
+  required init(body: (Template, [String: Any])->()){
     self.body = body
   }
   
@@ -30,20 +33,29 @@ class Template {
     :returns: The body.
     */
   func generate(parameters: [String: Any]) -> String {
-    return self.body(self, parameters)
+    self.body(self, parameters)
+    return self.buffer
   }
   
   //MARK: - Helpers
   
   /**
-    This method adds generates an HTML tag.
+    This method appends text to our buffer.
+
+    :param: text     The text to add.
+    */
+  func text(text: String) {
+    self.buffer.appendString(text)
+  }
+  
+  /**
+    This method adds an HTML tag.
   
     :param: name          The name of the element.
     :param: attributes    Additional attributes for the tag.
-    :param: with          A closure providing the contents of the tag.
-    :returns:             The tag HTML.
+    :param: with          A closure that adds the contents of the tag.
     */
-  func tag(name: String, attributes: [String:String] = [:], with contents: ()->String = {""}) -> String {
+  func tag(name: String, attributes: [String:String] = [:], with contents: ()->() = {}) -> () {
     var text = ""
     var openingTag = "<\(name)"
     
@@ -51,6 +63,8 @@ class Template {
       openingTag += " \(key)=\"\(value)\""
     }
     openingTag += ">"
-    return openingTag + contents() + "</\(name)>"
+    buffer.appendString(openingTag)
+    contents()
+    buffer.appendString("</\(name)>")
   }
 }

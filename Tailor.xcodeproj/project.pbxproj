@@ -8,27 +8,26 @@
 
 /* Begin PBXBuildFile section */
 		524F917219C1179800B16B6E /* libmysqlclient.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 524F917119C1179800B16B6E /* libmysqlclient.dylib */; };
-		526858EC19C2A54000557B02 /* application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526858EB19C2A54000557B02 /* application.swift */; };
-		527B68A819C3925A00BC62E8 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527B689419C391C700BC62E8 /* Application.swift */; };
-		527B68A919C3925A00BC62E8 /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527B689519C391C700BC62E8 /* Connection.swift */; };
-		527B68AA19C3925A00BC62E8 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527B689619C391C700BC62E8 /* Request.swift */; };
-		527B68AB19C3925A00BC62E8 /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527B689719C391C700BC62E8 /* Response.swift */; };
-		527B68AC19C3925A00BC62E8 /* RouteSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527B689819C391C700BC62E8 /* RouteSet.swift */; };
-		527B68AD19C3925A00BC62E8 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527B689919C391C700BC62E8 /* Server.swift */; };
-		527B68AE19C3925F00BC62E8 /* Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527B689B19C391C700BC62E8 /* Controller.swift */; };
-		527B68AF19C3926500BC62E8 /* DatabaseConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527B689D19C391C700BC62E8 /* DatabaseConnection.swift */; };
-		527B68B019C3926800BC62E8 /* tailor_c_wrappers.c in Sources */ = {isa = PBXBuildFile; fileRef = 527B689E19C391C700BC62E8 /* tailor_c_wrappers.c */; };
-		527B68B119C3926A00BC62E8 /* MysqlConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527B68A019C391C700BC62E8 /* MysqlConnection.swift */; };
-		527B68B219C3926F00BC62E8 /* NSDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527B68A219C391C700BC62E8 /* NSDate.swift */; };
-		527B68B319C3928100BC62E8 /* Record.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527B68A419C391C700BC62E8 /* Record.swift */; };
-		527B68B419C3928100BC62E8 /* Template.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527B68A619C391C700BC62E8 /* Template.swift */; };
-		527B68B519C3928500BC62E8 /* ItemsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527B688C19C38F8400BC62E8 /* ItemsController.swift */; };
-		527B68B619C3928900BC62E8 /* Hat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527B688E19C38F8400BC62E8 /* Hat.swift */; };
-		527B68B719C3929100BC62E8 /* index.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527B689119C38F8400BC62E8 /* index.swift */; };
-		527B68B819C3929100BC62E8 /* show.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527B689219C38F8400BC62E8 /* show.swift */; };
-		527B68BA19C3A92600BC62E8 /* NSString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527B68B919C3A92600BC62E8 /* NSString.swift */; };
-		52870F7B19BB7C00001E4163 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52870F7A19BB7C00001E4163 /* main.swift */; };
-		52D7350E19BC9B620059E612 /* routes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D7350D19BC9B620059E612 /* routes.swift */; };
+		525CC56419C4BB6C00B8626E /* application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC54019C4BB6C00B8626E /* application.swift */; };
+		525CC56519C4BB6C00B8626E /* routes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC54119C4BB6C00B8626E /* routes.swift */; };
+		525CC56619C4BB6C00B8626E /* HatsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC54419C4BB6C00B8626E /* HatsController.swift */; };
+		525CC56819C4BB6C00B8626E /* Hat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC54719C4BB6C00B8626E /* Hat.swift */; };
+		525CC56919C4BB6C00B8626E /* index.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC54A19C4BB6C00B8626E /* index.swift */; };
+		525CC56A19C4BB6C00B8626E /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC54D19C4BB6C00B8626E /* Application.swift */; };
+		525CC56B19C4BB6C00B8626E /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC54E19C4BB6C00B8626E /* Connection.swift */; };
+		525CC56C19C4BB6C00B8626E /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC54F19C4BB6C00B8626E /* Request.swift */; };
+		525CC56D19C4BB6C00B8626E /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC55019C4BB6C00B8626E /* Response.swift */; };
+		525CC56E19C4BB6C00B8626E /* RouteSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC55119C4BB6C00B8626E /* RouteSet.swift */; };
+		525CC56F19C4BB6C00B8626E /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC55219C4BB6C00B8626E /* Server.swift */; };
+		525CC57019C4BB6C00B8626E /* Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC55419C4BB6C00B8626E /* Controller.swift */; };
+		525CC57119C4BB6C00B8626E /* DatabaseConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC55619C4BB6C00B8626E /* DatabaseConnection.swift */; };
+		525CC57219C4BB6C00B8626E /* MysqlConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC55719C4BB6C00B8626E /* MysqlConnection.swift */; };
+		525CC57319C4BB6C00B8626E /* tailor_c_wrappers.c in Sources */ = {isa = PBXBuildFile; fileRef = 525CC55819C4BB6C00B8626E /* tailor_c_wrappers.c */; };
+		525CC57419C4BB6C00B8626E /* NSDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC55B19C4BB6C00B8626E /* NSDate.swift */; };
+		525CC57519C4BB6C00B8626E /* NSString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC55C19C4BB6C00B8626E /* NSString.swift */; };
+		525CC57619C4BB6C00B8626E /* Record.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC55F19C4BB6C00B8626E /* Record.swift */; };
+		525CC57919C4BB6C00B8626E /* Template.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC56319C4BB6C00B8626E /* Template.swift */; };
+		525CC57D19C4BBD700B8626E /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC57C19C4BBD700B8626E /* main.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -45,31 +44,31 @@
 
 /* Begin PBXFileReference section */
 		524F917119C1179800B16B6E /* libmysqlclient.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmysqlclient.dylib; path = ../../../../usr/local/Cellar/mysql/5.6.19/lib/libmysqlclient.dylib; sourceTree = "<group>"; };
-		526858EB19C2A54000557B02 /* application.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = application.swift; path = app/application.swift; sourceTree = "<group>"; };
-		527B688C19C38F8400BC62E8 /* ItemsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemsController.swift; sourceTree = "<group>"; };
-		527B688E19C38F8400BC62E8 /* Hat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Hat.swift; sourceTree = "<group>"; };
-		527B689119C38F8400BC62E8 /* index.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = index.swift; sourceTree = "<group>"; };
-		527B689219C38F8400BC62E8 /* show.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = show.swift; sourceTree = "<group>"; };
-		527B689419C391C700BC62E8 /* Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
-		527B689519C391C700BC62E8 /* Connection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connection.swift; sourceTree = "<group>"; };
-		527B689619C391C700BC62E8 /* Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
-		527B689719C391C700BC62E8 /* Response.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Response.swift; sourceTree = "<group>"; };
-		527B689819C391C700BC62E8 /* RouteSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteSet.swift; sourceTree = "<group>"; };
-		527B689919C391C700BC62E8 /* Server.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
-		527B689B19C391C700BC62E8 /* Controller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controller.swift; sourceTree = "<group>"; };
-		527B689D19C391C700BC62E8 /* DatabaseConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseConnection.swift; sourceTree = "<group>"; };
-		527B689E19C391C700BC62E8 /* tailor_c_wrappers.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tailor_c_wrappers.c; sourceTree = "<group>"; };
-		527B689F19C391C700BC62E8 /* tailor_c_wrappers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tailor_c_wrappers.h; sourceTree = "<group>"; };
-		527B68A019C391C700BC62E8 /* MysqlConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MysqlConnection.swift; sourceTree = "<group>"; };
-		527B68A219C391C700BC62E8 /* NSDate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSDate.swift; sourceTree = "<group>"; };
-		527B68A419C391C700BC62E8 /* Record.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Record.swift; sourceTree = "<group>"; };
-		527B68A619C391C700BC62E8 /* Template.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Template.swift; sourceTree = "<group>"; };
-		527B68A719C3923000BC62E8 /* Tailor-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Tailor-Bridging-Header.h"; path = "app/Tailor-Bridging-Header.h"; sourceTree = "<group>"; };
-		527B68B919C3A92600BC62E8 /* NSString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSString.swift; sourceTree = "<group>"; };
+		525CC54019C4BB6C00B8626E /* application.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = application.swift; sourceTree = "<group>"; };
+		525CC54119C4BB6C00B8626E /* routes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = routes.swift; sourceTree = "<group>"; };
+		525CC54219C4BB6C00B8626E /* Tailor-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Tailor-Bridging-Header.h"; sourceTree = "<group>"; };
+		525CC54419C4BB6C00B8626E /* HatsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HatsController.swift; sourceTree = "<group>"; };
+		525CC54719C4BB6C00B8626E /* Hat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Hat.swift; sourceTree = "<group>"; };
+		525CC54A19C4BB6C00B8626E /* index.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = index.swift; sourceTree = "<group>"; };
+		525CC54D19C4BB6C00B8626E /* Application.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
+		525CC54E19C4BB6C00B8626E /* Connection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Connection.swift; sourceTree = "<group>"; };
+		525CC54F19C4BB6C00B8626E /* Request.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
+		525CC55019C4BB6C00B8626E /* Response.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Response.swift; sourceTree = "<group>"; };
+		525CC55119C4BB6C00B8626E /* RouteSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteSet.swift; sourceTree = "<group>"; };
+		525CC55219C4BB6C00B8626E /* Server.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
+		525CC55419C4BB6C00B8626E /* Controller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Controller.swift; sourceTree = "<group>"; };
+		525CC55619C4BB6C00B8626E /* DatabaseConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseConnection.swift; sourceTree = "<group>"; };
+		525CC55719C4BB6C00B8626E /* MysqlConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MysqlConnection.swift; sourceTree = "<group>"; };
+		525CC55819C4BB6C00B8626E /* tailor_c_wrappers.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tailor_c_wrappers.c; sourceTree = "<group>"; };
+		525CC55919C4BB6C00B8626E /* tailor_c_wrappers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tailor_c_wrappers.h; sourceTree = "<group>"; };
+		525CC55B19C4BB6C00B8626E /* NSDate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSDate.swift; sourceTree = "<group>"; };
+		525CC55C19C4BB6C00B8626E /* NSString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSString.swift; sourceTree = "<group>"; };
+		525CC55F19C4BB6C00B8626E /* Record.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Record.swift; sourceTree = "<group>"; };
+		525CC56319C4BB6C00B8626E /* Template.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Template.swift; sourceTree = "<group>"; };
+		525CC57A19C4BBA100B8626E /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		525CC57B19C4BBA100B8626E /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
+		525CC57C19C4BBD700B8626E /* main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		52870F7719BB7C00001E4163 /* Tailor */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Tailor; sourceTree = BUILT_PRODUCTS_DIR; };
-		52870F7A19BB7C00001E4163 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		52D7350A19BC1D890059E612 /* TODO.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
-		52D7350D19BC9B620059E612 /* routes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = routes.swift; path = app/routes.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,107 +83,146 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		527B688B19C38F8400BC62E8 /* controllers */ = {
+		525CC53E19C4BB6C00B8626E /* Haberdashery */ = {
 			isa = PBXGroup;
 			children = (
-				527B688C19C38F8400BC62E8 /* ItemsController.swift */,
+				525CC53F19C4BB6C00B8626E /* app */,
+				525CC54319C4BB6C00B8626E /* controllers */,
+				525CC54619C4BB6C00B8626E /* models */,
+				525CC54819C4BB6C00B8626E /* views */,
+			);
+			path = Haberdashery;
+			sourceTree = "<group>";
+		};
+		525CC53F19C4BB6C00B8626E /* app */ = {
+			isa = PBXGroup;
+			children = (
+				525CC54019C4BB6C00B8626E /* application.swift */,
+				525CC54119C4BB6C00B8626E /* routes.swift */,
+				525CC54219C4BB6C00B8626E /* Tailor-Bridging-Header.h */,
+				525CC57C19C4BBD700B8626E /* main.swift */,
+			);
+			path = app;
+			sourceTree = "<group>";
+		};
+		525CC54319C4BB6C00B8626E /* controllers */ = {
+			isa = PBXGroup;
+			children = (
+				525CC54419C4BB6C00B8626E /* HatsController.swift */,
 			);
 			path = controllers;
 			sourceTree = "<group>";
 		};
-		527B688D19C38F8400BC62E8 /* models */ = {
+		525CC54619C4BB6C00B8626E /* models */ = {
 			isa = PBXGroup;
 			children = (
-				527B688E19C38F8400BC62E8 /* Hat.swift */,
+				525CC54719C4BB6C00B8626E /* Hat.swift */,
 			);
 			path = models;
 			sourceTree = "<group>";
 		};
-		527B688F19C38F8400BC62E8 /* views */ = {
+		525CC54819C4BB6C00B8626E /* views */ = {
 			isa = PBXGroup;
 			children = (
-				527B689019C38F8400BC62E8 /* items */,
+				525CC54919C4BB6C00B8626E /* hats */,
 			);
 			path = views;
 			sourceTree = "<group>";
 		};
-		527B689019C38F8400BC62E8 /* items */ = {
+		525CC54919C4BB6C00B8626E /* hats */ = {
 			isa = PBXGroup;
 			children = (
-				527B689119C38F8400BC62E8 /* index.swift */,
-				527B689219C38F8400BC62E8 /* show.swift */,
+				525CC54A19C4BB6C00B8626E /* index.swift */,
 			);
-			path = items;
+			path = hats;
 			sourceTree = "<group>";
 		};
-		527B689319C391C700BC62E8 /* app */ = {
+		525CC54B19C4BB6C00B8626E /* Tailor */ = {
 			isa = PBXGroup;
 			children = (
-				527B689419C391C700BC62E8 /* Application.swift */,
-				527B689519C391C700BC62E8 /* Connection.swift */,
-				527B689619C391C700BC62E8 /* Request.swift */,
-				527B689719C391C700BC62E8 /* Response.swift */,
-				527B689819C391C700BC62E8 /* RouteSet.swift */,
-				527B689919C391C700BC62E8 /* Server.swift */,
+				525CC54C19C4BB6C00B8626E /* app */,
+				525CC55319C4BB6C00B8626E /* controller */,
+				525CC55519C4BB6C00B8626E /* db */,
+				525CC55A19C4BB6C00B8626E /* ext */,
+				525CC55D19C4BB6C00B8626E /* lib */,
+				525CC55E19C4BB6C00B8626E /* model */,
+				525CC56219C4BB6C00B8626E /* view */,
 			);
-			name = app;
-			path = lib/app;
+			path = Tailor;
 			sourceTree = "<group>";
 		};
-		527B689A19C391C700BC62E8 /* controller */ = {
+		525CC54C19C4BB6C00B8626E /* app */ = {
 			isa = PBXGroup;
 			children = (
-				527B689B19C391C700BC62E8 /* Controller.swift */,
+				525CC54D19C4BB6C00B8626E /* Application.swift */,
+				525CC54E19C4BB6C00B8626E /* Connection.swift */,
+				525CC54F19C4BB6C00B8626E /* Request.swift */,
+				525CC55019C4BB6C00B8626E /* Response.swift */,
+				525CC55119C4BB6C00B8626E /* RouteSet.swift */,
+				525CC55219C4BB6C00B8626E /* Server.swift */,
 			);
-			name = controller;
-			path = lib/controller;
+			path = app;
 			sourceTree = "<group>";
 		};
-		527B689C19C391C700BC62E8 /* db */ = {
+		525CC55319C4BB6C00B8626E /* controller */ = {
 			isa = PBXGroup;
 			children = (
-				527B689D19C391C700BC62E8 /* DatabaseConnection.swift */,
-				527B689E19C391C700BC62E8 /* tailor_c_wrappers.c */,
-				527B689F19C391C700BC62E8 /* tailor_c_wrappers.h */,
-				527B68A019C391C700BC62E8 /* MysqlConnection.swift */,
+				525CC55419C4BB6C00B8626E /* Controller.swift */,
 			);
-			name = db;
-			path = lib/db;
+			path = controller;
 			sourceTree = "<group>";
 		};
-		527B68A119C391C700BC62E8 /* ext */ = {
+		525CC55519C4BB6C00B8626E /* db */ = {
 			isa = PBXGroup;
 			children = (
-				527B68A219C391C700BC62E8 /* NSDate.swift */,
-				527B68B919C3A92600BC62E8 /* NSString.swift */,
+				525CC55619C4BB6C00B8626E /* DatabaseConnection.swift */,
+				525CC55719C4BB6C00B8626E /* MysqlConnection.swift */,
+				525CC55819C4BB6C00B8626E /* tailor_c_wrappers.c */,
+				525CC55919C4BB6C00B8626E /* tailor_c_wrappers.h */,
 			);
-			name = ext;
-			path = lib/ext;
+			path = db;
 			sourceTree = "<group>";
 		};
-		527B68A319C391C700BC62E8 /* model */ = {
+		525CC55A19C4BB6C00B8626E /* ext */ = {
 			isa = PBXGroup;
 			children = (
-				527B68A419C391C700BC62E8 /* Record.swift */,
+				525CC55B19C4BB6C00B8626E /* NSDate.swift */,
+				525CC55C19C4BB6C00B8626E /* NSString.swift */,
 			);
-			name = model;
-			path = lib/model;
+			path = ext;
 			sourceTree = "<group>";
 		};
-		527B68A519C391C700BC62E8 /* view */ = {
+		525CC55D19C4BB6C00B8626E /* lib */ = {
 			isa = PBXGroup;
 			children = (
-				527B68A619C391C700BC62E8 /* Template.swift */,
 			);
-			name = view;
-			path = lib/view;
+			path = lib;
+			sourceTree = "<group>";
+		};
+		525CC55E19C4BB6C00B8626E /* model */ = {
+			isa = PBXGroup;
+			children = (
+				525CC55F19C4BB6C00B8626E /* Record.swift */,
+			);
+			path = model;
+			sourceTree = "<group>";
+		};
+		525CC56219C4BB6C00B8626E /* view */ = {
+			isa = PBXGroup;
+			children = (
+				525CC56319C4BB6C00B8626E /* Template.swift */,
+			);
+			path = view;
 			sourceTree = "<group>";
 		};
 		52870F6E19BB7C00001E4163 = {
 			isa = PBXGroup;
 			children = (
 				524F917119C1179800B16B6E /* libmysqlclient.dylib */,
-				52870F7919BB7C00001E4163 /* Tailor */,
+				525CC57A19C4BBA100B8626E /* README.md */,
+				525CC57B19C4BBA100B8626E /* TODO.md */,
+				525CC53E19C4BB6C00B8626E /* Haberdashery */,
+				525CC54B19C4BB6C00B8626E /* Tailor */,
 				52870F7819BB7C00001E4163 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -195,43 +233,6 @@
 				52870F7719BB7C00001E4163 /* Tailor */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		52870F7919BB7C00001E4163 /* Tailor */ = {
-			isa = PBXGroup;
-			children = (
-				52D7350C19BC9B3F0059E612 /* app */,
-				527B688B19C38F8400BC62E8 /* controllers */,
-				527B688D19C38F8400BC62E8 /* models */,
-				527B688F19C38F8400BC62E8 /* views */,
-				52D734FB19BBD6A80059E612 /* lib */,
-				52870F7A19BB7C00001E4163 /* main.swift */,
-				52D7350A19BC1D890059E612 /* TODO.md */,
-			);
-			path = Tailor;
-			sourceTree = "<group>";
-		};
-		52D734FB19BBD6A80059E612 /* lib */ = {
-			isa = PBXGroup;
-			children = (
-				527B689319C391C700BC62E8 /* app */,
-				527B689A19C391C700BC62E8 /* controller */,
-				527B689C19C391C700BC62E8 /* db */,
-				527B68A119C391C700BC62E8 /* ext */,
-				527B68A319C391C700BC62E8 /* model */,
-				527B68A519C391C700BC62E8 /* view */,
-			);
-			name = lib;
-			sourceTree = "<group>";
-		};
-		52D7350C19BC9B3F0059E612 /* app */ = {
-			isa = PBXGroup;
-			children = (
-				527B68A719C3923000BC62E8 /* Tailor-Bridging-Header.h */,
-				52D7350D19BC9B620059E612 /* routes.swift */,
-				526858EB19C2A54000557B02 /* application.swift */,
-			);
-			name = app;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -290,27 +291,26 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				527B68B119C3926A00BC62E8 /* MysqlConnection.swift in Sources */,
-				527B68A819C3925A00BC62E8 /* Application.swift in Sources */,
-				527B68B319C3928100BC62E8 /* Record.swift in Sources */,
-				527B68AA19C3925A00BC62E8 /* Request.swift in Sources */,
-				526858EC19C2A54000557B02 /* application.swift in Sources */,
-				527B68B419C3928100BC62E8 /* Template.swift in Sources */,
-				527B68B219C3926F00BC62E8 /* NSDate.swift in Sources */,
-				527B68A919C3925A00BC62E8 /* Connection.swift in Sources */,
-				527B68AC19C3925A00BC62E8 /* RouteSet.swift in Sources */,
-				527B68AE19C3925F00BC62E8 /* Controller.swift in Sources */,
-				527B68B819C3929100BC62E8 /* show.swift in Sources */,
-				527B68AF19C3926500BC62E8 /* DatabaseConnection.swift in Sources */,
-				527B68B519C3928500BC62E8 /* ItemsController.swift in Sources */,
-				527B68B719C3929100BC62E8 /* index.swift in Sources */,
-				52870F7B19BB7C00001E4163 /* main.swift in Sources */,
-				52D7350E19BC9B620059E612 /* routes.swift in Sources */,
-				527B68AD19C3925A00BC62E8 /* Server.swift in Sources */,
-				527B68B619C3928900BC62E8 /* Hat.swift in Sources */,
-				527B68B019C3926800BC62E8 /* tailor_c_wrappers.c in Sources */,
-				527B68BA19C3A92600BC62E8 /* NSString.swift in Sources */,
-				527B68AB19C3925A00BC62E8 /* Response.swift in Sources */,
+				525CC57119C4BB6C00B8626E /* DatabaseConnection.swift in Sources */,
+				525CC56E19C4BB6C00B8626E /* RouteSet.swift in Sources */,
+				525CC57219C4BB6C00B8626E /* MysqlConnection.swift in Sources */,
+				525CC56C19C4BB6C00B8626E /* Request.swift in Sources */,
+				525CC57419C4BB6C00B8626E /* NSDate.swift in Sources */,
+				525CC56A19C4BB6C00B8626E /* Application.swift in Sources */,
+				525CC57319C4BB6C00B8626E /* tailor_c_wrappers.c in Sources */,
+				525CC56619C4BB6C00B8626E /* HatsController.swift in Sources */,
+				525CC57D19C4BBD700B8626E /* main.swift in Sources */,
+				525CC57519C4BB6C00B8626E /* NSString.swift in Sources */,
+				525CC56419C4BB6C00B8626E /* application.swift in Sources */,
+				525CC57619C4BB6C00B8626E /* Record.swift in Sources */,
+				525CC56919C4BB6C00B8626E /* index.swift in Sources */,
+				525CC56D19C4BB6C00B8626E /* Response.swift in Sources */,
+				525CC57019C4BB6C00B8626E /* Controller.swift in Sources */,
+				525CC56819C4BB6C00B8626E /* Hat.swift in Sources */,
+				525CC56519C4BB6C00B8626E /* routes.swift in Sources */,
+				525CC56F19C4BB6C00B8626E /* Server.swift in Sources */,
+				525CC57919C4BB6C00B8626E /* Template.swift in Sources */,
+				525CC56B19C4BB6C00B8626E /* Connection.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -417,7 +417,7 @@
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "Tailor/app/Tailor-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Haberdashery/app/Tailor-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -435,7 +435,7 @@
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "Tailor/app/Tailor-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Haberdashery/app/Tailor-Bridging-Header.h";
 			};
 			name = Release;
 		};

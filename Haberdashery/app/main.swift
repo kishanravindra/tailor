@@ -6,3 +6,6 @@ MysqlConnection.open([
   "password": "2wsxcde3",
   "database": "haberdashery"
 ])
+
+let hats : [Hat] = Hat.query("SELECT * FROM hats", parameters: [])
+HaberdasheryApplication.start()

@@ -2,8 +2,6 @@ import Foundation
 
 /**
   This class provides a base class for models backed by the database.
-
-  :todo: Error checking
   */
 class Record {
   /** The unique identifier for the record. */
@@ -117,9 +115,9 @@ class Record {
     :param: parameters  The information to interpolate into the query.
     :returns:           The created records.
     */
-  class func query(query: String, parameters: [String]) -> [Record] {
+  class func query<RecordType : Record>(query: String, parameters: [String]) -> [RecordType] {
     let rows = DatabaseConnection.sharedConnection().executeQuery(query, parameters: parameters)
-    return rows.map { self.init(data: $0.data) }
+    return rows.map { RecordType.init(data: $0.data) }
   }
   
   /**
@@ -132,7 +130,7 @@ class Record {
     :param: limit         The maximum number of results to return.
     :returns:             The created records.
     */
-  class func find(conditions: [String:String] = [:], order: [String: NSComparisonResult] = [:], limit: Int? = nil) -> [Record] {
+  class func find<RecordType : Record>(conditions: [String:String] = [:], order: [String: NSComparisonResult] = [:], limit: Int? = nil) -> [RecordType] {
     var query = "SELECT * FROM \(self.init().tableName())"
     var parameters : [String] = []
     
@@ -178,8 +176,8 @@ class Record {
     :param: id  The id of the record to find.
     :returns:   The record, if it was found.
     */
-  class func find(id: Int) -> Record? {
-    let results = self.find(conditions: ["id": "\(id)"])
+  class func find<RecordType: Record>(id: Int) -> RecordType? {
+    let results : [RecordType] = self.find(conditions: ["id": "\(id)"])
     return results.isEmpty ? nil : results[0]
   }
   
