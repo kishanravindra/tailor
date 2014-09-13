@@ -103,10 +103,10 @@ class MysqlConnection : DatabaseConnection {
         return Int(buffer.memory)
       case MYSQL_TYPE_FLOAT.value:
         let buffer = UnsafeMutablePointer<CFloat>(bindResult.buffer)
-        return Int(buffer.memory)
+        return Double(buffer.memory)
       case MYSQL_TYPE_DOUBLE.value:
         let buffer = UnsafeMutablePointer<CDouble>(bindResult.buffer)
-        return Int(buffer.memory)
+        return Double(buffer.memory)
       case MYSQL_TYPE_TIME.value, MYSQL_TYPE_DATE.value,
       MYSQL_TYPE_DATETIME.value, MYSQL_TYPE_TIMESTAMP.value:
         let buffer = UnsafeMutablePointer<MYSQL_TIME>(bindResult.buffer)
@@ -151,6 +151,9 @@ class MysqlConnection : DatabaseConnection {
   /**
     This method executes a query against the database.
   
+    If the query is a SELECT query, it will return the rows that were fetched.
+    Otherwise, it will return a row with the last insert ID as the "id"
+    column.
   
     :param: query           The text of the query.
     :param: bindParameters  Parameters to interpolate into the query on the
@@ -179,6 +182,11 @@ class MysqlConnection : DatabaseConnection {
     mysql_stmt_execute(statement)
     
     mysqlBindParameters = []
+    
+    if metadataResult == nil {
+      let insertId = mysql_stmt_insert_id(statement)
+      return [DatabaseConnection.Row(data: ["id": Int(insertId)])]
+    }
     
     for index in 0..<mysql_num_fields(metadataResult) {
       let fieldType = mysql_fetch_field_direct(metadataResult, UInt32(index)).memory

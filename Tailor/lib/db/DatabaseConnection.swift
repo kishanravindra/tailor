@@ -4,8 +4,6 @@ import Foundation
   This method provides an abstract base class for managing database connections
   and executing queries.
 
-  :todo: Modelling class
-  :todo: Inserts and updates
   :todo: Better time zone support.
   :todo: Storing database config in a file.
   :todo: Add helper methods for sanitization
@@ -69,15 +67,29 @@ class DatabaseConnection {
   }
   
   /**
-  This method executes a query and returns a result set.
-  
-  :param: query           The text of the query.
-  :param: bindParameters  Parameters to interpolate into the query on the
-  database side.
-  :returns                The interpreted result set.
+    This method executes a query and returns a result set.
+    
+    :param: query           The text of the query.
+    :param: bindParameters  Parameters to interpolate into the query on the
+    database side.
+    :returns                The interpreted result set.
   */
   func executeQuery(query: String, parameters bindParameters: [String]) -> [Row] {
     return []
+  }
+  
+  /**
+    This method sanitizes a column name so that it can be safely interpolated
+    into a query.
+
+    :param: columnName    The unsanitized version
+    :returns:             The sanitized version.
+    */
+  class func sanitizeColumnName(columnName: String) -> String {
+    let keyRegex = NSRegularExpression(pattern: "[^A-Za-z_0-9]", options: nil, error: nil)
+    let range = NSMakeRange(0, countElements(columnName))
+    let sanitizedColumn = keyRegex.stringByReplacingMatchesInString(columnName, options: nil, range: range, withTemplate: "")
+    return sanitizedColumn
   }
 }
 

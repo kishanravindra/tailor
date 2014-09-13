@@ -1,2 +1,2 @@
 #import <mysql.h>
-#include "mysql_wrappers.h"
+#import "tailor_c_wrappers.h"

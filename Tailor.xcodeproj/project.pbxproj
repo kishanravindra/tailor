@@ -17,7 +17,7 @@
 		527B68AD19C3925A00BC62E8 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527B689919C391C700BC62E8 /* Server.swift */; };
 		527B68AE19C3925F00BC62E8 /* Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527B689B19C391C700BC62E8 /* Controller.swift */; };
 		527B68AF19C3926500BC62E8 /* DatabaseConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527B689D19C391C700BC62E8 /* DatabaseConnection.swift */; };
-		527B68B019C3926800BC62E8 /* mysql_wrappers.c in Sources */ = {isa = PBXBuildFile; fileRef = 527B689E19C391C700BC62E8 /* mysql_wrappers.c */; };
+		527B68B019C3926800BC62E8 /* tailor_c_wrappers.c in Sources */ = {isa = PBXBuildFile; fileRef = 527B689E19C391C700BC62E8 /* tailor_c_wrappers.c */; };
 		527B68B119C3926A00BC62E8 /* MysqlConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527B68A019C391C700BC62E8 /* MysqlConnection.swift */; };
 		527B68B219C3926F00BC62E8 /* NSDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527B68A219C391C700BC62E8 /* NSDate.swift */; };
 		527B68B319C3928100BC62E8 /* Record.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527B68A419C391C700BC62E8 /* Record.swift */; };
@@ -26,6 +26,7 @@
 		527B68B619C3928900BC62E8 /* Hat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527B688E19C38F8400BC62E8 /* Hat.swift */; };
 		527B68B719C3929100BC62E8 /* index.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527B689119C38F8400BC62E8 /* index.swift */; };
 		527B68B819C3929100BC62E8 /* show.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527B689219C38F8400BC62E8 /* show.swift */; };
+		527B68BA19C3A92600BC62E8 /* NSString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527B68B919C3A92600BC62E8 /* NSString.swift */; };
 		52870F7B19BB7C00001E4163 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52870F7A19BB7C00001E4163 /* main.swift */; };
 		52D7350E19BC9B620059E612 /* routes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D7350D19BC9B620059E612 /* routes.swift */; };
 /* End PBXBuildFile section */
@@ -57,13 +58,14 @@
 		527B689919C391C700BC62E8 /* Server.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
 		527B689B19C391C700BC62E8 /* Controller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controller.swift; sourceTree = "<group>"; };
 		527B689D19C391C700BC62E8 /* DatabaseConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseConnection.swift; sourceTree = "<group>"; };
-		527B689E19C391C700BC62E8 /* mysql_wrappers.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mysql_wrappers.c; sourceTree = "<group>"; };
-		527B689F19C391C700BC62E8 /* mysql_wrappers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mysql_wrappers.h; sourceTree = "<group>"; };
+		527B689E19C391C700BC62E8 /* tailor_c_wrappers.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tailor_c_wrappers.c; sourceTree = "<group>"; };
+		527B689F19C391C700BC62E8 /* tailor_c_wrappers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tailor_c_wrappers.h; sourceTree = "<group>"; };
 		527B68A019C391C700BC62E8 /* MysqlConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MysqlConnection.swift; sourceTree = "<group>"; };
 		527B68A219C391C700BC62E8 /* NSDate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSDate.swift; sourceTree = "<group>"; };
 		527B68A419C391C700BC62E8 /* Record.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Record.swift; sourceTree = "<group>"; };
 		527B68A619C391C700BC62E8 /* Template.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Template.swift; sourceTree = "<group>"; };
 		527B68A719C3923000BC62E8 /* Tailor-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Tailor-Bridging-Header.h"; path = "app/Tailor-Bridging-Header.h"; sourceTree = "<group>"; };
+		527B68B919C3A92600BC62E8 /* NSString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSString.swift; sourceTree = "<group>"; };
 		52870F7719BB7C00001E4163 /* Tailor */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Tailor; sourceTree = BUILT_PRODUCTS_DIR; };
 		52870F7A19BB7C00001E4163 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		52D7350A19BC1D890059E612 /* TODO.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
@@ -142,8 +144,8 @@
 			isa = PBXGroup;
 			children = (
 				527B689D19C391C700BC62E8 /* DatabaseConnection.swift */,
-				527B689E19C391C700BC62E8 /* mysql_wrappers.c */,
-				527B689F19C391C700BC62E8 /* mysql_wrappers.h */,
+				527B689E19C391C700BC62E8 /* tailor_c_wrappers.c */,
+				527B689F19C391C700BC62E8 /* tailor_c_wrappers.h */,
 				527B68A019C391C700BC62E8 /* MysqlConnection.swift */,
 			);
 			name = db;
@@ -154,6 +156,7 @@
 			isa = PBXGroup;
 			children = (
 				527B68A219C391C700BC62E8 /* NSDate.swift */,
+				527B68B919C3A92600BC62E8 /* NSString.swift */,
 			);
 			name = ext;
 			path = lib/ext;
@@ -305,7 +308,8 @@
 				52D7350E19BC9B620059E612 /* routes.swift in Sources */,
 				527B68AD19C3925A00BC62E8 /* Server.swift in Sources */,
 				527B68B619C3928900BC62E8 /* Hat.swift in Sources */,
-				527B68B019C3926800BC62E8 /* mysql_wrappers.c in Sources */,
+				527B68B019C3926800BC62E8 /* tailor_c_wrappers.c in Sources */,
+				527B68BA19C3A92600BC62E8 /* NSString.swift in Sources */,
 				527B68AB19C3925A00BC62E8 /* Response.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
