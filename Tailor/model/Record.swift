@@ -203,8 +203,6 @@ class Record {
         var stringValue : String?
         
         switch propertyName {
-        case "createdAt":
-          value = nil
         case "updatedAt":
           value = NSDate()
         default:
@@ -214,7 +212,7 @@ class Record {
         case let string as String:
           stringValue = string
         case let date as NSDate:
-          stringValue = date.descriptionWithCalendarFormat(nil, timeZone: nil, locale: nil)
+          stringValue = date.descriptionWithCalendarFormat(nil, timeZone: DatabaseConnection.sharedConnection().timeZone, locale: nil)
         case let number as NSNumber:
           stringValue = number.stringValue
         default:

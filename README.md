@@ -5,7 +5,8 @@ early stages of development, and not isn't ready for production use.
 
 ### How to Use Tailor
 
-You can find sample apps at [https://johnbrownlee.com/tailor]. Official
+You can find sample apps at
+[the official website](https://johnbrownlee.com/tailor). Official
 tutorials and documentation will be coming in the future.
 
 ### Feedback and Contributions

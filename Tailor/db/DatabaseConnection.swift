@@ -22,6 +22,8 @@ class DatabaseConnection {
       self.data = data
     }
   }
+  
+  internal(set) var timeZone: NSTimeZone
 
   /**
     This method creates the connection.
@@ -30,6 +32,7 @@ class DatabaseConnection {
     query execution.
     */
   required init(config: [String:String]) {
+    self.timeZone = NSTimeZone.systemTimeZone()
   }
   
   /**

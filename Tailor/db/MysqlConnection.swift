@@ -111,9 +111,10 @@ class MysqlConnection : DatabaseConnection {
       MYSQL_TYPE_DATETIME.value, MYSQL_TYPE_TIMESTAMP.value:
         let buffer = UnsafeMutablePointer<MYSQL_TIME>(bindResult.buffer)
         let time = buffer.memory
-        return NSDate(year: Int(time.year), month: Int(time.month),
+        var date = NSDate(year: Int(time.year), month: Int(time.month),
           day: Int(time.day), hour: Int(time.hour), minute: Int(time.minute),
-          second: Int(time.second))
+          second: Int(time.second), timeZone: DatabaseConnection.sharedConnection().timeZone)
+        return date
       default:
         return NSString(bytes: bindResult.buffer, length: Int(bindResult.length.memory), encoding: NSUTF8StringEncoding)
       }
@@ -134,6 +135,22 @@ class MysqlConnection : DatabaseConnection {
     self.connection = mysql_init(nil)
     super.init(config: config)
     mysql_real_connect(self.connection, config["host"]!, config["username"]!, config["password"]!, config["database"]!,   0, nil, 0)
+    
+    let timeZoneInfo = self.executeQuery("SELECT @@session.time_zone as timeZone")
+    if timeZoneInfo.count > 0 {
+      let timeZoneDescription = timeZoneInfo[0].data["timeZone"] as String
+      let components = Request.extractWithPattern(timeZoneDescription, pattern: "([-+])(\\d\\d):(\\d\\d)")
+      if components.count == 3 {
+        let hour = components[1].toInt()!
+        let minute = components[2].toInt()!
+        var minutes = hour * 60 + minute
+        if components[0] == "-" {
+          minutes = minutes * -1
+        }
+        self.timeZone = NSTimeZone(forSecondsFromGMT: minutes * 60)
+        NSLog("Time zone is %@", self.timeZone)
+      }
+    }
   }
   
   /**
