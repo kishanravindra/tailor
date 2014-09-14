@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		524F917219C1179800B16B6E /* libmysqlclient.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 524F917119C1179800B16B6E /* libmysqlclient.dylib */; };
 		525CC56419C4BB6C00B8626E /* application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC54019C4BB6C00B8626E /* application.swift */; };
 		525CC56519C4BB6C00B8626E /* routes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC54119C4BB6C00B8626E /* routes.swift */; };
 		525CC56619C4BB6C00B8626E /* HatsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC54419C4BB6C00B8626E /* HatsController.swift */; };
@@ -32,22 +31,25 @@
 		52A1C28819C4F2BC00F0133E /* form.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A1C28719C4F2BC00F0133E /* form.swift */; };
 		52A1C28B19C4F48800F0133E /* application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A1C28A19C4F48800F0133E /* application.swift */; };
 		52A1C28F19C53E1F00F0133E /* RestfulController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A1C28E19C53E1F00F0133E /* RestfulController.swift */; };
+		52D6600919C640A200A82758 /* application.css in Copy Files */ = {isa = PBXBuildFile; fileRef = 52D6600819C637BD00A82758 /* application.css */; };
+		52D6600B19C645E100A82758 /* libmysqlclient.18.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D6600A19C645E100A82758 /* libmysqlclient.18.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		52870F7519BB7C00001E4163 /* CopyFiles */ = {
+		52870F7519BB7C00001E4163 /* Copy Files */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
+			buildActionMask = 12;
+			dstPath = assets;
+			dstSubfolderSpec = 7;
 			files = (
+				52D6600919C640A200A82758 /* application.css in Copy Files */,
 			);
-			runOnlyForDeploymentPostprocessing = 1;
+			name = "Copy Files";
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		524F917119C1179800B16B6E /* libmysqlclient.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmysqlclient.dylib; path = ../../../../usr/local/Cellar/mysql/5.6.19/lib/libmysqlclient.dylib; sourceTree = "<group>"; };
 		525CC54019C4BB6C00B8626E /* application.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = application.swift; sourceTree = "<group>"; };
 		525CC54119C4BB6C00B8626E /* routes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = routes.swift; sourceTree = "<group>"; };
 		525CC54219C4BB6C00B8626E /* Tailor-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Tailor-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -77,6 +79,9 @@
 		52A1C28719C4F2BC00F0133E /* form.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = form.swift; sourceTree = "<group>"; };
 		52A1C28A19C4F48800F0133E /* application.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = application.swift; path = layouts/application.swift; sourceTree = "<group>"; };
 		52A1C28E19C53E1F00F0133E /* RestfulController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RestfulController.swift; sourceTree = "<group>"; };
+		52D65FFD19C62D6800A82758 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		52D6600819C637BD00A82758 /* application.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = application.css; path = assets/application.css; sourceTree = "<group>"; };
+		52D6600A19C645E100A82758 /* libmysqlclient.18.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libmysqlclient.18.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,7 +89,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				524F917219C1179800B16B6E /* libmysqlclient.dylib in Frameworks */,
+				52D6600B19C645E100A82758 /* libmysqlclient.18.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -95,6 +100,7 @@
 			isa = PBXGroup;
 			children = (
 				525CC53F19C4BB6C00B8626E /* app */,
+				52D6600719C637A700A82758 /* assets */,
 				525CC54319C4BB6C00B8626E /* controllers */,
 				525CC54619C4BB6C00B8626E /* models */,
 				525CC54819C4BB6C00B8626E /* views */,
@@ -186,6 +192,7 @@
 		525CC55519C4BB6C00B8626E /* db */ = {
 			isa = PBXGroup;
 			children = (
+				52D6600A19C645E100A82758 /* libmysqlclient.18.dylib */,
 				525CC55619C4BB6C00B8626E /* DatabaseConnection.swift */,
 				525CC55719C4BB6C00B8626E /* MysqlConnection.swift */,
 				525CC55819C4BB6C00B8626E /* tailor_c_wrappers.c */,
@@ -222,9 +229,9 @@
 		52870F6E19BB7C00001E4163 = {
 			isa = PBXGroup;
 			children = (
-				524F917119C1179800B16B6E /* libmysqlclient.dylib */,
 				525CC57A19C4BBA100B8626E /* README.md */,
 				525CC57B19C4BBA100B8626E /* TODO.md */,
+				52D65FFD19C62D6800A82758 /* LICENSE */,
 				525CC53E19C4BB6C00B8626E /* Haberdashery */,
 				525CC54B19C4BB6C00B8626E /* Tailor */,
 				52870F7819BB7C00001E4163 /* Products */,
@@ -247,6 +254,14 @@
 			name = layouts;
 			sourceTree = "<group>";
 		};
+		52D6600719C637A700A82758 /* assets */ = {
+			isa = PBXGroup;
+			children = (
+				52D6600819C637BD00A82758 /* application.css */,
+			);
+			name = assets;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -256,7 +271,7 @@
 			buildPhases = (
 				52870F7319BB7C00001E4163 /* Sources */,
 				52870F7419BB7C00001E4163 /* Frameworks */,
-				52870F7519BB7C00001E4163 /* CopyFiles */,
+				52870F7519BB7C00001E4163 /* Copy Files */,
 			);
 			buildRules = (
 			);
@@ -428,6 +443,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/Cellar/mysql/5.6.19/lib,
+					"$(PROJECT_DIR)/Tailor/db",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				OTHER_LDFLAGS = "";
@@ -446,6 +462,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/Cellar/mysql/5.6.19/lib,
+					"$(PROJECT_DIR)/Tailor/db",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				OTHER_LDFLAGS = "";

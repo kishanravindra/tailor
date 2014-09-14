@@ -7,12 +7,13 @@
 
 * Validations
 * Checking for errors creating or updating records
-* Move tableName, etc to class methods
-
-### Templating
-
-* Shared layouts
 
 ### Controllers
 
 * Cookie Management
+
+### General
+
+* Authentication
+* Helpers for APIs
+* Extract out sample app into its own project

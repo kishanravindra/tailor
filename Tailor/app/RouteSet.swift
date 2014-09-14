@@ -298,4 +298,41 @@ class RouteSet {
     }
     return nil
   }
+  
+  /**
+    This method generates a set of routes for static assets.
+
+    The handlers for this will read the file contents for each file from the
+    disk and serve it out as the response. The local paths for the assets will
+    be relative to the application's root path, which defaults to the directory
+    containing the executable.
+
+    :param: prefix        The prefix that we append to all the static asset URLs.
+    :param: localPrefix   The prefix that we append to all of the paths for the
+                          assets on disk.
+    :param: assets        The names of the asset files.
+    */
+  func staticAssets(#prefix: String, localPrefix: String, assets: [String]) {
+    for assetName in assets {
+      let path = "\(prefix)/\(assetName)"
+      let localPath = "\(localPrefix)/\(assetName)"
+      self.addRoute(path, method: "GET") {
+        (request, callback) -> () in
+        
+        let fullPath = Application.sharedApplication().rootPath + "/\(localPath)"
+        NSLog("Full path is \(fullPath)")
+        if let contents = NSFileManager.defaultManager().contentsAtPath(fullPath) {
+          var response = Response()
+          response.code = 200
+          response.bodyData.appendData(contents)
+          callback(response)
+        }
+        else {
+          var response = Response()
+          response.code = 404
+          callback(response)
+        }
+      }
+    }
+  }
 }

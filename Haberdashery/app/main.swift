@@ -7,7 +7,4 @@ MysqlConnection.open([
   "database": "haberdashery"
 ])
 
-HaberdasheryRouteSet.printRoutes()
 HaberdasheryApplication.start()
-
-let thing = HatsController<Hat>.self

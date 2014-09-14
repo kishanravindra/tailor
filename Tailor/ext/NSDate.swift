@@ -21,6 +21,22 @@ extension NSDate {
     let date = calendar.dateFromComponents(components)!
     self.init(timeInterval: 0, sinceDate: date)
   }
+  
+  /**
+    This method formats a date using the application's date formatters.
+
+    :param: format    The name of the format to use.
+    :returns:         The formatted date, or nil of the format was not found.
+    */
+  func format(format: String) -> String? {
+    if let formatter = Application.sharedApplication().dateFormatters[format] {
+      return formatter.stringFromDate(self)
+    }
+    else {
+      return nil
+    }
+  }
+
 }
 
 /**

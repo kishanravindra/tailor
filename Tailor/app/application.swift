@@ -14,12 +14,32 @@ class Application {
   var routeSet = RouteSet()
   
   /**
+    The path to the root of the application.
+  
+    This defaults to the path of the executable
+    */
+  var rootPath = "."
+  
+  /** The formatters that we have available for dates. */
+  var dateFormatters: [String:NSDateFormatter] = [:]
+  
+  /**
     This method initializes the application.
   
     This implementation does nothing, but subclasses can initialize
     application-specific information like routes.
     */
   required init() {
+    self.dateFormatters["short"] = NSDateFormatter()
+    self.dateFormatters["long"] = NSDateFormatter()
+    self.dateFormatters["shortDate"] = NSDateFormatter()
+    self.dateFormatters["longDate"] = NSDateFormatter()
+    
+    self.dateFormatters["short"]?.dateFormat = "hh:mm Z"
+    self.dateFormatters["long"]?.dateFormat = "dd MMMM, yyyy, hh:mm z"
+
+    self.dateFormatters["shortDate"]?.dateFormat = "dd MMMM"
+    self.dateFormatters["longDate"]?.dateFormat = "dd MMMM, yyyy"
   }
   
   /**

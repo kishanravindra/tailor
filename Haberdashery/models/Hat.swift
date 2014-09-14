@@ -19,10 +19,10 @@ class Hat : Record {
   dynamic private(set) var updatedAt : NSDate!
   
   /** The name of the table that backs this class. */
-  override func tableName() -> String { return "hats" }
+  override class func tableName() -> String { return "hats" }
   
   /** The properties that we provide dynamically. */
-  override func persistedProperties() -> [String] {
+  override class func persistedProperties() -> [String] {
     return ["brimSize", "color", "createdAt", "updatedAt"]
   }
 }

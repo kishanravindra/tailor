@@ -25,7 +25,7 @@ class Record {
     self.id = data["id"] as? Int
     
     let klass : AnyClass = object_getClass(self)
-    for (propertyName, columnName) in self.persistedPropertyMapping() {
+    for (propertyName, columnName) in self.dynamicType.persistedPropertyMapping() {
       if let value = data[columnName] {
         let capitalName = String(propertyName[propertyName.startIndex]).capitalizedString +
           propertyName.substringFromIndex(advance(propertyName.startIndex, 1))
@@ -63,7 +63,7 @@ class Record {
 
     :returns: The table name.
     */
-  func tableName() -> String { return "" }
+  class func tableName() -> String { return "" }
   
   /**
     This method provides the names of the properties in this class that are
@@ -79,7 +79,7 @@ class Record {
   
     :returns: The property names
     */
-  func persistedProperties() -> [String] { return [] }
+  class func persistedProperties() -> [String] { return [] }
   
   /**
     This method provides a mapping between the names of properties in instances
@@ -95,7 +95,7 @@ class Record {
 
     :returns: The property mapping.
     */
-  func persistedPropertyMapping() -> [String:String] {
+  class func persistedPropertyMapping() -> [String:String] {
     var dictionary = [String:String]()
     for property in self.persistedProperties() {
       dictionary[property] = property.underscored()
@@ -131,7 +131,7 @@ class Record {
     :returns:             The created records.
     */
   class func find<RecordType : Record>(conditions: [String:String] = [:], order: [String: NSComparisonResult] = [:], limit: Int? = nil) -> [RecordType] {
-    var query = "SELECT * FROM \(self.init().tableName())"
+    var query = "SELECT * FROM \(self.tableName())"
     var parameters : [String] = []
     
     if !conditions.isEmpty {
@@ -196,7 +196,7 @@ class Record {
     var values = [String:String]()
     
     let klass: AnyClass! = object_getClass(self)
-    for (propertyName, columnName) in self.persistedPropertyMapping() {
+    for (propertyName, columnName) in self.dynamicType.persistedPropertyMapping() {
       let getter = class_getInstanceMethod(klass, Selector(propertyName))
       if getter != nil {
         var value: AnyObject?
@@ -245,13 +245,13 @@ class Record {
     This method saves the record to the database by inserting it.
     */
   func saveInsert() {
-    var query = "INSERT INTO \(self.tableName()) ("
+    var query = "INSERT INTO \(self.dynamicType.tableName()) ("
     var parameters = [String]()
     
     var firstParameter = true
     var parameterString = ""
     let values = self.valuesToPersist()
-    for (propertyName, columnName) in self.persistedPropertyMapping() {
+    for (propertyName, columnName) in self.dynamicType.persistedPropertyMapping() {
       let value = values[columnName]
       if value == nil {
         continue
@@ -276,12 +276,12 @@ class Record {
     This method saves the record to the database by updating it.
     */
   func saveUpdate() {
-    var query = "UPDATE \(self.tableName())"
+    var query = "UPDATE \(self.dynamicType.tableName())"
     var parameters = [String]()
     
     var firstParameter = true
     let values = self.valuesToPersist()
-    for (propertyName, columnName) in self.persistedPropertyMapping() {
+    for (propertyName, columnName) in self.dynamicType.persistedPropertyMapping() {
       let value = values[columnName]
       if firstParameter {
         query += " SET "
@@ -308,7 +308,7 @@ class Record {
     This method deletes the record from the database.
     */
   func destroy() {
-    let query = "DELETE FROM \(self.tableName()) WHERE id = ?"
+    let query = "DELETE FROM \(self.dynamicType.tableName()) WHERE id = ?"
     DatabaseConnection.sharedConnection().executeQuery(query, String(self.id))
   }
 }
