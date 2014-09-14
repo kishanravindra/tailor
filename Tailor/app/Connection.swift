@@ -4,8 +4,8 @@ import Foundation
   This class represents a connection with a client.
   */
 class Connection : NSObject {
-  /** The handle that we are using to communicate with the client. */
-  let listeningHandle : NSFileHandle
+  /** The file descriptor that we are using to communicate with the client.*/
+  let socketDescriptor: Int32
   
   /** A callback to the code to provide the request. */
   let handler: Server.RequestHandler
@@ -18,43 +18,72 @@ class Connection : NSObject {
     :param: handler           A callback that will handle the request.
     */
   required init(fileDescriptor: Int32, handler: Server.RequestHandler) {
-    self.listeningHandle = NSFileHandle(fileDescriptor: fileDescriptor, closeOnDealloc: false)
+    self.socketDescriptor = fileDescriptor
     self.handler = handler
     super.init()
-    NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("connectionMade:"), name: NSFileHandleConnectionAcceptedNotification, object: listeningHandle)
-    listeningHandle.acceptConnectionInBackgroundAndNotify()
+    
+    self.listenToSocket()
   }
   
   //MARK: - Handling Requests
-  
-  /**
-    This method is called when a client initiates a request.
 
-    :param: notification    The notification from the file handle.
+  /**
+    This method adds an operation to the main queue for getting a connection for
+    our socket.
+  
+    This will return immediately after putting the operation in the queue.
+  
+    Once the connection is accepted, it will put an operation on a new
+    queue for reading from the socket, and put an operation on the main queue
+    for listening for a new connection.k
     */
-  func connectionMade(notification: NSNotification) {
-    let fileHandle = notification.userInfo![NSFileHandleNotificationFileHandleItem]! as NSFileHandle
-    
-    NSLog("Connection made")
-    NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("dataAvailable:"), name:
-      NSFileHandleDataAvailableNotification, object: fileHandle)
-    fileHandle.waitForDataInBackgroundAndNotify()
-    listeningHandle.acceptConnectionInBackgroundAndNotify()
+  func listenToSocket() {
+    NSOperationQueue.mainQueue().addOperationWithBlock {
+      let connectionDescriptor = accept(self.socketDescriptor, nil, nil)
+
+      if connectionDescriptor < 0 {
+        return
+      }
+      
+      NSOperationQueue().addOperationWithBlock {
+        self.readFromSocket(connectionDescriptor)
+      }
+      self.listenToSocket()
+    }
   }
   
   /**
-    This method is called when the client has data for us to process.
+    This method reads the available data from a socket.
     
-    :param: notification  The notification from the file handle.
+    It will read the data and process the request synchronosuly, then write the
+    response data to the file descriptor and close it.
+  
+    :param: connectionDescriptor    The file descriptor for the connection.
     */
-  func dataAvailable(notification: NSNotification) {
-    NSLog("Processing request")
-    let handle = notification.object! as NSFileHandle
-    let request = Request(data: handle.availableData)
+  func readFromSocket(connectionDescriptor: Int32) {
+    var data = NSMutableData()
+    var buffer = [UInt8]()
+    let bufferLength: UInt = 1024
     
-    handler(request) {
-      NSLog("Writing data for request")
-      handle.writeData($0.data)
+    for _ in 0..<bufferLength { buffer.append(0) }
+    
+    while true {
+      let length = read(connectionDescriptor, &buffer, bufferLength)
+      if length < 0 || length > Int(bufferLength) {
+        close(connectionDescriptor)
+        return
+      }
+      data.appendBytes(buffer, length: length)
+      if length < Int(bufferLength) {
+        break
+      }
+    }
+    
+    let request = Request(data: data)
+    self.handler(request) {
+      let responseData = $0.data
+      write(connectionDescriptor, responseData.bytes, UInt(responseData.length))
+      close(connectionDescriptor)
     }
   }
 }

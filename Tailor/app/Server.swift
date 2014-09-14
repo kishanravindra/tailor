@@ -36,41 +36,35 @@ class Server {
     :returns:         Whether we were able to open the connection.
     */
   func start(address: (Int,Int,Int,Int), port: Int, handler: RequestHandler) -> Bool {
-    let socket = CFSocketCreate(nil, 0, 0, 0, 0, nil, nil)
-    
-    let fileDescriptor = CFSocketGetNative(socket)
-    
+    let socketDescriptor = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)
     let flag = [1]
-    setsockopt(fileDescriptor, SOL_SOCKET, SO_REUSEADDR, flag, UInt32(sizeof(Int)))
+    setsockopt(socketDescriptor, SOL_SOCKET, SO_REUSEADDR, flag, UInt32(sizeof(Int)))
+    setsockopt(socketDescriptor, SOL_SOCKET, SO_KEEPALIVE, flag, UInt32(sizeof(Int)))
     
-    let length = UInt8(sizeof(sockaddr_in))
-    let ipAddress = address.3 << 24 + address.2 << 16 + address.1 << 8 + address.0
-    let convertedPort = UInt16(port >> 8 | (port & 255) << 8)
+    if socketDescriptor == -1 {
+      NSLog("Error creating socket")
+      return false
+    }
+    var socketAddress = createSocketAddress(Int32(port))
     
-    var socketAddress = sockaddr_in(
-      sin_len: length,
-      sin_family: UInt8(AF_INET),
-      sin_port: convertedPort,
-      sin_addr: in_addr(
-        s_addr: UInt32(ipAddress)
-      ),
-      sin_zero: (0,0,0,0,0,0,0,0)
-    )
+    func socketAddressPointer(pointer: UnsafePointer<sockaddr_in>) -> UnsafePointer<sockaddr> {
+      return UnsafePointer<sockaddr>(pointer)
+    }
     
-    let addressResult = withUnsafePointer(&socketAddress, {
-      (pointer: UnsafePointer) -> CFSocketError in
-      let intPointer = UnsafePointer<UInt8>(pointer)
-      let data = CFDataCreate(nil, intPointer, sizeof(sockaddr_in))
-      return CFSocketSetAddress(socket, data)
-    })
-    
-    if addressResult != CFSocketError.Success {
-      NSLog("Error opening socket")
+    if bind(socketDescriptor, socketAddressPointer(&socketAddress), UInt32(sizeof(sockaddr_in))) == -1 {
+      NSLog("Error binding to socket")
+      close(socketDescriptor)
       return false
     }
     
-    self.connection = Connection(fileDescriptor: fileDescriptor, handler: handler)
-    NSLog("Listening on port %d", port)
+    if listen(socketDescriptor, 10) == -1 {
+      NSLog("Error listening on socket")
+      close(socketDescriptor)
+      return false
+    }
+    
+    self.connection = Connection(fileDescriptor: socketDescriptor, handler: handler)
+    
     NSRunLoop.currentRunLoop().run()
     return true
   }

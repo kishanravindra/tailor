@@ -47,7 +47,7 @@ class Record {
           default:
             break
           }
-          tailor_invoke_setter(self, setter, objectValue)
+          tailorInvokeSetter(self, setter, objectValue)
         }
       }
     }
@@ -208,7 +208,7 @@ class Record {
         case "updatedAt":
           value = NSDate()
         default:
-          value = tailor_invoke_getter(self, getter)
+          value = tailorInvokeGetter(self, getter)
         }
         switch value {
         case let string as String:

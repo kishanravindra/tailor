@@ -7,6 +7,7 @@
 
 * Validations
 * Checking for errors creating or updating records
+* Move tableName, etc to class methods
 
 ### Templating
 
@@ -15,4 +16,3 @@
 ### Controllers
 
 * Cookie Management
-* Improving reliability

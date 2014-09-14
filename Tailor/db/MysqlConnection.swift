@@ -38,7 +38,7 @@ class MysqlConnection : DatabaseConnection {
       :returns:       The container.
       */
     class func createBindResult(type: enum_field_types) -> MYSQL_BIND {
-      var bind = empty_mysql_bind_param()
+      var bind = emptyMysqlBindParam()
       
       var bufferType = type
       var unitSize = sizeof(UInt8)
@@ -171,8 +171,8 @@ class MysqlConnection : DatabaseConnection {
       (stringParameter: String) -> MYSQL_BIND in
       var buffer : [UInt8] = []
       let data = NSMutableData(data: stringParameter.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!)
-      var bind = empty_mysql_bind_param()
-      bind.buffer = UnsafeMutablePointer<Void>(data.mutableBytes)
+      var bind = emptyMysqlBindParam()
+      bind.buffer = data.mutableBytes
       bind.buffer_length = UInt(data.length)
       bind.buffer_type = MYSQL_TYPE_STRING
       return bind
