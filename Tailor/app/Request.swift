@@ -76,7 +76,14 @@ struct Request {
       headerLength += countElements(lines[index]) + 1
     }
     
-    self.body = data.subdataWithRange(NSMakeRange(headerLength, data.length - headerLength))
+    let range = NSMakeRange(headerLength, data.length - headerLength)
+    
+    if range.length > 0 {
+      self.body = data.subdataWithRange(range)
+    }
+    else {
+      self.body = NSData()
+    }
     self.headers = headers
     
     self.parseRequestParameters()

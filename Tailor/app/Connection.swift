@@ -35,9 +35,11 @@ class Connection : NSObject {
   func connectionMade(notification: NSNotification) {
     let fileHandle = notification.userInfo![NSFileHandleNotificationFileHandleItem]! as NSFileHandle
     
+    NSLog("Connection made")
     NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("dataAvailable:"), name:
       NSFileHandleDataAvailableNotification, object: fileHandle)
     fileHandle.waitForDataInBackgroundAndNotify()
+    listeningHandle.acceptConnectionInBackgroundAndNotify()
   }
   
   /**
@@ -46,11 +48,13 @@ class Connection : NSObject {
     :param: notification  The notification from the file handle.
     */
   func dataAvailable(notification: NSNotification) {
-    listeningHandle.acceptConnectionInBackgroundAndNotify()
+    NSLog("Processing request")
     let handle = notification.object! as NSFileHandle
     let request = Request(data: handle.availableData)
-    handler(request, {
+    
+    handler(request) {
+      NSLog("Writing data for request")
       handle.writeData($0.data)
-    })
+    }
   }
 }

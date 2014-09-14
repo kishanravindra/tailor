@@ -67,7 +67,7 @@ class DatabaseConnection {
     
     :param: query           The text of the query.
     :param: bindParameters  Parameters to interpolate into the query on the
-    database side.
+                            database side.
     :returns                The interpreted result set.
   */
   func executeQuery(query: String, parameters bindParameters: [String]) -> [Row] {
@@ -89,4 +89,5 @@ class DatabaseConnection {
   }
 }
 
+/** The connection to the database. */
 var SHARED_DATABASE_CONNECTION : DatabaseConnection?

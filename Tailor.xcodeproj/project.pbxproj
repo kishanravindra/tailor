@@ -28,6 +28,10 @@
 		525CC57619C4BB6C00B8626E /* Record.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC55F19C4BB6C00B8626E /* Record.swift */; };
 		525CC57919C4BB6C00B8626E /* Template.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC56319C4BB6C00B8626E /* Template.swift */; };
 		525CC57D19C4BBD700B8626E /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC57C19C4BBD700B8626E /* main.swift */; };
+		525CC57F19C4D7E000B8626E /* show.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC57E19C4D7E000B8626E /* show.swift */; };
+		52A1C28819C4F2BC00F0133E /* form.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A1C28719C4F2BC00F0133E /* form.swift */; };
+		52A1C28B19C4F48800F0133E /* application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A1C28A19C4F48800F0133E /* application.swift */; };
+		52A1C28F19C53E1F00F0133E /* RestfulController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A1C28E19C53E1F00F0133E /* RestfulController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -68,7 +72,11 @@
 		525CC57A19C4BBA100B8626E /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		525CC57B19C4BBA100B8626E /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
 		525CC57C19C4BBD700B8626E /* main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		525CC57E19C4D7E000B8626E /* show.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = show.swift; sourceTree = "<group>"; };
 		52870F7719BB7C00001E4163 /* Tailor */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Tailor; sourceTree = BUILT_PRODUCTS_DIR; };
+		52A1C28719C4F2BC00F0133E /* form.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = form.swift; sourceTree = "<group>"; };
+		52A1C28A19C4F48800F0133E /* application.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = application.swift; path = layouts/application.swift; sourceTree = "<group>"; };
+		52A1C28E19C53E1F00F0133E /* RestfulController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RestfulController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -124,6 +132,7 @@
 		525CC54819C4BB6C00B8626E /* views */ = {
 			isa = PBXGroup;
 			children = (
+				52A1C28919C4F45700F0133E /* layouts */,
 				525CC54919C4BB6C00B8626E /* hats */,
 			);
 			path = views;
@@ -133,6 +142,8 @@
 			isa = PBXGroup;
 			children = (
 				525CC54A19C4BB6C00B8626E /* index.swift */,
+				525CC57E19C4D7E000B8626E /* show.swift */,
+				52A1C28719C4F2BC00F0133E /* form.swift */,
 			);
 			path = hats;
 			sourceTree = "<group>";
@@ -144,7 +155,6 @@
 				525CC55319C4BB6C00B8626E /* controller */,
 				525CC55519C4BB6C00B8626E /* db */,
 				525CC55A19C4BB6C00B8626E /* ext */,
-				525CC55D19C4BB6C00B8626E /* lib */,
 				525CC55E19C4BB6C00B8626E /* model */,
 				525CC56219C4BB6C00B8626E /* view */,
 			);
@@ -168,6 +178,7 @@
 			isa = PBXGroup;
 			children = (
 				525CC55419C4BB6C00B8626E /* Controller.swift */,
+				52A1C28E19C53E1F00F0133E /* RestfulController.swift */,
 			);
 			path = controller;
 			sourceTree = "<group>";
@@ -190,13 +201,6 @@
 				525CC55C19C4BB6C00B8626E /* NSString.swift */,
 			);
 			path = ext;
-			sourceTree = "<group>";
-		};
-		525CC55D19C4BB6C00B8626E /* lib */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = lib;
 			sourceTree = "<group>";
 		};
 		525CC55E19C4BB6C00B8626E /* model */ = {
@@ -233,6 +237,14 @@
 				52870F7719BB7C00001E4163 /* Tailor */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		52A1C28919C4F45700F0133E /* layouts */ = {
+			isa = PBXGroup;
+			children = (
+				52A1C28A19C4F48800F0133E /* application.swift */,
+			);
+			name = layouts;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -291,6 +303,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52A1C28B19C4F48800F0133E /* application.swift in Sources */,
 				525CC57119C4BB6C00B8626E /* DatabaseConnection.swift in Sources */,
 				525CC56E19C4BB6C00B8626E /* RouteSet.swift in Sources */,
 				525CC57219C4BB6C00B8626E /* MysqlConnection.swift in Sources */,
@@ -300,11 +313,14 @@
 				525CC57319C4BB6C00B8626E /* tailor_c_wrappers.c in Sources */,
 				525CC56619C4BB6C00B8626E /* HatsController.swift in Sources */,
 				525CC57D19C4BBD700B8626E /* main.swift in Sources */,
+				525CC57F19C4D7E000B8626E /* show.swift in Sources */,
 				525CC57519C4BB6C00B8626E /* NSString.swift in Sources */,
 				525CC56419C4BB6C00B8626E /* application.swift in Sources */,
 				525CC57619C4BB6C00B8626E /* Record.swift in Sources */,
 				525CC56919C4BB6C00B8626E /* index.swift in Sources */,
+				52A1C28F19C53E1F00F0133E /* RestfulController.swift in Sources */,
 				525CC56D19C4BB6C00B8626E /* Response.swift in Sources */,
+				52A1C28819C4F2BC00F0133E /* form.swift in Sources */,
 				525CC57019C4BB6C00B8626E /* Controller.swift in Sources */,
 				525CC56819C4BB6C00B8626E /* Hat.swift in Sources */,
 				525CC56519C4BB6C00B8626E /* routes.swift in Sources */,

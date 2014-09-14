@@ -7,3 +7,12 @@
 
 * Validations
 * Checking for errors creating or updating records
+
+### Templating
+
+* Shared layouts
+
+### Controllers
+
+* Cookie Management
+* Improving reliability

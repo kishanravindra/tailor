@@ -2,26 +2,32 @@
   The template for the index action in the HatsController.
 
   Parameters:
-  - hats: A list of hats
+
+  * hats: A list of hats
   */
 let HatIndexTemplate = Template {
   (t, parameters) in
-  t.tag("html", with: {
-    t.tag("body", with: {
-      t.tag("table", with: {
-        t.tag("tr", with: {
-          t.tag("th", with: { t.text("Color") })
-          t.tag("th", with: { t.text("Brim Size") })
-        })
-        if let hats = parameters["hats"] as? [Hat] {
-          for hat in hats {
-            t.tag("tr", with: {
-              t.tag("td", with: { t.text(hat.color) })
-              t.tag("td", with: { t.text(hat.brimSize?.stringValue ?? "") })
+  t.link(action: "new", with: {
+    t.text("New Hat")
+  })
+  t.tag("table") {
+    t.tag("tr") {
+      t.tag("th", text: "Color")
+      t.tag("th", text: "Brim Size")
+      t.tag("th", text: "Actions")
+    }
+    if let hats = parameters["records"] as? [Hat] {
+      for hat in hats {
+        t.tag("tr") {
+          t.tag("td", text: hat.color)
+          t.tag("td", text: hat.brimSize?.stringValue ?? "")
+          t.tag("td") {
+            t.link(action: "show", parameters: ["id": String(hat.id)], with: {
+              t.text("Show")
             })
           }
         }
-      })
-    })
-  })
+      }
+    }
+  }
 }

@@ -27,13 +27,20 @@ struct Response {
   /** The full HTTP response data. */
   var data : NSData { get {
     let data = NSMutableData()
-    let introString = NSString(format: "HTTP/1.1 %d\n", code)
-    data.appendData(introString.dataUsingEncoding(NSUTF8StringEncoding)!)
-    for (key,value) in self.headers {
-      let headerString = NSString(format: "%s: %s\n", key, value)
-      data.appendData(introString.dataUsingEncoding(NSUTF8StringEncoding)!)
+    
+    func add(string: String) {
+      if let newData = string.dataUsingEncoding(NSUTF8StringEncoding) {
+        data.appendData(newData)
+      }
     }
-    data.appendData("\n".dataUsingEncoding(NSUTF8StringEncoding)!)
+    
+    add(NSString(format: "HTTP/1.1 %d\n", code))
+    add(NSString(format: "Content-Length: %d\n", bodyData.length))
+    
+    for (key,value) in self.headers {
+      add(NSString(format: "%@: %@ \n", key, value))
+    }
+    add("\n")
     data.appendData(bodyData)
     return data
   } }

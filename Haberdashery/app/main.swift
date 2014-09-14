@@ -7,5 +7,7 @@ MysqlConnection.open([
   "database": "haberdashery"
 ])
 
-let hats : [Hat] = Hat.query("SELECT * FROM hats", parameters: [])
+HaberdasheryRouteSet.printRoutes()
 HaberdasheryApplication.start()
+
+let thing = HatsController<Hat>.self

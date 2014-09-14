@@ -16,9 +16,12 @@ class RouteSet {
     format `:parameter_name`, which will capture a variable portion of the route
     in a request parameter called `parameter_name`.
     */
-  struct Route {
+  class Route {
     /** The pattern for the path. */
     let pathPattern: String
+    
+    /** The method for the HTTP request. */
+    let method: String
     
     /** The implementation of the response handler. */
     let handler: Server.RequestHandler
@@ -37,6 +40,12 @@ class RouteSet {
       */
     let pathParameters: [String]
     
+    /** The controller that will handle the request. */
+    var controller: Controller.Type?
+    
+    /** The name of the action in the controller. */
+    var action: String?
+    
     /**
       This method initializes a route.
 
@@ -44,10 +53,11 @@ class RouteSet {
       :param: handler       The response handler.
       :param: description   The description for the route.
       */
-    init(pathPattern: String, handler: Server.RequestHandler, description: String) {
+    init(pathPattern: String, method: String, handler: Server.RequestHandler, description: String) {
       self.pathPattern = pathPattern
       self.handler = handler
       self.description = description
+      self.method = method
       
       let parameterPattern = NSRegularExpression(pattern: ":[\\w]+", options: nil, error: nil)
       
@@ -63,8 +73,8 @@ class RouteSet {
       
       var filteredPathPattern = NSMutableString(string: pathPattern)
       
-      parameterPattern.replaceMatchesInString(filteredPathPattern, options: nil, range: NSMakeRange(0, countElements(pathPattern)), withTemplate: "(.*)")
-      self.regex = NSRegularExpression(pattern: "^" + filteredPathPattern + "$", options: nil, error: nil)
+      parameterPattern.replaceMatchesInString(filteredPathPattern, options: nil, range: NSMakeRange(0, countElements(pathPattern)), withTemplate: "([^/]*)")
+      self.regex = NSRegularExpression(pattern: "^" + filteredPathPattern + "/?$", options: nil, error: nil)
     }
     
     //MARK: - Description
@@ -89,7 +99,7 @@ class RouteSet {
       let path = request.path
       let range = NSRange(location: 0, length: countElements(path))
       let match = self.regex.firstMatchInString(path, options: nil, range: range)
-      return match != nil
+      return match != nil && request.method == self.method
     }
     
     /**
@@ -123,7 +133,7 @@ class RouteSet {
   private var currentPathPrefix = ""
   
   /** The controller that will be handling requests in a block. */
-  private var currentController = Controller()
+  private var currentController = Controller.self
   
   //MARK: - Managing Routes
 
@@ -135,7 +145,7 @@ class RouteSet {
     */
   func withPrefix(pathPrefix: String, block: ()->()) {
     let oldPrefix = self.currentPathPrefix
-    self.currentPathPrefix += pathPrefix
+    self.currentPathPrefix += "/" + pathPrefix
     block()
     self.currentPathPrefix = oldPrefix
   }
@@ -147,10 +157,10 @@ class RouteSet {
     :param: controller    The controller that will handle the routes.
     :param: block         The block that will provide the routes.
     */
-  func withPrefix(pathPrefix: String, controller: Controller, block: ()->()) {
+  func withPrefix(pathPrefix: String, controller: Controller.Type, block: ()->()) {
     let oldPrefix = self.currentPathPrefix
     let oldController = self.currentController
-    self.currentPathPrefix += pathPrefix
+    self.currentPathPrefix += "/" + pathPrefix
     self.currentController = controller
     block()
     self.currentController = oldController
@@ -164,40 +174,55 @@ class RouteSet {
     :param: handler       The block that will handle the request.
     :param: description   The description of the route implementation.
     */
-  func addRoute(pathPattern: String, handler: Server.RequestHandler, description: String) {
-    self.routes.append(Route(pathPattern: self.currentPathPrefix + pathPattern, handler: handler, description: description))
+  func addRoute(pathPattern: String, method: String, handler: Server.RequestHandler, description: String) -> Route {
+    var fullPattern = self.currentPathPrefix
+    if !pathPattern.isEmpty {
+      fullPattern += "/" + pathPattern
+    }
+    let route = Route(pathPattern: fullPattern, method: method, handler: handler, description: description)
+    self.routes.append(route)
+    return route
   }
   
   /**
     This method adds a route with a block.
 
     :param: pathPattern   The pattern for the route.
+    :param: method        The HTTP method for the route.
     :param: handler       The block that will handle the request.
   */
-  func addRoute(pathPattern: String, handler: Server.RequestHandler) {
-    self.addRoute(pathPattern, handler: handler, description: "custom block")
+  func addRoute(pathPattern: String, method: String, handler: Server.RequestHandler) {
+    self.addRoute(pathPattern, method: method, handler: handler, description: "custom block")
   }
   
   /**
     This method adds a route that will be handled by a controller.
 
     :param: pathPattern   The pattern for the route.
+    :param: method        The HTTP method for the route.
     :param: controller    The controller that will handle the requests.
     :param: action        The name of the action in the controller.
     */
-  func addRoute(pathPattern: String, controller: Controller, action: String) {
-    let description = NSString(format: "%@#%@", controller.name, action)
-    self.addRoute(pathPattern, handler: controller.actions[action]!, description: description)
+  func addRoute(pathPattern: String, method: String, controller: Controller.Type, action: String) {
+    let description = NSString(format: "%@#%@", NSStringFromClass(controller), action)
+    let handler = {
+      (request: Request, callback: Server.ResponseCallback) -> () in
+      controller(request: request, action: action, callback: callback).respond()
+    }
+    let route = self.addRoute(pathPattern, method: method, handler: handler, description: description)
+    route.controller = controller
+    route.action = action
   }
   
   /**
     This method adds a route that will be handled by the current controller.
     
     :param: pathPattern   The pattern for the route.
+    :param: method        The HTTP method for the route.
     :param: action        The name of the action in the controller.
     */
-  func addRoute(pathPattern: String, action: String) {
-    self.addRoute(pathPattern, controller: self.currentController, action: action)
+  func addRoute(pathPattern: String, method: String, action: String) {
+    self.addRoute(pathPattern, method: method, controller: self.currentController, action: action)
   }
   
   /**
@@ -233,5 +258,44 @@ class RouteSet {
     response.code = 404
     response.appendString("File Not Found")
     callback(response)
+  }
+  
+  //MARK: - Generating URLs
+  
+  /**
+    This method generates a URL using our route set.
+
+    :param: controller    The name of the controller that the link is to.
+    :param: action        The name of the action.
+    :param: parameters    The parameters to interpolate into the route.
+    :returns:             The path, if we could match it up.
+    */
+  func urlFor(controllerName: String, action: String, parameters: [String:String] = [:]) -> String? {
+    for route in self.routes {
+      if route.controller != nil && NSStringFromClass(route.controller!) == controllerName &&
+      route.action != nil && route.action! == action {
+        var path = route.pathPattern
+        var hasQuery = false
+        for (key, value) in parameters {
+          if let range = path.rangeOfString(":" + key, options: nil, range: nil, locale: nil) {
+            path = path.stringByReplacingCharactersInRange(range, withString: value.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding) ?? "")
+          }
+          else {
+            if hasQuery {
+              path += "&"
+            }
+            else {
+              path += "?"
+              hasQuery = true
+            }
+            path += key.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding) ?? ""
+            path += "="
+            path += value.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding) ?? ""
+          }
+        }
+        return path
+      }
+    }
+    return nil
   }
 }
