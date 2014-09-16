@@ -2,17 +2,20 @@
 
 * Storing database config in a file.
 
-### Records
+### Modelling
 
-* Validations
-* Checking for errors creating or updating records
+* Checking for database errors creating or updating records
+* Transactions
+* Database migrations
 
 ### Controllers
 
 * Cookie Management
+* Rate limiting on threads
 
 ### General
 
 * Authentication
 * Helpers for APIs
 * Extract out sample app into its own project
+* Mailers

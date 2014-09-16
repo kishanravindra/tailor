@@ -25,4 +25,12 @@ class Hat : Record {
   override class func persistedProperties() -> [String] {
     return ["brimSize", "color", "createdAt", "updatedAt"]
   }
+  
+  /** The validations for the hats. */
+  override class func validators() -> [Validator] {
+    return [
+      PresenceValidator(key: "color"),
+      RangeValidator(key: "brimSize", data: ["min": 10, "max": 20])
+    ]
+  }
 }

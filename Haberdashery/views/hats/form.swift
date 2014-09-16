@@ -19,13 +19,26 @@ let HatFormTemplate = Template {
     t.tag("div", ["class": "row"]) {
       t.tag("div", ["class": "col-md-6"]) {
         t.tag("form", ["method": "POST", "action": path]) {
-          t.tag("div", ["class": "form-group"]) {
-            t.tag("label", text: "Color")
-            t.tag("input", ["class": "form-control", "name": "hat[color]", "value": hat.color ?? ""])
+          func inputClass(key: String) -> String {
+            var inputClass = "form-group"
+            if !(hat.errors.errors[key]?.isEmpty ?? true) {
+              inputClass += " has-error"
+            }
+            return inputClass
           }
-          t.tag("div", ["class": "form-group"]) {
-            t.tag("label", text: "Brim Size")
+          t.tag("div", ["class": inputClass("color")]) {
+            t.tag("label", attributes: ["class": "control-label"], text: "Color")
+            t.tag("input", ["class": "form-control", "name": "hat[color]", "value": hat.color ?? ""])
+            for error in hat.errors.errors["color"] ?? [] {
+              t.tag("p", attributes: ["class": "help-block"], text: error)
+            }
+          }
+          t.tag("div", ["class": inputClass("brimSize")]) {
+            t.tag("label", attributes: ["class": "control-label"], text: "Brim Size")
             t.tag("input", ["class": "form-control", "name": "hat[brimSize]", "value": hat.brimSize?.stringValue ?? ""])
+            for error in hat.errors.errors["brimSize"] ?? [] {
+              t.tag("p", attributes: ["class": "help-block"], text: error)
+            }
           }
           t.tag("div", ["class": "row"]) {
             t.tag("div", ["class": "col-md-2"]) {

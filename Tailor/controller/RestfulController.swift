@@ -104,9 +104,20 @@ class RestfulController<RecordType: Record> : Controller {
   func processForm() {
     if let record = self.record() {
       self.setAttributesOnRecord(record, parameters: request.requestParameters)
-      record.save()
-      let path = Application.sharedApplication().routeSet.urlFor(self.name, action: "index") ?? "/"
-      self.redirectTo(path)
+      if record.save() {
+        let path = Application.sharedApplication().routeSet.urlFor(self.name, action: "index") ?? "/"
+        self.redirectTo(path)
+      }
+      else {
+        if let template = self.templates["form"] {
+          self.respondWith(template, parameters: [
+            "record": record
+          ])
+        }
+        else {
+          self.render404()
+        }
+      }
     }
     else {
       render404()

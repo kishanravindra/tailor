@@ -148,7 +148,6 @@ class MysqlConnection : DatabaseConnection {
           minutes = minutes * -1
         }
         self.timeZone = NSTimeZone(forSecondsFromGMT: minutes * 60)
-        NSLog("Time zone is %@", self.timeZone)
       }
     }
   }

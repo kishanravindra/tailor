@@ -3,14 +3,14 @@ import Foundation
 /**
   This class provides a base class for models backed by the database.
   */
-class Record {
+class Record : Model {
   /** The unique identifier for the record. */
   var id : Int!
   
   /**
     This method initializes a record with no data.
     */
-  convenience init() {
+  convenience override init() {
     self.init(data: [:])
   }
 
@@ -23,32 +23,12 @@ class Record {
     */
   required init(data: [String:Any]) {
     self.id = data["id"] as? Int
+    super.init()
     
     let klass : AnyClass = object_getClass(self)
     for (propertyName, columnName) in self.dynamicType.persistedPropertyMapping() {
       if let value = data[columnName] {
-        let capitalName = String(propertyName[propertyName.startIndex]).capitalizedString +
-          propertyName.substringFromIndex(advance(propertyName.startIndex, 1))
-        let setterName = "set" + capitalName + ":"
-        
-        let setter = class_getInstanceMethod(klass, Selector(setterName))
-        if setter != nil {
-          var objectValue : AnyObject = ""
-          
-          switch value {
-          case let string as String:
-            objectValue = string
-          case let date as NSDate:
-            objectValue = date
-          case let int as Int:
-            objectValue = NSNumber(integer: int)
-          case let double as Double:
-            objectValue = NSNumber(double: double)
-          default:
-            break
-          }
-          tailorInvokeSetter(self, setter, objectValue)
-        }
+        self.setValue(value, forKey: propertyName)
       }
     }
   }
@@ -197,17 +177,13 @@ class Record {
     
     let klass: AnyClass! = object_getClass(self)
     for (propertyName, columnName) in self.dynamicType.persistedPropertyMapping() {
-      let getter = class_getInstanceMethod(klass, Selector(propertyName))
-      if getter != nil {
-        var value: AnyObject?
-        var stringValue : String?
-        
-        switch propertyName {
-        case "updatedAt":
-          value = NSDate()
-        default:
-          value = tailorInvokeGetter(self, getter)
-        }
+      if propertyName == "updatedAt" {
+        values[columnName] = NSDate().descriptionWithCalendarFormat(nil, timeZone: DatabaseConnection.sharedConnection().timeZone, locale: nil)
+        continue
+      }
+      
+      if let value: AnyObject = self.valueForKey(propertyName) {
+        var stringValue: String? = nil
         switch value {
         case let string as String:
           stringValue = string
@@ -229,20 +205,27 @@ class Record {
   
   /**
     This method saves the record to the database.
+  
+    :returns: Whether we were able to save the record.
     */
-  func save() {
+  func save() -> Bool {
+    if !self.validate() {
+      return false
+    }
     if self.id != nil {
-      self.saveUpdate()
+      return self.saveUpdate()
     }
     else {
-      self.saveInsert()
+      return self.saveInsert()
     }
   }
   
   /**
     This method saves the record to the database by inserting it.
+  
+    :returns:   Whether we were able to save the record.
     */
-  func saveInsert() {
+  private func saveInsert() -> Bool {
     var query = "INSERT INTO \(self.dynamicType.tableName()) ("
     var parameters = [String]()
     
@@ -268,12 +251,15 @@ class Record {
     query += ") VALUES (\(parameterString))"
     let result = DatabaseConnection.sharedConnection().executeQuery(query, parameters: parameters)[0]
     self.id = result.data["id"] as Int
+    return true
   }
   
   /**
     This method saves the record to the database by updating it.
+  
+    :returns:   Whether we were able to save the record.
     */
-  func saveUpdate() {
+  private func saveUpdate() -> Bool {
     var query = "UPDATE \(self.dynamicType.tableName())"
     var parameters = [String]()
     
@@ -300,6 +286,7 @@ class Record {
     query += " WHERE id = ?"
     parameters.append(String(self.id))
     DatabaseConnection.sharedConnection().executeQuery(query, parameters: parameters)
+    return true
   }
   
   /**
