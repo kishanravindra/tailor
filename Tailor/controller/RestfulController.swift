@@ -1,7 +1,18 @@
+/**
+  This class provides a controller with restful actions for accessing a
+  collection of records.
+  */
 class RestfulController<RecordType: Record> : Controller {
   /** The templates that this controller has for its actions. */
   var templates: [String: Template] = [:]
   
+  /**
+    This method initializes the controller.
+
+    :param: request     The request that we are processing.
+    :param: action      The action on the controller that we are executing.
+    :param: callback    The callback to call with the response.
+    */
   required init(request: Request, action: String, callback: Server.ResponseCallback) {
     super.init(request: request, action: action, callback: callback)
   }

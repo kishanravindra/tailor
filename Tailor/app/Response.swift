@@ -13,6 +13,9 @@ struct Response {
   /** The data for the response body. */
   var bodyData = NSMutableData()
   
+  /** The cookies that should be updated with this response. */
+  var cookies = CookieJar()
+  
   //MARK: - Response Data
   
   /**
@@ -40,6 +43,7 @@ struct Response {
     for (key,value) in self.headers {
       add(NSString(format: "%@: %@ \n", key, value))
     }
+    add(cookies.headerStringForChanges)
     add("\n")
     data.appendData(bodyData)
     return data

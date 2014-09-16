@@ -10,7 +10,7 @@ let HaberdasheryLayout = Template {
       
       t.tag("div", ["class": "navbar navbar-inverse navbar-fixed-top"]) {
         t.tag("div", ["class": "navbar-header"]) {
-          t.tag("a", attributes: ["class": "navbar-brand"], text: "Haberdashery")
+          t.tag("a", text: "Haberdashery", attributes: ["class": "navbar-brand"])
         }
       }
       t.tag("div", ["class": "container"]) {

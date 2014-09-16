@@ -62,6 +62,7 @@ class Controller {
     template.buffer.setString("")
     self.layout.body(template, parameters)
     var response = Response()
+    response.cookies = request.cookies
     response.appendString(template.buffer)
     self.callback(response)
   }
@@ -73,6 +74,7 @@ class Controller {
     */
   func redirectTo(path: String) {
     var response = Response()
+    response.cookies = request.cookies
     response.code = 302
     response.headers["Location"] = path
     self.callback(response)
@@ -83,6 +85,7 @@ class Controller {
     */
   func render404() {
     var response = Response()
+    response.cookies = request.cookies
     response.code = 404
     response.appendString("Page Not Found")
     self.callback(response)

@@ -22,7 +22,6 @@ let HatShowTemplate = Template {
           }
           t.tag("tr") {
             t.tag("th", text: "Created At")
-            
             t.tag("td", text: hat.createdAt?.format("long") ?? "N/A")
           }
           t.tag("tr") {

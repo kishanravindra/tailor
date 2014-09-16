@@ -28,6 +28,9 @@ struct Request {
   /** The request parameters. */
   var requestParameters: [String:String] = [:]
   
+  /** The cookies that were sent with this request. */
+  let cookies = CookieJar()
+  
   /**
     This method initializes a request.
 
@@ -67,7 +70,13 @@ struct Request {
         break
       }
       let headerMatch = Request.extractWithPattern(line, pattern: "^([\\w-]*): (.*)$")
-      headers[headerMatch[0]] = headerMatch[1]
+      
+      if headerMatch[0] == "Cookie" {
+        self.cookies.addHeaderString(headerMatch[1])
+      }
+      else {
+        headers[headerMatch[0]] = headerMatch[1]
+      }
     }
     
     let headerLines = lines[0...lastHeaderLine]
