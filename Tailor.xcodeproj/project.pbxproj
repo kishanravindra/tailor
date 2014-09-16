@@ -32,6 +32,9 @@
 		525CC57919C4BB6C00B8626E /* Template.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC56319C4BB6C00B8626E /* Template.swift */; };
 		525CC57D19C4BBD700B8626E /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC57C19C4BBD700B8626E /* main.swift */; };
 		525CC57F19C4D7E000B8626E /* show.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC57E19C4D7E000B8626E /* show.swift */; };
+		526CC4A519C7B8B400333C47 /* FormBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526CC4A419C7B8B400333C47 /* FormBuilder.swift */; };
+		526CC4A919C7BD9C00333C47 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526CC4A819C7BD9C00333C47 /* String.swift */; };
+		526CC4AB19C7C1E300333C47 /* helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526CC4AA19C7C1E300333C47 /* helpers.swift */; };
 		52A1C28819C4F2BC00F0133E /* form.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A1C28719C4F2BC00F0133E /* form.swift */; };
 		52A1C28B19C4F48800F0133E /* application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A1C28A19C4F48800F0133E /* application.swift */; };
 		52A1C28F19C53E1F00F0133E /* RestfulController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A1C28E19C53E1F00F0133E /* RestfulController.swift */; };
@@ -85,6 +88,9 @@
 		525CC57B19C4BBA100B8626E /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
 		525CC57C19C4BBD700B8626E /* main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		525CC57E19C4D7E000B8626E /* show.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = show.swift; sourceTree = "<group>"; };
+		526CC4A419C7B8B400333C47 /* FormBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormBuilder.swift; sourceTree = "<group>"; };
+		526CC4A819C7BD9C00333C47 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
+		526CC4AA19C7C1E300333C47 /* helpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = helpers.swift; path = ext/helpers.swift; sourceTree = "<group>"; };
 		52870F7719BB7C00001E4163 /* Tailor */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Tailor; sourceTree = BUILT_PRODUCTS_DIR; };
 		52A1C28719C4F2BC00F0133E /* form.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = form.swift; sourceTree = "<group>"; };
 		52A1C28A19C4F48800F0133E /* application.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = application.swift; path = layouts/application.swift; sourceTree = "<group>"; };
@@ -150,6 +156,7 @@
 		525CC54819C4BB6C00B8626E /* views */ = {
 			isa = PBXGroup;
 			children = (
+				526CC4A319C7B87F00333C47 /* ext */,
 				52A1C28919C4F45700F0133E /* layouts */,
 				525CC54919C4BB6C00B8626E /* hats */,
 			);
@@ -217,6 +224,7 @@
 			isa = PBXGroup;
 			children = (
 				525CC55B19C4BB6C00B8626E /* NSDate.swift */,
+				526CC4A819C7BD9C00333C47 /* String.swift */,
 				525CC55C19C4BB6C00B8626E /* NSString.swift */,
 			);
 			path = ext;
@@ -236,8 +244,17 @@
 			isa = PBXGroup;
 			children = (
 				525CC56319C4BB6C00B8626E /* Template.swift */,
+				526CC4A419C7B8B400333C47 /* FormBuilder.swift */,
 			);
 			path = view;
+			sourceTree = "<group>";
+		};
+		526CC4A319C7B87F00333C47 /* ext */ = {
+			isa = PBXGroup;
+			children = (
+				526CC4AA19C7C1E300333C47 /* helpers.swift */,
+			);
+			name = ext;
 			sourceTree = "<group>";
 		};
 		52870F6E19BB7C00001E4163 = {
@@ -353,6 +370,7 @@
 				525CC57419C4BB6C00B8626E /* NSDate.swift in Sources */,
 				525CC56A19C4BB6C00B8626E /* Application.swift in Sources */,
 				525CC57319C4BB6C00B8626E /* tailor_c_wrappers.c in Sources */,
+				526CC4A519C7B8B400333C47 /* FormBuilder.swift in Sources */,
 				525CC56619C4BB6C00B8626E /* HatsController.swift in Sources */,
 				525CC57D19C4BBD700B8626E /* main.swift in Sources */,
 				5203BB8519C6642700E47100 /* RangeValidator.swift in Sources */,
@@ -366,6 +384,7 @@
 				525CC56919C4BB6C00B8626E /* index.swift in Sources */,
 				52A1C28F19C53E1F00F0133E /* RestfulController.swift in Sources */,
 				525CC56D19C4BB6C00B8626E /* Response.swift in Sources */,
+				526CC4AB19C7C1E300333C47 /* helpers.swift in Sources */,
 				5203BB8719C665D600E47100 /* ErrorCollection.swift in Sources */,
 				52A1C28819C4F2BC00F0133E /* form.swift in Sources */,
 				525CC57019C4BB6C00B8626E /* Controller.swift in Sources */,
@@ -373,6 +392,7 @@
 				525CC56519C4BB6C00B8626E /* routes.swift in Sources */,
 				525CC56F19C4BB6C00B8626E /* Server.swift in Sources */,
 				525CC57919C4BB6C00B8626E /* Template.swift in Sources */,
+				526CC4A919C7BD9C00333C47 /* String.swift in Sources */,
 				525CC56B19C4BB6C00B8626E /* Connection.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -471,6 +491,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",

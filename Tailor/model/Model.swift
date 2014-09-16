@@ -7,6 +7,22 @@ import Foundation
   properties, validations, and error storage.
   */
 class Model {
+  //MARK - Structure
+  
+  /** 
+    The name of the model.
+
+    This implementation infers it from the class name.
+    */
+  class func modelName() -> String {
+    var fullName = NSStringFromClass(self)
+    let range = fullName.rangeOfString(".", options: NSStringCompareOptions.BackwardsSearch, range: nil, locale: nil)
+    if range != nil {
+      fullName = fullName.substringFromIndex(advance(range!.startIndex, 1))
+    }
+    return fullName
+  }
+  
   //MARK - Validations
   
   /** The errors that have been set on this object in the validation process. */
@@ -32,6 +48,33 @@ class Model {
   
   //MARK - Dynamic Properties
   
+  /**
+    This method gets the name of a property converted into a human-readable
+    name.
+
+    Every capital letter will be interpreted as the beginning of a new word.
+    Each word will be capitalized, including the first.
+  
+    :param: key     The attribute name.
+    :returns:       The humanized attribute name.
+    */
+  class func humanAttributeName(key: String) -> String {
+    var result = ""
+    for (index, character) in enumerate(key) {
+      let string = String(character)
+      if index == 0 {
+        result += string.capitalizedString
+      }
+      else {
+        if string == string.capitalizedString {
+          result += " "
+        }
+        result += string
+      }
+    }
+    return result
+  }
+
   /**
     This method gets the value for a dynamic property.
 
@@ -60,8 +103,7 @@ class Model {
     :param: key     The name of the property.
     */
   func setValue(value: Any?, forKey key: String) {
-    let capitalName = String(key[key.startIndex]).capitalizedString +
-      key.substringFromIndex(advance(key.startIndex, 1))
+    let capitalName = key.capitalizeInitial
     let setterName = "set" + capitalName + ":"
     let klass : AnyClass! = object_getClass(self)
     let setter = class_getInstanceMethod(klass, Selector(setterName))

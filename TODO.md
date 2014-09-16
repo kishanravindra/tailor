@@ -19,3 +19,4 @@
 * Helpers for APIs
 * Extract out sample app into its own project
 * Mailers
+* Localization

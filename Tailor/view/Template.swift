@@ -92,7 +92,7 @@ class Template {
     :param: attributes    Additional attributes for the tag.
     :param: text          The text for the tag.
     */
-  func tag(name: String, attributes: [String:String] = [:], text: String) -> () {
+  func tag(name: String, text: String, attributes: [String:String] = [:]) -> () {
     self.tag(name, attributes) { self.text(text) }
   }
   

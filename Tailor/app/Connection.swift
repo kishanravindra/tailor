@@ -84,6 +84,7 @@ class Connection : NSObject {
       let responseData = $0.data
       write(connectionDescriptor, responseData.bytes, UInt(responseData.length))
       close(connectionDescriptor)
+      NSLog("Finished processing %@", request.path)
     }
   }
 }
