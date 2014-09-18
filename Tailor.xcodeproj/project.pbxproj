@@ -33,6 +33,7 @@
 		525CC57D19C4BBD700B8626E /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC57C19C4BBD700B8626E /* main.swift */; };
 		525CC57F19C4D7E000B8626E /* show.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC57E19C4D7E000B8626E /* show.swift */; };
 		5265497119CA5F4C00456834 /* AesEncryptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5265497019CA5F4C00456834 /* AesEncryptor.swift */; };
+		5265497319CA79F200456834 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5265497219CA79F200456834 /* Session.swift */; };
 		526CC4A519C7B8B400333C47 /* FormBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526CC4A419C7B8B400333C47 /* FormBuilder.swift */; };
 		526CC4A919C7BD9C00333C47 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526CC4A819C7BD9C00333C47 /* String.swift */; };
 		526CC4AB19C7C1E300333C47 /* helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526CC4AA19C7C1E300333C47 /* helpers.swift */; };
@@ -96,6 +97,7 @@
 		525CC57C19C4BBD700B8626E /* main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		525CC57E19C4D7E000B8626E /* show.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = show.swift; sourceTree = "<group>"; };
 		5265497019CA5F4C00456834 /* AesEncryptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AesEncryptor.swift; sourceTree = "<group>"; };
+		5265497219CA79F200456834 /* Session.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
 		526CC4A419C7B8B400333C47 /* FormBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormBuilder.swift; sourceTree = "<group>"; };
 		526CC4A819C7BD9C00333C47 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		526CC4AA19C7C1E300333C47 /* helpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = helpers.swift; path = ext/helpers.swift; sourceTree = "<group>"; };
@@ -222,6 +224,7 @@
 				525CC55419C4BB6C00B8626E /* Controller.swift */,
 				52A1C28E19C53E1F00F0133E /* RestfulController.swift */,
 				5265497019CA5F4C00456834 /* AesEncryptor.swift */,
+				5265497219CA79F200456834 /* Session.swift */,
 			);
 			path = controller;
 			sourceTree = "<group>";
@@ -409,6 +412,7 @@
 				525CC57519C4BB6C00B8626E /* NSString.swift in Sources */,
 				525CC56419C4BB6C00B8626E /* application.swift in Sources */,
 				5203BB8119C660B100E47100 /* PresenceValidator.swift in Sources */,
+				5265497319CA79F200456834 /* Session.swift in Sources */,
 				5203BB8319C660DD00E47100 /* BlockValidator.swift in Sources */,
 				5265497119CA5F4C00456834 /* AesEncryptor.swift in Sources */,
 				525CC57619C4BB6C00B8626E /* Record.swift in Sources */,

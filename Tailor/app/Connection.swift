@@ -40,7 +40,7 @@ class Connection : NSObject {
   func listenToSocket() {
     NSOperationQueue.mainQueue().addOperationWithBlock {
       let connectionDescriptor = accept(self.socketDescriptor, nil, nil)
-
+      
       if connectionDescriptor < 0 {
         return
       }
@@ -78,8 +78,17 @@ class Connection : NSObject {
         break
       }
     }
+    var clientAddress = sockaddr(
+      sa_len: 0,
+      sa_family: 0,
+      sa_data: (0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+    )
+    var size = UInt32(sizeof(sockaddr))
+    getpeername(connectionDescriptor, &clientAddress, &size)
     
-    let request = Request(data: data)
+    let clientAddressString = "\(clientAddress.sa_data.2).\(clientAddress.sa_data.3).\(clientAddress.sa_data.4).\(clientAddress.sa_data.5)"
+
+    let request = Request(clientAddress: clientAddressString, data: data)
     self.handler(request) {
       let responseData = $0.data
       write(connectionDescriptor, responseData.bytes, UInt(responseData.length))

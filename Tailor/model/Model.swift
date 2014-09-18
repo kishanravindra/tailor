@@ -39,6 +39,7 @@ class Model {
     :returns:   Whether the object passed all the validations.
     */
   func validate() -> Bool {
+    self.errors.errors = [:]
     var valid = true
     for validator in self.dynamicType.validators() {
       validator.validate(self)

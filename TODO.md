@@ -10,8 +10,8 @@
 
 ### Controllers
 
-* Cookie Management
 * Rate limiting on threads
+* Better HTML sanitization
 
 ### General
 

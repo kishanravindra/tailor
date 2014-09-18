@@ -14,6 +14,14 @@ let HaberdasheryLayout = Template {
         }
       }
       t.tag("div", ["class": "container"]) {
+        for key in ["success", "error"] {
+          if let message = t.controller?.session.flash(key) {
+            t.tag("div", ["class": "alert alert-\(key)"]) {
+              t.tag("button", ["type": "button", "class": "close", "data-dismiss": "alert"]) { t.text("&times;") }
+              t.tag("div", text: message)
+            }
+          }
+        }
         t.body(t, parameters)
       }
       t.tag("script", ["type": "text/javascript", "src": "//code.jquery.com/jquery-1.11.0.min.js"])

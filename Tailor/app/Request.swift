@@ -4,6 +4,9 @@ import Foundation
   This class represents a request from the client.
   */
 struct Request {
+  /** The client's IP address. */
+  let clientAddress: String
+  
   /** The full request data. */
   let data: NSData
   
@@ -34,9 +37,11 @@ struct Request {
   /**
     This method initializes a request.
 
-    :param: data  The full request data.
+    :param: clientAddress   The client's IP address.
+    :param: data            The full request data.
     */
-  init(data: NSData) {
+  init(clientAddress: String, data: NSData) {
+    self.clientAddress = clientAddress
     self.data = data
     let fullBody = NSString(data: data, encoding: NSUTF8StringEncoding) as NSString
     

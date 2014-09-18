@@ -16,6 +16,9 @@ class Controller {
   /** The action that we are executing. */
   let action: String
   
+  /** The session information for this request. */
+  let session: Session
+  
   /**
     This method creates a controller for handling a request.
 
@@ -27,6 +30,7 @@ class Controller {
     self.request = request
     self.action = action
     self.callback = callback
+    self.session = Session(request: request)
   }
   
   /**
@@ -51,6 +55,22 @@ class Controller {
   }
   
   /**
+    This method generates a response object and passes it to a block.
+
+    This will set the cookies on the response before giving it to the block, 
+    and after the block is done it will give the response to the controller's
+    handler.
+    */
+  func generateResponse(contents: (inout Response)->()) {
+    var response = Response()
+    response.cookies = request.cookies
+    contents(&response)
+    session["_flash_notice"] = nil
+    session.storeInCookies(response.cookies)
+    self.callback(response)
+  }
+  
+  /**
     This method generates a response with a template.
   
     :param: template    The template to use for the request.
@@ -61,10 +81,10 @@ class Controller {
     template.controller = self
     template.buffer.setString("")
     self.layout.body(template, parameters)
-    var response = Response()
-    response.cookies = request.cookies
-    response.appendString(template.buffer)
-    self.callback(response)
+    self.generateResponse {
+      (inout response : Response) in
+      response.appendString(template.buffer)
+    }
   }
   
   /**
@@ -73,21 +93,21 @@ class Controller {
     :param: path      The path to redirect to.
     */
   func redirectTo(path: String) {
-    var response = Response()
-    response.cookies = request.cookies
-    response.code = 302
-    response.headers["Location"] = path
-    self.callback(response)
+    self.generateResponse {
+      response in
+      response.code = 302
+      response.headers["Location"] = path
+    }
   }
   
   /**
     This method generates a response with a 404 page.
     */
   func render404() {
-    var response = Response()
-    response.cookies = request.cookies
-    response.code = 404
-    response.appendString("Page Not Found")
-    self.callback(response)
+    self.generateResponse {
+      response in
+      response.code = 404
+      response.appendString("Page Not Found")
+    }
   }
 }

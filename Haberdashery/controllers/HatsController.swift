@@ -30,6 +30,11 @@ class HatsController<RecordType> : RestfulController<Hat> {
     if let brimSize = request.requestParameters["hat[brimSize]"]?.toInt() {
       record.brimSize = NSNumber(integer: brimSize)
     }
+    
     record.color = request.requestParameters["hat[color]"]
+    
+    if record.validate() {
+      session.setFlash("success", "Hat saved")
+    }
   }
 }
