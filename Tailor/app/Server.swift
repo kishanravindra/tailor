@@ -65,6 +65,8 @@ class Server {
     
     self.connection = Connection(fileDescriptor: socketDescriptor, handler: handler)
     
+    NSLog("Listening on port %d", port)
+    
     NSRunLoop.currentRunLoop().run()
     return true
   }

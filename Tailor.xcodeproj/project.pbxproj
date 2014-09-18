@@ -32,11 +32,14 @@
 		525CC57919C4BB6C00B8626E /* Template.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC56319C4BB6C00B8626E /* Template.swift */; };
 		525CC57D19C4BBD700B8626E /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC57C19C4BBD700B8626E /* main.swift */; };
 		525CC57F19C4D7E000B8626E /* show.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525CC57E19C4D7E000B8626E /* show.swift */; };
+		5265497119CA5F4C00456834 /* AesEncryptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5265497019CA5F4C00456834 /* AesEncryptor.swift */; };
 		526CC4A519C7B8B400333C47 /* FormBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526CC4A419C7B8B400333C47 /* FormBuilder.swift */; };
 		526CC4A919C7BD9C00333C47 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526CC4A819C7BD9C00333C47 /* String.swift */; };
 		526CC4AB19C7C1E300333C47 /* helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526CC4AA19C7C1E300333C47 /* helpers.swift */; };
 		526CC4AD19C7DB9A00333C47 /* Cookie.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526CC4AC19C7DB9A00333C47 /* Cookie.swift */; };
 		526CC4AF19C7DD6300333C47 /* CookieJar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526CC4AE19C7DD6300333C47 /* CookieJar.swift */; };
+		526CC4B419C904D000333C47 /* database.plist in Copy Files */ = {isa = PBXBuildFile; fileRef = 526CC4B219C9037200333C47 /* database.plist */; };
+		526CC4B819C9093700333C47 /* sessions.plist in Copy Files */ = {isa = PBXBuildFile; fileRef = 526CC4B619C9092800333C47 /* sessions.plist */; };
 		52A1C28819C4F2BC00F0133E /* form.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A1C28719C4F2BC00F0133E /* form.swift */; };
 		52A1C28B19C4F48800F0133E /* application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A1C28A19C4F48800F0133E /* application.swift */; };
 		52A1C28F19C53E1F00F0133E /* RestfulController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A1C28E19C53E1F00F0133E /* RestfulController.swift */; };
@@ -50,9 +53,11 @@
 		52870F7519BB7C00001E4163 /* Copy Files */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 12;
-			dstPath = assets;
+			dstPath = "";
 			dstSubfolderSpec = 7;
 			files = (
+				526CC4B819C9093700333C47 /* sessions.plist in Copy Files */,
+				526CC4B419C904D000333C47 /* database.plist in Copy Files */,
 				52D6600919C640A200A82758 /* application.css in Copy Files */,
 			);
 			name = "Copy Files";
@@ -90,11 +95,16 @@
 		525CC57B19C4BBA100B8626E /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
 		525CC57C19C4BBD700B8626E /* main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		525CC57E19C4D7E000B8626E /* show.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = show.swift; sourceTree = "<group>"; };
+		5265497019CA5F4C00456834 /* AesEncryptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AesEncryptor.swift; sourceTree = "<group>"; };
 		526CC4A419C7B8B400333C47 /* FormBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormBuilder.swift; sourceTree = "<group>"; };
 		526CC4A819C7BD9C00333C47 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		526CC4AA19C7C1E300333C47 /* helpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = helpers.swift; path = ext/helpers.swift; sourceTree = "<group>"; };
 		526CC4AC19C7DB9A00333C47 /* Cookie.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cookie.swift; sourceTree = "<group>"; };
 		526CC4AE19C7DD6300333C47 /* CookieJar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CookieJar.swift; sourceTree = "<group>"; };
+		526CC4B219C9037200333C47 /* database.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = database.plist; path = config/database.plist; sourceTree = "<group>"; };
+		526CC4B319C903EA00333C47 /* database.plist.sample */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = database.plist.sample; path = config/database.plist.sample; sourceTree = "<group>"; };
+		526CC4B619C9092800333C47 /* sessions.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = sessions.plist; path = config/sessions.plist; sourceTree = "<group>"; };
+		526CC4B719C9092800333C47 /* sessions.plist.sample */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = sessions.plist.sample; path = config/sessions.plist.sample; sourceTree = "<group>"; };
 		52870F7719BB7C00001E4163 /* Tailor */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Tailor; sourceTree = BUILT_PRODUCTS_DIR; };
 		52A1C28719C4F2BC00F0133E /* form.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = form.swift; sourceTree = "<group>"; };
 		52A1C28A19C4F48800F0133E /* application.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = application.swift; path = layouts/application.swift; sourceTree = "<group>"; };
@@ -122,6 +132,7 @@
 			isa = PBXGroup;
 			children = (
 				525CC53F19C4BB6C00B8626E /* app */,
+				526CC4B019C9033000333C47 /* config */,
 				52D6600719C637A700A82758 /* assets */,
 				525CC54319C4BB6C00B8626E /* controllers */,
 				525CC54619C4BB6C00B8626E /* models */,
@@ -210,6 +221,7 @@
 			children = (
 				525CC55419C4BB6C00B8626E /* Controller.swift */,
 				52A1C28E19C53E1F00F0133E /* RestfulController.swift */,
+				5265497019CA5F4C00456834 /* AesEncryptor.swift */,
 			);
 			path = controller;
 			sourceTree = "<group>";
@@ -261,6 +273,17 @@
 				526CC4AA19C7C1E300333C47 /* helpers.swift */,
 			);
 			name = ext;
+			sourceTree = "<group>";
+		};
+		526CC4B019C9033000333C47 /* config */ = {
+			isa = PBXGroup;
+			children = (
+				526CC4B219C9037200333C47 /* database.plist */,
+				526CC4B319C903EA00333C47 /* database.plist.sample */,
+				526CC4B619C9092800333C47 /* sessions.plist */,
+				526CC4B719C9092800333C47 /* sessions.plist.sample */,
+			);
+			name = config;
 			sourceTree = "<group>";
 		};
 		52870F6E19BB7C00001E4163 = {
@@ -387,6 +410,7 @@
 				525CC56419C4BB6C00B8626E /* application.swift in Sources */,
 				5203BB8119C660B100E47100 /* PresenceValidator.swift in Sources */,
 				5203BB8319C660DD00E47100 /* BlockValidator.swift in Sources */,
+				5265497119CA5F4C00456834 /* AesEncryptor.swift in Sources */,
 				525CC57619C4BB6C00B8626E /* Record.swift in Sources */,
 				525CC56919C4BB6C00B8626E /* index.swift in Sources */,
 				52A1C28F19C53E1F00F0133E /* RestfulController.swift in Sources */,

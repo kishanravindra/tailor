@@ -320,7 +320,7 @@ class RouteSet {
         (request, callback) -> () in
         
         let fullPath = Application.sharedApplication().rootPath + "/\(localPath)"
-        NSLog("Full path is \(fullPath)")
+
         if let contents = NSFileManager.defaultManager().contentsAtPath(fullPath) {
           var response = Response()
           response.code = 200

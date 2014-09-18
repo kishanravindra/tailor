@@ -13,7 +13,7 @@ let HaberdasheryRouteSet = {
     routes.addRoute(":id", method: "POST", action: "update")
   })
   
-  routes.staticAssets(prefix: "assets", localPrefix: "assets", assets: [
+  routes.staticAssets(prefix: "assets", localPrefix: "", assets: [
     "application.css"
   ])
   

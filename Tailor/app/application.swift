@@ -59,6 +59,22 @@ class Application {
     SHARED_APPLICATION = self.init()
     SHARED_APPLICATION.start()
   }
+  
+  //MARK: - Configuration
+  
+  /**
+    This method gets the config from our config file based on the filename.
+  
+    :param: file    The name of the file, with no extension.
+    :returns:       The config from the file, or an empty dictionary if we could
+                    not load the config.
+    */
+  func configFromFile(file: String) -> NSDictionary {
+    let filename = "\(self.rootPath)/\(file).plist"
+    let data = NSData(contentsOfFile: filename)
+    let propertyList = NSPropertyListSerialization.propertyListWithData(data, options: Int(NSPropertyListMutabilityOptions.Immutable.toRaw()), format: nil, error: nil) as? NSDictionary
+    return propertyList ?? NSDictionary()
+  }
 }
 
 /** The application that we are running. */
