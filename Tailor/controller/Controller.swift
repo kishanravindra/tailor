@@ -3,21 +3,21 @@ import Foundation
 /**
   This class is the base class for controllers that route requests.
   */
-class Controller {
+public class Controller {
   /** A name used for the controller in routing. */
-  var name: String { get { return NSStringFromClass(self.dynamicType) } }
+  public var name: String { get { return NSStringFromClass(self.dynamicType) } }
   
   /** The request that we are currently handling. */
-  let request: Request
+  public let request: Request
   
   /** The callback for the current request's response. */
-  let callback: Server.ResponseCallback
+  public let callback: Server.ResponseCallback
   
   /** The action that we are executing. */
-  let action: String
+  public let action: String
   
   /** The session information for this request. */
-  let session: Session
+  public let session: Session
   
   /**
     This method creates a controller for handling a request.
@@ -26,7 +26,7 @@ class Controller {
     :param: action    The action that we are executing.
     :param: callback  The callback to give the response to.
     */
-  required init(request: Request, action: String, callback: Server.ResponseCallback) {
+  public required init(request: Request, action: String, callback: Server.ResponseCallback) {
     self.request = request
     self.action = action
     self.callback = callback
@@ -40,7 +40,7 @@ class Controller {
     argument. At some point in its body, this should call that other template's
     body.
     */
-  var layout = Template { $0.body($0,$1) }
+  public var layout = Template { $0.body($0,$1) }
   
   //MARK - Responses
   
@@ -50,7 +50,7 @@ class Controller {
     This implementation renders a 404 response. Sublcasses should map this to
     real implementations.
     */
-  func respond() {
+  public func respond() {
     self.render404()
   }
   
@@ -61,7 +61,7 @@ class Controller {
     and after the block is done it will give the response to the controller's
     handler.
     */
-  func generateResponse(contents: (inout Response)->()) {
+  public func generateResponse(contents: (inout Response)->()) {
     var response = Response()
     response.cookies = request.cookies
     contents(&response)
@@ -77,7 +77,7 @@ class Controller {
     :param: action      The name of the action we are responding to.
     :param: parameters  The parameters to pass to the template.
     */
-  func respondWith(template: Template, parameters: [String:Any] = [:]) {
+  public func respondWith(template: Template, parameters: [String:Any] = [:]) {
     template.controller = self
     template.buffer.setString("")
     self.layout.body(template, parameters)
@@ -92,7 +92,7 @@ class Controller {
   
     :param: path      The path to redirect to.
     */
-  func redirectTo(path: String) {
+  public func redirectTo(path: String) {
     self.generateResponse {
       response in
       response.code = 302
@@ -103,7 +103,7 @@ class Controller {
   /**
     This method generates a response with a 404 page.
     */
-  func render404() {
+  public func render404() {
     self.generateResponse {
       response in
       response.code = 404

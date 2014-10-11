@@ -1,5 +1,15 @@
-#include "tailor_c_wrappers.h"
-#include <string.h>
+//
+//  TailorC.c
+//  Tailor
+//
+//  Created by John Brownlee on 19/9/14.
+//  Copyright (c) 2014 John Brownlee. All rights reserved.
+//
+
+#import <stdio.h>
+#import "TailorC.h"
+#import <string.h>
+#import <mysql.h>
 
 MYSQL_BIND emptyMysqlBindParam() {
   MYSQL_BIND result;
@@ -10,11 +20,15 @@ MYSQL_BIND emptyMysqlBindParam() {
 }
 
 void tailorInvokeSetter(id object, Method method, id value) {
-  method_invoke(object, method, value);
+  typedef void (*setterType)(id, Method, id);
+  setterType setter = (setterType)method_invoke;
+  setter(object, method, value);
 }
 
 id tailorInvokeGetter(id object, Method method) {
-  return method_invoke(object, method);
+  typedef id (*getterType)(id, Method);
+  getterType getter = (getterType)method_invoke;
+  return getter(object, method);
 }
 
 struct sockaddr_in createSocketAddress(int port) {

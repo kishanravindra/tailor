@@ -3,14 +3,14 @@ import Foundation
 /**
   This class provides a base class for models backed by the database.
   */
-class Record : Model {
+public class Record : Model {
   /** The unique identifier for the record. */
-  var id : Int!
+  public var id : Int!
   
   /**
     This method initializes a record with no data.
     */
-  convenience override init() {
+  public convenience override init() {
     self.init(data: [:])
   }
 
@@ -21,7 +21,7 @@ class Record : Model {
 
     :param: data  The columns from the database.
     */
-  required init(data: [String:Any]) {
+  public required init(data: [String:Any]) {
     self.id = data["id"] as? Int
     super.init()
     
@@ -43,7 +43,7 @@ class Record : Model {
 
     :returns: The table name.
     */
-  class func tableName() -> String { return "" }
+  public class func tableName() -> String { return "" }
   
   /**
     This method provides the names of the properties in this class that are
@@ -59,7 +59,7 @@ class Record : Model {
   
     :returns: The property names
     */
-  class func persistedProperties() -> [String] { return [] }
+  public class func persistedProperties() -> [String] { return [] }
   
   /**
     This method provides a mapping between the names of properties in instances
@@ -75,7 +75,7 @@ class Record : Model {
 
     :returns: The property mapping.
     */
-  class func persistedPropertyMapping() -> [String:String] {
+  public class func persistedPropertyMapping() -> [String:String] {
     var dictionary = [String:String]()
     for property in self.persistedProperties() {
       dictionary[property] = property.underscored()
@@ -95,8 +95,9 @@ class Record : Model {
     :param: parameters  The information to interpolate into the query.
     :returns:           The created records.
     */
-  class func query<RecordType : Record>(query: String, parameters: [String]) -> [RecordType] {
+  public class func query<RecordType : Record>(query: String, parameters: [String]) -> [RecordType] {
     let rows = DatabaseConnection.sharedConnection().executeQuery(query, parameters: parameters)
+    NSLog("In query: %@", RecordType.tableName())
     return rows.map { RecordType.init(data: $0.data) }
   }
   
@@ -110,7 +111,7 @@ class Record : Model {
     :param: limit         The maximum number of results to return.
     :returns:             The created records.
     */
-  class func find<RecordType : Record>(conditions: [String:String] = [:], order: [String: NSComparisonResult] = [:], limit: Int? = nil) -> [RecordType] {
+  public class func find<RecordType : Record>(conditions: [String:String] = [:], order: [String: NSComparisonResult] = [:], limit: Int? = nil) -> [RecordType] {
     var query = "SELECT * FROM \(self.tableName())"
     var parameters : [String] = []
     
@@ -156,7 +157,7 @@ class Record : Model {
     :param: id  The id of the record to find.
     :returns:   The record, if it was found.
     */
-  class func find<RecordType: Record>(id: Int) -> RecordType? {
+  public class func find<RecordType: Record>(id: Int) -> RecordType? {
     let results : [RecordType] = self.find(conditions: ["id": "\(id)"])
     return results.isEmpty ? nil : results[0]
   }
@@ -172,7 +173,7 @@ class Record : Model {
   
     :returns:   The values to save.
     */
-  func valuesToPersist() -> [String:String] {
+  public func valuesToPersist() -> [String:String] {
     var values = [String:String]()
     
     let klass: AnyClass! = object_getClass(self)
@@ -208,7 +209,7 @@ class Record : Model {
   
     :returns: Whether we were able to save the record.
     */
-  func save() -> Bool {
+  public func save() -> Bool {
     if !self.validate() {
       return false
     }
@@ -292,7 +293,7 @@ class Record : Model {
   /**
     This method deletes the record from the database.
     */
-  func destroy() {
+  public func destroy() {
     let query = "DELETE FROM \(self.dynamicType.tableName()) WHERE id = ?"
     DatabaseConnection.sharedConnection().executeQuery(query, String(self.id))
   }

@@ -3,21 +3,21 @@ import Foundation
 /**
   This class provides helper methods for building forms.
   */
-class FormBuilder {
+public class FormBuilder {
   /** A block that can build an input for a model property. */
-  typealias InputBuilder = (form: FormBuilder, key: String, value: String, attributes: [String:String], errors: [String])->()
+  public typealias InputBuilder = (form: FormBuilder, key: String, value: String, attributes: [String:String], errors: [String])->()
   
   /** The template that we are putting the form in. */
-  let template: Template
+  public let template: Template
   
   /** The model that we are representing with the form. */
-  let model: Model
+  public let model: Model
   
   /** The name of the model in the input names. */
-  let name: String
+  public let name: String
   
   /** The block that we use to build inputs. */
-  let inputBuilder: InputBuilder
+  public let inputBuilder: InputBuilder
   
   /**
     This method creates a form builder.
@@ -31,7 +31,7 @@ class FormBuilder {
                           provided, we will use a simple one with a div
                           containing a label and an input.
     */
-  init(template: Template, model: Model, name: String? = nil, inputBuilder: InputBuilder? = nil) {
+  public init(template: Template, model: Model, name: String? = nil, inputBuilder: InputBuilder? = nil) {
     self.template = template
     self.model = model
     self.name = model.dynamicType.modelName().lowercaseInitial
@@ -60,7 +60,7 @@ class FormBuilder {
     :param: attributes  Additional attributes for the form tag.
     :param: contents    A block that will populate the contents of the form.
     */
-  func form(path: String, _ method: String = "POST", attributes: [String:String] = [:], with contents: ()->()) {
+  public func form(path: String, _ method: String = "POST", attributes: [String:String] = [:], with contents: ()->()) {
     var mergedAttributes = attributes
     mergedAttributes["method"] = method
     mergedAttributes["action"] = path
@@ -73,7 +73,7 @@ class FormBuilder {
     :param: key           The name of the property.
     :param: attributes    Additional attributes to set on the input tag.
     */
-  func input(key: String, attributes: [String: String] = [:]) {
+  public func input(key: String, attributes: [String: String] = [:]) {
     var value : AnyObject? = self.model.valueForKey(key)
     var stringValue = ""
     switch(value) {

@@ -4,7 +4,7 @@ import Foundation
   This class manages a set of routes that map from request paths to
   response handlers.
   */
-class RouteSet {
+public class RouteSet {
   /**
     This class models a single route.
 
@@ -59,7 +59,7 @@ class RouteSet {
       self.description = description
       self.method = method
       
-      let parameterPattern = NSRegularExpression(pattern: ":[\\w]+", options: nil, error: nil)
+      let parameterPattern = NSRegularExpression(pattern: ":[\\w]+", options: nil, error: nil)!
       
       var parameterNames : [String] = []
       
@@ -74,7 +74,7 @@ class RouteSet {
       var filteredPathPattern = NSMutableString(string: pathPattern)
       
       parameterPattern.replaceMatchesInString(filteredPathPattern, options: nil, range: NSMakeRange(0, countElements(pathPattern)), withTemplate: "([^/]*)")
-      self.regex = NSRegularExpression(pattern: "^" + filteredPathPattern + "/?$", options: nil, error: nil)
+      self.regex = NSRegularExpression(pattern: "^" + filteredPathPattern + "/?$", options: nil, error: nil) ?? NSRegularExpression(pattern: "^$", options: nil, error: nil)!
     }
     
     //MARK: - Description
@@ -135,6 +135,10 @@ class RouteSet {
   /** The controller that will be handling requests in a block. */
   private var currentController = Controller.self
   
+  public required init() {
+    
+  }
+  
   //MARK: - Managing Routes
 
   /**
@@ -143,7 +147,7 @@ class RouteSet {
     :param: pathPrefix    The prefix for the paths of the routes.
     :param: block         The block that will provide the routes.
     */
-  func withPrefix(pathPrefix: String, block: ()->()) {
+  public func withPrefix(pathPrefix: String, block: ()->()) {
     let oldPrefix = self.currentPathPrefix
     self.currentPathPrefix += "/" + pathPrefix
     block()
@@ -157,7 +161,7 @@ class RouteSet {
     :param: controller    The controller that will handle the routes.
     :param: block         The block that will provide the routes.
     */
-  func withPrefix(pathPrefix: String, controller: Controller.Type, block: ()->()) {
+  public func withPrefix(pathPrefix: String, controller: Controller.Type, block: ()->()) {
     let oldPrefix = self.currentPathPrefix
     let oldController = self.currentController
     self.currentPathPrefix += "/" + pathPrefix
@@ -174,14 +178,14 @@ class RouteSet {
     :param: handler       The block that will handle the request.
     :param: description   The description of the route implementation.
     */
-  func addRoute(pathPattern: String, method: String, handler: Server.RequestHandler, description: String) -> Route {
+  public func addRoute(pathPattern: String, method: String, handler: Server.RequestHandler, description: String) {
     var fullPattern = self.currentPathPrefix
     if !pathPattern.isEmpty {
       fullPattern += "/" + pathPattern
     }
     let route = Route(pathPattern: fullPattern, method: method, handler: handler, description: description)
     self.routes.append(route)
-    return route
+    //return route
   }
   
   /**
@@ -191,7 +195,7 @@ class RouteSet {
     :param: method        The HTTP method for the route.
     :param: handler       The block that will handle the request.
   */
-  func addRoute(pathPattern: String, method: String, handler: Server.RequestHandler) {
+  public func addRoute(pathPattern: String, method: String, handler: Server.RequestHandler) {
     self.addRoute(pathPattern, method: method, handler: handler, description: "custom block")
   }
   
@@ -203,15 +207,17 @@ class RouteSet {
     :param: controller    The controller that will handle the requests.
     :param: action        The name of the action in the controller.
     */
-  func addRoute(pathPattern: String, method: String, controller: Controller.Type, action: String) {
+  public func addRoute(pathPattern: String, method: String, controller: Controller.Type, action: String) {
     let description = NSString(format: "%@#%@", NSStringFromClass(controller), action)
     let handler = {
       (request: Request, callback: Server.ResponseCallback) -> () in
       controller(request: request, action: action, callback: callback).respond()
     }
-    let route = self.addRoute(pathPattern, method: method, handler: handler, description: description)
-    route.controller = controller
-    route.action = action
+    self.addRoute(pathPattern, method: method, handler: handler, description: description)
+    if let route = self.routes.last {
+      route.controller = controller
+      route.action = action
+    }
   }
   
   /**
@@ -221,14 +227,14 @@ class RouteSet {
     :param: method        The HTTP method for the route.
     :param: action        The name of the action in the controller.
     */
-  func addRoute(pathPattern: String, method: String, action: String) {
+  public func addRoute(pathPattern: String, method: String, action: String) {
     self.addRoute(pathPattern, method: method, controller: self.currentController, action: action)
   }
   
   /**
     This method prints information about all of the routes.
     */
-  func printRoutes() {
+  public func printRoutes() {
     for route in self.routes {
       NSLog("%@", route.fullDescription())
     }
@@ -245,7 +251,7 @@ class RouteSet {
     :param: request   The request that we should handle.
     :param: callback  The callback that we should give the response to.
     */
-  func handleRequest(request: Request, callback: Server.ResponseCallback) {
+  public func handleRequest(request: Request, callback: Server.ResponseCallback) {
     NSLog("Processing %@ %@", request.method, request.path)
     for route in self.routes {
       if route.canHandleRequest(request) {
@@ -270,7 +276,7 @@ class RouteSet {
     :param: parameters    The parameters to interpolate into the route.
     :returns:             The path, if we could match it up.
     */
-  func urlFor(controllerName: String, action: String, parameters: [String:String] = [:]) -> String? {
+  public func urlFor(controllerName: String, action: String, parameters: [String:String] = [:]) -> String? {
     for route in self.routes {
       if route.controller != nil && NSStringFromClass(route.controller!) == controllerName &&
       route.action != nil && route.action! == action {
@@ -312,7 +318,7 @@ class RouteSet {
                           assets on disk.
     :param: assets        The names of the asset files.
     */
-  func staticAssets(#prefix: String, localPrefix: String, assets: [String]) {
+  public func staticAssets(#prefix: String, localPrefix: String, assets: [String]) {
     for assetName in assets {
       let path = "\(prefix)/\(assetName)"
       let localPath = "\(localPrefix)/\(assetName)"

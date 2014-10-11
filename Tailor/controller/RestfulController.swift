@@ -2,9 +2,9 @@
   This class provides a controller with restful actions for accessing a
   collection of records.
   */
-class RestfulController<RecordType: Record> : Controller {
+public class RestfulController<RecordType: Record> : Controller {
   /** The templates that this controller has for its actions. */
-  var templates: [String: Template] = [:]
+  public var templates: [String: Template] = [:]
   
   /**
     This method initializes the controller.
@@ -13,14 +13,14 @@ class RestfulController<RecordType: Record> : Controller {
     :param: action      The action on the controller that we are executing.
     :param: callback    The callback to call with the response.
     */
-  required init(request: Request, action: String, callback: Server.ResponseCallback) {
+  public required init(request: Request, action: String, callback: Server.ResponseCallback) {
     super.init(request: request, action: action, callback: callback)
   }
   
   //MARK: - Data
   
   /** The record that we are working on. */
-  func record() -> RecordType? {
+  public func record() -> RecordType? {
     if let idString = request.requestParameters["id"] {
       if let id = idString.toInt() {
         return RecordType.find(id)
@@ -37,7 +37,7 @@ class RestfulController<RecordType: Record> : Controller {
   /**
     This method runs the current action on the controller.
     */
-  override func respond() {
+  public override func respond() {
     switch(action) {
       case "index": self.index()
       case "show": self.show()
@@ -52,7 +52,7 @@ class RestfulController<RecordType: Record> : Controller {
   /**
     This action provides a listing of records.
     */
-  func index() {
+  public func index() {
     let records : [RecordType] = RecordType.find()
     if let template = self.templates["index"] {
       self.respondWith(template, parameters: [
@@ -68,7 +68,7 @@ class RestfulController<RecordType: Record> : Controller {
   
     * id: The id of the hat to show.
     */
-  func show() {
+  public func show() {
     if let record = record() {
       if let template = self.templates["show"] {
         self.respondWith(template, parameters: [
@@ -91,7 +91,7 @@ class RestfulController<RecordType: Record> : Controller {
   
     * id:     The id of the record to edit.
     */
-  func form() {
+  public func form() {
     if let record = record() {
       if let template = self.templates["form"] {
         self.respondWith(template, parameters: [
@@ -112,7 +112,7 @@ class RestfulController<RecordType: Record> : Controller {
     * id:             The id of the record to update, if we are updating.
     * Additional keys as appropriate for the record type.
   */
-  func processForm() {
+  public func processForm() {
     if let record = self.record() {
       self.setAttributesOnRecord(record, parameters: request.requestParameters)
       if record.save() {
@@ -144,7 +144,7 @@ class RestfulController<RecordType: Record> : Controller {
     :param: record      The record to update
     :param: parameters  The request parameters.
     */
-  func setAttributesOnRecord(record: RecordType, parameters: [String:String]) {
+  public func setAttributesOnRecord(record: RecordType, parameters: [String:String]) {
     
   }
 }

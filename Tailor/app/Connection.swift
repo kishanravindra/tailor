@@ -3,7 +3,7 @@ import Foundation
 /**
   This class represents a connection with a client.
   */
-class Connection : NSObject {
+public class Connection : NSObject {
   /** The file descriptor that we are using to communicate with the client.*/
   let socketDescriptor: Int32
   
@@ -17,7 +17,7 @@ class Connection : NSObject {
                               using for the connection.
     :param: handler           A callback that will handle the request.
     */
-  required init(fileDescriptor: Int32, handler: Server.RequestHandler) {
+  public required init(fileDescriptor: Int32, handler: Server.RequestHandler) {
     self.socketDescriptor = fileDescriptor
     self.handler = handler
     super.init()
@@ -39,7 +39,9 @@ class Connection : NSObject {
     */
   func listenToSocket() {
     NSOperationQueue.mainQueue().addOperationWithBlock {
+      NSLog("Listening to %d", self.socketDescriptor)
       let connectionDescriptor = accept(self.socketDescriptor, nil, nil)
+      NSLog("Connection descriptor: %d", connectionDescriptor)
       
       if connectionDescriptor < 0 {
         return

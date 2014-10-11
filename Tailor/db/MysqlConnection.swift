@@ -3,7 +3,7 @@ import Foundation
 /**
   This class represents a connection to a MySQL database.
   */
-class MysqlConnection : DatabaseConnection {
+public class MysqlConnection : DatabaseConnection {
   /**
     This class represents a row fetched from a MySQL daatabase. */
   class MysqlRow : DatabaseConnection.Row {
@@ -19,9 +19,13 @@ class MysqlConnection : DatabaseConnection {
       for (index,bindResult) in enumerate(bindResults) {
         let fieldType = mysql_fetch_field_direct(metadata, UInt32(index)).memory
         let name = NSString(bytes: fieldType.name, length: Int(fieldType.name_length), encoding: NSASCIIStringEncoding)
+        
+        if name == nil {
+          continue
+        }
 
         if let value = MysqlRow.extractBindResult(bindResult, type: fieldType.type) {
-          data[name] = value
+          data[name!] = value
         }
       }
       self.init(data: data)
@@ -131,7 +135,7 @@ class MysqlConnection : DatabaseConnection {
                     It must provide keys for host, username, password, and
                     database.
     */
-  required init(config: [String:String]) {
+  public required init(config: [String:String]) {
     self.connection = mysql_init(nil)
     super.init(config: config)
     mysql_real_connect(self.connection, config["host"]!, config["username"]!, config["password"]!, config["database"]!,   0, nil, 0)
@@ -176,7 +180,7 @@ class MysqlConnection : DatabaseConnection {
                             database side.
     :returns                The interpreted result set.
     */
-  override func executeQuery(query: String, parameters bindParameters: [String]) -> [DatabaseConnection.Row] {
+  public override func executeQuery(query: String, parameters bindParameters: [String]) -> [DatabaseConnection.Row] {
     let statement = mysql_stmt_init(connection)
     let encodedQuery = query.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!
     mysql_stmt_prepare(statement, UnsafePointer<Int8>(encodedQuery.bytes), UInt(encodedQuery.length))

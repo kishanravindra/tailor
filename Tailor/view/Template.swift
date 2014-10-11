@@ -3,27 +3,27 @@ import Foundation
 /**
   This class provides a template for generating a response to a request.
   */
-class Template {
+public class Template {
   /**
     A closure providing the body of the response.
 
     The first argument is the template itself, and the second argument is a
     hash of parameters from the controller.
     */
-  let body: (Template, [String: Any])->()
+  public let body: (Template, [String: Any])->()
   
   /** The buffer that we use to build our result. */
-  let buffer = NSMutableString()
+  public let buffer = NSMutableString()
   
   /** The controller that is requesting the rendering. */
-  var controller: Controller?
+  public var controller: Controller?
   
   /**
     This method creates a template.
 
     :param: body    The closure for the body.
     */
-  required init(body: (Template, [String: Any])->()){
+  public required init(body: (Template, [String: Any])->()){
     self.body = body
   }
   
@@ -35,7 +35,7 @@ class Template {
     :param: parameters  The parameters to pass to the template.
     :returns: The body.
     */
-  func generate(parameters: [String: Any]) -> String {
+  public func generate(parameters: [String: Any]) -> String {
     self.body(self, parameters)
     return self.buffer
   }
@@ -47,7 +47,7 @@ class Template {
 
     :param: text     The text to add.
     */
-  func text(text: String) {
+  public func text(text: String) {
     self.buffer.appendString(text)
   }
   
@@ -58,7 +58,7 @@ class Template {
     :param: attributes    Additional attributes for the tag.
     :param: with          A closure that adds the contents of the tag.
     */
-  func tag(name: String, _ attributes: [String:String], with contents: ()->() = {}) -> () {
+  public func tag(name: String, _ attributes: [String:String], with contents: ()->() = {}) -> () {
     var text = ""
     var openingTag = "<\(name)"
     
@@ -81,7 +81,7 @@ class Template {
     :param: name          The name of the element.
     :param: contents      A closure that adds the contents of the tag.
     */
-  func tag(name: String, contents: ()->() = {}) -> () {
+  public func tag(name: String, contents: ()->() = {}) -> () {
     self.tag(name, [:], with: contents)
   }
   
@@ -92,7 +92,7 @@ class Template {
     :param: attributes    Additional attributes for the tag.
     :param: text          The text for the tag.
     */
-  func tag(name: String, text: String, attributes: [String:String] = [:]) -> () {
+  public func tag(name: String, text: String, attributes: [String:String] = [:]) -> () {
     self.tag(name, attributes) { self.text(text) }
   }
   
@@ -105,7 +105,7 @@ class Template {
     :param: parameters  Additional parameters for the path.
     :reutrns:           The path
     */
-  func urlFor(controller: Controller? = nil, action: String? = nil, parameters: [String:String] = [:]) -> String? {
+  public func urlFor(controller: Controller? = nil, action: String? = nil, parameters: [String:String] = [:]) -> String? {
     return SHARED_APPLICATION.routeSet.urlFor(
       controller?.name ?? self.controller?.name ?? "",
       action: action ?? self.controller?.action ?? "",
@@ -123,7 +123,7 @@ class Template {
     :param: attributes  Additional attributes for the tag.
     :param: with        A closure that adds the contents of the link.
     */
-  func link(controller: Controller? = nil, action: String? = nil, parameters: [String:String] = [:], attributes: [String:String] = [:], with contents: ()->()={}) {
+  public func link(controller: Controller? = nil, action: String? = nil, parameters: [String:String] = [:], attributes: [String:String] = [:], with contents: ()->()={}) {
     var mergedAttributes = attributes
     mergedAttributes["href"] = self.urlFor(controller: controller,
       action: action, parameters: parameters) ?? ""

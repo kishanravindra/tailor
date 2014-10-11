@@ -14,13 +14,13 @@ import Foundation
   Both min and max are inclusive. You can provide both values to bound both ends
   of the range.
   */
-class RangeValidator : Validator {
+public class RangeValidator : Validator {
   /**
     This method applies the range validation.
 
     :param: model   The model object to validate.
     */
-  override func validate(model: Model) {
+  public override func validate(model: Model) {
     switch(model.valueForKey(self.key)) {
     case let number as NSNumber:
       var matched = true

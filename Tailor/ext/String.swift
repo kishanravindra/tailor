@@ -1,8 +1,8 @@
 import Foundation
 
-extension String {
+public extension String {
   /** The string with the first character lowercased. */
-  var lowercaseInitial: String {
+  public var lowercaseInitial: String {
     get {
       return String(self[self.startIndex]).lowercaseString +
         self.substringFromIndex(advance(self.startIndex, 1))
@@ -11,7 +11,7 @@ extension String {
   }
   
   /** The string with the first character capitalized. */
-  var capitalizeInitial: String {
+  public var capitalizeInitial: String {
     get {
       return String(self[self.startIndex]).capitalizedString +
         self.substringFromIndex(advance(self.startIndex, 1))

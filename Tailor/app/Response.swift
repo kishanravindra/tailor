@@ -3,18 +3,18 @@ import Foundation
 /**
   This class represents a response to a request.
   */
-struct Response {
+public struct Response {
   /** The HTTP response code. */
-  var code = 200
+  public var code = 200
   
   /** The response headers. */
-  var headers: [String:String] = [:]
+  public var headers: [String:String] = [:]
   
   /** The data for the response body. */
-  var bodyData = NSMutableData()
+  public var bodyData = NSMutableData()
   
   /** The cookies that should be updated with this response. */
-  var cookies = CookieJar()
+  public var cookies = CookieJar()
   
   //MARK: - Response Data
   
@@ -23,12 +23,12 @@ struct Response {
 
     :param: string  The string to add
     */
-  func appendString(string: String) {
+  public func appendString(string: String) {
     bodyData.appendData(string.dataUsingEncoding(NSUTF8StringEncoding)!)
   }
   
   /** The full HTTP response data. */
-  var data : NSData { get {
+  public var data : NSData { get {
     let data = NSMutableData()
     
     func add(string: String) {

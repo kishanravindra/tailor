@@ -7,12 +7,12 @@
   This class performs no validations. Subclasses must define the validation
   rules.
   */
-class Validator {
+public class Validator {
   /** The name of the property the validator operates on. */
-  let key: String
+  public let key: String
   
   /** Additional information that is specific to the type of validation */
-  let data: [String:Any]
+  public let data: [String:Any]
   
   /**
     This method initializes a validator.
@@ -21,7 +21,7 @@ class Validator {
     :param: data  Additional information that is specific to the type of
                   validation.
     */
-  required init(key: String, data: [String: Any] = [:]) {
+  public required init(key: String, data: [String: Any] = [:]) {
     self.key = key
     self.data = data
   }
@@ -36,5 +36,5 @@ class Validator {
 
     :param: model     The model object to validate.
     */
-  func validate(model: Model) {}
+  public func validate(model: Model) {}
 }

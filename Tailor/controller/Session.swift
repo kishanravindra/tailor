@@ -6,7 +6,7 @@ import Foundation
   This will allow storing arbitrary data on the client, persisted between
   requests, without the client being able to read it.
   */
-class Session {
+public class Session {
   /** The data in the sessions. */
   private var data: [String:String] = [:]
   
@@ -30,14 +30,14 @@ class Session {
     
     :param: request   The request.
     */
-  init(request: Request) {
+  public init(request: Request) {
     let cookies = request.cookies
     self.clientAddress = request.clientAddress
     self.expirationDate = NSDate(timeIntervalSinceNow: 3600)
     let key = Application.sharedApplication().configFromFile("sessions")["encryptionKey"] as? String
     encryptor = AesEncryptor(key: key ?? "")
     if let encryptedDataString = cookies["_session"] {
-      let encryptedData = NSData(base64EncodedString: encryptedDataString, options: nil)
+      let encryptedData = NSData(base64EncodedString: encryptedDataString, options: nil) ?? NSData()
       let decryptedData = encryptor.decrypt(encryptedData)
       
       var cookieData = (NSJSONSerialization.JSONObjectWithData(decryptedData, options: nil, error: nil) as? [String:String]) ?? [:]
@@ -79,7 +79,7 @@ class Session {
 
     :param: key   The key to access.
     */
-  subscript(key: String) -> String? {
+  public subscript(key: String) -> String? {
     get {
       return self.data[key]
     }
@@ -93,7 +93,7 @@ class Session {
 
     :param: cookies   The cookie jar to put the session info in.
     */
-  func storeInCookies(cookies: CookieJar) {
+  public func storeInCookies(cookies: CookieJar) {
     var mergedData = self.data
     mergedData["clientAddress"] = clientAddress
     mergedData["expirationDate"] = COOKIE_DATE_FORMATTER.stringFromDate(self.expirationDate)
@@ -116,7 +116,7 @@ class Session {
     :param: key     The key for the message.
     :returns:       The message
     */
-  func flash(key: String) -> String? {
+  public func flash(key: String) -> String? {
     return self.currentFlash[key]
   }
   
@@ -128,7 +128,7 @@ class Session {
     :param: currentPage     Whether we should set the message for the current
                             page or the next page.
     */
-  func setFlash(key: String, _ value: String?, currentPage: Bool = false) {
+  public func setFlash(key: String, _ value: String?, currentPage: Bool = false) {
     if currentPage {
       self.currentFlash[key] = value
     }

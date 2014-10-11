@@ -7,9 +7,9 @@ import Foundation
   the validation. It will be given the key and data used to initialize the
   validator.
   */
-class BlockValidator : Validator {
+public class BlockValidator : Validator {
   /** The block to use to pass the model to for validation. */
-  let block : (Model, String, [String:Any])->()
+  public let block : (Model, String, [String:Any])->()
   
   /**
     This method initializes a block validator with an empty block.
@@ -17,7 +17,7 @@ class BlockValidator : Validator {
     :param: key   The key to validate.
     :param: data  Additional data for the validation.
     */
-  convenience required init(key: String, data: [String:Any]) {
+  public convenience required init(key: String, data: [String:Any]) {
     self.init(key: key, data: data, block: {(Model,String,[String:Any])->() in })
   }
   
@@ -28,7 +28,7 @@ class BlockValidator : Validator {
     :param: data    Additional data to give to the block.
     :param: block   The block that will be doing the validation.
     */
-  required init(key: String, data: [String: Any], block: (Model, String, [String:Any])->()) {
+  public required init(key: String, data: [String: Any], block: (Model, String, [String:Any])->()) {
     self.block = block
     super.init(key: key, data: data)
   }
@@ -38,7 +38,7 @@ class BlockValidator : Validator {
 
     :param: model   The model object to validate.
     */
-  override func validate(model: Model) {
+  public override func validate(model: Model) {
     self.block(model, key, data)
   }
 }

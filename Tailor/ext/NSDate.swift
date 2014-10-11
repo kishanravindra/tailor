@@ -3,7 +3,7 @@ import Foundation
 /**
   This extension provides a shorthand for initializing dates with components.
   */
-extension NSDate {
+public extension NSDate {
   /**
     This method initializes a date with components.
 
@@ -14,7 +14,7 @@ extension NSDate {
     :param: minute    The minute
     :param: second    The second
     */
-  convenience init(year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int, timeZone: NSTimeZone? = nil) {
+  public convenience init(year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int, timeZone: NSTimeZone? = nil) {
     let components = NSDateComponents(year: year, month: month, day: day,
       hour: hour, minute: minute, second: second, timeZone: timeZone)
     let calendar = NSCalendar.currentCalendar()
@@ -31,7 +31,7 @@ extension NSDate {
                       zone.
     :returns:         The formatted date, or nil if the format was not found.
     */
-  func format(format: String, timeZone: NSTimeZone? = nil) -> String? {
+  public func format(format: String, timeZone: NSTimeZone? = nil) -> String? {
     if let formatter = Application.sharedApplication().dateFormatters[format] {
       var oldTimeZone: NSTimeZone! = formatter.timeZone
       if timeZone != nil {
@@ -53,7 +53,7 @@ extension NSDate {
     :param: timeZone  The name of the time zone to use for formatting the date.
     :returns:         The formatted date, or nil if the format was not found.
     */
-  func format(format: String, timeZoneNamed zoneName: String) -> String? {
+  public func format(format: String, timeZoneNamed zoneName: String) -> String? {
     return self.format(format, timeZone: NSTimeZone(name: zoneName))
   }
 }
@@ -62,7 +62,7 @@ extension NSDate {
   This extension provides a shorthand for initalize date components with their
   constituent parts.
   */
-extension NSDateComponents {
+public extension NSDateComponents {
   /**
     This method initializes a date component set with its constituent parts.
     
@@ -73,7 +73,7 @@ extension NSDateComponents {
     :param: minute    The minute
     :param: second    The second
     */
-  convenience init(year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int, timeZone: NSTimeZone? = nil) {
+  public convenience init(year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int, timeZone: NSTimeZone? = nil) {
     self.init()
     self.year = year
     self.month = month

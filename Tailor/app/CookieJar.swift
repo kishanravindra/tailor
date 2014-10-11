@@ -3,9 +3,9 @@ import Foundation
 /**
   This class stories a set of cookies for a request.
   */
-class CookieJar {
+public class CookieJar {
   /** The cookies in the jar. */
-  private(set) var cookies: [Cookie] = []
+  public private(set) var cookies: [Cookie] = []
   
   //MARK - Modifying Cookies
   
@@ -30,7 +30,7 @@ class CookieJar {
     :param: httpOnly        Whether the cookie should only be sent over
                             HTTP/HTTPS requests.
     */
-  func setCookie(key: String, _ value: String, path: String = "/",
+  public func setCookie(key: String, _ value: String, path: String = "/",
     expiresAt: NSDate? = nil, maxAge: Int? = nil, domain: String? = nil,
     secureOnly: Bool = false, httpOnly: Bool = false) {
       var cookie = Cookie(key: key, value: value)
@@ -59,7 +59,7 @@ class CookieJar {
     
     :param: string    The header string with the cookies.
     */
-  func addHeaderString(string: String) {
+  public func addHeaderString(string: String) {
     for component in string.componentsSeparatedByString("; ") {
       let equalSignRange = component.rangeOfString("=", options: nil, range: nil, locale: nil)
       if equalSignRange != nil {
@@ -78,7 +78,7 @@ class CookieJar {
     :param: key     The identifier for the cookie.
     :return:        The value, if we found one.
     */
-  subscript(key: String) -> String? {
+  public subscript(key: String) -> String? {
     get {
       for cookie in self.cookies {
         if cookie.key == key {
@@ -103,7 +103,7 @@ class CookieJar {
 
     It will also end with a newline.
     */
-  var headerStringForChanges: String {
+  public var headerStringForChanges: String {
     get {
       let filters = self.cookies.filter {
         $0.changed
@@ -116,7 +116,7 @@ class CookieJar {
 }
 
 /** A formatter for dates in cookies. */
-let COOKIE_DATE_FORMATTER = {
+public let COOKIE_DATE_FORMATTER = {
   ()->NSDateFormatter in
   var formatter = NSDateFormatter()
   formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"

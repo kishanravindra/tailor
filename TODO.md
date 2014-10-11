@@ -1,6 +1,5 @@
-### Database Connections
-
-* Storing database config in a file.
+### Documentation
+* Add more info to README on installation and major issues
 
 ### Modelling
 
@@ -15,6 +14,7 @@
 
 ### General
 
+* Look into bug with generic type initialization in Record.query
 * Authentication
 * Helpers for APIs
 * Extract out sample app into its own project

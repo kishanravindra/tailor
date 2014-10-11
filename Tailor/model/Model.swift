@@ -6,7 +6,7 @@ import Foundation
   Model object provide shorthand for getting and setting dynamic Swift
   properties, validations, and error storage.
   */
-class Model {
+public class Model {
   //MARK - Structure
   
   /** 
@@ -14,7 +14,7 @@ class Model {
 
     This implementation infers it from the class name.
     */
-  class func modelName() -> String {
+  public class func modelName() -> String {
     var fullName = NSStringFromClass(self)
     let range = fullName.rangeOfString(".", options: NSStringCompareOptions.BackwardsSearch, range: nil, locale: nil)
     if range != nil {
@@ -26,10 +26,10 @@ class Model {
   //MARK - Validations
   
   /** The errors that have been set on this object in the validation process. */
-  let errors = ErrorCollection()
+  public let errors = ErrorCollection()
 
   /** The validators that will be applied to model objects for this model. */
-  class func validators() -> [Validator] {
+  public class func validators() -> [Validator] {
     return []
   }
   
@@ -38,7 +38,7 @@ class Model {
   
     :returns:   Whether the object passed all the validations.
     */
-  func validate() -> Bool {
+  public func validate() -> Bool {
     self.errors.errors = [:]
     var valid = true
     for validator in self.dynamicType.validators() {
@@ -59,7 +59,7 @@ class Model {
     :param: key     The attribute name.
     :returns:       The humanized attribute name.
     */
-  class func humanAttributeName(key: String) -> String {
+  public class func humanAttributeName(key: String) -> String {
     var result = ""
     for (index, character) in enumerate(key) {
       let string = String(character)
@@ -84,7 +84,7 @@ class Model {
     :param: key   The name of the property.
     :returns:     The value.
     */
-  func valueForKey(key: String) -> AnyObject? {
+  public func valueForKey(key: String) -> AnyObject? {
     let klass : AnyClass! = object_getClass(self)
     let getter = class_getInstanceMethod(klass, Selector(key))
     if getter != nil {
@@ -103,7 +103,7 @@ class Model {
     :param: value   The value to set.
     :param: key     The name of the property.
     */
-  func setValue(value: Any?, forKey key: String) {
+  public func setValue(value: Any?, forKey key: String) {
     let capitalName = key.capitalizeInitial
     let setterName = "set" + capitalName + ":"
     let klass : AnyClass! = object_getClass(self)

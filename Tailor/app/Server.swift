@@ -3,20 +3,20 @@ import Foundation
 /**
   This class provides an HTTP server.
   */
-class Server {
+public class Server {
   /** A callback that can be given a response. */
-  typealias ResponseCallback = (Response)->()
+  public typealias ResponseCallback = (Response)->()
   
   /** A closure that can process a request. */
-  typealias RequestHandler = (Request, ResponseCallback)->()
+  public typealias RequestHandler = (Request, ResponseCallback)->()
   
   /** The connection that the server is listening on. */
-  private(set) var connection: Connection?
+  public private(set) var connection: Connection?
 
   /**
     This method initializes the server.
     */
-  required init() {
+  public required init() {
     
   }
   
@@ -35,7 +35,7 @@ class Server {
   
     :returns:         Whether we were able to open the connection.
     */
-  func start(address: (Int,Int,Int,Int), port: Int, handler: RequestHandler) -> Bool {
+  public func start(address: (Int,Int,Int,Int), port: Int, handler: RequestHandler) -> Bool {
     let socketDescriptor = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)
     let flag = [1]
     setsockopt(socketDescriptor, SOL_SOCKET, SO_REUSEADDR, flag, UInt32(sizeof(Int)))

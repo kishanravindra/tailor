@@ -3,36 +3,36 @@ import Foundation
 /**
   This class represents a request from the client.
   */
-struct Request {
+public struct Request {
   /** The client's IP address. */
-  let clientAddress: String
+  public let clientAddress: String
   
   /** The full request data. */
-  let data: NSData
+  public let data: NSData
   
   /** The HTTP method. */
-  let method: String
+  public let method: String
   
   /** The HTTP version */
-  let version: String
+  public let version: String
   
   /** The full path from the request. */
-  let fullPath: String
+  public let fullPath: String
   
   /** The path that the client is requesting, without the query string. */
-  let path: String
+  public let path: String
   
   /** The header information from the request. */
-  let headers: [String: String]
+  public let headers: [String: String]
   
   /** The full request data. */
-  let body: NSData
+  public let body: NSData
   
   /** The request parameters. */
-  var requestParameters: [String:String] = [:]
+  public var requestParameters: [String:String] = [:]
   
   /** The cookies that were sent with this request. */
-  let cookies = CookieJar()
+  public let cookies = CookieJar()
   
   /**
     This method initializes a request.
@@ -40,10 +40,10 @@ struct Request {
     :param: clientAddress   The client's IP address.
     :param: data            The full request data.
     */
-  init(clientAddress: String, data: NSData) {
+  public init(clientAddress: String, data: NSData) {
     self.clientAddress = clientAddress
     self.data = data
-    let fullBody = NSString(data: data, encoding: NSUTF8StringEncoding) as NSString
+    let fullBody = NSString(data: data, encoding: NSUTF8StringEncoding) ?? ""
     
     let lines = fullBody.componentsSeparatedByString("\n") as [String]
     let introMatches = Request.extractWithPattern(lines[0], pattern: "^([\\S]*) ([\\S]*) HTTP/([\\d.]*)$")
@@ -106,15 +106,15 @@ struct Request {
   //MARK: - Body Parsing
   
   /** The text of the request body. */
-  var bodyText : String { get {
-    return NSString(data: self.body, encoding: NSUTF8StringEncoding)
+  public var bodyText : String { get {
+    return NSString(data: self.body, encoding: NSUTF8StringEncoding) ?? ""
   } }
   
   /**
     This method extracts the request parameters from the query string and the
     request body.
     */
-  mutating func parseRequestParameters() {
+  private mutating func parseRequestParameters() {
     let queryStringLocation = self.fullPath.rangeOfString("?", options: NSStringCompareOptions.BackwardsSearch)
     if queryStringLocation != nil {
       let queryString = self.fullPath.substringFromIndex(queryStringLocation!.startIndex.successor())
@@ -140,10 +140,11 @@ struct Request {
     :returns:         The matched subparts, or an empty array if there was no
                       match.
     */
-  static func extractWithPattern(line : String, pattern : String) -> [String] {
+  public static func extractWithPattern(line : String, pattern : String) -> [String] {
     let regex = NSRegularExpression(pattern: pattern, options: nil, error: nil)
     var sections : [String] = []
-    regex.enumerateMatchesInString(line, options: nil, range: NSMakeRange(0,countElements(line)), usingBlock: {
+    
+    regex?.enumerateMatchesInString(line, options: nil, range: NSMakeRange(0,countElements(line)), usingBlock: {
       (result: NSTextCheckingResult!, _, _) in
       sections = []
       for index in 1..<result.numberOfRanges {
@@ -163,7 +164,7 @@ struct Request {
     :param: string          The query string.
     :returns:               The parameters.
     */
-  static func decodeQueryString(string: String) -> [String:String] {
+  public static func decodeQueryString(string: String) -> [String:String] {
     var params: [String:String] = [:]
     for param in string.componentsSeparatedByString("&") {
       let components = param.componentsSeparatedByString("=").map {

@@ -3,7 +3,7 @@ import Foundation
 /**
   This class provides a high-level interface for doing AES encryption.
   */
-class AesEncryptor {
+public class AesEncryptor {
   /** The transform for encrypting data. */
   private let encryptor: Unmanaged<SecTransform>
   
@@ -19,7 +19,7 @@ class AesEncryptor {
     :param: pad     Whether we should force this to be a two-character string.
     :returns:       The encoded string.
     */
-  class func getHexString(byte: UInt8, pad: Bool = true) -> String {
+  public class func getHexString(byte: UInt8, pad: Bool = true) -> String {
     if pad {
       return getHexString(byte / 16, pad: false) + getHexString(byte % 16, pad: false)
     }
@@ -50,7 +50,7 @@ class AesEncryptor {
     :param: byte     The string
     :returns:       The hex byte.
     */
-  class func getHex(byte: String) -> UInt8? {
+  public class func getHex(byte: String) -> UInt8? {
     switch(countElements(byte)) {
     case 1:
       switch(byte) {
@@ -90,7 +90,7 @@ class AesEncryptor {
     :param: key     A string with the hexadecimal encoding of the encryption
                     key.
     */
-  init(key hexKey: String) {
+  public init(key hexKey: String) {
     var keyData = NSMutableData()
     for indexOfByte in (0..<countElements(hexKey)/2) {
       let range = Range(start: advance(hexKey.startIndex, indexOfByte), end: advance(hexKey.startIndex, indexOfByte + 2))
@@ -124,7 +124,7 @@ class AesEncryptor {
     :param: data      The plaintext.
     :returns:         The encrypted data.
     */
-  func encrypt(data: NSData) -> NSData {
+  public func encrypt(data: NSData) -> NSData {
     SecTransformSetAttribute(encryptor.takeUnretainedValue(), kSecTransformInputAttributeName, data, nil)
     return SecTransformExecute(encryptor.takeUnretainedValue(), nil) as NSData
   }
@@ -135,7 +135,7 @@ class AesEncryptor {
     :param: data    The encrypted data.
     :returns:       The plaintext.
     */
-  func decrypt(data: NSData) -> NSData {
+  public func decrypt(data: NSData) -> NSData {
     SecTransformSetAttribute(decryptor.takeUnretainedValue(), kSecTransformInputAttributeName, data, nil)
     return SecTransformExecute(decryptor.takeUnretainedValue(), nil) as NSData
   }
@@ -147,20 +147,20 @@ class AesEncryptor {
 
     :returns:   The hexadecimal encoding of the key.
     */
-  class func generateKey() -> String {
+  public class func generateKey() -> String {
     let keyParams = [
       kSecAttrKeyType as NSString: kSecAttrKeyTypeAES as NSString,
       kSecAttrKeySizeInBits as NSString: NSNumber(int: 256)
     ]
     let key = SecKeyGenerateSymmetric(keyParams, nil)
-    var dataContainer: Unmanaged<NSData>? = nil
+    var dataContainer: Unmanaged<CFData>? = nil
     SecItemExport(key.takeUnretainedValue(), UInt32(kSecFormatUnknown), 0, nil, &dataContainer)
     
     
     var keyString = ""
     
     if dataContainer != nil {
-      let data = dataContainer!.takeUnretainedValue()
+      let data = dataContainer!.takeUnretainedValue() as NSData
       var bytes = [UInt8](count: data.length, repeatedValue: 0)
       data.getBytes(&bytes, length: data.length)
       for byte in bytes {

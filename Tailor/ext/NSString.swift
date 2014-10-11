@@ -1,13 +1,13 @@
 import Foundation
 
-extension String {
+public extension String {
   /**
     This method converts a string to camel case.
 
     :param: capitalize    Whether we should capitalize the first letter.
     :returns:             The camel-cased string.
     */
-  func camelCase(capitalize: Bool = false) -> String {
+  public func camelCase(capitalize: Bool = false) -> String {
     var result = NSMutableString()
     var lastWasUnderscore = false
     
@@ -30,7 +30,7 @@ extension String {
 
     :returns: The converted string.
     */
-  func underscored() -> String {
+  public func underscored() -> String {
     var result = NSMutableString()
     var lastWasUnderscore = false
     

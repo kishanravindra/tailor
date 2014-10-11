@@ -8,13 +8,13 @@ import Foundation
   If the value is a non-String type, then merely being present will pass the
   validation.
   */
-class PresenceValidator : Validator {
+public class PresenceValidator : Validator {
   /**
     This method validates that a model object passes the validator.
 
     :param: model   The model object to validate.
     */
-  override func validate(model: Model) {
+  public override func validate(model: Model) {
     let value: AnyObject? = model.valueForKey(key)
     var present = true
     if value == nil {

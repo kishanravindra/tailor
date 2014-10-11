@@ -4,26 +4,26 @@ import Foundation
   This method provides an abstract base class for managing database connections
   and executing queries.
   */
-class DatabaseConnection {
+public class DatabaseConnection {
   /**
     This class provides a base class for representing a row that is returned
     from a database query.
     */
-  class Row {
+  public class Row {
     /** The data returned for the row. */
-    let data: [String:Any]
+    public let data: [String:Any]
     
     /**
       This method initializes a row with a hash of data.
     
       :param: row   The data for the row.
       */
-    required init(data: [String:Any]) {
+    public required init(data: [String:Any]) {
       self.data = data
     }
   }
   
-  internal(set) var timeZone: NSTimeZone
+  public internal(set) var timeZone: NSTimeZone
 
   /**
     This method creates the connection.
@@ -31,14 +31,14 @@ class DatabaseConnection {
     This will open the connection and do everything necessary to prepare for
     query execution.
     */
-  required init(config: [String:String]) {
+  public required init(config: [String:String]) {
     self.timeZone = NSTimeZone.systemTimeZone()
   }
   
   /**
     This gets the shared global database connection.
     */
-  class func sharedConnection() -> DatabaseConnection! {
+  public class func sharedConnection() -> DatabaseConnection! {
     return SHARED_DATABASE_CONNECTION
   }
   
@@ -47,7 +47,7 @@ class DatabaseConnection {
     
     :param: config    The config for opening the connection.
     */
-  class func open(config: [String:String]) {
+  public class func open(config: [String:String]) {
     SHARED_DATABASE_CONNECTION = self(config: config)
   }
 
@@ -61,7 +61,7 @@ class DatabaseConnection {
                             database side.
     :returns                The interpreted result set.
     */
-  func executeQuery(query: String, _ bindParameters: String...) -> [Row] {
+  public func executeQuery(query: String, _ bindParameters: String...) -> [Row] {
     return self.executeQuery(query, parameters: bindParameters)
   }
   
@@ -73,7 +73,7 @@ class DatabaseConnection {
                             database side.
     :returns                The interpreted result set.
   */
-  func executeQuery(query: String, parameters bindParameters: [String]) -> [Row] {
+  public func executeQuery(query: String, parameters bindParameters: [String]) -> [Row] {
     return []
   }
   
@@ -84,8 +84,8 @@ class DatabaseConnection {
     :param: columnName    The unsanitized version
     :returns:             The sanitized version.
     */
-  class func sanitizeColumnName(columnName: String) -> String {
-    let keyRegex = NSRegularExpression(pattern: "[^A-Za-z_0-9]", options: nil, error: nil)
+  public class func sanitizeColumnName(columnName: String) -> String {
+    let keyRegex = NSRegularExpression(pattern: "[^A-Za-z_0-9]", options: nil, error: nil)!
     let range = NSMakeRange(0, countElements(columnName))
     let sanitizedColumn = keyRegex.stringByReplacingMatchesInString(columnName, options: nil, range: range, withTemplate: "")
     return sanitizedColumn
