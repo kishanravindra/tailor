@@ -201,6 +201,12 @@ public class MysqlConnection : DatabaseConnection {
     mysql_stmt_bind_param(statement, &mysqlBindParameters)
     mysql_stmt_execute(statement)
     
+    let errorPointer = mysql_stmt_error(statement)
+    let error : String = NSString(CString: errorPointer, encoding: NSUTF8StringEncoding) ?? ""
+    if !error.isEmpty {
+      return [MysqlRow(error: error)]
+    }
+    
     mysqlBindParameters = []
     
     if metadataResult == nil {

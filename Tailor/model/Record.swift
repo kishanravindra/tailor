@@ -251,8 +251,15 @@ public class Record : Model {
     }
     query += ") VALUES (\(parameterString))"
     let result = DatabaseConnection.sharedConnection().executeQuery(query, parameters: parameters)[0]
-    self.id = result.data["id"] as Int
-    return true
+    
+    if let error = result.error {
+      self.errors.add("_database", error)
+      return false
+    }
+    else {
+      self.id = result.data["id"] as Int
+      return true
+    }
   }
   
   /**
@@ -286,7 +293,14 @@ public class Record : Model {
     }
     query += " WHERE id = ?"
     parameters.append(String(self.id))
-    DatabaseConnection.sharedConnection().executeQuery(query, parameters: parameters)
+    let result = DatabaseConnection.sharedConnection().executeQuery(query, parameters: parameters)
+    
+    if result.count > 0 {
+      if let error = result[0].error {
+        self.errors.add("_database", error)
+        return false
+      }
+    }
     return true
   }
   

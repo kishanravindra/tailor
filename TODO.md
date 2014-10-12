@@ -3,7 +3,6 @@
 
 ### Modelling
 
-* Checking for database errors creating or updating records
 * Transactions
 * Database migrations
 

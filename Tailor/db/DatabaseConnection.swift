@@ -13,6 +13,9 @@ public class DatabaseConnection {
     /** The data returned for the row. */
     public let data: [String:Any]
     
+    /** The error message that the database gave for this query. */
+    public private(set) var error: String?
+    
     /**
       This method initializes a row with a hash of data.
     
@@ -20,6 +23,14 @@ public class DatabaseConnection {
       */
     public required init(data: [String:Any]) {
       self.data = data
+    }
+    
+    /**
+      This method initializees a row for an error message.
+      */
+    public convenience init(error: String) {
+      self.init(data: [:])
+      self.error = error
     }
   }
   

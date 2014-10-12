@@ -38,7 +38,7 @@ public struct Response {
     }
     
     add(NSString(format: "HTTP/1.1 %d\n", code))
-    add(NSString(format: "Content-Length: %d\n", bodyData.length + 1))
+    add(NSString(format: "Content-Length: %d\n", bodyData.length))
     
     for (key,value) in self.headers {
       add(NSString(format: "%@: %@ \n", key, value))
