@@ -15,6 +15,7 @@
 ### General
 
 * Look into bug with generic type initialization in Record.query
+* Upload pre-built framework to site
 * Authentication
 * Helpers for APIs
 * Extract out sample app into its own project
