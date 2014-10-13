@@ -6,7 +6,7 @@ early stages of development, and isn't ready for production use.
 ### How to Use Tailor
 
 You can find sample apps at
-[the official website](http://johnbrownlee.com/tailor). Official
+[the official website](http://johnbrownlee.com/tailor/about). Official
 tutorials and documentation will be coming in the future. The sample apps
 require a libmysqlclient to be installed, with a module map for using it as a
 Swift module.
