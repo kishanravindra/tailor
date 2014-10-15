@@ -95,10 +95,9 @@ public class Record : Model {
     :param: parameters  The information to interpolate into the query.
     :returns:           The created records.
     */
-  public class func query<RecordType : Record>(query: String, parameters: [String]) -> [RecordType] {
+  public class func query(query: String, parameters: [String]) -> [Record] {
     let rows = DatabaseConnection.sharedConnection().executeQuery(query, parameters: parameters)
-    NSLog("In query: %@", RecordType.tableName())
-    return rows.map { RecordType.init(data: $0.data) }
+    return rows.map { self(data: $0.data) }
   }
   
   /**
@@ -111,7 +110,7 @@ public class Record : Model {
     :param: limit         The maximum number of results to return.
     :returns:             The created records.
     */
-  public class func find<RecordType : Record>(conditions: [String:String] = [:], order: [String: NSComparisonResult] = [:], limit: Int? = nil) -> [RecordType] {
+  public class func find(conditions: [String:String] = [:], order: [String: NSComparisonResult] = [:], limit: Int? = nil) -> [Record] {
     var query = "SELECT * FROM \(self.tableName())"
     var parameters : [String] = []
     
@@ -157,8 +156,8 @@ public class Record : Model {
     :param: id  The id of the record to find.
     :returns:   The record, if it was found.
     */
-  public class func find<RecordType: Record>(id: Int) -> RecordType? {
-    let results : [RecordType] = self.find(conditions: ["id": "\(id)"])
+  public class func find(id: Int) -> Record? {
+    let results : [Record] = self.find(conditions: ["id": "\(id)"])
     return results.isEmpty ? nil : results[0]
   }
   
