@@ -1,7 +1,8 @@
 ### Tailor
 
-Tailor is a fast, secure, simple web development framework. It's still in the
-early stages of development, and isn't ready for production use.
+Tailor is a fast, secure, simple web development framework built for the Swift
+programming language. It's still in the early stages of development, and isn't
+ready for production use, but I'm working hard to get it there.
 
 ### How to Use Tailor
 
@@ -14,4 +15,5 @@ Swift module.
 ### Feedback and Contributions
 
 You can give feedback by opening issues in Github, or
-[reaching out to me](http://johnbrownlee.com/contact).
+[reaching out to me](http://johnbrownlee.com/contact). I know that people say
+this sarcastically, but patches are incredibly welcome. 
