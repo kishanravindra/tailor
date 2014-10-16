@@ -14,8 +14,13 @@
 ### General
 
 * Upload pre-built framework to site
-* Authentication
 * Helpers for APIs
-* Extract out sample app into its own project
 * Mailers
 * Localization
+
+### Authentication
+
+* Validate uniqueness of user email addresses
+* Provide limitations on sign-in attempts
+* Provide mechanism for resetting passwords
+* Provide tracking of IP histories

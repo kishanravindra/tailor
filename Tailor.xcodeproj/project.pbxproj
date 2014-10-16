@@ -18,7 +18,6 @@
 		52BD142B19E9DA1D006D72B0 /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140619E9DA1D006D72B0 /* Response.swift */; };
 		52BD142C19E9DA1D006D72B0 /* RouteSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140719E9DA1D006D72B0 /* RouteSet.swift */; };
 		52BD142D19E9DA1D006D72B0 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140819E9DA1D006D72B0 /* Server.swift */; };
-		52BD142E19E9DA1D006D72B0 /* AesEncryptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140A19E9DA1D006D72B0 /* AesEncryptor.swift */; };
 		52BD142F19E9DA1D006D72B0 /* Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140B19E9DA1D006D72B0 /* Controller.swift */; };
 		52BD143019E9DA1D006D72B0 /* RestfulController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140C19E9DA1D006D72B0 /* RestfulController.swift */; };
 		52BD143119E9DA1D006D72B0 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140D19E9DA1D006D72B0 /* Session.swift */; };
@@ -39,6 +38,11 @@
 		52BD144219E9DA1D006D72B0 /* Validator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD142219E9DA1D006D72B0 /* Validator.swift */; };
 		52BD144319E9DA1D006D72B0 /* FormBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD142419E9DA1D006D72B0 /* FormBuilder.swift */; };
 		52BD144419E9DA1D006D72B0 /* Template.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD142519E9DA1D006D72B0 /* Template.swift */; };
+		52C6251A19EE110B0024453F /* AesEncryptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C6251919EE110B0024453F /* AesEncryptor.swift */; };
+		52C6252019EE12810024453F /* BlowfishEncryptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C6251F19EE12810024453F /* BlowfishEncryptor.swift */; };
+		52C6252719EE12AE0024453F /* crypt_blowfish.c in Sources */ = {isa = PBXBuildFile; fileRef = 52C6252519EE12AE0024453F /* crypt_blowfish.c */; };
+		52C6252819EE12AE0024453F /* crypt_blowfish.h in Headers */ = {isa = PBXBuildFile; fileRef = 52C6252619EE12AE0024453F /* crypt_blowfish.h */; };
+		52EF126419EF545000B61DF4 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EF126319EF545000B61DF4 /* User.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -65,7 +69,6 @@
 		52BD140619E9DA1D006D72B0 /* Response.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Response.swift; sourceTree = "<group>"; };
 		52BD140719E9DA1D006D72B0 /* RouteSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteSet.swift; sourceTree = "<group>"; };
 		52BD140819E9DA1D006D72B0 /* Server.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
-		52BD140A19E9DA1D006D72B0 /* AesEncryptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AesEncryptor.swift; sourceTree = "<group>"; };
 		52BD140B19E9DA1D006D72B0 /* Controller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Controller.swift; sourceTree = "<group>"; };
 		52BD140C19E9DA1D006D72B0 /* RestfulController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RestfulController.swift; sourceTree = "<group>"; };
 		52BD140D19E9DA1D006D72B0 /* Session.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
@@ -90,6 +93,11 @@
 		52BD14C219E9E9D1006D72B0 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = SOURCE_ROOT; };
 		52BD14C319E9E9D1006D72B0 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 		52BD14CB19E9E9E4006D72B0 /* TODO.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = TODO.md; path = ../TODO.md; sourceTree = "<group>"; };
+		52C6251919EE110B0024453F /* AesEncryptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AesEncryptor.swift; sourceTree = "<group>"; };
+		52C6251F19EE12810024453F /* BlowfishEncryptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlowfishEncryptor.swift; sourceTree = "<group>"; };
+		52C6252519EE12AE0024453F /* crypt_blowfish.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = crypt_blowfish.c; sourceTree = "<group>"; };
+		52C6252619EE12AE0024453F /* crypt_blowfish.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt_blowfish.h; sourceTree = "<group>"; };
+		52EF126319EF545000B61DF4 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -138,6 +146,7 @@
 				52BD14CB19E9E9E4006D72B0 /* TODO.md */,
 				52BD140019E9DA1D006D72B0 /* app */,
 				52BD140919E9DA1D006D72B0 /* controller */,
+				52C6251819EE110B0024453F /* crypt */,
 				52BD140E19E9DA1D006D72B0 /* db */,
 				52BD141519E9DA1D006D72B0 /* ext */,
 				52BD141919E9DA1D006D72B0 /* Info.plist */,
@@ -183,7 +192,6 @@
 		52BD140919E9DA1D006D72B0 /* controller */ = {
 			isa = PBXGroup;
 			children = (
-				52BD140A19E9DA1D006D72B0 /* AesEncryptor.swift */,
 				52BD140B19E9DA1D006D72B0 /* Controller.swift */,
 				52BD140C19E9DA1D006D72B0 /* RestfulController.swift */,
 				52BD140D19E9DA1D006D72B0 /* Session.swift */,
@@ -218,6 +226,7 @@
 			children = (
 				52BD141B19E9DA1D006D72B0 /* Model.swift */,
 				52BD141C19E9DA1D006D72B0 /* Record.swift */,
+				52EF126319EF545000B61DF4 /* User.swift */,
 				52BD141D19E9DA1D006D72B0 /* validators */,
 			);
 			path = model;
@@ -244,6 +253,17 @@
 			path = view;
 			sourceTree = "<group>";
 		};
+		52C6251819EE110B0024453F /* crypt */ = {
+			isa = PBXGroup;
+			children = (
+				52C6252519EE12AE0024453F /* crypt_blowfish.c */,
+				52C6252619EE12AE0024453F /* crypt_blowfish.h */,
+				52C6251919EE110B0024453F /* AesEncryptor.swift */,
+				52C6251F19EE12810024453F /* BlowfishEncryptor.swift */,
+			);
+			path = crypt;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -253,6 +273,7 @@
 			files = (
 				52BD13A319E9D7E4006D72B0 /* Tailor.h in Headers */,
 				52BD143619E9DA1D006D72B0 /* TailorC.h in Headers */,
+				52C6252819EE12AE0024453F /* crypt_blowfish.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -359,10 +380,11 @@
 				52BD144219E9DA1D006D72B0 /* Validator.swift in Sources */,
 				52BD144419E9DA1D006D72B0 /* Template.swift in Sources */,
 				52BD142619E9DA1D006D72B0 /* Application.swift in Sources */,
-				52BD142E19E9DA1D006D72B0 /* AesEncryptor.swift in Sources */,
 				52BD142919E9DA1D006D72B0 /* CookieJar.swift in Sources */,
+				52EF126419EF545000B61DF4 /* User.swift in Sources */,
 				52BD142A19E9DA1D006D72B0 /* Request.swift in Sources */,
 				52BD143F19E9DA1D006D72B0 /* ErrorCollection.swift in Sources */,
+				52C6252019EE12810024453F /* BlowfishEncryptor.swift in Sources */,
 				52BD142F19E9DA1D006D72B0 /* Controller.swift in Sources */,
 				52BD142819E9DA1D006D72B0 /* Cookie.swift in Sources */,
 				52BD143D19E9DA1D006D72B0 /* Record.swift in Sources */,
@@ -376,7 +398,9 @@
 				52BD143519E9DA1D006D72B0 /* MysqlConnection.swift in Sources */,
 				52BD144119E9DA1D006D72B0 /* RangeValidator.swift in Sources */,
 				52BD143819E9DA1D006D72B0 /* NSDate.swift in Sources */,
+				52C6251A19EE110B0024453F /* AesEncryptor.swift in Sources */,
 				52BD144019E9DA1D006D72B0 /* PresenceValidator.swift in Sources */,
+				52C6252719EE12AE0024453F /* crypt_blowfish.c in Sources */,
 				52BD142D19E9DA1D006D72B0 /* Server.swift in Sources */,
 				52BD142719E9DA1D006D72B0 /* Connection.swift in Sources */,
 			);

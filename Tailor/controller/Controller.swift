@@ -19,6 +19,9 @@ public class Controller {
   /** The session information for this request. */
   public let session: Session
   
+  /** The user that is accessing the system. */
+  public private(set) var currentUser : User?
+  
   /**
     This method creates a controller for handling a request.
 
@@ -31,6 +34,10 @@ public class Controller {
     self.action = action
     self.callback = callback
     self.session = Session(request: request)
+    
+    if let userId = self.session["userId"]?.toInt() {
+      self.currentUser = User.find(userId) as? User
+    }
   }
   
   /**
@@ -108,6 +115,55 @@ public class Controller {
       response in
       response.code = 404
       response.appendString("Page Not Found")
+    }
+  }
+  
+  //MARK: - Authentication
+  
+  /**
+    This method signs a user in for our session.
+  
+    This will set them in the controller's user field and store their id in the
+    session for future requests.
+  
+    :param: user
+      The user to sign in.
+    */
+  public func signIn(user: User) {
+    self.currentUser = user
+    self.session["userId"] = String(user.id)
+  }
+  
+  /**
+    This method signs a user out for our session.
+
+    This will clear the controller's user field and remove the id from the
+    session for future requests.
+    */
+  public func signOut() {
+    self.currentUser = nil
+    self.session["userId"] = nil
+  }
+  
+  /**
+    This method signs in a user by providing their credentials.
+
+    :param: emailAddress
+      The email address the user has provided.
+
+    :param: password
+      The password the user has provided.
+
+    :returns:
+      Whether we were able to authenticate the user.
+    */
+  public func signIn(emailAddress: String, password: String) -> Bool {
+    if let user = User.authenticate(emailAddress, password: password) {
+      self.signIn(user)
+      return true
+    }
+    else {
+      return false
     }
   }
 }

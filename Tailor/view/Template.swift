@@ -99,15 +99,15 @@ public class Template {
   /**
     This method gets the URL for a route.
 
-    :param: controller  The controller to link to. This will default to the
-                        current controller.
-    :param: action      The action to link to.
-    :param: parameters  Additional parameters for the path.
-    :reutrns:           The path
+    :param: controllerName  The controller to link to. This will default to the
+                            current controller.
+    :param: action          The action to link to.
+    :param: parameters      Additional parameters for the path.
+    :reutrns:               The path
     */
-  public func urlFor(controller: Controller? = nil, action: String? = nil, parameters: [String:String] = [:]) -> String? {
+  public func urlFor(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:]) -> String? {
     return SHARED_APPLICATION.routeSet.urlFor(
-      controller?.name ?? self.controller?.name ?? "",
+      controllerName ?? self.controller?.name ?? "",
       action: action ?? self.controller?.action ?? "",
       parameters: parameters
     )
@@ -116,16 +116,16 @@ public class Template {
   /**
     This method adds a tag for linking to a path.
   
-    :param: controller  The controller to link to. This will default to the
-                        current controller.
-    :param: action      The action to link to.
-    :param: parameters  Additional parameters for the path.
-    :param: attributes  Additional attributes for the tag.
-    :param: with        A closure that adds the contents of the link.
+    :param: controllerName  The controller to link to. This will default to the
+                            current controller.
+    :param: action          The action to link to.
+    :param: parameters      Additional parameters for the path.
+    :param: attributes      Additional attributes for the tag.
+    :param: with            A closure that adds the contents of the link.
     */
-  public func link(controller: Controller? = nil, action: String? = nil, parameters: [String:String] = [:], attributes: [String:String] = [:], with contents: ()->()={}) {
+  public func link(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:], attributes: [String:String] = [:], with contents: ()->()={}) {
     var mergedAttributes = attributes
-    mergedAttributes["href"] = self.urlFor(controller: controller,
+    mergedAttributes["href"] = self.urlFor(controllerName: controllerName,
       action: action, parameters: parameters) ?? ""
     self.tag("a", mergedAttributes, with: contents)
   }
