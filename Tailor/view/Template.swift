@@ -45,10 +45,12 @@ public class Template {
   /**
     This method appends text to our buffer.
 
-    :param: text     The text to add.
+    :param: text      The text to add.
+    :param: localize  Whether we should attempt to localize the text.
     */
-  public func text(text: String) {
-    self.buffer.appendString(text)
+  public func text(text: String, localize: Bool = true) {
+    let localizedText = self.controller?.localize(text) ?? text
+    self.buffer.appendString(localizedText)
   }
   
   /**

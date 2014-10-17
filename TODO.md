@@ -1,5 +1,6 @@
 ### Documentation
 * Add more info to README on installation and major issues
+* Host API documentation online
 
 ### Modelling
 
@@ -16,7 +17,8 @@
 * Upload pre-built framework to site
 * Helpers for APIs
 * Mailers
-* Localization
+* Running cron jobs
+* Running persistent background jobs
 
 ### Authentication
 
@@ -24,3 +26,13 @@
 * Provide limitations on sign-in attempts
 * Provide mechanism for resetting passwords
 * Provide tracking of IP histories
+
+### Localization
+
+* Localization for languages through config file, setting locales at controller
+  level.
+* Storing content / translations in the database
+* Localization for countries
+* Interpolating values in content
+* Fallbacks to default locales
+* Inferring locales for templates

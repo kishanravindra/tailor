@@ -43,6 +43,7 @@
 		52C6252719EE12AE0024453F /* crypt_blowfish.c in Sources */ = {isa = PBXBuildFile; fileRef = 52C6252519EE12AE0024453F /* crypt_blowfish.c */; };
 		52C6252819EE12AE0024453F /* crypt_blowfish.h in Headers */ = {isa = PBXBuildFile; fileRef = 52C6252619EE12AE0024453F /* crypt_blowfish.h */; };
 		52EF126419EF545000B61DF4 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EF126319EF545000B61DF4 /* User.swift */; };
+		52EF127419F0A58400B61DF4 /* localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EF127319F0A58400B61DF4 /* localization.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -98,6 +99,7 @@
 		52C6252519EE12AE0024453F /* crypt_blowfish.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = crypt_blowfish.c; sourceTree = "<group>"; };
 		52C6252619EE12AE0024453F /* crypt_blowfish.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt_blowfish.h; sourceTree = "<group>"; };
 		52EF126319EF545000B61DF4 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		52EF127319F0A58400B61DF4 /* localization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = localization.swift; path = localization/localization.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,12 +146,13 @@
 				52BD14C219E9E9D1006D72B0 /* LICENSE */,
 				52BD14C319E9E9D1006D72B0 /* README.md */,
 				52BD14CB19E9E9E4006D72B0 /* TODO.md */,
+				52BD141919E9DA1D006D72B0 /* Info.plist */,
 				52BD140019E9DA1D006D72B0 /* app */,
 				52BD140919E9DA1D006D72B0 /* controller */,
 				52C6251819EE110B0024453F /* crypt */,
 				52BD140E19E9DA1D006D72B0 /* db */,
 				52BD141519E9DA1D006D72B0 /* ext */,
-				52BD141919E9DA1D006D72B0 /* Info.plist */,
+				52EF127219F0A54A00B61DF4 /* localization */,
 				52BD141A19E9DA1D006D72B0 /* model */,
 				52BD142319E9DA1D006D72B0 /* view */,
 				52BD13A219E9D7E4006D72B0 /* Tailor.h */,
@@ -262,6 +265,14 @@
 				52C6251F19EE12810024453F /* BlowfishEncryptor.swift */,
 			);
 			path = crypt;
+			sourceTree = "<group>";
+		};
+		52EF127219F0A54A00B61DF4 /* localization */ = {
+			isa = PBXGroup;
+			children = (
+				52EF127319F0A58400B61DF4 /* localization.swift */,
+			);
+			name = localization;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -377,6 +388,7 @@
 				52BD143019E9DA1D006D72B0 /* RestfulController.swift in Sources */,
 				52BD142C19E9DA1D006D72B0 /* RouteSet.swift in Sources */,
 				52BD143719E9DA1D006D72B0 /* TailorC.m in Sources */,
+				52EF127419F0A58400B61DF4 /* localization.swift in Sources */,
 				52BD144219E9DA1D006D72B0 /* Validator.swift in Sources */,
 				52BD144419E9DA1D006D72B0 /* Template.swift in Sources */,
 				52BD142619E9DA1D006D72B0 /* Application.swift in Sources */,

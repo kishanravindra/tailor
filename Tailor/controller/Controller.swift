@@ -22,6 +22,9 @@ public class Controller {
   /** The user that is accessing the system. */
   public private(set) var currentUser : User?
   
+  /** The localization that provides content for this controller. */
+  public var localization: Localization
+  
   /**
     This method creates a controller for handling a request.
 
@@ -34,6 +37,7 @@ public class Controller {
     self.action = action
     self.callback = callback
     self.session = Session(request: request)
+    self.localization = Localization(locale: "en")
     
     if let userId = self.session["userId"]?.toInt() {
       self.currentUser = User.find(userId) as? User
@@ -164,6 +168,30 @@ public class Controller {
     }
     else {
       return false
+    }
+  }
+  
+  //MARK: - Localization
+  
+  /**
+    This method localizes text.
+
+    :param: key
+      The key for the localized text
+
+    :param: locale
+      The locale that the localized text should be in. If this is not provided,
+      it will use the locale from the default localization on this controller.
+    
+    :returns:
+      The localized text
+    */
+  public func localize(key: String, locale: String? = nil) -> String? {
+    if locale != nil {
+      return self.localization.dynamicType.init(locale: locale!).fetch(key)
+    }
+    else {
+      return self.localization.fetch(key)
     }
   }
 }
