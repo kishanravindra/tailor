@@ -30,8 +30,6 @@
 
 ### Localization
 
-* Localization for languages through config file, setting locales at controller
-  level.
 * Storing content / translations in the database
 * Localization for countries
 * Interpolating values in content
