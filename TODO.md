@@ -9,6 +9,7 @@
 * Tasks to generate code
 * Console
 * Logging
+* Fix parsing of parameters from prompt
 
 ### Documentation
 * Add more info to README on installation and major issues
@@ -17,7 +18,6 @@
 ### Modelling
 
 * Transactions
-* Database migrations
 * Resetting local database
 * Storing seed data
 

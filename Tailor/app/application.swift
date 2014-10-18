@@ -28,9 +28,9 @@ public class Application {
   
   /**
     The command that the application is running, which is provided in the first
-    command-line argument. The default is "server".
+    command-line argument.
     */
-  public private(set) var command: String  = "server"
+  public private(set) var command: String  = ""
   
   /**
     The additional flags that have been passed to the application.
@@ -47,9 +47,9 @@ public class Application {
     running scripts.
     */
   public required init() {
-    (self.command, self.flags) = self.dynamicType.parseArguments()
     self.loadDateFormatters()
-    self.registerSubclasses(Task.self)
+    self.registerSubclasses(Task.self, Alteration.self)
+    self.parseArguments()
   }
   
   /** The application that we are running. */
@@ -111,9 +111,10 @@ public class Application {
     }
     return arguments
   }
+
   
   /**
-    This method parses the command-line arguments to the current executable.
+    This method parses a list of command-line arguments.
 
     The arguments will be interpreted as a command followed by a series of
     flags. The flags should have the format key=value. If there is no equal sign
@@ -122,10 +123,9 @@ public class Application {
     :returns:
       The command and the arguments.
     */
-  public class func parseArguments() -> (String, [String:String]) {
-    var command = "server"
+  public class func parseArguments(arguments: [String]) -> (String, [String:String]) {
+    var command = ""
     var flags = [String:String]()
-    let arguments = self.extractArguments()
     if !arguments.isEmpty {
       command = arguments[0]
       for indexOfFlag in 1..<arguments.count {
@@ -139,6 +139,46 @@ public class Application {
       }
     }
     return (command,flags)
+  }
+  
+  /**
+    This method gets the command and flags from the command-line arguments.
+    
+    If the command doesn't match a task, this will prompt the user to put in
+    a task on the command line, either by name or by number. It will keep
+    prompting until it gets a valid task.
+    */
+  private func parseArguments() {
+    (self.command, self.flags) = self.dynamicType.parseArguments(self.dynamicType.extractArguments())
+    let tasks = self.registeredSubclassList(Task.self).sorted {
+      task1, task2 in
+      task1.command().compare(task2.command()) == NSComparisonResult.OrderedAscending
+    }
+    
+    while (tasks.filter { $0.command() == self.command }).isEmpty {
+      print("Please provide a task by name, or from the following list:\n")
+      
+      for (index,task) in enumerate(tasks) {
+        print("\(index + 1). \(task.command())\n")
+      }
+      let keyboard = NSFileHandle.fileHandleWithStandardInput()
+      let inputData = keyboard.availableData
+      let invocation = NSString(data: inputData, encoding:NSUTF8StringEncoding)?.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
+      if invocation == nil {
+        continue
+      }
+      let int = Int((invocation! as NSString).intValue)
+      if int > 0 && int < tasks.count {
+        self.command = tasks[int - 1].command()
+        self.flags = [:]
+      }
+      else {
+        let arguments = invocation?.componentsSeparatedByString(" ")
+        NSLog("Extracted %@", arguments ?? [])
+        (self.command, self.flags) = self.dynamicType.parseArguments(arguments ?? [])
+      }
+    }
+
   }
   
   /**
