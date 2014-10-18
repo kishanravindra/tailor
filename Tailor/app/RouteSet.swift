@@ -172,6 +172,26 @@ public class RouteSet {
   }
   
   /**
+    This method sets up a redirect from one path to the other.
+
+    :param: pathPattern
+      The regular expression for the incoming path.
+
+    :param: toPath
+      The full path to redirect to.
+    */
+  public func addRedirect(pathPattern: String, toPath: String) {
+    self.addRoute(pathPattern, method: "GET", handler: {
+      request, responseHandler in
+      var response = Response()
+      response.code = 302
+      response.headers["location"] = toPath
+      response.appendString("You are being redirected")
+      responseHandler(response)
+    }, description: "Redirect")
+  }
+  
+  /**
     This method adds a route with a block.
 
     :param: pathPattern   The pattern for the route.

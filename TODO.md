@@ -5,7 +5,6 @@
 * Mailers
 * Running cron jobs
 * Running persistent background jobs
-* Redirects
 * Tasks to generate code
 * Console
 * Logging
