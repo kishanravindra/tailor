@@ -85,6 +85,7 @@ public class BlowfishEncryptor {
       &output,
       Int32(output.count)
     )
+    
     return NSString(CString: &output, encoding: NSUTF8StringEncoding)
   }
   

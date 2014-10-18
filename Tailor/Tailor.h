@@ -1,11 +1,3 @@
-//
-//  Tailor.h
-//  Tailor
-//
-//  Created by John Brownlee on 11/10/14.
-//  Copyright (c) 2014 John Brownlee. All rights reserved.
-//
-
 #import <Foundation/Foundation.h>
 
 //! Project version number for Tailor.

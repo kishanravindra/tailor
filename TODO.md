@@ -6,6 +6,9 @@
 * Running cron jobs
 * Running persistent background jobs
 * Redirects
+* Tasks to generate code
+* Console
+* Logging
 
 ### Documentation
 * Add more info to README on installation and major issues
@@ -15,6 +18,8 @@
 
 * Transactions
 * Database migrations
+* Resetting local database
+* Storing seed data
 
 ### Controllers
 

@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		52B2B69A19F1DCF10086261B /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B69919F1DCF10086261B /* Dictionary.swift */; };
+		52B2B6A919F2B1D00086261B /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6A819F2B1D00086261B /* Task.swift */; };
+		52B2B6AB19F2B2590086261B /* ServerTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6AA19F2B2590086261B /* ServerTask.swift */; };
+		52B2B6B019F2D24F0086261B /* AlterationsTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6AF19F2D24F0086261B /* AlterationsTask.swift */; };
 		52BD13A319E9D7E4006D72B0 /* Tailor.h in Headers */ = {isa = PBXBuildFile; fileRef = 52BD13A219E9D7E4006D72B0 /* Tailor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52BD13A919E9D7E4006D72B0 /* Tailor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52BD139D19E9D7E4006D72B0 /* Tailor.framework */; };
 		52BD13B019E9D7E4006D72B0 /* TailorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD13AF19E9D7E4006D72B0 /* TailorTests.swift */; };
@@ -42,7 +45,7 @@
 		52C6251A19EE110B0024453F /* AesEncryptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C6251919EE110B0024453F /* AesEncryptor.swift */; };
 		52C6252019EE12810024453F /* BlowfishEncryptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C6251F19EE12810024453F /* BlowfishEncryptor.swift */; };
 		52C6252719EE12AE0024453F /* crypt_blowfish.c in Sources */ = {isa = PBXBuildFile; fileRef = 52C6252519EE12AE0024453F /* crypt_blowfish.c */; };
-		52C6252819EE12AE0024453F /* crypt_blowfish.h in Headers */ = {isa = PBXBuildFile; fileRef = 52C6252619EE12AE0024453F /* crypt_blowfish.h */; };
+		52C6252819EE12AE0024453F /* crypt_blowfish.h in Headers */ = {isa = PBXBuildFile; fileRef = 52C6252619EE12AE0024453F /* crypt_blowfish.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52EF126419EF545000B61DF4 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EF126319EF545000B61DF4 /* User.swift */; };
 		52EF127419F0A58400B61DF4 /* Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EF127319F0A58400B61DF4 /* Localization.swift */; };
 /* End PBXBuildFile section */
@@ -59,6 +62,9 @@
 
 /* Begin PBXFileReference section */
 		52B2B69919F1DCF10086261B /* Dictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
+		52B2B6A819F2B1D00086261B /* Task.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Task.swift; path = tasks/Task.swift; sourceTree = "<group>"; };
+		52B2B6AA19F2B2590086261B /* ServerTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ServerTask.swift; path = tasks/ServerTask.swift; sourceTree = "<group>"; };
+		52B2B6AF19F2D24F0086261B /* AlterationsTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AlterationsTask.swift; path = tasks/AlterationsTask.swift; sourceTree = "<group>"; };
 		52BD139D19E9D7E4006D72B0 /* Tailor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Tailor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52BD13A219E9D7E4006D72B0 /* Tailor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Tailor.h; sourceTree = "<group>"; };
 		52BD13A819E9D7E4006D72B0 /* TailorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TailorTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -95,7 +101,7 @@
 		52BD142519E9DA1D006D72B0 /* Template.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Template.swift; sourceTree = "<group>"; };
 		52BD14C219E9E9D1006D72B0 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = SOURCE_ROOT; };
 		52BD14C319E9E9D1006D72B0 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
-		52BD14CB19E9E9E4006D72B0 /* TODO.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = TODO.md; path = ../TODO.md; sourceTree = "<group>"; };
+		52BD14CB19E9E9E4006D72B0 /* TODO.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
 		52C6251919EE110B0024453F /* AesEncryptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AesEncryptor.swift; sourceTree = "<group>"; };
 		52C6251F19EE12810024453F /* BlowfishEncryptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlowfishEncryptor.swift; sourceTree = "<group>"; };
 		52C6252519EE12AE0024453F /* crypt_blowfish.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = crypt_blowfish.c; sourceTree = "<group>"; };
@@ -124,9 +130,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		52B2B6A519F2B1430086261B /* tasks */ = {
+			isa = PBXGroup;
+			children = (
+				52B2B6A819F2B1D00086261B /* Task.swift */,
+				52B2B6AA19F2B2590086261B /* ServerTask.swift */,
+				52B2B6AF19F2D24F0086261B /* AlterationsTask.swift */,
+			);
+			name = tasks;
+			sourceTree = "<group>";
+		};
 		52BD139319E9D7E3006D72B0 = {
 			isa = PBXGroup;
 			children = (
+				52BD14C219E9E9D1006D72B0 /* LICENSE */,
+				52BD14C319E9E9D1006D72B0 /* README.md */,
+				52BD14CB19E9E9E4006D72B0 /* TODO.md */,
 				52BD139F19E9D7E4006D72B0 /* Tailor */,
 				52BD13AC19E9D7E4006D72B0 /* TailorTests */,
 				52BD139E19E9D7E4006D72B0 /* Products */,
@@ -145,9 +164,6 @@
 		52BD139F19E9D7E4006D72B0 /* Tailor */ = {
 			isa = PBXGroup;
 			children = (
-				52BD14C219E9E9D1006D72B0 /* LICENSE */,
-				52BD14C319E9E9D1006D72B0 /* README.md */,
-				52BD14CB19E9E9E4006D72B0 /* TODO.md */,
 				52BD141919E9DA1D006D72B0 /* Info.plist */,
 				52BD140019E9DA1D006D72B0 /* app */,
 				52BD140919E9DA1D006D72B0 /* controller */,
@@ -157,6 +173,7 @@
 				52EF127219F0A54A00B61DF4 /* localization */,
 				52BD141A19E9DA1D006D72B0 /* model */,
 				52BD142319E9DA1D006D72B0 /* view */,
+				52B2B6A519F2B1430086261B /* tasks */,
 				52BD13A219E9D7E4006D72B0 /* Tailor.h */,
 			);
 			path = Tailor;
@@ -406,7 +423,9 @@
 				52BD143D19E9DA1D006D72B0 /* Record.swift in Sources */,
 				52BD143E19E9DA1D006D72B0 /* BlockValidator.swift in Sources */,
 				52BD143219E9DA1D006D72B0 /* DatabaseConnection.swift in Sources */,
+				52B2B6B019F2D24F0086261B /* AlterationsTask.swift in Sources */,
 				52BD143119E9DA1D006D72B0 /* Session.swift in Sources */,
+				52B2B6AB19F2B2590086261B /* ServerTask.swift in Sources */,
 				52BD142B19E9DA1D006D72B0 /* Response.swift in Sources */,
 				52BD144319E9DA1D006D72B0 /* FormBuilder.swift in Sources */,
 				52BD143919E9DA1D006D72B0 /* NSString.swift in Sources */,
@@ -418,6 +437,7 @@
 				52BD144019E9DA1D006D72B0 /* PresenceValidator.swift in Sources */,
 				52C6252719EE12AE0024453F /* crypt_blowfish.c in Sources */,
 				52BD142D19E9DA1D006D72B0 /* Server.swift in Sources */,
+				52B2B6A919F2B1D00086261B /* Task.swift in Sources */,
 				52BD142719E9DA1D006D72B0 /* Connection.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

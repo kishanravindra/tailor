@@ -23,35 +23,68 @@ public class Application {
   /** The formatters that we have available for dates. */
   public var dateFormatters: [String:NSDateFormatter] = [:]
   
+  /** The subclasses that we've registered for certain critical base classes. */
+  private var registeredSubclasses: [String:[AnyClass]] = [:]
+  
+  /**
+    The command that the application is running, which is provided in the first
+    command-line argument. The default is "server".
+    */
+  public private(set) var command: String  = "server"
+  
+  /**
+    The additional flags that have been passed to the application.
+    These flags can be passed in after the command in key=value format. If just
+    a key is passed, it will be mapped to "1".
+    */
+  public private(set) var flags: [String:String] = [:]
+  
   /**
     This method initializes the application.
   
-    This implementation does nothing, but subclasses can initialize
-    application-specific information like routes.
+    This implementation parses command-line arguments, loads date formatters,
+    and registers all the subclasses of Task and Alteration for use in
+    running scripts.
     */
   public required init() {
-    self.dateFormatters["short"] = NSDateFormatter()
-    self.dateFormatters["long"] = NSDateFormatter()
-    self.dateFormatters["shortDate"] = NSDateFormatter()
-    self.dateFormatters["longDate"] = NSDateFormatter()
-    
-    self.dateFormatters["short"]?.dateFormat = "hh:mm Z"
-    self.dateFormatters["long"]?.dateFormat = "dd MMMM, yyyy, hh:mm z"
-
-    self.dateFormatters["shortDate"]?.dateFormat = "dd MMMM"
-    self.dateFormatters["longDate"]?.dateFormat = "dd MMMM, yyyy"
-  }
-  
-  /**
-    This method starts the server.
-    */
-  public func start() {
-    Server().start(ipAddress, port: port, handler: { self.routeSet.handleRequest($0, callback: $1) })
+    (self.command, self.flags) = self.dynamicType.parseArguments()
+    self.loadDateFormatters()
+    self.registerSubclasses(Task.self)
   }
   
   /** The application that we are running. */
   public class func sharedApplication() -> Application {
     return SHARED_APPLICATION
+  }
+  
+  //MARK: - Running
+  
+  /**
+    This method starts the application.
+  
+    It looks for a registered task with the command that was invoked when
+    starting the application, and runs that task.
+  
+    If the provided command doesn't have a matching task, this will crash.
+    */
+  public func start() {
+    NSLog("Starting application: %@, %@", command, flags)
+    
+    for task in self.registeredSubclassList(Task.self) {
+      if task.command() == command {
+        task().run()
+        return
+      }
+    }
+    NSLog("Could not find the specified task")
+    exit(1)
+  }
+  
+  /**
+    This method starts a server for this application.
+    */
+  public func startServer() {
+    Server().start(ipAddress, port: port, handler: { self.routeSet.handleRequest($0, callback: $1) })
   }
   
   /** Starts a version of this application as the shared application. */
@@ -60,7 +93,132 @@ public class Application {
     SHARED_APPLICATION.start()
   }
   
-  //MARK: - Configuration
+  //MARK: - Loading
+  
+  /**
+    This method extracts the command-line arguments to the current executable
+    as a list of strings.
+
+    :returns:
+      The arguments.
+    */
+  public class func extractArguments() -> [String] {
+    var arguments = [String]()
+    for indexOfArgument in 1..<C_ARGC {
+      if let argument = String.fromCString(C_ARGV[Int(indexOfArgument)]) {
+        arguments.append(argument)
+      }
+    }
+    return arguments
+  }
+  
+  /**
+    This method parses the command-line arguments to the current executable.
+
+    The arguments will be interpreted as a command followed by a series of
+    flags. The flags should have the format key=value. If there is no equal sign
+    in an flag, the value will be 1.
+    
+    :returns:
+      The command and the arguments.
+    */
+  public class func parseArguments() -> (String, [String:String]) {
+    var command = "server"
+    var flags = [String:String]()
+    let arguments = self.extractArguments()
+    if !arguments.isEmpty {
+      command = arguments[0]
+      for indexOfFlag in 1..<arguments.count {
+        let flagParts = arguments[indexOfFlag].componentsSeparatedByString("=")
+        if flagParts.count == 1 {
+          flags[flagParts[0]] = "1"
+        }
+        else {
+          flags[flagParts[0]] = flagParts[1]
+        }
+      }
+    }
+    return (command,flags)
+  }
+  
+  /**
+    This method loads the default date formatters.
+    */
+  private func loadDateFormatters() {
+    self.dateFormatters["short"] = NSDateFormatter()
+    self.dateFormatters["long"] = NSDateFormatter()
+    self.dateFormatters["shortDate"] = NSDateFormatter()
+    self.dateFormatters["longDate"] = NSDateFormatter()
+    
+    self.dateFormatters["short"]?.dateFormat = "hh:mm Z"
+    self.dateFormatters["long"]?.dateFormat = "dd MMMM, yyyy, hh:mm z"
+    
+    self.dateFormatters["shortDate"]?.dateFormat = "dd MMMM"
+    self.dateFormatters["longDate"]?.dateFormat = "dd MMMM, yyyy"
+
+  }
+  
+  /**
+    This method loads all the subclasses the provided classes into the
+    application's registered subclass list.
+
+    The Application initializer uses this to identify all the tasks and
+    annotations, but subclasses can invoke it with other classes that they want
+    to dynamically crawl.
+
+    The registered subclass list will include the types passed in.
+
+    :param: types
+      The types to get subclasses of.
+    */
+  public func registerSubclasses(types: AnyClass...) {
+    var classCount = objc_getClassList(nil, 0)
+    var allClasses = UnsafeMutablePointer<AnyClass?>(calloc(UInt(sizeof(AnyClass)), UInt(classCount)))
+    
+    objc_getClassList(AutoreleasingUnsafeMutablePointer<AnyClass?>(allClasses), classCount)
+    
+    for indexOfClass in 0..<classCount {
+      let klass : AnyClass! = allClasses.memory
+      
+      if klass == nil {
+        continue
+      }
+      allClasses = advance(allClasses, 1)
+
+      let method = class_getClassMethod(klass, Selector("isSubclassOfClass:"))
+      if method == nil  {
+        continue
+      }
+      
+      for type in types {
+        if klass.isSubclassOfClass(type) {
+          let typeKey = NSStringFromClass(type)
+          var subclasses = self.registeredSubclasses[typeKey] ?? []
+          subclasses.append(klass)
+          self.registeredSubclasses[typeKey] = subclasses
+        }
+      }
+    }
+  }
+  
+  /**
+    This method fetches subclasses of a type.
+
+    The type must have previously been passed in to registerSubclasses to load
+    the list.
+  
+    :param: type
+      The type to get subclasses of.
+  
+    :returns:
+      The subclasses of the type.
+    */
+  public func registeredSubclassList<ParentType : AnyObject>(type: ParentType.Type) -> [ParentType.Type] {
+    let klass : AnyClass = ParentType.self
+    let description = NSStringFromClass(klass)
+    let classes = self.registeredSubclasses[description] ?? []
+    return classes.map { $0 as ParentType.Type }
+  }
   
   /**
     This method gets the config from our config file based on the filename.
@@ -78,4 +236,4 @@ public class Application {
 }
 
 /** The application that we are running. */
-var SHARED_APPLICATION = Application()
+var SHARED_APPLICATION : Application!
