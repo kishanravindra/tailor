@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		52B2B69A19F1DCF10086261B /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B69919F1DCF10086261B /* Dictionary.swift */; };
 		52BD13A319E9D7E4006D72B0 /* Tailor.h in Headers */ = {isa = PBXBuildFile; fileRef = 52BD13A219E9D7E4006D72B0 /* Tailor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52BD13A919E9D7E4006D72B0 /* Tailor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52BD139D19E9D7E4006D72B0 /* Tailor.framework */; };
 		52BD13B019E9D7E4006D72B0 /* TailorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD13AF19E9D7E4006D72B0 /* TailorTests.swift */; };
@@ -43,7 +44,7 @@
 		52C6252719EE12AE0024453F /* crypt_blowfish.c in Sources */ = {isa = PBXBuildFile; fileRef = 52C6252519EE12AE0024453F /* crypt_blowfish.c */; };
 		52C6252819EE12AE0024453F /* crypt_blowfish.h in Headers */ = {isa = PBXBuildFile; fileRef = 52C6252619EE12AE0024453F /* crypt_blowfish.h */; };
 		52EF126419EF545000B61DF4 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EF126319EF545000B61DF4 /* User.swift */; };
-		52EF127419F0A58400B61DF4 /* localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EF127319F0A58400B61DF4 /* localization.swift */; };
+		52EF127419F0A58400B61DF4 /* Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EF127319F0A58400B61DF4 /* Localization.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		52B2B69919F1DCF10086261B /* Dictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
 		52BD139D19E9D7E4006D72B0 /* Tailor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Tailor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52BD13A219E9D7E4006D72B0 /* Tailor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Tailor.h; sourceTree = "<group>"; };
 		52BD13A819E9D7E4006D72B0 /* TailorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TailorTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -99,7 +101,7 @@
 		52C6252519EE12AE0024453F /* crypt_blowfish.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = crypt_blowfish.c; sourceTree = "<group>"; };
 		52C6252619EE12AE0024453F /* crypt_blowfish.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt_blowfish.h; sourceTree = "<group>"; };
 		52EF126319EF545000B61DF4 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
-		52EF127319F0A58400B61DF4 /* localization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = localization.swift; path = localization/localization.swift; sourceTree = "<group>"; };
+		52EF127319F0A58400B61DF4 /* Localization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Localization.swift; path = localization/Localization.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -220,6 +222,7 @@
 				52BD141619E9DA1D006D72B0 /* NSDate.swift */,
 				52BD141719E9DA1D006D72B0 /* NSString.swift */,
 				52BD141819E9DA1D006D72B0 /* String.swift */,
+				52B2B69919F1DCF10086261B /* Dictionary.swift */,
 			);
 			path = ext;
 			sourceTree = "<group>";
@@ -270,7 +273,7 @@
 		52EF127219F0A54A00B61DF4 /* localization */ = {
 			isa = PBXGroup;
 			children = (
-				52EF127319F0A58400B61DF4 /* localization.swift */,
+				52EF127319F0A58400B61DF4 /* Localization.swift */,
 			);
 			name = localization;
 			sourceTree = "<group>";
@@ -385,10 +388,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				52BD143A19E9DA1D006D72B0 /* String.swift in Sources */,
+				52B2B69A19F1DCF10086261B /* Dictionary.swift in Sources */,
 				52BD143019E9DA1D006D72B0 /* RestfulController.swift in Sources */,
 				52BD142C19E9DA1D006D72B0 /* RouteSet.swift in Sources */,
 				52BD143719E9DA1D006D72B0 /* TailorC.m in Sources */,
-				52EF127419F0A58400B61DF4 /* localization.swift in Sources */,
+				52EF127419F0A58400B61DF4 /* Localization.swift in Sources */,
 				52BD144219E9DA1D006D72B0 /* Validator.swift in Sources */,
 				52BD144419E9DA1D006D72B0 /* Template.swift in Sources */,
 				52BD142619E9DA1D006D72B0 /* Application.swift in Sources */,

@@ -1,3 +1,12 @@
+### General
+
+* Upload pre-built framework to site
+* Helpers for APIs
+* Mailers
+* Running cron jobs
+* Running persistent background jobs
+* Redirects
+
 ### Documentation
 * Add more info to README on installation and major issues
 * Host API documentation online
@@ -11,14 +20,6 @@
 
 * Rate limiting on threads
 * Better HTML sanitization
-
-### General
-
-* Upload pre-built framework to site
-* Helpers for APIs
-* Mailers
-* Running cron jobs
-* Running persistent background jobs
 
 ### Authentication
 
@@ -36,3 +37,4 @@
 * Interpolating values in content
 * Fallbacks to default locales
 * Inferring locales for templates
+* Translating error messages

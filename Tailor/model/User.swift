@@ -15,6 +15,8 @@ public class User : Record {
   /** The user's password, encrypted with bcrypt. */
   public dynamic var encryptedPassword: String!
   
+  public override class func modelName() -> String { return "user" }
+  
   public override class func tableName() -> String { return "users" }
   
   public override class func persistedProperties() -> [String] { return ["emailAddress", "encryptedPassword"] }

@@ -108,11 +108,17 @@ public class Template {
     :reutrns:               The path
     */
   public func urlFor(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:]) -> String? {
-    return SHARED_APPLICATION.routeSet.urlFor(
+    var url = SHARED_APPLICATION.routeSet.urlFor(
       controllerName ?? self.controller?.name ?? "",
       action: action ?? self.controller?.action ?? "",
       parameters: parameters
     )
+    if self.controller != nil && url != nil {
+      for (key,value) in self.controller!.request.requestParameters {
+        url = url?.stringByReplacingOccurrencesOfString(":\(key)", withString: value)
+      }
+    }
+    return url
   }
   
   /**
@@ -130,5 +136,47 @@ public class Template {
     mergedAttributes["href"] = self.urlFor(controllerName: controllerName,
       action: action, parameters: parameters) ?? ""
     self.tag("a", mergedAttributes, with: contents)
+  }
+
+  //MARK: - Controller Information
+
+  /**
+    This method gets a subset of the request parameters from the controll.er
+
+    :param: keys
+      The keys to extract
+
+    :returns:
+      A hash with the extracted values.
+    */
+  public func requestParameters(keys: String...) -> [String:String] {
+    if let params = self.controller?.request.requestParameters {
+      var filteredParams = [String:String]()
+      for key in keys {
+        filteredParams[key] = params[key]
+      }
+      return filteredParams
+    }
+    else {
+      return [:]
+    }
+  }
+  
+  //MARK: - Localization
+  
+  /** The localization that this template will use by default, if it has one. */
+  public var localization: Localization? { get { return self.controller?.localization } }
+  
+  /**
+    This method gets a localized, capitalized attribute name.
+
+    :param: model
+      The model whose attribute this is.
+    :param: attributeName
+      The name of the attribute to localize.
+    :returns: The localized attribute.
+    */
+  public func attributeName(model: Model.Type, _ attributeName: String) -> String {
+    return model.humanAttributeName(attributeName, localization: self.localization, capitalize: true)
   }
 }

@@ -32,12 +32,11 @@ public extension String {
     */
   public func underscored() -> String {
     var result = NSMutableString()
-    var lastWasUnderscore = false
     
-    for character in self {
+    for (index,character) in enumerate(self) {
       var newCharacter = String(character)
       let lowercase = newCharacter.lowercaseString
-      if lowercase != newCharacter {
+      if lowercase != newCharacter && index != 0 {
         result.appendString("_")
       }
       result.appendString(lowercase)

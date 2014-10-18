@@ -53,14 +53,31 @@ public class Model {
     This method gets the name of a property converted into a human-readable
     name.
 
-    Every capital letter will be interpreted as the beginning of a new word.
-    Each word will be capitalized, including the first.
+    It will first try to use a localization to fetch the name. The key for the
+    translation will be based on the model name and key name. For the
+    paymentAmount attributes on a PurchaseOrder model, it will be
+    record.purchase_order.attributes.payment_amount.
   
-    :param: key     The attribute name.
-    :returns:       The humanized attribute name.
+    If it cannot get the translation, or a localization is not provided, it will
+    generate a label based on the attributes name. Every capital letter will be
+    interpreted as the beginning of a new word.
+  
+    :param: key           The attribute name.
+    :param: localization  The localization to get the name.
+    :param: capitalize    Whether we should capitalize the name.
+    :returns:             The humanized attribute name.
     */
-  public class func humanAttributeName(key: String) -> String {
+  public class func humanAttributeName(key: String, localization: Localization? = nil, capitalize: Bool = false) -> String {
     var result = ""
+    
+    if localization != nil {
+      let translationKey = "record.\(self.modelName().underscored()).attributes.\(key.underscored())"
+      let translation = localization?.fetch(translationKey)
+      if translation != nil {
+        return capitalize ? translation!.capitalizedString : translation!
+      }
+    }
+    
     for (index, character) in enumerate(key) {
       let string = String(character)
       if index == 0 {
@@ -73,7 +90,7 @@ public class Model {
         result += string
       }
     }
-    return result
+    return capitalize ? result : result.lowercaseString
   }
 
   /**

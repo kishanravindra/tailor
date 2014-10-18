@@ -39,9 +39,7 @@ public class Connection : NSObject {
     */
   func listenToSocket() {
     NSOperationQueue.mainQueue().addOperationWithBlock {
-      NSLog("Listening to %d", self.socketDescriptor)
       let connectionDescriptor = accept(self.socketDescriptor, nil, nil)
-      NSLog("Connection descriptor: %d", connectionDescriptor)
       
       if connectionDescriptor < 0 {
         return
