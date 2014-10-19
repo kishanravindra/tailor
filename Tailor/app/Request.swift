@@ -166,7 +166,8 @@ public struct Request {
     */
   public static func decodeQueryString(string: String) -> [String:String] {
     var params: [String:String] = [:]
-    for param in string.componentsSeparatedByString("&") {
+    var simplifiedString = string.stringByReplacingOccurrencesOfString("+", withString: "%20")
+    for param in simplifiedString.componentsSeparatedByString("&") {
       let components = param.componentsSeparatedByString("=").map {
         $0.stringByReplacingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
       }

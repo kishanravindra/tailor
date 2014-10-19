@@ -13,16 +13,13 @@
 ### Documentation
 * Add more info to README on installation and major issues
 * Host API documentation online
+* Standardize parameter indentation
 
 ### Modelling
 
 * Transactions
 * Resetting local database
 * Storing seed data
-
-### Controllers
-
-* Better HTML sanitization
 
 ### Authentication
 

@@ -33,7 +33,7 @@ public class Template {
     This method generates the body using the template.
 
     :param: parameters  The parameters to pass to the template.
-    :returns: The body.
+    :returns:           The body.
     */
   public func generate(parameters: [String: Any]) -> String {
     self.body(self, parameters)
@@ -44,13 +44,43 @@ public class Template {
   
   /**
     This method appends text to our buffer.
+  
+    It will HTML-sanitize the text automatically.
 
     :param: text      The text to add.
     :param: localize  Whether we should attempt to localize the text.
     */
   public func text(text: String, localize: Bool = true) {
     let localizedText = self.controller?.localize(text) ?? text
-    self.buffer.appendString(localizedText)
+    let sanitizedText = HtmlSanitizer().sanitizeString(localizedText)
+    self.addSanitizedText(sanitizedText)
+  }
+  
+  /**
+    This method appends text to our buffer without HTML-sanitizing it.
+
+    Use this with caution, and only when you are certain the text is safe.
+
+    :param: text    The text to add.
+    */
+  public func raw(text: String, localize: Bool = true) {
+    let localizedText = self.controller?.localize(text) ?? text
+    self.addSanitizedText(HtmlSanitizer().accept(text))
+  }
+  
+  /**
+    This method adds sanitized text to our buffer.
+
+    It will check to make sure it is really HTML-sanitized, and sanitize it if
+    necessary.
+
+    :param: text    The text to add.
+    */
+  public func addSanitizedText(text: SanitizedText) {
+    if !HtmlSanitizer.isSanitized(text) {
+      self.addSanitizedText(HtmlSanitizer().sanitizeText(text))
+    }
+    self.buffer.appendString(text.text)
   }
   
   /**
