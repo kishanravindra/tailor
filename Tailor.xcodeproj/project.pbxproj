@@ -67,6 +67,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5242C35519F4466F00E605D2 /* TemplateInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = TemplateInfo.plist; sourceTree = "<group>"; };
+		5247FF9E19F4629700C08156 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		5247FF9F19F462C200C08156 /* ___PACKAGENAME___Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "___PACKAGENAME___Application.swift"; sourceTree = "<group>"; };
 		52B2B69919F1DCF10086261B /* Dictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
 		52B2B6A819F2B1D00086261B /* Task.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Task.swift; path = tasks/Task.swift; sourceTree = "<group>"; };
 		52B2B6AA19F2B2590086261B /* ServerTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ServerTask.swift; path = tasks/ServerTask.swift; sourceTree = "<group>"; };
@@ -157,6 +160,7 @@
 		52B2B6DD19F365130086261B /* xcode_templates */ = {
 			isa = PBXGroup;
 			children = (
+				52B2B6F519F43DB60086261B /* Tailor Application */,
 				52B2B6DE19F3653A0086261B /* Alteration.xctemplate */,
 			);
 			path = xcode_templates;
@@ -180,6 +184,17 @@
 				52B2B6F319F405620086261B /* SqlSanitizer.swift */,
 			);
 			path = sanitization;
+			sourceTree = "<group>";
+		};
+		52B2B6F519F43DB60086261B /* Tailor Application */ = {
+			isa = PBXGroup;
+			children = (
+				5242C35519F4466F00E605D2 /* TemplateInfo.plist */,
+				5247FF9E19F4629700C08156 /* main.swift */,
+				5247FF9F19F462C200C08156 /* ___PACKAGENAME___Application.swift */,
+			);
+			name = "Tailor Application";
+			path = "Tailor Application.xctemplate";
 			sourceTree = "<group>";
 		};
 		52BD139319E9D7E3006D72B0 = {

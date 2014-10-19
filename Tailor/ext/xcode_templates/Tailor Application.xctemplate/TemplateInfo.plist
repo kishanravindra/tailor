@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Concrete</key>
+	<true/>
+	<key>Description</key>
+	<string>This template provides a web application using the Tailor framework</string>
+	<key>Kind</key>
+	<string>Xcode.Xcode3.ProjectTemplateUnitKind</string>
+	<key>Identifier</key>
+	<string>com.johnbrownlee.tailor.tailorApplication</string>
+	<key>Ancestors</key>
+	<array>
+		<string>com.apple.dt.unit.applicationBase</string>
+    <string>com.apple.dt.unit.osxBase</string>
+	</array>
+  <key>Targets</key>
+  <array>
+    <dict>
+      <key>TargetIdentifier</key>
+      <string>com.apple.dt.cocoaApplicationTarget</string>
+      <key>SharedSettings</key>
+      <dict>
+        <key>LD_RUNPATH_SEARCH_PATHS</key>
+        <string>$(inherited) @executable_path/../Frameworks</string>
+      	<key>FRAMEWORK_SEARCH_PATHS</key>
+      	<array>
+      		<string>$(inherited)</string>
+      		<string>$(LOCAL_LIBRARY_DIR)/Frameworks</string>
+      	</array>
+      	<key>HEADER_SEARCH_PATHS</key>
+      	<array>
+					<string>$(inherited)</string>
+					<string>/usr/local/include/mysql</string>
+				</array>
+      </dict>
+    </dict>
+  </array>
+	<key>Components</key>
+	<array>
+		<dict>
+			<key>Identifier</key>
+			<string>com.apple.dt.unit.cocoaApplicationUnitTestBundle</string>
+			<key>Name</key>
+			<string>___PACKAGENAME___Tests</string>
+		</dict>
+	</array>
+	<key>Project</key>
+	<dict/>
+  <key>Nodes</key>
+  <array>
+    <string>main.swift</string>
+    <string>app/___PACKAGENAME___Application.swift</string>
+  </array>
+  <key>Definitions</key>
+  <dict>
+    <key>main.swift</key>
+    <dict>
+    	<key>Path</key>
+    	<string>main.swift</string>
+    </dict>
+    <key>app/___PACKAGENAME___Application.swift</key>
+    <dict>
+    	<key>Group</key>
+    	<string>app</string>
+    	<key>Path</key>
+    	<string>___PACKAGENAME___Application.swift</string>
+		</dict>
+  </dict>
+</dict>
+</plist>
