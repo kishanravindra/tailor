@@ -33,13 +33,17 @@ public extension String {
   public func underscored() -> String {
     var result = NSMutableString()
     
+    let alnumSet = NSCharacterSet.alphanumericCharacterSet()
+    var lastWasAlnum = false
     for (index,character) in enumerate(self) {
       var newCharacter = String(character)
       let lowercase = newCharacter.lowercaseString
-      if lowercase != newCharacter && index != 0 {
+      if lowercase != newCharacter && lastWasAlnum {
         result.appendString("_")
       }
       result.appendString(lowercase)
+      
+      lastWasAlnum = newCharacter.rangeOfCharacterFromSet(alnumSet) != nil
     }
     return result as String
   }

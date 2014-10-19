@@ -12,6 +12,7 @@
 		52B2B6AB19F2B2590086261B /* ServerTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6AA19F2B2590086261B /* ServerTask.swift */; };
 		52B2B6B019F2D24F0086261B /* AlterationsTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6AF19F2D24F0086261B /* AlterationsTask.swift */; };
 		52B2B6B219F2DAD30086261B /* Alteration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6B119F2DAD30086261B /* Alteration.swift */; };
+		52B2B6E119F3656F0086261B /* TemplateInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 52B2B6E019F3656F0086261B /* TemplateInfo.plist */; };
 		52BD13A319E9D7E4006D72B0 /* Tailor.h in Headers */ = {isa = PBXBuildFile; fileRef = 52BD13A219E9D7E4006D72B0 /* Tailor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52BD13A919E9D7E4006D72B0 /* Tailor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52BD139D19E9D7E4006D72B0 /* Tailor.framework */; };
 		52BD13B019E9D7E4006D72B0 /* TailorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD13AF19E9D7E4006D72B0 /* TailorTests.swift */; };
@@ -67,6 +68,8 @@
 		52B2B6AA19F2B2590086261B /* ServerTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ServerTask.swift; path = tasks/ServerTask.swift; sourceTree = "<group>"; };
 		52B2B6AF19F2D24F0086261B /* AlterationsTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AlterationsTask.swift; path = tasks/AlterationsTask.swift; sourceTree = "<group>"; };
 		52B2B6B119F2DAD30086261B /* Alteration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Alteration.swift; path = tasks/Alteration.swift; sourceTree = "<group>"; };
+		52B2B6E019F3656F0086261B /* TemplateInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = TemplateInfo.plist; sourceTree = "<group>"; };
+		52B2B6E219F3EE8B0086261B /* ___FILEBASENAME___.swift */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; path = "___FILEBASENAME___.swift"; sourceTree = "<group>"; };
 		52BD139D19E9D7E4006D72B0 /* Tailor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Tailor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52BD13A219E9D7E4006D72B0 /* Tailor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Tailor.h; sourceTree = "<group>"; };
 		52BD13A819E9D7E4006D72B0 /* TailorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TailorTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -141,6 +144,23 @@
 				52B2B6B119F2DAD30086261B /* Alteration.swift */,
 			);
 			name = tasks;
+			sourceTree = "<group>";
+		};
+		52B2B6DD19F365130086261B /* xcode_templates */ = {
+			isa = PBXGroup;
+			children = (
+				52B2B6DE19F3653A0086261B /* Alteration.xctemplate */,
+			);
+			path = xcode_templates;
+			sourceTree = "<group>";
+		};
+		52B2B6DE19F3653A0086261B /* Alteration.xctemplate */ = {
+			isa = PBXGroup;
+			children = (
+				52B2B6E219F3EE8B0086261B /* ___FILEBASENAME___.swift */,
+				52B2B6E019F3656F0086261B /* TemplateInfo.plist */,
+			);
+			path = Alteration.xctemplate;
 			sourceTree = "<group>";
 		};
 		52BD139319E9D7E3006D72B0 = {
@@ -243,6 +263,7 @@
 				52BD141719E9DA1D006D72B0 /* NSString.swift */,
 				52BD141819E9DA1D006D72B0 /* String.swift */,
 				52B2B69919F1DCF10086261B /* Dictionary.swift */,
+				52B2B6DD19F365130086261B /* xcode_templates */,
 			);
 			path = ext;
 			sourceTree = "<group>";
@@ -390,6 +411,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52B2B6E119F3656F0086261B /* TemplateInfo.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

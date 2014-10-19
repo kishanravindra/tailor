@@ -5,10 +5,10 @@
 * Mailers
 * Running cron jobs
 * Running persistent background jobs
-* Tasks to generate code
 * Console
 * Logging
 * Fix parsing of parameters from prompt
+* Generator for new project
 
 ### Documentation
 * Add more info to README on installation and major issues
