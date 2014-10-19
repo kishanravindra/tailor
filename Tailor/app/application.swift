@@ -174,7 +174,6 @@ public class Application {
       }
       else {
         let arguments = invocation?.componentsSeparatedByString(" ")
-        NSLog("Extracted %@", arguments ?? [])
         (self.command, self.flags) = self.dynamicType.parseArguments(arguments ?? [])
       }
     }

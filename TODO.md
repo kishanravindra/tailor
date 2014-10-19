@@ -22,7 +22,6 @@
 
 ### Controllers
 
-* Rate limiting on threads
 * Better HTML sanitization
 
 ### Authentication

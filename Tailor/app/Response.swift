@@ -16,6 +16,13 @@ public struct Response {
   /** The cookies that should be updated with this response. */
   public var cookies = CookieJar()
   
+  /**
+    This method initializes an empty response.
+    */
+  public init() {
+    
+  }
+  
   //MARK: - Response Data
   
   /**

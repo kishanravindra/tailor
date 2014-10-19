@@ -10,6 +10,12 @@ public class Connection : NSObject {
   /** A callback to the code to provide the request. */
   let handler: Server.RequestHandler
   
+  /** The maximum number of connections to process at once. */
+  let simultaneousConnectionLimit = 10
+  
+  /** The number of connections that we are currently processing. */
+  var activeConnections = 0
+  
   /**
     This method creates a new connection.
 
@@ -35,7 +41,7 @@ public class Connection : NSObject {
   
     Once the connection is accepted, it will put an operation on a new
     queue for reading from the socket, and put an operation on the main queue
-    for listening for a new connection.k
+    for listening for a new connection.
     */
   func listenToSocket() {
     NSOperationQueue.mainQueue().addOperationWithBlock {
@@ -46,6 +52,10 @@ public class Connection : NSObject {
       }
       
       NSOperationQueue().addOperationWithBlock {
+        while(self.activeConnections >= self.simultaneousConnectionLimit) {
+          NSThread.sleepForTimeInterval(1)
+        }
+        
         self.readFromSocket(connectionDescriptor)
       }
       self.listenToSocket()
@@ -64,6 +74,8 @@ public class Connection : NSObject {
     var data = NSMutableData()
     var buffer = [UInt8]()
     let bufferLength: UInt = 1024
+    
+    self.activeConnections += 1
     
     for _ in 0..<bufferLength { buffer.append(0) }
     
@@ -93,6 +105,7 @@ public class Connection : NSObject {
       let responseData = $0.data
       write(connectionDescriptor, responseData.bytes, UInt(responseData.length))
       close(connectionDescriptor)
+      self.activeConnections -= 1
       NSLog("Finished processing %@", request.path)
     }
   }
