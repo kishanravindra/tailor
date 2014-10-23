@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5247029919F48CA600C08156 /* libmysqlclient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5247029819F48CA600C08156 /* libmysqlclient.framework */; };
 		52B2B69A19F1DCF10086261B /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B69919F1DCF10086261B /* Dictionary.swift */; };
 		52B2B6A919F2B1D00086261B /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6A819F2B1D00086261B /* Task.swift */; };
 		52B2B6AB19F2B2590086261B /* ServerTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6AA19F2B2590086261B /* ServerTask.swift */; };
@@ -32,7 +33,6 @@
 		52BD143019E9DA1D006D72B0 /* RestfulController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140C19E9DA1D006D72B0 /* RestfulController.swift */; };
 		52BD143119E9DA1D006D72B0 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140D19E9DA1D006D72B0 /* Session.swift */; };
 		52BD143219E9DA1D006D72B0 /* DatabaseConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140F19E9DA1D006D72B0 /* DatabaseConnection.swift */; };
-		52BD143319E9DA1D006D72B0 /* libmysqlclient.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 52BD141019E9DA1D006D72B0 /* libmysqlclient.dylib */; };
 		52BD143519E9DA1D006D72B0 /* MysqlConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD141219E9DA1D006D72B0 /* MysqlConnection.swift */; };
 		52BD143619E9DA1D006D72B0 /* TailorC.h in Headers */ = {isa = PBXBuildFile; fileRef = 52BD141319E9DA1D006D72B0 /* TailorC.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52BD143719E9DA1D006D72B0 /* TailorC.m in Sources */ = {isa = PBXBuildFile; fileRef = 52BD141419E9DA1D006D72B0 /* TailorC.m */; };
@@ -48,6 +48,7 @@
 		52BD144219E9DA1D006D72B0 /* Validator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD142219E9DA1D006D72B0 /* Validator.swift */; };
 		52BD144319E9DA1D006D72B0 /* FormBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD142419E9DA1D006D72B0 /* FormBuilder.swift */; };
 		52BD144419E9DA1D006D72B0 /* Template.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD142519E9DA1D006D72B0 /* Template.swift */; };
+		52C0E12819F87E9500B4725F /* libmysqlclient.18.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 52C0E12719F87E9500B4725F /* libmysqlclient.18.dylib */; };
 		52C6251A19EE110B0024453F /* AesEncryptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C6251919EE110B0024453F /* AesEncryptor.swift */; };
 		52C6252019EE12810024453F /* BlowfishEncryptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C6251F19EE12810024453F /* BlowfishEncryptor.swift */; };
 		52C6252719EE12AE0024453F /* crypt_blowfish.c in Sources */ = {isa = PBXBuildFile; fileRef = 52C6252519EE12AE0024453F /* crypt_blowfish.c */; };
@@ -68,6 +69,7 @@
 
 /* Begin PBXFileReference section */
 		5242C35519F4466F00E605D2 /* TemplateInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = TemplateInfo.plist; sourceTree = "<group>"; };
+		5247029819F48CA600C08156 /* libmysqlclient.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libmysqlclient.framework; path = ../../../Library/Frameworks/libmysqlclient.framework; sourceTree = "<group>"; };
 		5247FF9E19F4629700C08156 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		5247FF9F19F462C200C08156 /* ___PACKAGENAME___Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "___PACKAGENAME___Application.swift"; sourceTree = "<group>"; };
 		52B2B69919F1DCF10086261B /* Dictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
@@ -118,6 +120,7 @@
 		52BD14C219E9E9D1006D72B0 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = SOURCE_ROOT; };
 		52BD14C319E9E9D1006D72B0 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 		52BD14CB19E9E9E4006D72B0 /* TODO.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
+		52C0E12719F87E9500B4725F /* libmysqlclient.18.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmysqlclient.18.dylib; path = ../../../Library/Frameworks/libmysqlclient.framework/libmysqlclient.18.dylib; sourceTree = "<group>"; };
 		52C6251919EE110B0024453F /* AesEncryptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AesEncryptor.swift; sourceTree = "<group>"; };
 		52C6251F19EE12810024453F /* BlowfishEncryptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlowfishEncryptor.swift; sourceTree = "<group>"; };
 		52C6252519EE12AE0024453F /* crypt_blowfish.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = crypt_blowfish.c; sourceTree = "<group>"; };
@@ -131,7 +134,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				52BD143319E9DA1D006D72B0 /* libmysqlclient.dylib in Frameworks */,
+				52C0E12819F87E9500B4725F /* libmysqlclient.18.dylib in Frameworks */,
+				5247029919F48CA600C08156 /* libmysqlclient.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -200,6 +204,8 @@
 		52BD139319E9D7E3006D72B0 = {
 			isa = PBXGroup;
 			children = (
+				52C0E12719F87E9500B4725F /* libmysqlclient.18.dylib */,
+				5247029819F48CA600C08156 /* libmysqlclient.framework */,
 				52BD14C219E9E9D1006D72B0 /* LICENSE */,
 				52BD14C319E9E9D1006D72B0 /* README.md */,
 				52BD14CB19E9E9E4006D72B0 /* TODO.md */,
@@ -633,8 +639,15 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(USER_LIBRARY_DIR)/Frameworks",
+				);
 				FRAMEWORK_VERSION = A;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Applications/Xcode-Beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include",
+				);
 				INFOPLIST_FILE = Tailor/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
@@ -642,6 +655,7 @@
 					"$(inherited)",
 					/Users/john/Code/Tailor/Tailor/Tailor/db,
 					"$(PROJECT_DIR)/Tailor/db",
+					"$(USER_LIBRARY_DIR)/Frameworks/libmysqlclient.framework",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -656,8 +670,15 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(USER_LIBRARY_DIR)/Frameworks",
+				);
 				FRAMEWORK_VERSION = A;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Applications/Xcode-Beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include",
+				);
 				INFOPLIST_FILE = Tailor/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
@@ -665,6 +686,7 @@
 					"$(inherited)",
 					/Users/john/Code/Tailor/Tailor/Tailor/db,
 					"$(PROJECT_DIR)/Tailor/db",
+					"$(USER_LIBRARY_DIR)/Frameworks/libmysqlclient.framework",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

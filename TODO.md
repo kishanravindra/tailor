@@ -1,5 +1,6 @@
 ### General
 
+* Stabilize release build
 * Upload pre-built framework to site
 * Helpers for APIs
 * Mailers
