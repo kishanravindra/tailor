@@ -13,30 +13,30 @@
 	<key>Ancestors</key>
 	<array>
 		<string>com.apple.dt.unit.applicationBase</string>
-    <string>com.apple.dt.unit.osxBase</string>
+		<string>com.apple.dt.unit.osxBase</string>
 	</array>
-  <key>Targets</key>
-  <array>
-    <dict>
-      <key>TargetIdentifier</key>
-      <string>com.apple.dt.cocoaApplicationTarget</string>
-      <key>SharedSettings</key>
-      <dict>
-        <key>LD_RUNPATH_SEARCH_PATHS</key>
-        <string>$(inherited) @executable_path/../Frameworks</string>
-      	<key>FRAMEWORK_SEARCH_PATHS</key>
-      	<array>
-      		<string>$(inherited)</string>
-      		<string>$(LOCAL_LIBRARY_DIR)/Frameworks</string>
-      	</array>
-      	<key>HEADER_SEARCH_PATHS</key>
-      	<array>
+	<key>Targets</key>
+	<array>
+		<dict>
+			<key>TargetIdentifier</key>
+			<string>com.apple.dt.cocoaApplicationTarget</string>
+			<key>SharedSettings</key>
+			<dict>
+				<key>LD_RUNPATH_SEARCH_PATHS</key>
+				<string>$(inherited) @executable_path/../Frameworks</string>
+				<key>FRAMEWORK_SEARCH_PATHS</key>
+				<array>
+					<string>$(inherited)</string>
+					<string>$(LOCAL_LIBRARY_DIR)/Frameworks</string>
+				</array>
+				<key>HEADER_SEARCH_PATHS</key>
+				<array>
 					<string>$(inherited)</string>
 					<string>/usr/local/include/mysql</string>
 				</array>
-      </dict>
-    </dict>
-  </array>
+			</dict>
+		</dict>
+	</array>
 	<key>Components</key>
 	<array>
 		<dict>
@@ -48,25 +48,25 @@
 	</array>
 	<key>Project</key>
 	<dict/>
-  <key>Nodes</key>
-  <array>
-    <string>main.swift</string>
-    <string>app/___PACKAGENAME___Application.swift</string>
-  </array>
-  <key>Definitions</key>
-  <dict>
-    <key>main.swift</key>
-    <dict>
-    	<key>Path</key>
-    	<string>main.swift</string>
-    </dict>
-    <key>app/___PACKAGENAME___Application.swift</key>
-    <dict>
-    	<key>Group</key>
-    	<string>app</string>
-    	<key>Path</key>
-    	<string>___PACKAGENAME___Application.swift</string>
+	<key>Nodes</key>
+	<array>
+		<string>main.swift</string>
+		<string>app/___PACKAGENAME___Application.swift</string>
+	</array>
+	<key>Definitions</key>
+	<dict>
+		<key>main.swift</key>
+		<dict>
+			<key>Path</key>
+			<string>main.swift</string>
 		</dict>
-  </dict>
+		<key>app/___PACKAGENAME___Application.swift</key>
+		<dict>
+			<key>Group</key>
+			<string>app</string>
+			<key>Path</key>
+			<string>___PACKAGENAME___Application.swift</string>
+		</dict>
+	</dict>
 </dict>
 </plist>

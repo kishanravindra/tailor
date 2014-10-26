@@ -10,4 +10,3 @@ FOUNDATION_EXPORT const unsigned char TailorVersionString[];
 
 #include "TailorC.h"
 #include "crypt_blowfish.h"
-#include <mysql.h>

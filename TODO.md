@@ -1,7 +1,6 @@
 ### General
 
 * Stabilize release build
-* Upload pre-built framework to site
 * Helpers for APIs
 * Mailers
 * Running cron jobs
@@ -9,7 +8,6 @@
 * Console
 * Logging
 * Fix parsing of parameters from prompt
-* Generator for new project
 
 ### Documentation
 * Add more info to README on installation and major issues
