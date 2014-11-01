@@ -1,6 +1,5 @@
 ### General
 
-* Stabilize release build
 * Helpers for APIs
 * Mailers
 * Running cron jobs
