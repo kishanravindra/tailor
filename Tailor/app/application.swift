@@ -120,8 +120,7 @@ public class Application {
     flags. The flags should have the format key=value. If there is no equal sign
     in an flag, the value will be 1.
     
-    :returns:
-      The command and the arguments.
+    :returns:   The command and the arguments.
     */
   public class func parseArguments(arguments: [String]) -> (String, [String:String]) {
     var command = ""
@@ -188,12 +187,15 @@ public class Application {
     self.dateFormatters["long"] = NSDateFormatter()
     self.dateFormatters["shortDate"] = NSDateFormatter()
     self.dateFormatters["longDate"] = NSDateFormatter()
+    self.dateFormatters["db"] = NSDateFormatter()
     
     self.dateFormatters["short"]?.dateFormat = "hh:mm Z"
     self.dateFormatters["long"]?.dateFormat = "dd MMMM, yyyy, hh:mm z"
     
     self.dateFormatters["shortDate"]?.dateFormat = "dd MMMM"
     self.dateFormatters["longDate"]?.dateFormat = "dd MMMM, yyyy"
+    
+    self.dateFormatters["db"]?.dateFormat = "yyyy-MM-dd HH:mm:ss"
 
   }
   
@@ -207,8 +209,7 @@ public class Application {
 
     The registered subclass list will include the types passed in.
 
-    :param: types
-      The types to get subclasses of.
+    :param: types   The types to get subclasses of.
     */
   public func registerSubclasses(types: AnyClass...) {
     var classCount = objc_getClassList(nil, 0)
@@ -246,11 +247,8 @@ public class Application {
     The type must have previously been passed in to registerSubclasses to load
     the list.
   
-    :param: type
-      The type to get subclasses of.
-  
-    :returns:
-      The subclasses of the type.
+    :param: type  The type to get subclasses of.
+    :returns:     The subclasses of the type.
     */
   public func registeredSubclassList<ParentType : AnyObject>(type: ParentType.Type) -> [ParentType.Type] {
     let klass : AnyClass = ParentType.self

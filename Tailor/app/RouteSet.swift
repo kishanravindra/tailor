@@ -174,11 +174,8 @@ public class RouteSet {
   /**
     This method sets up a redirect from one path to the other.
 
-    :param: pathPattern
-      The regular expression for the incoming path.
-
-    :param: toPath
-      The full path to redirect to.
+    :param: pathPattern   The regular expression for the incoming path.
+    :param: toPath        The full path to redirect to.
     */
   public func addRedirect(pathPattern: String, toPath: String) {
     self.addRoute(pathPattern, method: "GET", handler: {

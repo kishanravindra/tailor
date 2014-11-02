@@ -130,8 +130,7 @@ public class Controller {
     This will set them in the controller's user field and store their id in the
     session for future requests.
   
-    :param: user
-      The user to sign in.
+    :param: user    The user to sign in.
     */
   public func signIn(user: User) {
     self.currentUser = user
@@ -152,14 +151,9 @@ public class Controller {
   /**
     This method signs in a user by providing their credentials.
 
-    :param: emailAddress
-      The email address the user has provided.
-
-    :param: password
-      The password the user has provided.
-
-    :returns:
-      Whether we were able to authenticate the user.
+    :param: emailAddress  The email address the user has provided.
+    :param: password      The password the user has provided.
+    :returns:             Whether we were able to authenticate the user.
     */
   public func signIn(emailAddress: String, password: String) -> Bool {
     if let user = User.authenticate(emailAddress, password: password) {
@@ -176,15 +170,11 @@ public class Controller {
   /**
     This method localizes text.
 
-    :param: key
-      The key for the localized text
-
-    :param: locale
-      The locale that the localized text should be in. If this is not provided,
-      it will use the locale from the default localization on this controller.
-    
-    :returns:
-      The localized text
+    :param: key     The key for the localized text
+    :param: locale  The locale that the localized text should be in. If this is
+                    not provided, it will use the locale from the default
+                    localization on this controller.
+    :returns:       The localized text
     */
   public func localize(key: String, locale: String? = nil) -> String? {
     if locale != nil {

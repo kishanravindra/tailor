@@ -26,12 +26,11 @@ public class User : Record {
   /**
     This method creates a record for a new user account.
 
-    :param: emailAddress
-      The new user's email address
+    :param: emailAddress  The new user's email address
 
-    :param: password
-      The new user's password. This will not be stored on the record; it will be
-      encrypted immediately and stored in the encryptedPassword.
+    :param: password      The new user's password. This will not be stored on
+                          the record; it will be encrypted immediately and
+                          stored in the encryptedPassword.
     */
   public convenience init(emailAddress: String, password: String) {
     self.init()
@@ -44,11 +43,8 @@ public class User : Record {
   /**
     This method determines if a password is correct for this user.
 
-    :param: password
-      The password to check.
-
-    :returns:
-      Whether the password is correct.
+    :param: password    The password to check.
+    :returns:           Whether the password is correct.
     */
   public func hasPassword(password: String) -> Bool {
     return BlowfishEncryptor.isMatch(password, encryptedHash: self.encryptedPassword)
@@ -60,8 +56,7 @@ public class User : Record {
     If the email address does not belong to any user, or the password is
     incorrect, this will return nil.
 
-    :returns:
-      The user
+    :returns: The user
     */
   public class func authenticate(emailAddress: String, password: String) -> User? {
     let users = self.find(conditions: ["email_address": emailAddress]) as [User]

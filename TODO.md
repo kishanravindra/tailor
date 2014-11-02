@@ -7,11 +7,14 @@
 * Console
 * Logging
 * Fix parsing of parameters from prompt
+* More load testing and checks for bugs
+* Unit tests
+* Make template project have a build stage for copying the Framework into the
+  application bundle.
 
 ### Documentation
-* Add more info to README on installation and major issues
+
 * Host API documentation online
-* Standardize parameter indentation
 
 ### Modelling
 

@@ -13,8 +13,7 @@ public class Localization {
   /**
     This method creates a content source.
 
-    :param: locale
-      The locale for the content.
+    :param: locale    The locale for the content.
     */
   public init(locale: String) {
     self.locale = locale
@@ -25,11 +24,8 @@ public class Localization {
   /**
     This method gets the localized content for a key.
 
-    :param: key
-      The key for the content
-    
-    :returns:
-      The content.
+    :param: key   The key for the content
+    :returns:     The content.
     */
   public func fetch(key: String) -> String? {
     return self.strings[key]
@@ -42,11 +38,8 @@ public class Localization {
     If a key is mapped to another dictionary, the key will be combined with the
     entries in that dictionary to produce a single key with the format key1.key2
 
-    :param: dictionary
-      The dictionary to flatten.
-
-    :returns:
-      The flattened dictionary.
+    :param: dictionary    The dictionary to flatten.
+    :returns:             The flattened dictionary.
     */
   public class func flattenDictionary(dictionary: NSDictionary) -> [String:String] {
     var results = [String:String]()

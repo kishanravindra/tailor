@@ -176,9 +176,10 @@ public class Record : Model {
     var values = [String:String]()
     
     let klass: AnyClass! = object_getClass(self)
+    let timeZone = DatabaseConnection.sharedConnection().timeZone
     for (propertyName, columnName) in self.dynamicType.persistedPropertyMapping() {
       if propertyName == "updatedAt" {
-        values[columnName] = NSDate().descriptionWithCalendarFormat(nil, timeZone: DatabaseConnection.sharedConnection().timeZone, locale: nil)
+        values[columnName] = NSDate().format("db", timeZone: timeZone)
         continue
       }
       
@@ -188,7 +189,7 @@ public class Record : Model {
         case let string as String:
           stringValue = string
         case let date as NSDate:
-          stringValue = date.descriptionWithCalendarFormat(nil, timeZone: DatabaseConnection.sharedConnection().timeZone, locale: nil)
+          stringValue = date.format("db", timeZone: timeZone)
         case let number as NSNumber:
           stringValue = number.stringValue
         default:

@@ -41,10 +41,8 @@ public class Sanitizer {
     instance variable, but they can also override this method if they need more
     complicated filters.
 
-    :params: string
-      The text to sanitize.
-    :returns:
-      The sanitized text.
+    :params: string   The text to sanitize.
+    :returns:         The sanitized text.
     */
   public func sanitize(string: String) -> String {
     var sanitized = ""
@@ -58,10 +56,8 @@ public class Sanitizer {
   /**
     This method sanitizes text and puts it in a sanitized text wrapper.
 
-    :param: string
-      The text to sanitize
-    :returns:
-      The sanitized text wrapper.
+    :param: string  The text to sanitize
+    :returns:       The sanitized text wrapper.
     */
   public func sanitizeString(string: String) -> SanitizedText {
     return SanitizedText(text: self.sanitize(string), sanitizers: [self.dynamicType])
@@ -74,11 +70,8 @@ public class Sanitizer {
     If the text has already been sanitized with this sanitizer, it will do
     nothing.
 
-    :param: text
-      The sanitized text wrapper
-
-    :returns:
-      The sanitized text wrapper for the new level of sanitization.
+    :param: text  The sanitized text wrapper
+    :returns:     The sanitized text wrapper for the new level of sanitization.
     */
   public func sanitizeText(text: SanitizedText) -> SanitizedText {
     if self.dynamicType.isSanitized(text) {
@@ -94,11 +87,8 @@ public class Sanitizer {
     Use this method with caution, and only when are absolutely certain of the
     contents of the string.
     
-    :param: string
-      The string to put in the sanitized text wrapper.
-    
-    :returns:
-      The sanitized text wrapper.
+    :param: string    The string to put in the sanitized text wrapper.
+    :returns:         The sanitized text wrapper.
   */
   public func accept(string: String) -> SanitizedText {
     return SanitizedText(text: string, sanitizers: [self.dynamicType])

@@ -6,11 +6,21 @@ ready for production use, but I'm working hard to get it there.
 
 ### How to Use Tailor
 
+
+Here's what you need to do to start your first Tailor app:
+
+1. Install homebrew
+2. Run `brew install mysql` to install the mysql library
+3. Download and run the [Tailor installer](http://www.johnbrownlee.com/s/Tailormpkg.zip)
+4. Create your project using the "Tailor Application" template in Xcode
+
+Once you build the app, you can run it on another Mac by installing mysql
+through Homebrew, and uploading and running the app. You'll want to always run
+it through the command-line so that you can provide the runtime arguments.
+
 You can find sample apps at
-[the official website](http://johnbrownlee.com/tailor/about). Official
-tutorials and documentation will be coming in the future. The sample apps
-require a libmysqlclient to be installed, with a module map for using it as a
-Swift module.
+[the official website](http://www.johnbrownlee.com/tailor/samples/). Official
+tutorials and documentation will be coming in the future.
 
 ### Feedback and Contributions
 
