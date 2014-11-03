@@ -12,10 +12,6 @@
 * Make template project have a build stage for copying the Framework into the
   application bundle.
 
-### Documentation
-
-* Host API documentation online
-
 ### Modelling
 
 * Transactions
