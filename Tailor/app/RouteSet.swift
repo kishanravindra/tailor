@@ -84,7 +84,7 @@ public class RouteSet {
       :returns: The description
       */
     func fullDescription() -> String {
-      return NSString(format: "%@ %@", self.pathPattern, self.description)
+      return NSString(format: "%@ %@ %@", self.method, self.pathPattern, self.description)
     }
     
     //MARK: - Request Handling

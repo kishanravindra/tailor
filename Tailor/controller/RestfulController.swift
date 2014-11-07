@@ -117,7 +117,7 @@ public class RestfulController<RecordType: Record> : Controller {
     if let record = self.record() {
       self.setAttributesOnRecord(record, parameters: request.requestParameters)
       if record.save() {
-        var path = Application.sharedApplication().routeSet.urlFor(self.name, action: "index") ?? "/"
+        var path = Application.sharedApplication().routeSet.urlFor(self.dynamicType.name(), action: "index") ?? "/"
         for (key,value) in request.requestParameters {
           path = path.stringByReplacingOccurrencesOfString(":\(key)", withString: value)
         }

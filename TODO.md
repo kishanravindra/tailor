@@ -11,12 +11,21 @@
 * Unit tests
 * Make template project have a build stage for copying the Framework into the
   application bundle.
+* Make template project have /usr/local/include/mysql in the header path
+
+### Routing and Controlleres
+
+* Better CSRF prevention
+* Shorthands for restful routes
+* Filters for running checks before performing actions
+* Easier redirects within controllers
 
 ### Modelling
 
 * Transactions
 * Resetting local database
 * Storing seed data
+* Fetching relationships
 
 ### Authentication
 

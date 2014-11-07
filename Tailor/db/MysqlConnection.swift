@@ -205,6 +205,7 @@ public class MysqlConnection : DatabaseConnection {
     let errorPointer = mysql_stmt_error(statement)
     let error : String = NSString(CString: errorPointer, encoding: NSUTF8StringEncoding) ?? ""
     if !error.isEmpty {
+      NSLog("Error in query: %@", error)
       return [MysqlRow(error: error)]
     }
     

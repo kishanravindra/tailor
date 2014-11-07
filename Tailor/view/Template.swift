@@ -139,7 +139,7 @@ public class Template {
     */
   public func urlFor(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:]) -> String? {
     var url = SHARED_APPLICATION.routeSet.urlFor(
-      controllerName ?? self.controller?.name ?? "",
+      controllerName ?? self.controller?.dynamicType.name() ?? "",
       action: action ?? self.controller?.action ?? "",
       parameters: parameters
     )

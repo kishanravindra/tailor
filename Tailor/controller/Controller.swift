@@ -4,8 +4,6 @@ import Foundation
   This class is the base class for controllers that route requests.
   */
 public class Controller {
-  /** A name used for the controller in routing. */
-  public var name: String { get { return NSStringFromClass(self.dynamicType) } }
   
   /** The request that we are currently handling. */
   public let request: Request
@@ -24,6 +22,11 @@ public class Controller {
   
   /** The localization that provides content for this controller. */
   public var localization: Localization
+  
+  /** The name used to identify the controller in routing. */
+  public class func name() -> String {
+    return NSStringFromClass(self)
+  }
   
   /**
     This method creates a controller for handling a request.
@@ -85,7 +88,6 @@ public class Controller {
     This method generates a response with a template.
   
     :param: template    The template to use for the request.
-    :param: action      The name of the action we are responding to.
     :param: parameters  The parameters to pass to the template.
     */
   public func respondWith(template: Template, parameters: [String:Any] = [:]) {
