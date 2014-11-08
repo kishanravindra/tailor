@@ -137,7 +137,7 @@ public class AesEncryptor {
     */
   public func decrypt(data: NSData) -> NSData {
     SecTransformSetAttribute(decryptor.takeUnretainedValue(), kSecTransformInputAttributeName, data, nil)
-    return SecTransformExecute(decryptor.takeUnretainedValue(), nil) as NSData
+    return (SecTransformExecute(decryptor.takeUnretainedValue(), nil) as? NSData) ?? NSData()
   }
   
   //MARK: - Key Generation

@@ -19,6 +19,7 @@
 * Shorthands for restful routes
 * Filters for running checks before performing actions
 * Easier redirects within controllers
+* Rendering other templates
 
 ### Modelling
 
@@ -26,6 +27,7 @@
 * Resetting local database
 * Storing seed data
 * Fetching relationships
+* Setting null values in update
 
 ### Authentication
 
