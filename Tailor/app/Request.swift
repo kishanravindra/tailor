@@ -31,6 +31,14 @@ public struct Request {
   /** The request parameters. */
   public var requestParameters: [String:String] = [:]
   
+  /**
+    The files that were uploaded in this request.
+
+    This will map the parameter name for the file to a hash containing the 
+    contentType and the data.
+  */
+  public var uploadedFiles: [String:[String:Any]] = [:]
+  
   /** The cookies that were sent with this request. */
   public let cookies = CookieJar()
   
@@ -43,9 +51,19 @@ public struct Request {
   public init(clientAddress: String, data: NSData) {
     self.clientAddress = clientAddress
     self.data = data
-    let fullBody = NSString(data: data, encoding: NSUTF8StringEncoding) ?? ""
     
-    let lines = fullBody.componentsSeparatedByString("\n") as [String]
+    let headerAndBody = data.componentsSeparatedByString("\r\n\r\n", limit: 2)
+    let headerData = headerAndBody[0]
+    if headerAndBody.count > 1 {
+      self.body = headerAndBody[1]
+    }
+    else {
+      self.body = NSData()
+    }
+    
+    let headerString = NSString(data: headerData, encoding: NSUTF8StringEncoding) ?? ""
+    
+    var lines = headerString.componentsSeparatedByString("\r\n") as [String]
     let introMatches = Request.extractWithPattern(lines[0], pattern: "^([\\S]*) ([\\S]*) HTTP/([\\d.]*)$")
     
     if introMatches.isEmpty {
@@ -57,6 +75,7 @@ public struct Request {
       self.method = introMatches[0]
       self.version = introMatches[2]
       self.fullPath = introMatches[1]
+      lines.removeAtIndex(0)
     }
     
     if let queryStringLocation = self.fullPath.rangeOfString("?", options: NSStringCompareOptions.BackwardsSearch) {
@@ -66,13 +85,11 @@ public struct Request {
       self.path = self.fullPath
     }
     
-    var lastHeaderLine = lines.count - 1
     var headers : [String:String] = [:]
-    for index in 1..<lines.count {
+    for index in 0..<lines.count {
       let line = lines[index].stringByTrimmingCharactersInSet(NSCharacterSet.newlineCharacterSet())
       if line.isEmpty {
-        lastHeaderLine = index
-        break
+        continue
       }
       let headerMatch = Request.extractWithPattern(line, pattern: "^([\\w-]*): (.*)$")
       
@@ -84,20 +101,6 @@ public struct Request {
       }
     }
     
-    let headerLines = lines[0...lastHeaderLine]
-    var headerLength = 0
-    for index in 0...lastHeaderLine {
-      headerLength += countElements(lines[index]) + 1
-    }
-    
-    let range = NSMakeRange(headerLength, data.length - headerLength)
-    
-    if range.length > 0 {
-      self.body = data.subdataWithRange(range)
-    }
-    else {
-      self.body = NSData()
-    }
     self.headers = headers
     
     self.parseRequestParameters()
@@ -123,11 +126,57 @@ public struct Request {
       }
     }
     
-    if headers["Content-Type"] != nil && headers["Content-Type"]! == "application/x-www-form-urlencoded" {
-      for (key,value) in Request.decodeQueryString(self.bodyText) {
-        self.requestParameters[key] = value
+    if let contentType = headers["Content-Type"] {
+      if  contentType == "application/x-www-form-urlencoded" {
+        for (key,value) in Request.decodeQueryString(self.bodyText) {
+          self.requestParameters[key] = value
+        }
+      }
+      if contentType.hasPrefix("multipart/form-data") {
+        self.parseMultipartForm()
       }
     }
+  }
+  
+  /**
+    This method extracts request parameters and uploaded files from a multitype
+    form.
+    */
+  private mutating func parseMultipartForm() {
+    let boundary = headers["Content-Type"]!.componentsSeparatedByString("boundary=")[1]
+    let components = self.body.componentsSeparatedByString("--\(boundary)")
+    for component in components {
+      if component.length <= 4 {
+        continue
+      }
+      let trimmedData = component.subdataWithRange(NSRange(location: 2, length: component.length - 4))
+      let subRequest = Request(clientAddress: self.clientAddress, data: trimmedData)
+      
+      var parameterName : String! = nil
+      
+      if let disposition = subRequest.headers["Content-Disposition"] {
+        for dispositionComponent in disposition.componentsSeparatedByString("; ") {
+          if dispositionComponent.hasPrefix("name=") {
+            parameterName = dispositionComponent.substringFromIndex(advance(dispositionComponent.startIndex, 5)).stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: "\""))
+          }
+        }
+      }
+      
+      if parameterName == nil {
+        continue
+      }
+      
+      if let contentType = subRequest.headers["Content-Type"] {
+        self.uploadedFiles[parameterName] = [
+          "contentType": contentType,
+          "data": subRequest.body
+        ]
+      }
+      else {
+        self.requestParameters[parameterName] = NSString(data: subRequest.body, encoding: NSUTF8StringEncoding)
+      }
+    }
+
   }
   
   //MARK: - Helper Methods
