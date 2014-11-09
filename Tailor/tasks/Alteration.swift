@@ -91,7 +91,7 @@ public class Alteration {
         query += component!
       }
     }
-    let results = DatabaseConnection.sharedConnection().executeQuery(query, parameters: parameters)
+    let results = DatabaseConnection.sharedConnection().executeQuery(query, stringParameters: parameters)
     if !results.isEmpty && results[0].error != nil {
       NSLog("Error running query")
       NSLog("%@ %@", query, parameters)

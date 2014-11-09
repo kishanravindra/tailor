@@ -137,6 +137,8 @@ public class Model {
         objectValue = NSNumber(integer: int)
       case let double as Double:
         objectValue = NSNumber(double: double)
+      case let object as NSObject:
+        objectValue = object
       case nil:
         objectValue = nil
       default:

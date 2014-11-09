@@ -64,6 +64,14 @@ public class MysqlConnection : DatabaseConnection {
       case MYSQL_TYPE_TIME.value, MYSQL_TYPE_DATE.value,
       MYSQL_TYPE_DATETIME.value, MYSQL_TYPE_TIMESTAMP.value:
         unitSize = sizeof(MYSQL_TIME)
+      case MYSQL_TYPE_TINY_BLOB.value:
+        count = 1 << 8
+      case MYSQL_TYPE_BLOB.value:
+        count = 1 << 16
+      case MYSQL_TYPE_MEDIUM_BLOB.value:
+        count = 1 << 24
+      case MYSQL_TYPE_LONG_BLOB.value:
+        count = 1 << 32
       default:
         bufferType = MYSQL_TYPE_STRING
         count = 1024
@@ -119,6 +127,9 @@ public class MysqlConnection : DatabaseConnection {
           day: Int(time.day), hour: Int(time.hour), minute: Int(time.minute),
           second: Int(time.second), timeZone: DatabaseConnection.sharedConnection().timeZone)
         return date
+      case MYSQL_TYPE_TINY_BLOB.value, MYSQL_TYPE_BLOB.value,
+      MYSQL_TYPE_MEDIUM_BLOB.value, MYSQL_TYPE_LONG_BLOB.value:
+        return NSData(bytes: bindResult.buffer, length: Int(bindResult.length.memory))
       default:
         return NSString(bytes: bindResult.buffer, length: Int(bindResult.length.memory), encoding: NSUTF8StringEncoding)
       }
@@ -180,8 +191,8 @@ public class MysqlConnection : DatabaseConnection {
                             database side.
     :returns                The interpreted result set.
     */
-  public override func executeQuery(query: String, parameters bindParameters: [String]) -> [DatabaseConnection.Row] {
-    NSLog("Executing %@ (%@)", query, bindParameters)
+  public override func executeQuery(query: String, parameters bindParameters: [NSData]) -> [DatabaseConnection.Row] {
+    NSLog("Executing %@", query)
     let statement = mysql_stmt_init(connection)
     let encodedQuery = query.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!
     mysql_stmt_prepare(statement, UnsafePointer<Int8>(encodedQuery.bytes), UInt(encodedQuery.length))
@@ -189,11 +200,11 @@ public class MysqlConnection : DatabaseConnection {
     let metadataResult = mysql_stmt_result_metadata(statement)
 
     var mysqlBindParameters = bindParameters.map {
-      (stringParameter: String) -> MYSQL_BIND in
+      (data: NSData) -> MYSQL_BIND in
       var buffer : [UInt8] = []
-      let data = NSMutableData(data: stringParameter.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!)
+      
       var bind = emptyMysqlBindParam()
-      bind.buffer = data.mutableBytes
+      bind.buffer = data.mutableCopy().mutableBytes
       bind.buffer_length = UInt(data.length)
       bind.buffer_type = MYSQL_TYPE_STRING
       return bind

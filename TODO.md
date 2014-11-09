@@ -19,7 +19,8 @@
 * Shorthands for restful routes
 * Filters for running checks before performing actions
 * Easier redirects within controllers
-* Rendering other templates
+* Rendering other template
+* Supporting more input types in forms
 
 ### Modelling
 
@@ -28,6 +29,7 @@
 * Storing seed data
 * Fetching relationships
 * Setting null values in update
+* More complicated query building and collection proxies
 
 ### Authentication
 

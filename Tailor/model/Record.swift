@@ -96,7 +96,7 @@ public class Record : Model {
     :returns:           The created records.
     */
   public class func query(query: String, parameters: [String]) -> [Record] {
-    let rows = DatabaseConnection.sharedConnection().executeQuery(query, parameters: parameters)
+    let rows = DatabaseConnection.sharedConnection().executeQuery(query, stringParameters: parameters)
     return rows.map { self(data: $0.data) }
   }
   
@@ -168,23 +168,25 @@ public class Record : Model {
     saved.
 
     This implementation takes the persisted property mapping, looks up the
-    current values for those properties, and converts them into strings.
+    current values for those properties, and converts them into the appropriate
+    data structure.
   
     :returns:   The values to save.
     */
-  public func valuesToPersist() -> [String:String] {
-    var values = [String:String]()
+  public func valuesToPersist() -> [String:NSData] {
+    var values = [String:NSData]()
     
     let klass: AnyClass! = object_getClass(self)
     let timeZone = DatabaseConnection.sharedConnection().timeZone
     for (propertyName, columnName) in self.dynamicType.persistedPropertyMapping() {
       if propertyName == "updatedAt" {
-        values[columnName] = NSDate().format("db", timeZone: timeZone)
+        values[columnName] = NSDate().format("db", timeZone: timeZone)?.dataUsingEncoding(NSUTF8StringEncoding)
         continue
       }
       
       if let value: AnyObject = self.valueForKey(propertyName) {
         var stringValue: String? = nil
+        var dataValue: NSData? = nil
         switch value {
         case let string as String:
           stringValue = string
@@ -192,12 +194,18 @@ public class Record : Model {
           stringValue = date.format("db", timeZone: timeZone)
         case let number as NSNumber:
           stringValue = number.stringValue
+        case let data as NSData:
+          dataValue = data
         default:
           break
         }
         
-        if stringValue != nil {
-          values[columnName] = stringValue
+        if dataValue == nil && stringValue != nil {
+          dataValue = stringValue!.dataUsingEncoding(NSUTF8StringEncoding)
+        }
+        
+        if dataValue != nil {
+          values[columnName] = dataValue
         }
       }
     }
@@ -228,7 +236,7 @@ public class Record : Model {
     */
   private func saveInsert() -> Bool {
     var query = "INSERT INTO \(self.dynamicType.tableName()) ("
-    var parameters = [String]()
+    var parameters = [NSData]()
     
     var firstParameter = true
     var parameterString = ""
@@ -269,7 +277,7 @@ public class Record : Model {
     */
   private func saveUpdate() -> Bool {
     var query = "UPDATE \(self.dynamicType.tableName())"
-    var parameters = [String]()
+    var parameters = [NSData]()
     
     var firstParameter = true
     let values = self.valuesToPersist()
@@ -292,7 +300,7 @@ public class Record : Model {
       }
     }
     query += " WHERE id = ?"
-    parameters.append(String(self.id))
+    parameters.append(String(self.id).dataUsingEncoding(NSUTF8StringEncoding)!)
     let result = DatabaseConnection.sharedConnection().executeQuery(query, parameters: parameters)
     
     if result.count > 0 {
