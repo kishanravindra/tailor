@@ -31,7 +31,16 @@ public struct Response {
     :param: string  The string to add
     */
   public func appendString(string: String) {
-    bodyData.appendData(string.dataUsingEncoding(NSUTF8StringEncoding)!)
+    self.appendData(string.dataUsingEncoding(NSUTF8StringEncoding)!)
+  }
+  
+  /**
+    This method appends raw data to the response.
+
+    :param: data  The data to add.
+    */
+  public func appendData(data: NSData) {
+    bodyData.appendData(data)
   }
   
   /** The full HTTP response data. */

@@ -21,6 +21,7 @@
 * Easier redirects within controllers
 * Rendering other template
 * Supporting more input types in forms
+* Better handling of trying to respond twice to one request
 
 ### Modelling
 
