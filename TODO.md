@@ -13,7 +13,7 @@
   application bundle.
 * Make template project have /usr/local/include/mysql in the header path
 
-### Routing and Controlleres
+### Routing and Controllers
 
 * Better CSRF prevention
 * Shorthands for restful routes
@@ -22,6 +22,7 @@
 * Rendering other template
 * Supporting more input types in forms
 * Better handling of trying to respond twice to one request
+* Posting via links
 
 ### Modelling
 

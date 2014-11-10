@@ -31,6 +31,12 @@ id tailorInvokeGetter(id object, Method method) {
   return getter(object, method);
 }
 
+void tailorInvokeFunction(id object, Method method) {
+  typedef void (*functionType)(id, Method);
+  functionType function = (functionType)method_invoke;
+  return function(object, method);
+}
+
 struct sockaddr_in createSocketAddress(int port) {
   struct sockaddr_in address;
   
