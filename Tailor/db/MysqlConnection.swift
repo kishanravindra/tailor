@@ -192,7 +192,6 @@ public class MysqlConnection : DatabaseConnection {
     :returns                The interpreted result set.
     */
   public override func executeQuery(query: String, parameters bindParameters: [NSData]) -> [DatabaseConnection.Row] {
-    NSLog("Executing %@", query)
     let statement = mysql_stmt_init(connection)
     let encodedQuery = query.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!
     mysql_stmt_prepare(statement, UnsafePointer<Int8>(encodedQuery.bytes), UInt(encodedQuery.length))
