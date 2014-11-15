@@ -194,7 +194,16 @@ public class MysqlConnection : DatabaseConnection {
   public override func executeQuery(query: String, parameters bindParameters: [NSData]) -> [DatabaseConnection.Row] {
     let statement = mysql_stmt_init(connection)
     let encodedQuery = query.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!
-    mysql_stmt_prepare(statement, UnsafePointer<Int8>(encodedQuery.bytes), UInt(encodedQuery.length))
+    let hasPrepareError = mysql_stmt_prepare(statement, UnsafePointer<Int8>(encodedQuery.bytes), UInt(encodedQuery.length))
+    
+    if hasPrepareError != 0 {
+      let errorPointer = mysql_stmt_error(statement)
+      let error : String = NSString(CString: errorPointer, encoding: NSUTF8StringEncoding) ?? ""
+      if !error.isEmpty {
+        NSLog("Error in query: %@", error)
+        return [MysqlRow(error: error)]
+      }
+    }
     
     let metadataResult = mysql_stmt_result_metadata(statement)
 
