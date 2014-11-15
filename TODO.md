@@ -37,6 +37,7 @@
 * Passing hashes when creating records
 * Using field names instead of database names in conditions
 * Having different connections for different threads
+* Setting timestamps when creating a record
 
 ### Authentication
 

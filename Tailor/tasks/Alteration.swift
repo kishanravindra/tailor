@@ -88,7 +88,7 @@ public class Alteration {
         parameters.append(component!)
       }
       else {
-        query += component!
+        query += component! + "\n"
       }
     }
     let results = DatabaseConnection.sharedConnection().executeQuery(query, stringParameters: parameters)
