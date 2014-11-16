@@ -20,7 +20,7 @@ public class Model {
     if range != nil {
       fullName = fullName.substringFromIndex(advance(range!.startIndex, 1))
     }
-    return fullName
+    return fullName.underscored()
   }
   
   //MARK - Validations

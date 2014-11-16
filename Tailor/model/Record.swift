@@ -216,11 +216,6 @@ public class Record : Model {
     let klass: AnyClass! = object_getClass(self)
     let timeZone = DatabaseConnection.sharedConnection().timeZone
     for (propertyName, columnName) in self.dynamicType.persistedPropertyMapping() {
-      if propertyName == "updatedAt" {
-        values[columnName] = NSDate().format("db", timeZone: timeZone)?.dataUsingEncoding(NSUTF8StringEncoding)
-        continue
-      }
-      
       if let value: AnyObject = self.valueForKey(propertyName) {
         var stringValue: String? = nil
         var dataValue: NSData? = nil
@@ -252,12 +247,27 @@ public class Record : Model {
   /**
     This method saves the record to the database.
   
+    It will also set values for the createdAt and updatedAt fields, if they
+    are defined.
+  
     :returns: Whether we were able to save the record.
     */
   public func save() -> Bool {
     if !self.validate() {
       return false
     }
+    
+    let propertyMapping = self.dynamicType.persistedPropertyMapping()
+    
+    if propertyMapping["createdAt"] != nil {
+      if self.valueForKey("createdAt") == nil {
+        self.setValue(NSDate(), forKey: "createdAt")
+      }
+    }
+    if propertyMapping["updatedAt"] != nil {
+      self.setValue(NSDate(), forKey: "updatedAt")
+    }
+    
     if self.id != nil {
       return self.saveUpdate()
     }

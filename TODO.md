@@ -11,7 +11,6 @@
 * Unit tests
 * Make template project have a build stage for copying the Framework into the
   application bundle.
-* Make template project have /usr/local/include/mysql in the header path
 
 ### Routing and Controllers
 
