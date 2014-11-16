@@ -15,10 +15,7 @@
 ### Routing and Controllers
 
 * Better CSRF prevention
-* Shorthands for restful routes
-* Filters for running checks before performing actions
 * Easier redirects within controllers
-* Rendering other template
 * Supporting more input types in forms
 * Better handling of trying to respond twice to one request
 * Posting via links
@@ -29,12 +26,10 @@
 * Resetting local database
 * Storing seed data
 * Fetching relationships
-* Setting null values in update
 * More complicated query building and collection proxies
 * Reversing alterations
 * Passing hashes when creating records
 * Using field names instead of database names in conditions
-* Setting timestamps when creating a record
 
 ### Authentication
 

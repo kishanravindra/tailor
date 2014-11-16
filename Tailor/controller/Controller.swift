@@ -4,6 +4,21 @@ import Foundation
   This class is the base class for controllers that route requests.
   */
 public class Controller {
+  /**
+    This type represents a filter that can be run before processing an action.
+  
+    :param: filter          The function to run as the filter. This should
+                            return true if the filter passed. If the filter
+                            fails, this must either render or redirect.
+    :param: includedActions The actions that this filter should be run for.
+                            If this is empty, it will be run for all actions.
+    :param: excludedActions The actions that this filter should not be run for.
+    */
+  typealias Filter = (
+    filter: ()->Bool,
+    includedActions: [String],
+    excludedActions: [String]
+  )
   
   /** The request that we are currently handling. */
   public let request: Request
@@ -22,6 +37,9 @@ public class Controller {
   
   /** The localization that provides content for this controller. */
   public var localization: Localization
+  
+  /** The filters that this controller runs. */
+  var filters: [Filter] = []
   
   /** The name used to identify the controller in routing. */
   public class func name() -> String {
@@ -65,7 +83,16 @@ public class Controller {
     real implementations.
     */
   public func respond() {
-    self.render404()
+    if !runFilters() { return }
+    var klass : AnyClass! = object_getClass(self)
+    let method = class_getInstanceMethod(klass, Selector("\(self.action)Action"))
+    
+    if method != nil {
+      tailorInvokeFunction(self, method)
+    }
+    else {
+      render404()
+    }
   }
   
   /**
@@ -151,12 +178,12 @@ public class Controller {
   }
   
   /**
-    This method signs in a user by providing their credentials.
-
-    :param: emailAddress  The email address the user has provided.
-    :param: password      The password the user has provided.
-    :returns:             Whether we were able to authenticate the user.
-    */
+  This method signs in a user by providing their credentials.
+  
+  :param: emailAddress  The email address the user has provided.
+  :param: password      The password the user has provided.
+  :returns:             Whether we were able to authenticate the user.
+  */
   public func signIn(emailAddress: String, password: String) -> Bool {
     if let user = User.authenticate(emailAddress, password: password) {
       self.signIn(user)
@@ -165,6 +192,38 @@ public class Controller {
     else {
       return false
     }
+  }
+  
+  
+  //MARK: - Filters
+  
+  /**
+    This method adds a filter.
+  
+    :param: filter    The filter function.
+    :param: only      The actions to run the filter for.
+    :param: except    The actions not to run the filter for.
+  */
+  public func addFilter(filter: ()->Bool, only: [String] = [], except: [String] = []) {
+    filters.append((filter, only, except))
+  }
+  
+  /**
+    This method runs all the filters set for this controller.
+  
+    If any of the filters returns false, this will return false immediately.
+  
+    :returns:   Whether all the filters passed.
+  */
+  public func runFilters() -> Bool {
+    for (filter, only, except) in self.filters {
+      if (only.isEmpty || contains(only, action)) && !contains(except, action) {
+        if !filter() {
+          return false
+        }
+      }
+    }
+    return true
   }
   
   //MARK: - Localization

@@ -139,6 +139,13 @@ public class RouteSet {
     
   }
   
+  /**
+    This method gets the shared route set for the application.
+    */
+  public class func shared() -> RouteSet {
+    return Application.sharedApplication().routeSet
+  }
+  
   //MARK: - Managing Routes
 
   /**
@@ -246,6 +253,50 @@ public class RouteSet {
     */
   public func addRoute(pathPattern: String, method: String, action: String) {
     self.addRoute(pathPattern, method: method, controller: self.currentController, action: action)
+  }
+  
+  /**
+    This method adds restful routes.
+  
+    The restful actions are index, new, create, edit, update, and destroy.
+  
+    :param: only    The actions to add. If this is empty, it will all the
+                    actions.
+    :param: except  The actions to skip.
+  */
+  public func addRestfulRoutes(only: [String] = [], except: [String] = []) {
+    var actions = (only.isEmpty ? ["index", "new", "create", "edit", "update", "destroy"] : only)
+    for action in except {
+      if let index = find(actions, action) {
+        actions.removeAtIndex(index)
+      }
+    }
+    
+    for action in actions {
+      var route = ""
+      var method = "GET"
+      
+      switch action {
+      case "create", "update", "destroy":
+        method = "POST"
+      default:
+        break
+      }
+      
+      switch(action) {
+      case "show", "update":
+        route = ":id"
+      case "edit":
+        route = ":id/edit"
+      case "destroy":
+        route = ":id/destroy"
+      case "new":
+        route = "new"
+      default:
+        break
+      }
+      self.addRoute(route, method: method, action: action)
+    }
   }
   
   /**

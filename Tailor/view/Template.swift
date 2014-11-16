@@ -167,6 +167,19 @@ public class Template {
       action: action, parameters: parameters) ?? ""
     self.tag("a", mergedAttributes, with: contents)
   }
+  
+  /**
+    This method renders another template within the context of this one.
+  
+    :param: template    The template to render
+    :param: parameters  The parameters to pass to the other template.
+  */
+  public func renderTemplate(template: Template, _ parameters: [String: Any]) {
+    template.controller = self.controller
+    template.buffer.setString("")
+    self.buffer.appendString(template.generate(parameters))
+  }
+  
 
   //MARK: - Controller Information
 
