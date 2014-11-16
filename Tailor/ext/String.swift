@@ -18,4 +18,19 @@ public extension String {
       
     }
   }
+  
+  /** The string converted into a plural form. */
+  public var pluralized : String {
+    let replacements = [
+      "y": "ies",
+      "o": "oes",
+      "s": "ses"
+    ]
+    for (suffix, pluralSuffix) in replacements {
+      if self.hasSuffix(suffix) {
+        return self.substringToIndex(advance(self.startIndex, countElements(self) - countElements(suffix))) + pluralSuffix
+      }
+    }
+    return self + "s"
+  }
 }

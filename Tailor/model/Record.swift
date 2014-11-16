@@ -43,7 +43,9 @@ public class Record : Model {
 
     :returns: The table name.
     */
-  public class func tableName() -> String { return "" }
+  public class func tableName() -> String {
+    return self.modelName().pluralized
+  }
   
   /**
     This method provides the names of the properties in this class that are

@@ -32,7 +32,6 @@
 * Fetching relationships
 * Setting null values in update
 * More complicated query building and collection proxies
-* Inferring table names
 * Reversing alterations
 * Passing hashes when creating records
 * Using field names instead of database names in conditions
