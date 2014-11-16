@@ -93,6 +93,21 @@ public class Application {
     SHARED_APPLICATION.start()
   }
   
+  /**
+    This method opens a database connection.
+    
+    This will be called every time a new thread is created, so that we have a
+    distinct database connection for every thread.
+ 
+    This implementation will return a dummy connection. Subclasses must provide
+    their own implementation.
+
+    :returns:   The connection
+    */
+  public func openDatabaseConnection() -> DatabaseConnection {
+    return DatabaseConnection(config: [:])
+  }
+  
   //MARK: - Loading
   
   /**

@@ -49,17 +49,16 @@ public class DatabaseConnection {
   /**
     This gets the shared global database connection.
     */
-  public class func sharedConnection() -> DatabaseConnection! {
-    return SHARED_DATABASE_CONNECTION
-  }
-  
-  /**
-    This method opens the shared database connection.
-    
-    :param: config    The config for opening the connection.
-    */
-  public class func open(config: [String:String]) {
-    SHARED_DATABASE_CONNECTION = self(config: config)
+  public class func sharedConnection() -> DatabaseConnection {
+    let dictionary = NSThread.currentThread().threadDictionary
+    if let connection = dictionary?["databaseConnection"] as? DatabaseConnection {
+      return connection
+    }
+    else {
+      let connection = Application.sharedApplication().openDatabaseConnection()
+      dictionary?["databaseConnection"] = connection
+      return connection
+    }
   }
 
   //MARK: - Queries
@@ -116,6 +115,3 @@ public class DatabaseConnection {
     return sanitizedColumn
   }
 }
-
-/** The connection to the database. */
-var SHARED_DATABASE_CONNECTION : DatabaseConnection?

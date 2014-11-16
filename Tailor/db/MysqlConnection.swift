@@ -174,7 +174,6 @@ public class MysqlConnection : DatabaseConnection {
     */
   deinit {
     mysql_close(connection)
-    free(connection)
   }
   
   //MARK - Queries
