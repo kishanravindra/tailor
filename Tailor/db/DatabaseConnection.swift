@@ -84,7 +84,6 @@ public class DatabaseConnection {
     :returns                The interpreted result set.
   */
   public func executeQuery(query: String, stringParameters bindParameters: [String]) -> [Row] {
-    NSLog("Executing %@ (%@)", query, bindParameters)
     let rawParameters = bindParameters.map { ($0 as NSString).dataUsingEncoding(NSUTF8StringEncoding)! }
     return executeQuery(query, parameters: rawParameters)
   }

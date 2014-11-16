@@ -25,7 +25,7 @@ public class UniquenessValidator : Validator {
       var duplicates : [Record] = []
       
       if record.id != nil {
-        duplicates = record.dynamicType.query("SELECT * FROM \(record.dynamicType.tableName()) WHERE ? = ? AND id != ?", parameters: [databaseKey, stringValue!, String(record.id)])
+        duplicates = record.dynamicType.query("SELECT * FROM \(record.dynamicType.tableName()) WHERE ? = ? AND id != ?", parameters: [databaseKey, stringValue!, record.id.stringValue])
       }
       else {
         duplicates = record.dynamicType.find(conditions: [databaseKey: stringValue!])

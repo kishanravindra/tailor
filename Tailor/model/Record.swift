@@ -5,7 +5,7 @@ import Foundation
   */
 public class Record : Model {
   /** The unique identifier for the record. */
-  public var id : Int!
+  public var id : NSNumber!
   
   /**
     This method initializes a record with no data.
@@ -22,7 +22,9 @@ public class Record : Model {
     :param: data  The columns from the database.
     */
   public required init(data: [String:Any]) {
-    self.id = data["id"] as? Int
+    if let id = data["id"] as? Int {
+      self.id = NSNumber(integer: id)
+    }
     super.init()
     
     let klass : AnyClass = object_getClass(self)
@@ -112,25 +114,41 @@ public class Record : Model {
     :param: limit         The maximum number of results to return.
     :returns:             The created records.
     */
-  public class func find(conditions: [String:String] = [:], order: [String: NSComparisonResult] = [:], limit: Int? = nil) -> [Record] {
+  public class func find(conditions: [String:AnyObject?] = [:], order: [String: NSComparisonResult] = [:], limit: Int? = nil) -> [Record] {
     var query = "SELECT * FROM \(self.tableName())"
     var parameters : [String] = []
+    let properties = self.persistedPropertyMapping()
     
     if !conditions.isEmpty {
       query += " WHERE"
-      
       var first = true
-      for (column,value) in conditions {
-        if first {
-          first = false
+      for (fieldName,value) in conditions {
+        var columnName = properties[fieldName]
+        if fieldName == "id" {
+          columnName = fieldName
+        }
+        if columnName != nil  {
+          if first {
+            first = false
+          }
+          else {
+            query += " AND"
+          }
+          
+          if value != nil {
+            let (stringValue, dataValue) = self.serializeValueForQuery(value, key: fieldName)
+            if stringValue != nil {
+              query += " \(columnName!)=?"
+              parameters.append(stringValue!)
+            }
+          }
+          else {
+            query += " \(columnName!) IS NULL"
+          }
         }
         else {
-          query += " AND"
+          NSLog("Error: Could not map %@ to column", fieldName)
         }
-        
-        query += " \(DatabaseConnection.sanitizeColumnName(column))=?"
-        
-        parameters.append(value)
       }
     }
     
@@ -138,11 +156,11 @@ public class Record : Model {
       query += " ORDER BY "
       
       var first = true
-      for (column,direction) in order {
-        let sqlDirection = (direction == NSComparisonResult.OrderedAscending ? "ASC" : "DESC")
-        let range = NSMakeRange(0, countElements(column))
-        query += "\(DatabaseConnection.sanitizeColumnName(column)) \(sqlDirection)"
-        parameters.append(column)
+      for (fieldName,direction) in order {
+        if let columnName = properties[fieldName] {
+          let sqlDirection = (direction == NSComparisonResult.OrderedAscending ? "ASC" : "DESC")
+          query += "\(columnName) \(sqlDirection)"
+        }
       }
     }
     
@@ -171,7 +189,7 @@ public class Record : Model {
                           before the first one is returne.d
     :returns:             The record we found.
   */
-  public class func findOne(conditions: [String:String] = [:], order: [String: NSComparisonResult] = [:]) -> Record? {
+  public class func findOne(conditions: [String:AnyObject?] = [:], order: [String: NSComparisonResult] = [:]) -> Record? {
     let results = self.find(conditions: conditions, order: order)
     if results.count > 0 {
       return results[0]
@@ -182,6 +200,41 @@ public class Record : Model {
   }
   
   //MARK: - Creating
+  
+  /**
+    This method takes a value of an arbitrary type and serializes it so it can
+    be put into a query.
+
+    :param: value     The value to serialize.
+    :param: key       The key that the value is for. This implementation does
+                      nothing with it, but subclasses can use this to provide
+                      custom serialization for vertain keys.
+    :returns:         The value serialized as both a string and an NSData
+                      object, so it can be used in either type of query.
+    */
+  public class func serializeValueForQuery(value: AnyObject?, key: String) -> (String?, NSData?) {
+    var stringValue: String? = nil
+    var dataValue: NSData? = nil
+    switch value {
+    case let string as String:
+      stringValue = string
+    case let date as NSDate:
+      let timeZone = DatabaseConnection.sharedConnection().timeZone
+      stringValue = date.format("db", timeZone: timeZone)
+    case let number as NSNumber:
+      stringValue = number.stringValue
+    case let data as NSData:
+      dataValue = data
+    default:
+      break
+    }
+    
+    if dataValue == nil && stringValue != nil {
+      dataValue = stringValue!.dataUsingEncoding(NSUTF8StringEncoding)
+    }
+    
+    return (stringValue, dataValue)
+  }
   
   
   /**
@@ -214,31 +267,12 @@ public class Record : Model {
     var values = [String:NSData]()
     
     let klass: AnyClass! = object_getClass(self)
-    let timeZone = DatabaseConnection.sharedConnection().timeZone
     for (propertyName, columnName) in self.dynamicType.persistedPropertyMapping() {
-      if let value: AnyObject = self.valueForKey(propertyName) {
-        var stringValue: String? = nil
-        var dataValue: NSData? = nil
-        switch value {
-        case let string as String:
-          stringValue = string
-        case let date as NSDate:
-          stringValue = date.format("db", timeZone: timeZone)
-        case let number as NSNumber:
-          stringValue = number.stringValue
-        case let data as NSData:
-          dataValue = data
-        default:
-          break
-        }
-        
-        if dataValue == nil && stringValue != nil {
-          dataValue = stringValue!.dataUsingEncoding(NSUTF8StringEncoding)
-        }
-        
-        if dataValue != nil {
-          values[columnName] = dataValue
-        }
+      let value : AnyObject? = self.valueForKey(propertyName)
+      let (stringValue, dataValue) = self.dynamicType.serializeValueForQuery(value, key: propertyName)
+      
+      if dataValue != nil {
+        values[propertyName] = dataValue!
       }
     }
     return values
@@ -289,7 +323,7 @@ public class Record : Model {
     var parameterString = ""
     let values = self.valuesToPersist()
     for (propertyName, columnName) in self.dynamicType.persistedPropertyMapping() {
-      let value = values[columnName]
+      let value = values[propertyName]
       if value == nil {
         continue
       }
@@ -300,7 +334,7 @@ public class Record : Model {
         query += ", "
         parameterString += ", "
       }
-      query += "\(DatabaseConnection.sanitizeColumnName(columnName))"
+      query += "\(columnName)"
       parameterString += "?"
       parameters.append(value!)
     }
@@ -329,7 +363,7 @@ public class Record : Model {
     var firstParameter = true
     let values = self.valuesToPersist()
     for (propertyName, columnName) in self.dynamicType.persistedPropertyMapping() {
-      let value = values[columnName]
+      let value = values[propertyName]
       if firstParameter {
         query += " SET "
         firstParameter = false
@@ -347,7 +381,7 @@ public class Record : Model {
       }
     }
     query += " WHERE id = ?"
-    parameters.append(String(self.id).dataUsingEncoding(NSUTF8StringEncoding)!)
+    parameters.append(self.id.stringValue.dataUsingEncoding(NSUTF8StringEncoding)!)
     let result = DatabaseConnection.sharedConnection().executeQuery(query, parameters: parameters)
     
     if result.count > 0 {
@@ -364,6 +398,6 @@ public class Record : Model {
     */
   public func destroy() {
     let query = "DELETE FROM \(self.dynamicType.tableName()) WHERE id = ?"
-    DatabaseConnection.sharedConnection().executeQuery(query, String(self.id))
+    DatabaseConnection.sharedConnection().executeQuery(query, self.id.stringValue)
   }
 }

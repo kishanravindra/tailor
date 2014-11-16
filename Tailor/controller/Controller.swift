@@ -163,7 +163,7 @@ public class Controller {
     */
   public func signIn(user: User) {
     self.currentUser = user
-    self.session["userId"] = String(user.id)
+    self.session["userId"] = user.id.stringValue
   }
   
   /**
