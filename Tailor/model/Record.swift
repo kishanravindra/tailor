@@ -161,6 +161,41 @@ public class Record : Model {
     return results.isEmpty ? nil : results[0]
   }
   
+  /**
+    This method finds a single record for a query.
+    
+    :param: conditions    The conditions to filter the returned record.
+    :param: order         The order in which the results should be ordered
+                          before the first one is returne.d
+    :returns:             The record we found.
+  */
+  public class func findOne(conditions: [String:String] = [:], order: [String: NSComparisonResult] = [:]) -> Record? {
+    let results = self.find(conditions: conditions, order: order)
+    if results.count > 0 {
+      return results[0]
+    }
+    else {
+      return nil
+    }
+  }
+  
+  //MARK: - Creating
+  
+  
+  /**
+    This method creates a blank record, and passes it to a block to fill in the
+    details.
+  
+    After the block runs, the record will be saved.
+  
+    :param: initializer     The initializer to fill in the details.
+    */
+  public class func create(initializer: (Record)->()) -> Bool {
+    let record = self.init()
+    initializer(record)
+    return record.save()
+  }
+  
   //MARK: - Persisting
   
   /**

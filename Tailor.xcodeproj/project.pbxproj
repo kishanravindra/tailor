@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		521E87481A0FCEDA00D84B7B /* NSData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 521E87471A0FCEDA00D84B7B /* NSData.swift */; };
+		522B56CA1A18C849009BBE32 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522B56C91A18C849009BBE32 /* Array.swift */; };
 		52B2B69A19F1DCF10086261B /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B69919F1DCF10086261B /* Dictionary.swift */; };
 		52B2B6A919F2B1D00086261B /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6A819F2B1D00086261B /* Task.swift */; };
 		52B2B6AB19F2B2590086261B /* ServerTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6AA19F2B2590086261B /* ServerTask.swift */; };
@@ -68,6 +69,7 @@
 
 /* Begin PBXFileReference section */
 		521E87471A0FCEDA00D84B7B /* NSData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSData.swift; sourceTree = "<group>"; };
+		522B56C91A18C849009BBE32 /* Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
 		5242C35519F4466F00E605D2 /* TemplateInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = TemplateInfo.plist; sourceTree = "<group>"; };
 		5247FF9E19F4629700C08156 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		5247FF9F19F462C200C08156 /* ___PACKAGENAME___Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "___PACKAGENAME___Application.swift"; sourceTree = "<group>"; };
@@ -223,13 +225,13 @@
 			children = (
 				52BD141919E9DA1D006D72B0 /* Info.plist */,
 				52BD140019E9DA1D006D72B0 /* app */,
-				52BD140919E9DA1D006D72B0 /* controller */,
-				52C6251819EE110B0024453F /* crypt */,
 				52BD140E19E9DA1D006D72B0 /* db */,
-				52BD141519E9DA1D006D72B0 /* ext */,
-				52EF127219F0A54A00B61DF4 /* localization */,
 				52BD141A19E9DA1D006D72B0 /* model */,
 				52BD142319E9DA1D006D72B0 /* view */,
+				52BD140919E9DA1D006D72B0 /* controller */,
+				52C6251819EE110B0024453F /* crypt */,
+				52BD141519E9DA1D006D72B0 /* ext */,
+				52EF127219F0A54A00B61DF4 /* localization */,
 				52B2B6A519F2B1430086261B /* tasks */,
 				52BD13A219E9D7E4006D72B0 /* Tailor.h */,
 			);
@@ -292,6 +294,7 @@
 		52BD141519E9DA1D006D72B0 /* ext */ = {
 			isa = PBXGroup;
 			children = (
+				522B56C91A18C849009BBE32 /* Array.swift */,
 				52BD141619E9DA1D006D72B0 /* NSDate.swift */,
 				521E87471A0FCEDA00D84B7B /* NSData.swift */,
 				52BD141719E9DA1D006D72B0 /* NSString.swift */,
@@ -473,6 +476,7 @@
 				52B2B6F419F405620086261B /* SqlSanitizer.swift in Sources */,
 				52EF127419F0A58400B61DF4 /* Localization.swift in Sources */,
 				52B2B6B219F2DAD30086261B /* Alteration.swift in Sources */,
+				522B56CA1A18C849009BBE32 /* Array.swift in Sources */,
 				52BD144219E9DA1D006D72B0 /* Validator.swift in Sources */,
 				52BD144419E9DA1D006D72B0 /* Template.swift in Sources */,
 				52BD142619E9DA1D006D72B0 /* Application.swift in Sources */,
