@@ -15,13 +15,16 @@ public class Record : Model {
   }
 
   /**
-    This method initializes a record with information from the database.
+    This method initializes a record with map of the attributes.
   
     It will set the id, and set any other dynamic properties it can.
 
-    :param: data  The columns from the database.
+    :param: data          The fields to set.
+    :param: fromDatabase  Whether the keys in the hash use the database
+                          column names rather than the attribute names on the
+                          record.
     */
-  public required init(data: [String:Any]) {
+  public required init(data: [String:Any], fromDatabase: Bool = false) {
     if let id = data["id"] as? Int {
       self.id = NSNumber(integer: id)
     }
@@ -29,7 +32,8 @@ public class Record : Model {
     
     let klass : AnyClass = object_getClass(self)
     for (propertyName, columnName) in self.dynamicType.persistedPropertyMapping() {
-      if let value = data[columnName] {
+      let key = fromDatabase ? columnName : propertyName
+      if let value = data[key] {
         self.setValue(value, forKey: propertyName)
       }
     }
@@ -101,7 +105,7 @@ public class Record : Model {
     */
   public class func query(query: String, parameters: [String]) -> [Record] {
     let rows = DatabaseConnection.sharedConnection().executeQuery(query, stringParameters: parameters)
-    return rows.map { self(data: $0.data) }
+    return rows.map { self(data: $0.data, fromDatabase: true) }
   }
   
   /**
@@ -238,17 +242,19 @@ public class Record : Model {
   
   
   /**
-    This method creates a blank record, and passes it to a block to fill in the
-    details.
+    This method creates a record with given attributes and tries to save it.
   
-    After the block runs, the record will be saved.
+    After the block runs, the record will be saved and returned. The caller can
+    check whether the save was successful by checking whether the returned
+    record's id is non-null.
   
-    :param: initializer     The initializer to fill in the details.
+    :param: data    The fields to set on the record.
+    :returns:       The record
     */
-  public class func create(initializer: (Record)->()) -> Bool {
-    let record = self.init()
-    initializer(record)
-    return record.save()
+  public class func create(data: [String: Any]) -> Self {
+    let record = self.init(data: data)
+    record.save()
+    return record
   }
   
   //MARK: - Persisting

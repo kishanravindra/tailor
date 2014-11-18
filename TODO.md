@@ -28,7 +28,6 @@
 * Fetching relationships
 * More complicated query building and collection proxies
 * Reversing alterations
-* Passing hashes when creating records
 
 ### Authentication
 
