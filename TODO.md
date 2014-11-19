@@ -6,7 +6,7 @@
 * Running persistent background jobs
 * Console
 * Logging
-* Fix parsing of parameters from prompt
+* Fix parsing of spaces in parameters from Xcode prompt
 * More load testing and checks for bugs
 * Unit tests
 * Make template project have a build stage for copying the Framework into the
@@ -15,9 +15,7 @@
 ### Routing and Controllers
 
 * Better CSRF prevention
-* Easier redirects within controllers
-* Supporting more input types in forms
-* Better handling of trying to respond twice to one request
+* Supporting select tags, checkboxes, etc in forms
 * Posting via links
 
 ### Modelling

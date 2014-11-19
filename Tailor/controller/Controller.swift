@@ -41,6 +41,9 @@ public class Controller {
   /** The filters that this controller runs. */
   var filters: [Filter] = []
   
+  /** Whether we have responded to our request. */
+  var responded = false
+  
   /** The name used to identify the controller in routing. */
   public class func name() -> String {
     return NSStringFromClass(self)
@@ -103,11 +106,16 @@ public class Controller {
     handler.
     */
   public func generateResponse(contents: (inout Response)->()) {
+    if self.responded {
+      NSLog("Error: Controller attempted to respond twice for %@:%@. Subsequent responses will be ignored.", self.dynamicType.name(), self.action)
+      return
+    }
     var response = Response()
     response.cookies = request.cookies
     contents(&response)
     session["_flash_notice"] = nil
     session.storeInCookies(response.cookies)
+    self.responded = true
     self.callback(response)
   }
   
@@ -139,7 +147,67 @@ public class Controller {
       response.headers["Location"] = path
     }
   }
+
+  /**
+    This method gets the URL for a route.
   
+    It defaults to the current controller and action. It will also substitute
+    any of the current request's parameters into the new URL, if they are part
+    of that URL's path.
+  
+    :param: controllerName  The controller to link to. This will default to the
+                            current controller.
+    :param: action          The action to link to.
+    :param: parameters      Additional parameters for the path.
+    :returns:               The path
+  */
+  public func urlFor(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:]) -> String? {
+    var url = SHARED_APPLICATION.routeSet.urlFor(
+      controllerName ?? self.dynamicType.name(),
+      action: action ?? self.action,
+      parameters: parameters
+    )
+    if url != nil {
+      for (key,value) in self.request.requestParameters {
+        url = url?.stringByReplacingOccurrencesOfString(":\(key)", withString: value)
+      }
+    }
+    return url
+  }
+
+  /**
+    This method generates a response with a redirect to a generated URL.
+
+    :param: controllerName  The controller to link to. This will default to the
+                            current controller.
+    :param: action          The action to link to.
+    :param: parameters      Additional parameters for the path.
+    */
+  public func redirectTo(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:]) {
+    let url = self.urlFor(controllerName: controllerName, action: action, parameters: parameters) ?? "/"
+    self.redirectTo(url)
+  }
+  
+  /**
+    This method generates a response with a redirect to a generated URL.
+  
+    This is a wrapper around the version that uses a controllerName. This
+    version provides a more concise syntax when redirecting to other
+    controllers.
+  
+    :param: controllerName  The controller to link to. This will default to the
+            current controller.
+    :param: action          The action to link to.
+    :param: parameters      Additional parameters for the path.
+  */
+  public func redirectTo(controller: Controller.Type, action: String, parameters: [String:String] = [:]) {
+    self.redirectTo(
+      controllerName: controller.name(),
+      action: action,
+      parameters: parameters
+    )
+  }
+
   /**
     This method generates a response with a 404 page.
     */
