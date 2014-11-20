@@ -10,6 +10,7 @@
 		521E87481A0FCEDA00D84B7B /* NSData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 521E87471A0FCEDA00D84B7B /* NSData.swift */; };
 		522B56CA1A18C849009BBE32 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522B56C91A18C849009BBE32 /* Array.swift */; };
 		522B56CC1A191475009BBE32 /* UniquenessValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522B56CB1A191475009BBE32 /* UniquenessValidator.swift */; };
+		525C80851A1C1B4900E7035F /* Query.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525C80841A1C1B4900E7035F /* Query.swift */; };
 		52B2B69A19F1DCF10086261B /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B69919F1DCF10086261B /* Dictionary.swift */; };
 		52B2B6A919F2B1D00086261B /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6A819F2B1D00086261B /* Task.swift */; };
 		52B2B6AB19F2B2590086261B /* ServerTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6AA19F2B2590086261B /* ServerTask.swift */; };
@@ -75,6 +76,7 @@
 		5242C35519F4466F00E605D2 /* TemplateInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = TemplateInfo.plist; sourceTree = "<group>"; };
 		5247FF9E19F4629700C08156 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		5247FF9F19F462C200C08156 /* ___PACKAGENAME___Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "___PACKAGENAME___Application.swift"; sourceTree = "<group>"; };
+		525C80841A1C1B4900E7035F /* Query.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Query.swift; sourceTree = "<group>"; };
 		52B2B69919F1DCF10086261B /* Dictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
 		52B2B6A819F2B1D00086261B /* Task.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Task.swift; path = tasks/Task.swift; sourceTree = "<group>"; };
 		52B2B6AA19F2B2590086261B /* ServerTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ServerTask.swift; path = tasks/ServerTask.swift; sourceTree = "<group>"; };
@@ -312,6 +314,7 @@
 			children = (
 				52BD141B19E9DA1D006D72B0 /* Model.swift */,
 				52BD141C19E9DA1D006D72B0 /* Record.swift */,
+				525C80841A1C1B4900E7035F /* Query.swift */,
 				52EF126319EF545000B61DF4 /* User.swift */,
 				52BD141D19E9DA1D006D72B0 /* validators */,
 			);
@@ -472,6 +475,7 @@
 			files = (
 				52BD143A19E9DA1D006D72B0 /* String.swift in Sources */,
 				52B2B69A19F1DCF10086261B /* Dictionary.swift in Sources */,
+				525C80851A1C1B4900E7035F /* Query.swift in Sources */,
 				52BD143019E9DA1D006D72B0 /* RestfulController.swift in Sources */,
 				52BD142C19E9DA1D006D72B0 /* RouteSet.swift in Sources */,
 				52BD143719E9DA1D006D72B0 /* TailorC.m in Sources */,

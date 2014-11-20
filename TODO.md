@@ -11,6 +11,7 @@
 * Unit tests
 * Make template project have a build stage for copying the Framework into the
   application bundle.
+* Shorthands for date arithmetic
 
 ### Routing and Controllers
 
@@ -24,8 +25,13 @@
 * Resetting local database
 * Storing seed data
 * Fetching relationships
-* More complicated query building and collection proxies
 * Reversing alterations
+
+### Query Building
+
+* Joins
+* Partial result sets
+* Counts
 
 ### Authentication
 
