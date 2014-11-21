@@ -23,8 +23,7 @@ public class RestfulController<RecordType: Record> : Controller {
   public func record() -> RecordType? {
     if let idString = request.requestParameters["id"] {
       if let id = idString.toInt() {
-        let record = RecordType.find(id)
-        return record == nil ? nil : record! as? RecordType
+        return Query<RecordType>().find(id)
       }
     }
     else {
@@ -54,7 +53,7 @@ public class RestfulController<RecordType: Record> : Controller {
     This action provides a listing of records.
     */
   public func index() {
-    let records =  RecordType.find() as [RecordType]
+    let records =  Query<RecordType>().all()
     if let template = self.templates["index"] {
       self.respondWith(template, parameters: [
         "records": records

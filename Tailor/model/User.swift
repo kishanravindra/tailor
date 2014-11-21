@@ -55,7 +55,7 @@ public class User : Record {
     :returns: The user
     */
   public class func authenticate(emailAddress: String, password: String) -> User? {
-    let users = self.find(conditions: ["emailAddress": emailAddress]) as [User]
+    let users = Query<User>().filter(["emailAddress": emailAddress]).all()
     
     if users.isEmpty {
       return nil

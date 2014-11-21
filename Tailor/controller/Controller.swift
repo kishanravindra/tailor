@@ -64,7 +64,7 @@ public class Controller {
     self.localization = Localization(locale: "en")
     
     if let userId = self.session["userId"]?.toInt() {
-      self.currentUser = User.find(userId) as? User
+      self.currentUser = Query<User>().find(userId)
     }
   }
   

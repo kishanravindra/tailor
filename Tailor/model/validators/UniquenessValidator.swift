@@ -22,14 +22,15 @@ public class UniquenessValidator : Validator {
         return
       }
       
-      var duplicates : [Record] = []
-      
+      let tableName = record.dynamicType.tableName()
+      var query = "SELECT * FROM \(tableName) WHERE ? = ?"
+      var parameters = [databaseKey!, stringValue!]
       if record.id != nil {
-        duplicates = record.dynamicType.query("SELECT * FROM \(record.dynamicType.tableName()) WHERE ? = ? AND id != ?", parameters: [databaseKey, stringValue!, record.id.stringValue])
+        query += " AND id != ?"
+        parameters.append(record.id.stringValue)
       }
-      else {
-        duplicates = record.dynamicType.find(conditions: [databaseKey: stringValue!])
-      }
+      
+      let duplicates = DatabaseConnection.sharedConnection().executeQuery(query, stringParameters: parameters)
       
       if !duplicates.isEmpty {
         model.errors.add(key, "is already taken")
