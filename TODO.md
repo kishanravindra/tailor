@@ -30,8 +30,6 @@
 ### Query Building
 
 * Joins
-* Partial result sets
-* Counts
 
 ### Authentication
 

@@ -11,6 +11,9 @@ public class Query<RecordType: Record> {
   /** A portion of a SQL query that contains a query and the bind parameters. */
   public typealias SqlFragment = (query: String, parameters: [String])
   
+  /** The fields that the query will select. */
+  public let selectClause: String
+  
   /** The part of the query for filtering the result set. */
   public let whereClause: SqlFragment
   
@@ -23,6 +26,7 @@ public class Query<RecordType: Record> {
   /**
     This method builds a query from its component clause.
 
+    :param: selectClause    The fields that will be selected.
     :param: whereClause     The portion of the query for filtering the result
                             set.
     :param: orderClause     The portion of the query specifying the order of the
@@ -30,7 +34,8 @@ public class Query<RecordType: Record> {
     :param: limitClause     The portion of the query specifying how many results
                             should be returned.
     */
-  public required init(whereClause: SqlFragment = ("", []), orderClause: SqlFragment = ("", []), limitClause: SqlFragment = ("", [])) {
+  public required init(selectClause: String = "*", whereClause: SqlFragment = ("", []), orderClause: SqlFragment = ("", []), limitClause: SqlFragment = ("", [])) {
+    self.selectClause = selectClause
     self.whereClause = whereClause
     self.orderClause = orderClause
     self.limitClause = limitClause
@@ -48,12 +53,21 @@ public class Query<RecordType: Record> {
     */
   public func filter(query: String, _ parameters: [String] = []) -> Query<RecordType> {
     var clause = whereClause
-    if !clause.query.isEmpty {
+    
+    if clause.query.isEmpty {
+      clause.query = " "
+    }
+    else {
       clause.query += " AND "
     }
     clause.query += query
     clause.parameters.extend(parameters)
-    return self.dynamicType.init(whereClause: clause, orderClause: orderClause, limitClause: limitClause)
+    return self.dynamicType.init(
+      selectClause: selectClause,
+      whereClause: clause,
+      orderClause: orderClause,
+      limitClause: limitClause
+    )
   }
   
   /**
@@ -77,18 +91,18 @@ public class Query<RecordType: Record> {
         }
         if columnName != nil  {
           if !query.isEmpty {
-            query += " AND"
+            query += " AND "
           }
           
           if value != nil {
             let (stringValue, _) = RecordType.serializeValueForQuery(value, key: fieldName)
             if stringValue != nil {
-              query += " \(columnName!)=?"
+              query += "\(columnName!)=?"
               parameters.append(stringValue!)
             }
           }
           else {
-            query += " \(columnName!) IS NULL"
+            query += "\(columnName!) IS NULL"
           }
         }
         else {
@@ -122,7 +136,12 @@ public class Query<RecordType: Record> {
     else {
       NSLog("Error: Could not map %@.%@ to column", RecordType.modelName(), fieldName)
     }
-    return self.dynamicType.init(whereClause: whereClause, orderClause: clause, limitClause: limitClause)
+    return self.dynamicType.init(
+      selectClause: selectClause,
+      whereClause: whereClause,
+      orderClause: clause,
+      limitClause: limitClause
+    )
   }
   
   /**
@@ -145,7 +164,29 @@ public class Query<RecordType: Record> {
     }
     var clause = limitClause
     clause.query = "\(newLimit)"
-    return self.dynamicType.init(whereClause: whereClause, orderClause: orderClause, limitClause: clause)
+    return self.dynamicType.init(
+      selectClause: selectClause,
+      whereClause: whereClause,
+      orderClause: orderClause,
+      limitClause: clause
+    )
+  }
+  
+  /**
+    This method specifies what fields from the database we should select with
+    our query.
+
+    :param: selectClause      The SQL for selecting the fields, not including
+                              the SELECT keyword.
+    :returns:                 The new query.
+    */
+  public func select(selectClause: String) -> Query<RecordType> {
+    return self.dynamicType.init(
+      selectClause: selectClause,
+      whereClause: whereClause,
+      orderClause: orderClause,
+      limitClause: limitClause
+    )
   }
   
   //MARK: - Running Query
@@ -156,7 +197,7 @@ public class Query<RecordType: Record> {
     :returns: The SQL query and bind parameters.
     */
   public func toSql() -> SqlFragment {
-    var query = "SELECT * FROM \(RecordType.tableName())"
+    var query = "SELECT \(selectClause) FROM \(RecordType.tableName())"
     var parameters : [String] = []
     let clauses = [
       ("WHERE", whereClause),
@@ -209,5 +250,17 @@ public class Query<RecordType: Record> {
     */
   public func find(id: Int) -> RecordType? {
     return self.filter(["id": NSNumber(integer: id)]).first()
+  }
+
+  /**
+    This method gets a count of the records matching the filterse in this query.
+    
+    :returns:   The count.
+    */
+  public func count() -> Int {
+    let (query, parameters) = self.select("count(*) as tailor_record_count").toSql()
+    let results = DatabaseConnection.sharedConnection().executeQuery(query, stringParameters: parameters)
+    let count = results[0].data["tailor_record_count"] as Int
+    return count
   }
 }
