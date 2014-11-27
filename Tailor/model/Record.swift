@@ -90,6 +90,23 @@ public class Record : Model {
     }
     return dictionary
   }
+
+  /**
+    This method fetches a relationship from this record to one other record.
+
+    This will look for a field on this record that contains the id of the other
+    record.
+
+    :param: foreignKey    The attribute on this record that contains the id. If
+                          this is not provided, it will be the name of the other
+                          model, with the first letter lowercased, followed by
+                          "Id".
+    :returns:             The fetched record.
+    */
+  public func toOne<OtherRecordType : Record>(foreignKey inputForeignKey: String? = nil) -> OtherRecordType? {
+    let foreignKey = inputForeignKey ?? (OtherRecordType.modelName().lowercaseInitial + "Id")
+    return Query<OtherRecordType>().filter(["id": self.valueForKey(foreignKey)]).first()
+  }
   
   //MARK: - Creating
   

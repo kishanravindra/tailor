@@ -17,7 +17,6 @@
 
 * Better CSRF prevention
 * Supporting select tags, checkboxes, etc in forms
-* Posting via links
 
 ### Modelling
 
