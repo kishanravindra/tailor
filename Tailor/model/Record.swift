@@ -108,6 +108,22 @@ public class Record : Model {
     return Query<OtherRecordType>().filter(["id": self.valueForKey(foreignKey)]).first()
   }
   
+  /**
+    This method fetches a relationship from this record to many related records.
+  
+    This will look for a field on the other record that contains the id of this
+    record.
+  
+    :param: foreignKey    The attribute on the other record that contains the
+      id. If this is not provided, it will be the name of this model, with the
+      first letter lowercased, followed by "Id".
+    :returns:             The fetched records.
+  */
+  public func toMany<OtherRecordType : Record>(foreignKey inputForeignKey: String? = nil) -> Query<OtherRecordType> {
+    let foreignKey = inputForeignKey ?? (self.dynamicType.modelName().lowercaseInitial + "Id")
+    return Query<OtherRecordType>().filter([foreignKey: self.id])
+  }
+  
   //MARK: - Creating
   
   /**
