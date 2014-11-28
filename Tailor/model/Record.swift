@@ -31,8 +31,11 @@ public class Record : Model {
     super.init()
     
     let klass : AnyClass = object_getClass(self)
-    for (propertyName, columnName) in self.dynamicType.persistedPropertyMapping() {
-      let key = fromDatabase ? columnName : propertyName
+    for propertyName in self.dynamicType.persistedProperties() {
+      var key = propertyName
+      if fromDatabase {
+        key = self.dynamicType.columnNameForField(key) ?? key
+      }
       if let value = data[key] {
         self.setValue(value, forKey: propertyName)
       }
@@ -44,13 +47,27 @@ public class Record : Model {
   /**
     This method provides name of the table that backs this class.
 
-    This implementation returns an empty string, but subclasses must override it
-    to provide a real value;
+    This implementation returns the pluralized version of the model name, but
+    subclasses can override that if they have a different table naming
+    convention.
 
     :returns: The table name.
     */
   public class func tableName() -> String {
     return self.modelName().pluralized
+  }
+  
+  /**
+    This method get the default name of an attribute holding a foreign key for
+    this model.
+  
+    It will be in lowercase camel case. The default version is the camel cased
+    model name, followed by Id.
+  
+    :returns: The foreign key name.
+  */
+  public class func foreignKeyName() -> String {
+    return self.modelName().camelCase() + "Id"
   }
   
   /**
@@ -70,27 +87,23 @@ public class Record : Model {
   public class func persistedProperties() -> [String] { return [] }
   
   /**
-    This method provides a mapping between the names of properties in instances
-    of this class and the names of columns in the database.
+    This method gets the name of the column used to store a field on this
+    record.
+  
+    The default implementation underscores the column name.
 
-    Any properties that are provided in this list will be automatically set
-    by the initializer when creating a record from a database row. They will
-    also be automatically included in the persisted data when creating or
-    updating a record. They must be dynamic properties for this to work.
-
-    The default implementation takes the property names returned by
-    persistedProperties and creates column names by underscorizing them.
-
-    :returns: The property mapping.
+    :param: fieldName     The name of the field.
+    :returns:             The name of the column.
     */
-  public class func persistedPropertyMapping() -> [String:String] {
-    var dictionary = [String:String]()
-    for property in self.persistedProperties() {
-      dictionary[property] = property.underscored()
+  class func columnNameForField(fieldName: String) -> String? {
+    if fieldName == "id" || contains(self.persistedProperties(), fieldName) {
+      return fieldName.underscored()
     }
-    return dictionary
+    else {
+      return nil
+    }
   }
-
+  
   /**
     This method fetches a relationship from this record to one other record.
 
@@ -98,13 +111,12 @@ public class Record : Model {
     record.
 
     :param: foreignKey    The attribute on this record that contains the id. If
-                          this is not provided, it will be the name of the other
-                          model, with the first letter lowercased, followed by
-                          "Id".
+                          this is not provided, it will be the default foreign
+                          key name for the other model.
     :returns:             The fetched record.
     */
   public func toOne<OtherRecordType : Record>(foreignKey inputForeignKey: String? = nil) -> OtherRecordType? {
-    let foreignKey = inputForeignKey ?? (OtherRecordType.modelName().lowercaseInitial + "Id")
+    let foreignKey = inputForeignKey ?? (OtherRecordType.foreignKeyName())
     return Query<OtherRecordType>().filter(["id": self.valueForKey(foreignKey)]).first()
   }
   
@@ -115,13 +127,46 @@ public class Record : Model {
     record.
   
     :param: foreignKey    The attribute on the other record that contains the
-      id. If this is not provided, it will be the name of this model, with the
-      first letter lowercased, followed by "Id".
+                          id. If this is not provided, it will be the default
+                          foreign key name for this model.
     :returns:             The fetched records.
   */
   public func toMany<OtherRecordType : Record>(foreignKey inputForeignKey: String? = nil) -> Query<OtherRecordType> {
-    let foreignKey = inputForeignKey ?? (self.dynamicType.modelName().lowercaseInitial + "Id")
+    let foreignKey = inputForeignKey ?? (self.dynamicType.foreignKeyName())
     return Query<OtherRecordType>().filter([foreignKey: self.id])
+  }
+  
+  /**
+    This method fetches a relationship from this record to many related records.
+  
+    This will use another relationship on the record as an intermediary, looking
+    for a foreign key relationship between the intermediary and the final record
+    type.
+  
+    :param: through           The relation
+    :param: foreignKey        The attribute on the intermediary record that contains the
+                              id. If this is not provided, it will be the default
+                              foreign key name for the appropriate model.
+    :param: joinToMany        Whether the join between the intermediary and the
+                              final table should join from a foreign key on the
+                              final to the id on the intermediate, rather than
+                              from a foreign key on the intermediate to the id
+                              on the final.
+    :returns:                 The fetched records.
+  */
+  public func toMany<OtherRecordType : Record, IntermediaryRecordType: Record>(#through: Query<IntermediaryRecordType>, foreignKey inputForeignKey: String? = nil, joinToMany: Bool = false) -> Query<OtherRecordType> {
+    var query = Query<OtherRecordType>()
+    
+    if joinToMany {
+      let foreignKey = inputForeignKey ?? (IntermediaryRecordType.foreignKeyName())
+      query = query.join(IntermediaryRecordType.self, fromField: "id", toField: foreignKey)
+      
+    }
+    else {
+      let foreignKey = inputForeignKey ?? (OtherRecordType.foreignKeyName())
+      query = query.join(IntermediaryRecordType.self, fromField: foreignKey, toField: "id")
+    }
+    return query.filter(through.whereClause.query, through.whereClause.parameters)
   }
   
   //MARK: - Creating
@@ -194,7 +239,7 @@ public class Record : Model {
     var values = [String:NSData]()
     
     let klass: AnyClass! = object_getClass(self)
-    for (propertyName, columnName) in self.dynamicType.persistedPropertyMapping() {
+    for propertyName in self.dynamicType.persistedProperties() {
       let value : AnyObject? = self.valueForKey(propertyName)
       let (stringValue, dataValue) = self.dynamicType.serializeValueForQuery(value, key: propertyName)
       
@@ -218,14 +263,14 @@ public class Record : Model {
       return false
     }
     
-    let propertyMapping = self.dynamicType.persistedPropertyMapping()
+    let properties = self.dynamicType.persistedProperties()
     
-    if propertyMapping["createdAt"] != nil {
+    if contains(properties, "createdAt") {
       if self.valueForKey("createdAt") == nil {
         self.setValue(NSDate(), forKey: "createdAt")
       }
     }
-    if propertyMapping["updatedAt"] != nil {
+    if contains(properties, "updatedAt") {
       self.setValue(NSDate(), forKey: "updatedAt")
     }
     
@@ -249,9 +294,13 @@ public class Record : Model {
     var firstParameter = true
     var parameterString = ""
     let values = self.valuesToPersist()
-    for (propertyName, columnName) in self.dynamicType.persistedPropertyMapping() {
+    for propertyName in self.dynamicType.persistedProperties() {
       let value = values[propertyName]
       if value == nil {
+        continue
+      }
+      let columnName = self.dynamicType.columnNameForField(propertyName)
+      if columnName == nil {
         continue
       }
       if firstParameter {
@@ -261,7 +310,7 @@ public class Record : Model {
         query += ", "
         parameterString += ", "
       }
-      query += "\(columnName)"
+      query += "\(columnName!)"
       parameterString += "?"
       parameters.append(value!)
     }
@@ -289,7 +338,11 @@ public class Record : Model {
     
     var firstParameter = true
     let values = self.valuesToPersist()
-    for (propertyName, columnName) in self.dynamicType.persistedPropertyMapping() {
+    for propertyName in self.dynamicType.persistedProperties() {
+      let columnName = self.dynamicType.columnNameForField(propertyName)
+      if columnName == nil {
+        continue
+      }
       let value = values[propertyName]
       if firstParameter {
         query += " SET "
@@ -298,7 +351,7 @@ public class Record : Model {
       else {
         query += ", "
       }
-      query += "\(DatabaseConnection.sanitizeColumnName(columnName)) = "
+      query += "\(DatabaseConnection.sanitizeColumnName(columnName!)) = "
       if value == nil {
         query += "NULL"
       }

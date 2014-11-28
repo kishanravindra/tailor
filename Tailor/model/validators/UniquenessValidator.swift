@@ -8,7 +8,7 @@ import Tailor
 public class UniquenessValidator : Validator {
   public override func validate(model: Model) {
     if let record = model as? Record {
-      let databaseKey : String! = record.dynamicType.persistedPropertyMapping()[self.key]
+      let databaseKey : String! = record.dynamicType.columnNameForField(self.key)
       let value : NSData? = record.valuesToPersist()[databaseKey]
       var stringValue : String? = nil
       if value != nil {

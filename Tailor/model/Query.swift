@@ -23,6 +23,9 @@ public class Query<RecordType: Record> {
   /** The part of the query for defining how many results should be returned. */
   public let limitClause: SqlFragment
   
+  /** The part of the query for joining to other tables. */
+  public let joinClause: SqlFragment
+  
   /**
     This method builds a query from its component clause.
 
@@ -34,11 +37,12 @@ public class Query<RecordType: Record> {
     :param: limitClause     The portion of the query specifying how many results
                             should be returned.
     */
-  public required init(selectClause: String = "*", whereClause: SqlFragment = ("", []), orderClause: SqlFragment = ("", []), limitClause: SqlFragment = ("", [])) {
+  public required init(selectClause: String = "*", whereClause: SqlFragment = ("", []), orderClause: SqlFragment = ("", []), limitClause: SqlFragment = ("", []), joinClause: SqlFragment = ("", [])) {
     self.selectClause = selectClause
     self.whereClause = whereClause
     self.orderClause = orderClause
     self.limitClause = limitClause
+    self.joinClause = joinClause
   }
 
   //MARK: - Query Building
@@ -66,7 +70,8 @@ public class Query<RecordType: Record> {
       selectClause: selectClause,
       whereClause: clause,
       orderClause: orderClause,
-      limitClause: limitClause
+      limitClause: limitClause,
+      joinClause: joinClause
     )
   }
   
@@ -81,11 +86,11 @@ public class Query<RecordType: Record> {
     */
   public func filter(conditions: [String: AnyObject?]) -> Query<RecordType> {
     var query = ""
-    let properties = RecordType.persistedPropertyMapping()
     var parameters : [String] = []
+    let tableName = RecordType.tableName()
     if !conditions.isEmpty {
       for (fieldName,value) in conditions {
-        var columnName = properties[fieldName]
+        var columnName = RecordType.columnNameForField(fieldName)
         if fieldName == "id" {
           columnName = fieldName
         }
@@ -97,12 +102,12 @@ public class Query<RecordType: Record> {
           if value != nil {
             let (stringValue, _) = RecordType.serializeValueForQuery(value, key: fieldName)
             if stringValue != nil {
-              query += "\(columnName!)=?"
+              query += "\(tableName).\(columnName!)=?"
               parameters.append(stringValue!)
             }
           }
           else {
-            query += "\(columnName!) IS NULL"
+            query += "\(tableName).\(columnName!) IS NULL"
           }
         }
         else {
@@ -123,15 +128,14 @@ public class Query<RecordType: Record> {
     :returns:           The new query.
     */
   public func order(fieldName: String, _ order: NSComparisonResult) -> Query<RecordType> {
-    let properties = RecordType.persistedPropertyMapping()
-    var columnName = properties[fieldName]
+    var columnName = RecordType.columnNameForField(fieldName)
     var clause = orderClause
     if columnName != nil {
       if !clause.query.isEmpty {
         clause.query += ","
       }
       let orderDescription = order == .OrderedAscending ? "ASC" : "DESC"
-      clause.query += " \(columnName!) \(orderDescription)"
+      clause.query += " \(RecordType.tableName()).\(columnName!) \(orderDescription)"
     }
     else {
       NSLog("Error: Could not map %@.%@ to column", RecordType.modelName(), fieldName)
@@ -140,7 +144,8 @@ public class Query<RecordType: Record> {
       selectClause: selectClause,
       whereClause: whereClause,
       orderClause: clause,
-      limitClause: limitClause
+      limitClause: limitClause,
+      joinClause: joinClause
     )
   }
   
@@ -168,7 +173,8 @@ public class Query<RecordType: Record> {
       selectClause: selectClause,
       whereClause: whereClause,
       orderClause: orderClause,
-      limitClause: clause
+      limitClause: clause,
+      joinClause: joinClause
     )
   }
   
@@ -185,8 +191,55 @@ public class Query<RecordType: Record> {
       selectClause: selectClause,
       whereClause: whereClause,
       orderClause: orderClause,
-      limitClause: limitClause
+      limitClause: limitClause,
+      joinClause: joinClause
     )
+  }
+  
+  /**
+    This method adds a join to the query.
+
+    :param: query           The SQL for selecting the fields, including the JOIN
+                            keywords.
+    :param: parameters      The bind parameters to pass to the join statement.
+    :returns:               The new query.
+    */
+  public func join(query: String, _ parameters: [String] = []) -> Query<RecordType> {
+    var clause = self.joinClause
+    
+    if !clause.query.isEmpty {
+      clause.query += " "
+    }
+    clause.query += query
+    clause.parameters.extend(parameters)
+    return self.dynamicType.init(
+      selectClause: selectClause,
+      whereClause: whereClause,
+      orderClause: orderClause,
+      limitClause: limitClause,
+      joinClause: clause
+    )
+  }
+  
+  /**
+    This method adds a join to the query.
+  
+    :param: recordType    The target record type for the join.
+    :param: fromField     The field on the target record to match for the join.
+    :param: toField       The field on this record to match for the join.
+    :returns:             The new query.
+  */
+  public func join(recordType: Record.Type, fromField: String, toField: String) -> Query<RecordType> {
+    let fromTable = recordType.tableName()
+    let fromColumn = recordType.columnNameForField(fromField)
+    let toTable = RecordType.tableName()
+    let toColumn = RecordType.columnNameForField(toField)
+    if fromColumn != nil && toColumn != nil {
+      return self.join("INNER JOIN \(fromTable) ON \(fromTable).\(fromColumn!) = \(toTable).\(toColumn!)")
+    }
+    else {
+      return self
+    }
   }
   
   //MARK: - Running Query
@@ -200,6 +253,7 @@ public class Query<RecordType: Record> {
     var query = "SELECT \(selectClause) FROM \(RecordType.tableName())"
     var parameters : [String] = []
     let clauses = [
+      ("", joinClause),
       ("WHERE", whereClause),
       ("ORDER BY", orderClause),
       ("LIMIT ", limitClause)
@@ -262,5 +316,14 @@ public class Query<RecordType: Record> {
     let results = DatabaseConnection.sharedConnection().executeQuery(query, stringParameters: parameters)
     let count = results[0].data["tailor_record_count"] as Int
     return count
+  }
+  
+  /**
+    This method determines if the result set for this query is empty.
+
+    :returns: Whether there are no results.
+    */
+  public func isEmpty() -> Bool {
+    return self.count() == 0
   }
 }
