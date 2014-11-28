@@ -27,6 +27,13 @@ public class Query<RecordType: Record> {
   public let joinClause: SqlFragment
   
   /**
+    The model-level conditions that are attached to this query.
+
+    This is not used in querying, but is used in building new records.
+    */
+  public let conditions: [String:AnyObject?]
+  
+  /**
     This method builds a query from its component clause.
 
     :param: selectClause    The fields that will be selected.
@@ -37,12 +44,13 @@ public class Query<RecordType: Record> {
     :param: limitClause     The portion of the query specifying how many results
                             should be returned.
     */
-  public required init(selectClause: String = "*", whereClause: SqlFragment = ("", []), orderClause: SqlFragment = ("", []), limitClause: SqlFragment = ("", []), joinClause: SqlFragment = ("", [])) {
-    self.selectClause = selectClause
-    self.whereClause = whereClause
-    self.orderClause = orderClause
-    self.limitClause = limitClause
-    self.joinClause = joinClause
+  public required init(copyFrom: Query<RecordType>? = nil, selectClause: String? = nil, whereClause: SqlFragment? = nil, orderClause: SqlFragment? = nil, limitClause: SqlFragment? = nil, joinClause: SqlFragment? = nil, conditions: [String:AnyObject?]? = nil) {
+    self.selectClause = selectClause ?? copyFrom?.selectClause ?? "*"
+    self.whereClause = whereClause ?? copyFrom?.whereClause ?? ("", [])
+    self.orderClause = orderClause ?? copyFrom?.orderClause ?? ("", [])
+    self.limitClause = limitClause ?? copyFrom?.limitClause ?? ("", [])
+    self.joinClause = joinClause ?? copyFrom?.joinClause ?? ("", [])
+    self.conditions = conditions ?? copyFrom?.conditions ?? [:]
   }
 
   //MARK: - Query Building
@@ -67,11 +75,8 @@ public class Query<RecordType: Record> {
     clause.query += query
     clause.parameters.extend(parameters)
     return self.dynamicType.init(
-      selectClause: selectClause,
-      whereClause: clause,
-      orderClause: orderClause,
-      limitClause: limitClause,
-      joinClause: joinClause
+      copyFrom: self,
+      whereClause: clause
     )
   }
   
@@ -115,7 +120,8 @@ public class Query<RecordType: Record> {
         }
       }
     }
-    return self.filter(query, parameters)
+    let mergedConditions = merge(conditions, self.conditions)
+    return self.dynamicType.init(conditions: mergedConditions, copyFrom: self.filter(query, parameters))
   }
   
   /**
@@ -141,11 +147,8 @@ public class Query<RecordType: Record> {
       NSLog("Error: Could not map %@.%@ to column", RecordType.modelName(), fieldName)
     }
     return self.dynamicType.init(
-      selectClause: selectClause,
-      whereClause: whereClause,
-      orderClause: clause,
-      limitClause: limitClause,
-      joinClause: joinClause
+      copyFrom: self,
+      orderClause: clause
     )
   }
   
@@ -170,11 +173,8 @@ public class Query<RecordType: Record> {
     var clause = limitClause
     clause.query = "\(newLimit)"
     return self.dynamicType.init(
-      selectClause: selectClause,
-      whereClause: whereClause,
-      orderClause: orderClause,
-      limitClause: clause,
-      joinClause: joinClause
+      copyFrom: self,
+      limitClause: clause
     )
   }
   
@@ -188,11 +188,8 @@ public class Query<RecordType: Record> {
     */
   public func select(selectClause: String) -> Query<RecordType> {
     return self.dynamicType.init(
-      selectClause: selectClause,
-      whereClause: whereClause,
-      orderClause: orderClause,
-      limitClause: limitClause,
-      joinClause: joinClause
+      copyFrom: self,
+      selectClause: selectClause
     )
   }
   
@@ -213,10 +210,7 @@ public class Query<RecordType: Record> {
     clause.query += query
     clause.parameters.extend(parameters)
     return self.dynamicType.init(
-      selectClause: selectClause,
-      whereClause: whereClause,
-      orderClause: orderClause,
-      limitClause: limitClause,
+      copyFrom: self,
       joinClause: clause
     )
   }
@@ -325,5 +319,46 @@ public class Query<RecordType: Record> {
     */
   public func isEmpty() -> Bool {
     return self.count() == 0
+  }
+  
+  //MARK: - Building Records
+  
+  /**
+    This method builds a new record based on the conditions on this query.
+  
+    :param: data    The fields to set on the new record. Any conditions from
+                    this query will be set automatically.
+    :returns:       The new record
+    */
+  public func build(_ data: [String:Any] = [:]) -> RecordType {
+    let type = RecordType.self
+    let record = type.init(data: data)
+    for (key,value) in conditions {
+      var anyValue: Any? = nil
+      switch(value) {
+      case let object as NSObject:
+        anyValue = object
+      default:
+        break
+      }
+      record.setValue(anyValue, forKey: key)
+    }
+    return record
+  }
+  
+  
+  /**
+    This method creates a new record based on the conditions on this query.
+  
+    It will build the record using the build method and then save it.
+  
+    :param: data    The fields to set on the new record. Any conditions from
+                    this query will be set automatically.
+    :returns:       The new record
+  */
+  public func create(_ data: [String:Any] = [:]) -> RecordType {
+    let record = self.build(data)
+    record.save()
+    return record
   }
 }
