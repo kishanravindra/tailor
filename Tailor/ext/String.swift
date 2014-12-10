@@ -33,4 +33,9 @@ public extension String {
     }
     return self + "s"
   }
+  
+  /** Whether this string contains another one. */
+  public func contains(other: String) -> Bool {
+    return self.rangeOfString(other) != nil
+  }
 }

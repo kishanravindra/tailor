@@ -268,4 +268,12 @@ public class MysqlConnection : DatabaseConnection {
     
     return rows
   }
+  
+  //MARK: Transactions
+  
+  public override func transaction(block: ()->()) {
+    mysql_query(self.connection, "START TRANSACTION;")
+    block()
+    mysql_query(self.connection, "COMMIT;")
+  }
 }

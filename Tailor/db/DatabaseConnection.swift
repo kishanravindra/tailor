@@ -113,4 +113,26 @@ public class DatabaseConnection {
     let sanitizedColumn = keyRegex.stringByReplacingMatchesInString(columnName, options: nil, range: range, withTemplate: "")
     return sanitizedColumn
   }
+  
+  //MARK: Transactions
+  
+  /**
+    This method executes a block within a transaction on the shared connection.
+  
+    :param: block   The block to execute.
+    */
+  public class func transaction(block: ()->()) {
+    self.sharedConnection().transaction(block)
+  }
+  
+  /**
+    This method executes a block within a transition.
+  
+    :param: block   The block to execute.
+    */
+  public func transaction(block: ()->()) {
+    executeQuery("START TRANSACTION;")
+    block()
+    executeQuery("COMMIT;")
+  }
 }

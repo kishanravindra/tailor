@@ -95,7 +95,7 @@ public class Record : Model {
     :param: fieldName     The name of the field.
     :returns:             The name of the column.
     */
-  class func columnNameForField(fieldName: String) -> String? {
+  public class func columnNameForField(fieldName: String) -> String? {
     if fieldName == "id" || contains(self.persistedProperties(), fieldName) {
       return fieldName.underscored()
     }

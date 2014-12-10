@@ -20,15 +20,10 @@
 
 ### Modelling
 
-* Transactions
 * Resetting local database
 * Storing seed data
-* Fetching relationships
 * Reversing alterations
 
-### Query Building
-
-* Joins
 
 ### Authentication
 
