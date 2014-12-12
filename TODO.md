@@ -1,6 +1,5 @@
 ### General
 
-* Helpers for APIs
 * Mailers
 * Running cron jobs
 * Running persistent background jobs
@@ -23,7 +22,6 @@
 * Resetting local database
 * Storing seed data
 * Reversing alterations
-
 
 ### Authentication
 

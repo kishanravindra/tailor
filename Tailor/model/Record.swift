@@ -380,4 +380,22 @@ public class Record : Model {
     let query = "DELETE FROM \(self.dynamicType.tableName()) WHERE id = ?"
     DatabaseConnection.sharedConnection().executeQuery(query, self.id.stringValue)
   }
+  
+  //MARK: - Serialization
+  
+  /**
+    This method converts a record into a simple property list.
+
+    The property list will contain all of the persisted properties.
+  
+    :returns:   The property list.
+    */
+  public func toPropertyList() -> [String:AnyObject] {
+    var propertyList = [String:AnyObject]()
+    propertyList["id"] = self.id
+    for key in self.dynamicType.persistedProperties() {
+      propertyList[key] = self.valueForKey(key)
+    }
+    return propertyList
+  }
 }
