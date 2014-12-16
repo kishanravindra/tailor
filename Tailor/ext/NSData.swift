@@ -1,3 +1,4 @@
+import Cocoa
 extension NSData {
   /**
     This method searches for a string in this data and uses it to separate out

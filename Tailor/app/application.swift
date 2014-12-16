@@ -27,6 +27,11 @@ public class Application {
   private var registeredSubclasses: [String:[AnyClass]] = [:]
   
   /**
+    The space-separated arguments given from the command-line.
+    */
+  public private(set) var arguments: [String]
+  
+  /**
     The command that the application is running, which is provided in the first
     command-line argument.
     */
@@ -46,7 +51,8 @@ public class Application {
     and registers all the subclasses of Task and Alteration for use in
     running scripts.
     */
-  public required init() {
+  public required init(arguments : [String]? = nil) {
+    self.arguments = arguments ?? Application.extractArguments()
     self.loadDateFormatters()
     self.registerSubclasses(Task.self, Alteration.self)
     self.parseArguments()
@@ -163,7 +169,7 @@ public class Application {
     prompting until it gets a valid task.
     */
   private func parseArguments() {
-    (self.command, self.flags) = self.dynamicType.parseArguments(self.dynamicType.extractArguments())
+    (self.command, self.flags) = self.dynamicType.parseArguments(self.arguments)
     let tasks = self.registeredSubclassList(Task.self).sorted {
       task1, task2 in
       task1.command().compare(task2.command()) == NSComparisonResult.OrderedAscending
@@ -187,8 +193,8 @@ public class Application {
         self.flags = [:]
       }
       else {
-        let arguments = invocation?.componentsSeparatedByString(" ")
-        (self.command, self.flags) = self.dynamicType.parseArguments(arguments ?? [])
+        self.arguments = invocation?.componentsSeparatedByString(" ") ?? []
+        (self.command, self.flags) = self.dynamicType.parseArguments(self.arguments)
       }
     }
 

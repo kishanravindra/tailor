@@ -1,4 +1,4 @@
-import Tailor
+import Cocoa
 
 /**
   This class provides a validator for a key being unique.

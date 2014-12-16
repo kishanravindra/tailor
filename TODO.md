@@ -11,6 +11,7 @@
 * Make template project have a build stage for copying the Framework into the
   application bundle.
 * Shorthands for date arithmetic
+* Caching
 
 ### Routing and Controllers
 

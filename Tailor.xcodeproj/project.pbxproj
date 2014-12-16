@@ -11,6 +11,56 @@
 		522B56CA1A18C849009BBE32 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522B56C91A18C849009BBE32 /* Array.swift */; };
 		522B56CC1A191475009BBE32 /* UniquenessValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522B56CB1A191475009BBE32 /* UniquenessValidator.swift */; };
 		525C80851A1C1B4900E7035F /* Query.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525C80841A1C1B4900E7035F /* Query.swift */; };
+		529230061A3CF4E4006DD6EB /* ApplicationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529230051A3CF4E4006DD6EB /* ApplicationTests.swift */; };
+		5292300F1A3CF671006DD6EB /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140119E9DA1D006D72B0 /* Application.swift */; };
+		529230101A3CF671006DD6EB /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140219E9DA1D006D72B0 /* Connection.swift */; };
+		529230111A3CF671006DD6EB /* Cookie.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140319E9DA1D006D72B0 /* Cookie.swift */; };
+		529230121A3CF671006DD6EB /* CookieJar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140419E9DA1D006D72B0 /* CookieJar.swift */; };
+		529230131A3CF671006DD6EB /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140519E9DA1D006D72B0 /* Request.swift */; };
+		529230141A3CF671006DD6EB /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140619E9DA1D006D72B0 /* Response.swift */; };
+		529230151A3CF671006DD6EB /* RouteSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140719E9DA1D006D72B0 /* RouteSet.swift */; };
+		529230161A3CF671006DD6EB /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140819E9DA1D006D72B0 /* Server.swift */; };
+		529230171A3CF681006DD6EB /* DatabaseConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140F19E9DA1D006D72B0 /* DatabaseConnection.swift */; };
+		529230181A3CF681006DD6EB /* MysqlConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD141219E9DA1D006D72B0 /* MysqlConnection.swift */; };
+		529230191A3CF687006DD6EB /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD141B19E9DA1D006D72B0 /* Model.swift */; };
+		5292301A1A3CF687006DD6EB /* Record.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD141C19E9DA1D006D72B0 /* Record.swift */; };
+		5292301B1A3CF687006DD6EB /* Query.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525C80841A1C1B4900E7035F /* Query.swift */; };
+		5292301C1A3CF687006DD6EB /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EF126319EF545000B61DF4 /* User.swift */; };
+		5292301D1A3CF68D006DD6EB /* UniquenessValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522B56CB1A191475009BBE32 /* UniquenessValidator.swift */; };
+		5292301E1A3CF68D006DD6EB /* BlockValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD141E19E9DA1D006D72B0 /* BlockValidator.swift */; };
+		5292301F1A3CF68D006DD6EB /* ErrorCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD141F19E9DA1D006D72B0 /* ErrorCollection.swift */; };
+		529230201A3CF68D006DD6EB /* PresenceValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD142019E9DA1D006D72B0 /* PresenceValidator.swift */; };
+		529230211A3CF68D006DD6EB /* RangeValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD142119E9DA1D006D72B0 /* RangeValidator.swift */; };
+		529230221A3CF68D006DD6EB /* Validator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD142219E9DA1D006D72B0 /* Validator.swift */; };
+		529230231A3CF695006DD6EB /* FormBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD142419E9DA1D006D72B0 /* FormBuilder.swift */; };
+		529230241A3CF695006DD6EB /* Template.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD142519E9DA1D006D72B0 /* Template.swift */; };
+		529230251A3CF695006DD6EB /* Sanitizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6ED19F3F75C0086261B /* Sanitizer.swift */; };
+		529230261A3CF695006DD6EB /* HtmlSanitizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6EF19F3F7E20086261B /* HtmlSanitizer.swift */; };
+		529230271A3CF695006DD6EB /* SanitizedText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6F119F3F7FC0086261B /* SanitizedText.swift */; };
+		529230281A3CF695006DD6EB /* SqlSanitizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6F319F405620086261B /* SqlSanitizer.swift */; };
+		529230291A3CF69C006DD6EB /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6A819F2B1D00086261B /* Task.swift */; };
+		5292302A1A3CF69C006DD6EB /* ServerTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6AA19F2B2590086261B /* ServerTask.swift */; };
+		5292302B1A3CF69C006DD6EB /* AlterationsTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6AF19F2D24F0086261B /* AlterationsTask.swift */; };
+		5292302C1A3CF69C006DD6EB /* Alteration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6B119F2DAD30086261B /* Alteration.swift */; };
+		5292302D1A3CF6A0006DD6EB /* Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EF127319F0A58400B61DF4 /* Localization.swift */; };
+		5292302E1A3CF6A4006DD6EB /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522B56C91A18C849009BBE32 /* Array.swift */; };
+		5292302F1A3CF6A4006DD6EB /* NSDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD141619E9DA1D006D72B0 /* NSDate.swift */; };
+		529230301A3CF6A4006DD6EB /* NSData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 521E87471A0FCEDA00D84B7B /* NSData.swift */; };
+		529230311A3CF6A4006DD6EB /* NSString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD141719E9DA1D006D72B0 /* NSString.swift */; };
+		529230321A3CF6A4006DD6EB /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD141819E9DA1D006D72B0 /* String.swift */; };
+		529230331A3CF6A4006DD6EB /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B69919F1DCF10086261B /* Dictionary.swift */; };
+		529230341A3CF6AB006DD6EB /* crypt_blowfish.c in Sources */ = {isa = PBXBuildFile; fileRef = 52C6252519EE12AE0024453F /* crypt_blowfish.c */; };
+		529230351A3CF6AB006DD6EB /* AesEncryptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C6251919EE110B0024453F /* AesEncryptor.swift */; };
+		529230361A3CF6AB006DD6EB /* BlowfishEncryptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C6251F19EE12810024453F /* BlowfishEncryptor.swift */; };
+		529230371A3CF6AE006DD6EB /* TailorC.m in Sources */ = {isa = PBXBuildFile; fileRef = 52BD141419E9DA1D006D72B0 /* TailorC.m */; };
+		529230381A3CF6B5006DD6EB /* Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140B19E9DA1D006D72B0 /* Controller.swift */; };
+		529230391A3CF6B5006DD6EB /* RestfulController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140C19E9DA1D006D72B0 /* RestfulController.swift */; };
+		5292303A1A3CF6B5006DD6EB /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140D19E9DA1D006D72B0 /* Session.swift */; };
+		5292303C1A3CF9AA006DD6EB /* libmysqlclient.18.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D61A7319FDB27800FFA2EF /* libmysqlclient.18.dylib */; };
+		5292303E1A3CFB93006DD6EB /* ExitTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5292303D1A3CFB93006DD6EB /* ExitTask.swift */; };
+		5292303F1A3CFC36006DD6EB /* ExitTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5292303D1A3CFB93006DD6EB /* ExitTask.swift */; };
+		52A684521A3D0C5B00F4AA47 /* ConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A684511A3D0C5B00F4AA47 /* ConnectionTests.swift */; };
+		52A684541A3EFB1000F4AA47 /* CookieTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A684531A3EFB1000F4AA47 /* CookieTests.swift */; };
 		52B2B69A19F1DCF10086261B /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B69919F1DCF10086261B /* Dictionary.swift */; };
 		52B2B6A919F2B1D00086261B /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6A819F2B1D00086261B /* Task.swift */; };
 		52B2B6AB19F2B2590086261B /* ServerTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6AA19F2B2590086261B /* ServerTask.swift */; };
@@ -22,7 +72,6 @@
 		52B2B6F219F3F7FC0086261B /* SanitizedText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6F119F3F7FC0086261B /* SanitizedText.swift */; };
 		52B2B6F419F405620086261B /* SqlSanitizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6F319F405620086261B /* SqlSanitizer.swift */; };
 		52BD13A319E9D7E4006D72B0 /* Tailor.h in Headers */ = {isa = PBXBuildFile; fileRef = 52BD13A219E9D7E4006D72B0 /* Tailor.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		52BD13B019E9D7E4006D72B0 /* TailorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD13AF19E9D7E4006D72B0 /* TailorTests.swift */; };
 		52BD142619E9DA1D006D72B0 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140119E9DA1D006D72B0 /* Application.swift */; };
 		52BD142719E9DA1D006D72B0 /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140219E9DA1D006D72B0 /* Connection.swift */; };
 		52BD142819E9DA1D006D72B0 /* Cookie.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140319E9DA1D006D72B0 /* Cookie.swift */; };
@@ -77,6 +126,11 @@
 		5247FF9E19F4629700C08156 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		5247FF9F19F462C200C08156 /* ___PACKAGENAME___Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "___PACKAGENAME___Application.swift"; sourceTree = "<group>"; };
 		525C80841A1C1B4900E7035F /* Query.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Query.swift; sourceTree = "<group>"; };
+		529230051A3CF4E4006DD6EB /* ApplicationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApplicationTests.swift; sourceTree = "<group>"; };
+		5292303B1A3CF74A006DD6EB /* TailorTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TailorTests.h; sourceTree = "<group>"; };
+		5292303D1A3CFB93006DD6EB /* ExitTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ExitTask.swift; path = tasks/ExitTask.swift; sourceTree = "<group>"; };
+		52A684511A3D0C5B00F4AA47 /* ConnectionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionTests.swift; sourceTree = "<group>"; };
+		52A684531A3EFB1000F4AA47 /* CookieTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CookieTests.swift; sourceTree = "<group>"; };
 		52B2B69919F1DCF10086261B /* Dictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
 		52B2B6A819F2B1D00086261B /* Task.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Task.swift; path = tasks/Task.swift; sourceTree = "<group>"; };
 		52B2B6AA19F2B2590086261B /* ServerTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ServerTask.swift; path = tasks/ServerTask.swift; sourceTree = "<group>"; };
@@ -92,7 +146,6 @@
 		52BD13A219E9D7E4006D72B0 /* Tailor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Tailor.h; sourceTree = "<group>"; };
 		52BD13A819E9D7E4006D72B0 /* TailorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TailorTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		52BD13AE19E9D7E4006D72B0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		52BD13AF19E9D7E4006D72B0 /* TailorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TailorTests.swift; sourceTree = "<group>"; };
 		52BD140119E9DA1D006D72B0 /* Application.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
 		52BD140219E9DA1D006D72B0 /* Connection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Connection.swift; sourceTree = "<group>"; };
 		52BD140319E9DA1D006D72B0 /* Cookie.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cookie.swift; sourceTree = "<group>"; };
@@ -146,12 +199,23 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5292303C1A3CF9AA006DD6EB /* libmysqlclient.18.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		529230041A3CF4AF006DD6EB /* app */ = {
+			isa = PBXGroup;
+			children = (
+				529230051A3CF4E4006DD6EB /* ApplicationTests.swift */,
+				52A684511A3D0C5B00F4AA47 /* ConnectionTests.swift */,
+				52A684531A3EFB1000F4AA47 /* CookieTests.swift */,
+			);
+			path = app;
+			sourceTree = "<group>";
+		};
 		52B2B6A519F2B1430086261B /* tasks */ = {
 			isa = PBXGroup;
 			children = (
@@ -159,6 +223,7 @@
 				52B2B6AA19F2B2590086261B /* ServerTask.swift */,
 				52B2B6AF19F2D24F0086261B /* AlterationsTask.swift */,
 				52B2B6B119F2DAD30086261B /* Alteration.swift */,
+				5292303D1A3CFB93006DD6EB /* ExitTask.swift */,
 			);
 			name = tasks;
 			sourceTree = "<group>";
@@ -245,7 +310,8 @@
 		52BD13AC19E9D7E4006D72B0 /* TailorTests */ = {
 			isa = PBXGroup;
 			children = (
-				52BD13AF19E9D7E4006D72B0 /* TailorTests.swift */,
+				5292303B1A3CF74A006DD6EB /* TailorTests.h */,
+				529230041A3CF4AF006DD6EB /* app */,
 				52BD13AD19E9D7E4006D72B0 /* Supporting Files */,
 			);
 			path = TailorTests;
@@ -504,6 +570,7 @@
 				52B2B6AB19F2B2590086261B /* ServerTask.swift in Sources */,
 				52BD142B19E9DA1D006D72B0 /* Response.swift in Sources */,
 				52BD144319E9DA1D006D72B0 /* FormBuilder.swift in Sources */,
+				5292303E1A3CFB93006DD6EB /* ExitTask.swift in Sources */,
 				52BD143919E9DA1D006D72B0 /* NSString.swift in Sources */,
 				52BD143C19E9DA1D006D72B0 /* Model.swift in Sources */,
 				52BD143519E9DA1D006D72B0 /* MysqlConnection.swift in Sources */,
@@ -524,7 +591,54 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				52BD13B019E9D7E4006D72B0 /* TailorTests.swift in Sources */,
+				529230321A3CF6A4006DD6EB /* String.swift in Sources */,
+				529230291A3CF69C006DD6EB /* Task.swift in Sources */,
+				529230161A3CF671006DD6EB /* Server.swift in Sources */,
+				529230201A3CF68D006DD6EB /* PresenceValidator.swift in Sources */,
+				5292302E1A3CF6A4006DD6EB /* Array.swift in Sources */,
+				5292302F1A3CF6A4006DD6EB /* NSDate.swift in Sources */,
+				529230281A3CF695006DD6EB /* SqlSanitizer.swift in Sources */,
+				529230151A3CF671006DD6EB /* RouteSet.swift in Sources */,
+				529230341A3CF6AB006DD6EB /* crypt_blowfish.c in Sources */,
+				52A684541A3EFB1000F4AA47 /* CookieTests.swift in Sources */,
+				529230141A3CF671006DD6EB /* Response.swift in Sources */,
+				5292300F1A3CF671006DD6EB /* Application.swift in Sources */,
+				5292302B1A3CF69C006DD6EB /* AlterationsTask.swift in Sources */,
+				5292301D1A3CF68D006DD6EB /* UniquenessValidator.swift in Sources */,
+				529230351A3CF6AB006DD6EB /* AesEncryptor.swift in Sources */,
+				529230211A3CF68D006DD6EB /* RangeValidator.swift in Sources */,
+				529230231A3CF695006DD6EB /* FormBuilder.swift in Sources */,
+				529230391A3CF6B5006DD6EB /* RestfulController.swift in Sources */,
+				529230361A3CF6AB006DD6EB /* BlowfishEncryptor.swift in Sources */,
+				529230271A3CF695006DD6EB /* SanitizedText.swift in Sources */,
+				529230261A3CF695006DD6EB /* HtmlSanitizer.swift in Sources */,
+				529230371A3CF6AE006DD6EB /* TailorC.m in Sources */,
+				5292301C1A3CF687006DD6EB /* User.swift in Sources */,
+				5292301A1A3CF687006DD6EB /* Record.swift in Sources */,
+				529230121A3CF671006DD6EB /* CookieJar.swift in Sources */,
+				529230061A3CF4E4006DD6EB /* ApplicationTests.swift in Sources */,
+				529230191A3CF687006DD6EB /* Model.swift in Sources */,
+				529230181A3CF681006DD6EB /* MysqlConnection.swift in Sources */,
+				529230171A3CF681006DD6EB /* DatabaseConnection.swift in Sources */,
+				529230301A3CF6A4006DD6EB /* NSData.swift in Sources */,
+				5292301B1A3CF687006DD6EB /* Query.swift in Sources */,
+				529230111A3CF671006DD6EB /* Cookie.swift in Sources */,
+				5292302A1A3CF69C006DD6EB /* ServerTask.swift in Sources */,
+				5292302D1A3CF6A0006DD6EB /* Localization.swift in Sources */,
+				529230221A3CF68D006DD6EB /* Validator.swift in Sources */,
+				529230331A3CF6A4006DD6EB /* Dictionary.swift in Sources */,
+				52A684521A3D0C5B00F4AA47 /* ConnectionTests.swift in Sources */,
+				5292301E1A3CF68D006DD6EB /* BlockValidator.swift in Sources */,
+				529230381A3CF6B5006DD6EB /* Controller.swift in Sources */,
+				529230311A3CF6A4006DD6EB /* NSString.swift in Sources */,
+				529230131A3CF671006DD6EB /* Request.swift in Sources */,
+				5292303F1A3CFC36006DD6EB /* ExitTask.swift in Sources */,
+				5292301F1A3CF68D006DD6EB /* ErrorCollection.swift in Sources */,
+				529230241A3CF695006DD6EB /* Template.swift in Sources */,
+				5292303A1A3CF6B5006DD6EB /* Session.swift in Sources */,
+				529230101A3CF671006DD6EB /* Connection.swift in Sources */,
+				5292302C1A3CF69C006DD6EB /* Alteration.swift in Sources */,
+				529230251A3CF695006DD6EB /* Sanitizer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -705,7 +819,9 @@
 				);
 				INFOPLIST_FILE = TailorTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = /usr/local/Cellar/mysql/5.6.19/lib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = TailorTests/TailorTests.h;
 			};
 			name = Debug;
 		};
@@ -723,7 +839,9 @@
 				);
 				INFOPLIST_FILE = TailorTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = /usr/local/Cellar/mysql/5.6.19/lib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = TailorTests/TailorTests.h;
 			};
 			name = Release;
 		};
