@@ -51,7 +51,6 @@ public struct Request {
   public init(clientAddress: String, data: NSData) {
     self.clientAddress = clientAddress
     self.data = data
-    NSLog("Data is %@", data)
     
     let headerAndBody = data.componentsSeparatedByString("\r\n\r\n", limit: 2)
     let headerData = headerAndBody[0]
@@ -78,8 +77,6 @@ public struct Request {
       self.fullPath = introMatches[1]
       lines.removeAtIndex(0)
     }
-    
-    self.path = self.fullPath
     
     if let queryStringLocation = self.fullPath.rangeOfString("?", options: NSStringCompareOptions.BackwardsSearch) {
       self.path = self.fullPath.substringToIndex(queryStringLocation.startIndex)
