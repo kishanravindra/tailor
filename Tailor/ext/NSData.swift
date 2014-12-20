@@ -1,4 +1,5 @@
-import Cocoa
+import Foundation
+
 extension NSData {
   /**
     This method searches for a string in this data and uses it to separate out
@@ -12,6 +13,9 @@ extension NSData {
   func componentsSeparatedByString(separator: String, limit: Int? = nil) -> [NSData] {
     var components = [NSData]()
     let separatorData = separator.dataUsingEncoding(NSUTF8StringEncoding)!
+    if self.length == 0 {
+      return [self]
+    }
     var searchRange = NSRange(location: 0, length: self.length)
     while(true) {
       let matchRange = self.rangeOfData(separatorData, options: nil, range: searchRange)
@@ -19,9 +23,7 @@ extension NSData {
         break
       }
       let componentRange = NSRange(location: searchRange.location, length: matchRange.location - searchRange.location)
-      if componentRange.length != 0 {
-        components.append(self.subdataWithRange(componentRange))
-      }
+      components.append(self.subdataWithRange(componentRange))
       searchRange.location += componentRange.length + matchRange.length
       searchRange.length -= componentRange.length + matchRange.length
       

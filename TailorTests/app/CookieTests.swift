@@ -10,16 +10,7 @@ import Cocoa
 import XCTest
 
 class CookieTests: XCTestCase {
-  var cookie = Cookie(key: "testCookie", value: "27")
-  override func setUp() {
-    super.setUp()
-    cookie = Cookie(key: "testCookie", value: "27")
-  }
-    
-  override func tearDown() {
-    super.tearDown()
-  }
-  
+  var cookie = Cookie(key: "testCookie", value: "27")  
   //MARK: - Header String
   
   func testGetsHeaderStringForSimpleCookie() {

@@ -29,10 +29,6 @@ class ConnectionTests: XCTestCase {
     connectionHandle = NSFileHandle(forUpdatingAtPath: path)!
     connection.readFromSocket(connectionHandle.fileDescriptor)
   }
-    
-  override func tearDown() {
-    super.tearDown()
-  }
   
   func testCanReceiveConnection() {
     let expectation = expectationWithDescription("received connection")

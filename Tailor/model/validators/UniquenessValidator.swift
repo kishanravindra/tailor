@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 /**
   This class provides a validator for a key being unique.

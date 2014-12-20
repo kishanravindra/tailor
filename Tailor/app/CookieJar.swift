@@ -7,7 +7,7 @@ public class CookieJar {
   /** The cookies in the jar. */
   public private(set) var cookies: [Cookie] = []
   
-  //MARK - Modifying Cookies
+  //MARK: - Modifying Cookies
   
   /**
     This method changes a value for a cookie.
