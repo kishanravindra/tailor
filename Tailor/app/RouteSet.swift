@@ -209,7 +209,6 @@ public class RouteSet {
     }
     let route = Route(pathPattern: fullPattern, method: method, handler: handler, description: description)
     self.routes.append(route)
-    //return route
   }
   
   /**
@@ -265,7 +264,7 @@ public class RouteSet {
     :param: except  The actions to skip.
   */
   public func addRestfulRoutes(only: [String] = [], except: [String] = []) {
-    var actions = (only.isEmpty ? ["index", "new", "create", "edit", "update", "destroy"] : only)
+    var actions = (only.isEmpty ? ["index", "new", "create", "show", "edit", "update", "destroy"] : only)
     for action in except {
       if let index = find(actions, action) {
         actions.removeAtIndex(index)
@@ -334,6 +333,43 @@ public class RouteSet {
     callback(response)
   }
   
+  /**
+    This method generates a set of routes for static assets.
+    
+    The handlers for this will read the file contents for each file from the
+    disk and serve it out as the response. The local paths for the assets will
+    be relative to the application's root path, which defaults to the directory
+    containing the executable.
+    
+    :param: prefix        The prefix that we append to all the static asset URLs.
+    :param: localPrefix   The prefix that we append to all of the paths for the
+                          assets on disk.
+    :param: assets        The names of the asset files.
+  */
+  public func staticAssets(#prefix: String, localPrefix: String, assets: [String]) {
+    for assetName in assets {
+      let path = "\(prefix)/\(assetName)"
+      let localPath = "\(localPrefix)/\(assetName)"
+      self.addRoute(path, method: "GET") {
+        (request, callback) -> () in
+        
+        let fullPath = Application.sharedApplication().rootPath + "/\(localPath)"
+        
+        if let contents = NSFileManager.defaultManager().contentsAtPath(fullPath) {
+          var response = Response()
+          response.code = 200
+          response.bodyData.appendData(contents)
+          callback(response)
+        }
+        else {
+          var response = Response()
+          response.code = 404
+          callback(response)
+        }
+      }
+    }
+  }
+  
   //MARK: - Generating URLs
   
   /**
@@ -346,7 +382,7 @@ public class RouteSet {
     */
   public func urlFor(controllerName: String, action: String, parameters: [String:String] = [:]) -> String? {
     for route in self.routes {
-      if route.controller != nil && NSStringFromClass(route.controller!) == controllerName &&
+      if route.controller != nil && route.controller!.name() == controllerName &&
       route.action != nil && route.action! == action {
         var path = route.pathPattern
         var hasQuery = false
@@ -371,42 +407,5 @@ public class RouteSet {
       }
     }
     return nil
-  }
-  
-  /**
-    This method generates a set of routes for static assets.
-
-    The handlers for this will read the file contents for each file from the
-    disk and serve it out as the response. The local paths for the assets will
-    be relative to the application's root path, which defaults to the directory
-    containing the executable.
-
-    :param: prefix        The prefix that we append to all the static asset URLs.
-    :param: localPrefix   The prefix that we append to all of the paths for the
-                          assets on disk.
-    :param: assets        The names of the asset files.
-    */
-  public func staticAssets(#prefix: String, localPrefix: String, assets: [String]) {
-    for assetName in assets {
-      let path = "\(prefix)/\(assetName)"
-      let localPath = "\(localPrefix)/\(assetName)"
-      self.addRoute(path, method: "GET") {
-        (request, callback) -> () in
-        
-        let fullPath = Application.sharedApplication().rootPath + "/\(localPath)"
-
-        if let contents = NSFileManager.defaultManager().contentsAtPath(fullPath) {
-          var response = Response()
-          response.code = 200
-          response.bodyData.appendData(contents)
-          callback(response)
-        }
-        else {
-          var response = Response()
-          response.code = 404
-          callback(response)
-        }
-      }
-    }
   }
 }

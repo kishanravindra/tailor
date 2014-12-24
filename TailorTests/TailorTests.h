@@ -11,4 +11,5 @@
 
 #include "../Tailor/db/TailorC.h"
 #include "../Tailor/crypt/crypt_blowfish.h"
+
 #endif

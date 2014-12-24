@@ -57,7 +57,7 @@ public struct Response {
     add(NSString(format: "Content-Length: %d\n", bodyData.length))
     
     for (key,value) in self.headers {
-      add(NSString(format: "%@: %@ \n", key, value))
+      add(NSString(format: "%@: %@\n", key, value))
     }
     add(cookies.headerStringForChanges)
     add("\n")
