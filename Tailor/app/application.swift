@@ -52,7 +52,10 @@ public class Application {
     running scripts.
     */
   public required init(arguments : [String]? = nil) {
-    self.arguments = arguments ?? Application.extractArguments()
+    self.arguments = arguments ?? []
+    if self.arguments.isEmpty {
+      self.arguments = self.dynamicType.extractArguments()
+    }
     self.loadDateFormatters()
     self.registerSubclasses(Task.self, Alteration.self)
     self.parseArguments()

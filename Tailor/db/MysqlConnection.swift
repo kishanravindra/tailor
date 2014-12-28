@@ -164,6 +164,9 @@ public class MysqlConnection : DatabaseConnection {
         }
         self.timeZone = NSTimeZone(forSecondsFromGMT: minutes * 60)
       }
+      else if let zone = NSTimeZone(name: timeZoneDescription) {
+        self.timeZone = zone
+      }
     }
   }
   

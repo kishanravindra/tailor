@@ -7,9 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		52178E671A4F359F001F6D57 /* MysqlConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52178E661A4F359F001F6D57 /* MysqlConnectionTests.swift */; };
+		52178E6A1A4F5FD2001F6D57 /* database.plist in Resources */ = {isa = PBXBuildFile; fileRef = 52178E691A4F5FD2001F6D57 /* database.plist */; };
+		52178E6C1A4F60E6001F6D57 /* database.plist.sample in Resources */ = {isa = PBXBuildFile; fileRef = 52178E6B1A4F60E6001F6D57 /* database.plist.sample */; };
 		521E87481A0FCEDA00D84B7B /* NSData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 521E87471A0FCEDA00D84B7B /* NSData.swift */; };
 		522B56CA1A18C849009BBE32 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522B56C91A18C849009BBE32 /* Array.swift */; };
 		522B56CC1A191475009BBE32 /* UniquenessValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522B56CB1A191475009BBE32 /* UniquenessValidator.swift */; };
+		5258989F1A4F289800DD853D /* DatabaseConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5258989E1A4F289800DD853D /* DatabaseConnectionTests.swift */; };
 		525C80851A1C1B4900E7035F /* Query.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525C80841A1C1B4900E7035F /* Query.swift */; };
 		529230061A3CF4E4006DD6EB /* ApplicationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529230051A3CF4E4006DD6EB /* ApplicationTests.swift */; };
 		5292300F1A3CF671006DD6EB /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140119E9DA1D006D72B0 /* Application.swift */; };
@@ -123,12 +127,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		52178E661A4F359F001F6D57 /* MysqlConnectionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MysqlConnectionTests.swift; sourceTree = "<group>"; };
+		52178E691A4F5FD2001F6D57 /* database.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = database.plist; sourceTree = "<group>"; };
+		52178E6B1A4F60E6001F6D57 /* database.plist.sample */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = database.plist.sample; sourceTree = "<group>"; };
 		521E87471A0FCEDA00D84B7B /* NSData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSData.swift; sourceTree = "<group>"; };
 		522B56C91A18C849009BBE32 /* Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
 		522B56CB1A191475009BBE32 /* UniquenessValidator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UniquenessValidator.swift; sourceTree = "<group>"; };
 		5242C35519F4466F00E605D2 /* TemplateInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = TemplateInfo.plist; sourceTree = "<group>"; };
 		5247FF9E19F4629700C08156 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		5247FF9F19F462C200C08156 /* ___PACKAGENAME___Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "___PACKAGENAME___Application.swift"; sourceTree = "<group>"; };
+		5258989E1A4F289800DD853D /* DatabaseConnectionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseConnectionTests.swift; sourceTree = "<group>"; };
 		525C80841A1C1B4900E7035F /* Query.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Query.swift; sourceTree = "<group>"; };
 		529230051A3CF4E4006DD6EB /* ApplicationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApplicationTests.swift; sourceTree = "<group>"; };
 		5292303B1A3CF74A006DD6EB /* TailorTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TailorTests.h; sourceTree = "<group>"; };
@@ -214,6 +222,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		52178E681A4F5FB8001F6D57 /* config */ = {
+			isa = PBXGroup;
+			children = (
+				52178E691A4F5FD2001F6D57 /* database.plist */,
+				52178E6B1A4F60E6001F6D57 /* database.plist.sample */,
+			);
+			path = config;
+			sourceTree = "<group>";
+		};
+		525898A01A4F28A900DD853D /* db */ = {
+			isa = PBXGroup;
+			children = (
+				5258989E1A4F289800DD853D /* DatabaseConnectionTests.swift */,
+				52178E661A4F359F001F6D57 /* MysqlConnectionTests.swift */,
+			);
+			path = db;
+			sourceTree = "<group>";
+		};
 		529230041A3CF4AF006DD6EB /* app */ = {
 			isa = PBXGroup;
 			children = (
@@ -323,7 +349,9 @@
 			isa = PBXGroup;
 			children = (
 				5292303B1A3CF74A006DD6EB /* TailorTests.h */,
+				52178E681A4F5FB8001F6D57 /* config */,
 				529230041A3CF4AF006DD6EB /* app */,
+				525898A01A4F28A900DD853D /* db */,
 				52BD13AD19E9D7E4006D72B0 /* Supporting Files */,
 			);
 			path = TailorTests;
@@ -541,6 +569,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52178E6C1A4F60E6001F6D57 /* database.plist.sample in Resources */,
+				52178E6A1A4F5FD2001F6D57 /* database.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -623,6 +653,7 @@
 				52A684561A3FC14D00F4AA47 /* CookieJarTests.swift in Sources */,
 				529230231A3CF695006DD6EB /* FormBuilder.swift in Sources */,
 				529230391A3CF6B5006DD6EB /* RestfulController.swift in Sources */,
+				52178E671A4F359F001F6D57 /* MysqlConnectionTests.swift in Sources */,
 				529230361A3CF6AB006DD6EB /* BlowfishEncryptor.swift in Sources */,
 				529230271A3CF695006DD6EB /* SanitizedText.swift in Sources */,
 				529230261A3CF695006DD6EB /* HtmlSanitizer.swift in Sources */,
@@ -654,6 +685,7 @@
 				5292303A1A3CF6B5006DD6EB /* Session.swift in Sources */,
 				529230101A3CF671006DD6EB /* Connection.swift in Sources */,
 				5292302C1A3CF69C006DD6EB /* Alteration.swift in Sources */,
+				5258989F1A4F289800DD853D /* DatabaseConnectionTests.swift in Sources */,
 				529230251A3CF695006DD6EB /* Sanitizer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

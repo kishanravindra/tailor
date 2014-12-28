@@ -47,6 +47,16 @@ public class DatabaseConnection {
   }
   
   /**
+    This forces us to open a new connection to serve as the shared connection.
+    */
+  public class func openSharedConnection() -> DatabaseConnection {
+    let dictionary = NSThread.currentThread().threadDictionary
+    let connection = Application.sharedApplication().openDatabaseConnection()
+    dictionary?["databaseConnection"] = connection
+    return connection
+  }
+  
+  /**
     This gets the shared global database connection.
     */
   public class func sharedConnection() -> DatabaseConnection {
@@ -55,9 +65,7 @@ public class DatabaseConnection {
       return connection
     }
     else {
-      let connection = Application.sharedApplication().openDatabaseConnection()
-      dictionary?["databaseConnection"] = connection
-      return connection
+      return self.openSharedConnection()
     }
   }
 
