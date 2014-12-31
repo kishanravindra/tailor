@@ -200,7 +200,6 @@ public class MysqlConnection : DatabaseConnection {
     }
     NSLog("Executing %@ %@", query, stringParameters)
     
-    
     let statement = mysql_stmt_init(connection)
     let encodedQuery = query.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!
     let hasPrepareError = mysql_stmt_prepare(statement, UnsafePointer<Int8>(encodedQuery.bytes), UInt(encodedQuery.length))

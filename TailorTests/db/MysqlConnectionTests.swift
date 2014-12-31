@@ -1,25 +1,11 @@
 import XCTest
 
 class MysqlConnectionTests: XCTestCase {
-  class TestConnection: MysqlConnection {
-    
-  }
-  var connection: TestConnection { get { return DatabaseConnection.sharedConnection() as TestConnection } }
-  
-  class TestApplication: Application {
-    override class func extractArguments() -> [String] { return ["tailor.exit"] }
-    override func openDatabaseConnection() -> DatabaseConnection {
-      let config = self.configFromFile("database") as [String:String]
-      return TestConnection(config: config)
-    }
-  }
+  var connection: MysqlConnection { get { return DatabaseConnection.sharedConnection() as MysqlConnection } }
   
   override func setUp() {
     TestApplication.start()
-    Application.sharedApplication().rootPath = "./TailorTests/config"
-    DatabaseConnection.openSharedConnection()
-    connection.executeQuery("DROP TABLE IF EXISTS `hats`")
-    connection.executeQuery("CREATE TABLE `hats` ( `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, `color` varchar(255), `brim_size` int(11))")
+    connection.executeQuery("TRUNCATE TABLE `hats`")
     connection.executeQuery("INSERT INTO `hats` (`color`, `brim_size`) VALUES ('red', 10)")
   }
   
@@ -38,8 +24,8 @@ class MysqlConnectionTests: XCTestCase {
     DatabaseConnection.openSharedConnection()
     XCTAssertEqual(connection.timeZone.secondsFromGMT, 18000, "gets a time zone with an offset from the database")
 
-
     connection.executeQuery("SET GLOBAL time_zone=?", initialZone)
+    DatabaseConnection.openSharedConnection()
   }
   
   func testQueryCanGetResults() {
@@ -69,7 +55,6 @@ class MysqlConnectionTests: XCTestCase {
   }
   
   func testQueryCanGetTimestampValue() {
-    connection.executeQuery("ALTER TABLE `hats` ADD COLUMN `updated_at` timestamp")
     connection.executeQuery("UPDATE `hats` SET `updated_at` = '2014-10-18 09:30:00'")
     let results = connection.executeQuery("SELECT * FROM hats")
     
@@ -77,7 +62,10 @@ class MysqlConnectionTests: XCTestCase {
       let result = results[0]
       
       if let date = result.data["updated_at"] as? NSDate {
-        let components = NSCalendar.currentCalendar().components(.YearCalendarUnit | .MonthCalendarUnit | .DayCalendarUnit | .HourCalendarUnit | .MinuteCalendarUnit | .SecondCalendarUnit,
+        let calendar = NSCalendar.currentCalendar()
+        let oldTimeZone = calendar.timeZone
+        calendar.timeZone = NSTimeZone(name: "UTC")!
+        let components = calendar.components(.YearCalendarUnit | .MonthCalendarUnit | .DayCalendarUnit | .HourCalendarUnit | .MinuteCalendarUnit | .SecondCalendarUnit,
           fromDate: date)
         XCTAssertEqual(components.year, 2014, "gets the year from the date")
         XCTAssertEqual(components.month, 10, "gets the month from the date")
@@ -85,6 +73,7 @@ class MysqlConnectionTests: XCTestCase {
         XCTAssertEqual(components.hour, 9, "gets the hour from the date")
         XCTAssertEqual(components.minute, 30, "gets the minute from the date")
         XCTAssertEqual(components.second, 0, "gets the second from the date")
+        calendar.timeZone = oldTimeZone
       }
       else {
         XCTFail("gets a date value")
@@ -98,7 +87,7 @@ class MysqlConnectionTests: XCTestCase {
   func testQueryCanGetBlobValue() {
     connection.executeQuery("ALTER TABLE `hats` ADD COLUMN `image` BLOB")
     let bytes = [1,2,3,4]
-    let byteCount = sizeof(Int) * 4
+    let byteCount = bytes.count * sizeof(Int)
     let data = NSData(bytes: UnsafePointer<Int>(bytes), length: byteCount)
     connection.executeQuery("UPDATE `hats` SET `image`=?", parameters: [data])
     let results = connection.executeQuery("SELECT * FROM hats")
@@ -117,6 +106,7 @@ class MysqlConnectionTests: XCTestCase {
         XCTFail("gets a data value")
       }
     }
+    connection.executeQuery("ALTER TABLE `hats` REMOVE COLUMN `image`")
   }
   
   func testQueryCanGetNullValue() {

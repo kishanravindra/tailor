@@ -166,7 +166,7 @@ public class Record : Model {
       let foreignKey = inputForeignKey ?? (OtherRecordType.foreignKeyName())
       query = query.join(IntermediaryRecordType.self, fromField: foreignKey, toField: "id")
     }
-    return query.filter(through.whereClause.query, through.whereClause.parameters)
+    return query.filter(through.whereClause.query.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet()), through.whereClause.parameters)
   }
   
   //MARK: - Creating

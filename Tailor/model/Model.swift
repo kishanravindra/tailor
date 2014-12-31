@@ -7,7 +7,7 @@ import Foundation
   properties, validations, and error storage.
   */
 public class Model {
-  //MARK - Structure
+  //MARK: - Structure
   
   /** 
     The name of the model.
@@ -16,14 +16,13 @@ public class Model {
     */
   public class func modelName() -> String {
     var fullName = NSStringFromClass(self)
-    let range = fullName.rangeOfString(".", options: NSStringCompareOptions.BackwardsSearch, range: nil, locale: nil)
-    if range != nil {
-      fullName = fullName.substringFromIndex(advance(range!.startIndex, 1))
+    if let range = fullName.rangeOfString(".", options: NSStringCompareOptions.BackwardsSearch, range: nil, locale: nil) {
+      fullName = fullName.substringFromIndex(advance(range.startIndex, 1))
     }
     return fullName.underscored()
   }
   
-  //MARK - Validations
+  //MARK: - Validations
   
   /** The errors that have been set on this object in the validation process. */
   public let errors = ErrorCollection()
@@ -47,7 +46,7 @@ public class Model {
     return self.errors.isEmpty()
   }
   
-  //MARK - Dynamic Properties
+  //MARK: - Dynamic Properties
   
   /**
     This method gets the name of a property converted into a human-readable
@@ -71,7 +70,7 @@ public class Model {
     var result = ""
     
     if localization != nil {
-      let translationKey = "record.\(self.modelName().underscored()).attributes.\(key.underscored())"
+      let translationKey = "record.\(self.modelName()).attributes.\(key.underscored())"
       let translation = localization?.fetch(translationKey)
       if translation != nil {
         return capitalize ? translation!.capitalizedString : translation!

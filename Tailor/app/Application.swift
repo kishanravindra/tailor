@@ -98,8 +98,10 @@ public class Application {
   
   /** Starts a version of this application as the shared application. */
   public class func start() {
-    SHARED_APPLICATION = self.init()
-    SHARED_APPLICATION.start()
+    if(SHARED_APPLICATION == nil) {
+      SHARED_APPLICATION = self.init()
+      SHARED_APPLICATION.start()
+    }
   }
   
   /**
@@ -290,7 +292,7 @@ public class Application {
     */
   public func configFromFile(file: String) -> NSDictionary {
     let filename = "\(self.rootPath)/\(file).plist"
-    let data = NSData(contentsOfFile: filename)!
+    let data = NSData(contentsOfFile: filename) ?? NSData()
     let propertyList = NSPropertyListSerialization.propertyListWithData(data, options: Int(NSPropertyListMutabilityOptions.Immutable.rawValue), format: nil, error: nil) as? NSDictionary
     return propertyList ?? NSDictionary()
   }

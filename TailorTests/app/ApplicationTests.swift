@@ -10,16 +10,16 @@ import Foundation
 import XCTest
 
 class ApplicationTests : XCTestCase {
-  var application = Application(arguments: ["tailor.exit"])
   //MARK: Initialization
   
+  var application: Application!
   override func setUp() {
-    super.setUp()
-    SHARED_APPLICATION = Application(arguments: ["tailor.exit"])
-    application = Application.sharedApplication()
+    TestApplication.start()
+    application = TestApplication.sharedApplication()
   }
 
   func testInitializationSetsInstanceVariables() {
+    application = Application(arguments: ["tailor.exit"])
     let address = application.ipAddress
     XCTAssertTrue(
       address.0 == 0 &&
