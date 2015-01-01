@@ -52,7 +52,7 @@ public class DatabaseConnection {
   public class func openSharedConnection() -> DatabaseConnection {
     let dictionary = NSThread.currentThread().threadDictionary
     let connection = Application.sharedApplication().openDatabaseConnection()
-    dictionary?["databaseConnection"] = connection
+    dictionary["databaseConnection"] = connection
     return connection
   }
   
@@ -61,7 +61,7 @@ public class DatabaseConnection {
     */
   public class func sharedConnection() -> DatabaseConnection {
     let dictionary = NSThread.currentThread().threadDictionary
-    if let connection = dictionary?["databaseConnection"] as? DatabaseConnection {
+    if let connection = dictionary["databaseConnection"] as? DatabaseConnection {
       return connection
     }
     else {

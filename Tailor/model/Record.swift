@@ -3,7 +3,7 @@ import Foundation
 /**
   This class provides a base class for models backed by the database.
   */
-public class Record : Model {
+public class Record : Model, Equatable {
   /** The unique identifier for the record. */
   public var id : NSNumber!
   
@@ -166,7 +166,7 @@ public class Record : Model {
       let foreignKey = inputForeignKey ?? (OtherRecordType.foreignKeyName())
       query = query.join(IntermediaryRecordType.self, fromField: foreignKey, toField: "id")
     }
-    return query.filter(through.whereClause.query.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet()), through.whereClause.parameters)
+    return query.filter(through.whereClause.query, through.whereClause.parameters)
   }
   
   //MARK: - Creating
@@ -398,4 +398,23 @@ public class Record : Model {
     }
     return propertyList
   }
+}
+
+//MARK: - Comparison
+
+/**
+  This method determines if two records are equal.
+
+  Records will be equal whenever they are from the same table and have the same
+  id.
+  
+  :param: lhs   The left-hand record
+  :param: rhs   The right-hand record.
+  :returns:     Whether they are equal.
+  */
+public func ==(lhs: Record, rhs: Record) -> Bool {
+  return  lhs.id != nil &&
+          rhs.id != nil &&
+          lhs.id == rhs.id &&
+          lhs.dynamicType.tableName() == rhs.dynamicType.tableName()
 }

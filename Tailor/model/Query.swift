@@ -66,10 +66,11 @@ public class Query<RecordType: Record> {
   public func filter(query: String, _ parameters: [String] = []) -> Query<RecordType> {
     var clause = whereClause
     
-    if clause.query.isEmpty {
-      clause.query = " "
+    if query.isEmpty {
+      return self
     }
-    else {
+    
+    if !clause.query.isEmpty {
       clause.query += " AND "
     }
     clause.query += query
@@ -138,10 +139,10 @@ public class Query<RecordType: Record> {
     var clause = orderClause
     if columnName != nil {
       if !clause.query.isEmpty {
-        clause.query += ","
+        clause.query += ", "
       }
       let orderDescription = order == .OrderedAscending ? "ASC" : "DESC"
-      clause.query += " \(RecordType.tableName()).\(columnName!) \(orderDescription)"
+      clause.query += "\(RecordType.tableName()).\(columnName!) \(orderDescription)"
     }
     else {
       NSLog("Error: Could not map %@.%@ to column", RecordType.modelName(), fieldName)
@@ -248,8 +249,8 @@ public class Query<RecordType: Record> {
     var parameters : [String] = []
     let clauses = [
       ("", joinClause),
-      ("WHERE", whereClause),
-      ("ORDER BY", orderClause),
+      ("WHERE ", whereClause),
+      ("ORDER BY ", orderClause),
       ("LIMIT ", limitClause)
     ]
     

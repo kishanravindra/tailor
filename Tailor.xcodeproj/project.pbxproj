@@ -69,6 +69,7 @@
 		52A684521A3D0C5B00F4AA47 /* ConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A684511A3D0C5B00F4AA47 /* ConnectionTests.swift */; };
 		52A684541A3EFB1000F4AA47 /* CookieTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A684531A3EFB1000F4AA47 /* CookieTests.swift */; };
 		52A684561A3FC14D00F4AA47 /* CookieJarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A684551A3FC14D00F4AA47 /* CookieJarTests.swift */; };
+		52ACAC781A56059200E875D9 /* UserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52ACAC771A56059200E875D9 /* UserTests.swift */; };
 		52B2B69A19F1DCF10086261B /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B69919F1DCF10086261B /* Dictionary.swift */; };
 		52B2B6A919F2B1D00086261B /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6A819F2B1D00086261B /* Task.swift */; };
 		52B2B6AB19F2B2590086261B /* ServerTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6AA19F2B2590086261B /* ServerTask.swift */; };
@@ -112,6 +113,7 @@
 		52C6252719EE12AE0024453F /* crypt_blowfish.c in Sources */ = {isa = PBXBuildFile; fileRef = 52C6252519EE12AE0024453F /* crypt_blowfish.c */; };
 		52C6252819EE12AE0024453F /* crypt_blowfish.h in Headers */ = {isa = PBXBuildFile; fileRef = 52C6252619EE12AE0024453F /* crypt_blowfish.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52D61A7419FDB27800FFA2EF /* libmysqlclient.18.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D61A7319FDB27800FFA2EF /* libmysqlclient.18.dylib */; };
+		52DDCF011A538C5800D3A47E /* QueryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DDCF001A538C5800D3A47E /* QueryTests.swift */; };
 		52EADCCA1A40504000D9A8CF /* RequestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EADCC91A40504000D9A8CF /* RequestTests.swift */; };
 		52EC6D481A475B8000A4D822 /* ResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EC6D471A475B8000A4D822 /* ResponseTests.swift */; };
 		52EC6D4A1A47B3F100A4D822 /* RouteSetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EC6D491A47B3F100A4D822 /* RouteSetTests.swift */; };
@@ -150,6 +152,7 @@
 		52A684511A3D0C5B00F4AA47 /* ConnectionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionTests.swift; sourceTree = "<group>"; };
 		52A684531A3EFB1000F4AA47 /* CookieTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CookieTests.swift; sourceTree = "<group>"; };
 		52A684551A3FC14D00F4AA47 /* CookieJarTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CookieJarTests.swift; sourceTree = "<group>"; };
+		52ACAC771A56059200E875D9 /* UserTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserTests.swift; sourceTree = "<group>"; };
 		52B2B69919F1DCF10086261B /* Dictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
 		52B2B6A819F2B1D00086261B /* Task.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Task.swift; path = tasks/Task.swift; sourceTree = "<group>"; };
 		52B2B6AA19F2B2590086261B /* ServerTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ServerTask.swift; path = tasks/ServerTask.swift; sourceTree = "<group>"; };
@@ -201,6 +204,7 @@
 		52C6252519EE12AE0024453F /* crypt_blowfish.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = crypt_blowfish.c; sourceTree = "<group>"; };
 		52C6252619EE12AE0024453F /* crypt_blowfish.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt_blowfish.h; sourceTree = "<group>"; };
 		52D61A7319FDB27800FFA2EF /* libmysqlclient.18.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmysqlclient.18.dylib; path = ../../../../../usr/local/Cellar/mysql/5.6.19/lib/libmysqlclient.18.dylib; sourceTree = "<group>"; };
+		52DDCF001A538C5800D3A47E /* QueryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryTests.swift; sourceTree = "<group>"; };
 		52EADCC91A40504000D9A8CF /* RequestTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestTests.swift; sourceTree = "<group>"; };
 		52EC6D471A475B8000A4D822 /* ResponseTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResponseTests.swift; sourceTree = "<group>"; };
 		52EC6D491A47B3F100A4D822 /* RouteSetTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteSetTests.swift; sourceTree = "<group>"; };
@@ -233,6 +237,8 @@
 			children = (
 				5209E2881A50920C0044EE70 /* ModelTests.swift */,
 				529125541A50A00E003D2A6D /* RecordTests.swift */,
+				52DDCF001A538C5800D3A47E /* QueryTests.swift */,
+				52ACAC771A56059200E875D9 /* UserTests.swift */,
 			);
 			path = model;
 			sourceTree = "<group>";
@@ -668,12 +674,14 @@
 				5292301D1A3CF68D006DD6EB /* UniquenessValidator.swift in Sources */,
 				529230351A3CF6AB006DD6EB /* AesEncryptor.swift in Sources */,
 				529230211A3CF68D006DD6EB /* RangeValidator.swift in Sources */,
+				52ACAC781A56059200E875D9 /* UserTests.swift in Sources */,
 				52A684561A3FC14D00F4AA47 /* CookieJarTests.swift in Sources */,
 				52192ADB1A50EBEA007BB2AF /* TailorTestHelpers.swift in Sources */,
 				529230231A3CF695006DD6EB /* FormBuilder.swift in Sources */,
 				529230391A3CF6B5006DD6EB /* RestfulController.swift in Sources */,
 				52178E671A4F359F001F6D57 /* MysqlConnectionTests.swift in Sources */,
 				529230361A3CF6AB006DD6EB /* BlowfishEncryptor.swift in Sources */,
+				52DDCF011A538C5800D3A47E /* QueryTests.swift in Sources */,
 				529230271A3CF695006DD6EB /* SanitizedText.swift in Sources */,
 				529230261A3CF695006DD6EB /* HtmlSanitizer.swift in Sources */,
 				529230371A3CF6AE006DD6EB /* TailorC.m in Sources */,

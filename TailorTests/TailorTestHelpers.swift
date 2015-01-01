@@ -22,6 +22,9 @@ class TestApplication: Application {
     
     DatabaseConnection.sharedConnection().executeQuery("DROP TABLE IF EXISTS `stores`")
     DatabaseConnection.sharedConnection().executeQuery("CREATE TABLE `stores` ( `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, `name` varchar(255))")
+    
+    DatabaseConnection.sharedConnection().executeQuery("DROP TABLE IF EXISTS `users`")
+    DatabaseConnection.sharedConnection().executeQuery("CREATE TABLE `users` ( `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, `email_address` varchar(255), `encrypted_password` varchar(255))")
   }
 }
 
@@ -40,11 +43,11 @@ class TestConnection : DatabaseConnection {
   
   class func withTestConnection(block: (TestConnection)->()) {
     var dictionary = NSThread.currentThread().threadDictionary
-    let oldConnection: AnyObject? = dictionary?["databaseConnection"]
+    let oldConnection: AnyObject? = dictionary["databaseConnection"]
     let newConnection = TestConnection(config: [:])
-    dictionary?["databaseConnection"] = newConnection
+    dictionary["databaseConnection"] = newConnection
     block(newConnection)
-    dictionary?["databaseConnection"] = oldConnection
+    dictionary["databaseConnection"] = oldConnection
   }
 }
 

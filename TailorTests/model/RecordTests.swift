@@ -72,7 +72,7 @@ class RecordTests: XCTestCase {
     let shelf = Shelf.create([:])
     let query : Query<Hat> = shelf.toMany()
     let clause = query.whereClause
-    XCTAssertEqual(clause.query, " hats.shelf_id=?", "has the shelfId in the query")
+    XCTAssertEqual(clause.query, "hats.shelf_id=?", "has the shelfId in the query")
     XCTAssertEqual(clause.parameters, [shelf.id.stringValue], "has the id as the parameter")
   }
   
@@ -82,7 +82,7 @@ class RecordTests: XCTestCase {
     let query : Query<Hat> = store.toMany(through: shelfQuery, joinToMany: true)
 
     let whereClause = query.whereClause
-    XCTAssertEqual(whereClause.query, " shelfs.store_id=?")
+    XCTAssertEqual(whereClause.query, "shelfs.store_id=?")
     XCTAssertEqual(whereClause.parameters, [store.id.stringValue], "has the id as the parameter")
     
     let joinClause = query.joinClause
@@ -96,7 +96,7 @@ class RecordTests: XCTestCase {
     let query : Query<Store> = hat.toMany(through: shelfQuery, joinToMany: false)
     
     let whereClause = query.whereClause
-    XCTAssertEqual(whereClause.query, " shelfs.id=?")
+    XCTAssertEqual(whereClause.query, "shelfs.id=?")
     XCTAssertEqual(whereClause.parameters, [hat.shelfId.stringValue], "has the id as the parameter")
     
     let joinClause = query.joinClause
@@ -437,5 +437,25 @@ class RecordTests: XCTestCase {
     else {
       XCTFail("has the color")
     }
+  }
+
+  //MARK: - Comparison
+  
+  func testRecordsWithSameIdAreEqual() {
+    let lhs = Hat(data: ["id": 5])
+    let rhs = Hat(data: ["id": 5])
+    XCTAssertEqual(lhs, rhs, "records are equal")
+  }
+  
+  func testRecordsWithNilIdsAreUnequal() {
+    let lhs = Hat()
+    let rhs = Hat()
+    XCTAssertNotEqual(lhs, rhs, "records are not equal")
+  }
+  
+  func testRecordsWithDifferentTypesAreUnequal() {
+    let lhs = Hat(data: ["id": 5])
+    let rhs = Store(data: ["id": 5])
+    XCTAssertNotEqual(lhs, rhs, "records are not equal")
   }
 }
