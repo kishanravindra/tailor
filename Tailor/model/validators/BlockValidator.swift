@@ -9,16 +9,20 @@ import Foundation
   */
 public class BlockValidator : Validator {
   /** The block to use to pass the model to for validation. */
-  public let block : (Model, String, [String:Any])->()
+  public let block : (Model, String)->()
   
   /**
     This method initializes a block validator with an empty block.
   
+    The resulting validator would be useless, but we use this to support the
+    initalizer from the parent class.
+  
     :param: key   The key to validate.
     :param: data  Additional data for the validation.
     */
-  public convenience required init(key: String, data: [String:Any]) {
-    self.init(key: key, data: data, block: {(Model,String,[String:Any])->() in })
+  public required init(key: String) {
+    self.block = {(Model,String)->() in }
+    super.init(key: key)
   }
   
   /**
@@ -28,9 +32,9 @@ public class BlockValidator : Validator {
     :param: data    Additional data to give to the block.
     :param: block   The block that will be doing the validation.
     */
-  public required init(key: String, data: [String: Any], block: (Model, String, [String:Any])->()) {
+  public required init(key: String, block: (Model, String)->()) {
     self.block = block
-    super.init(key: key, data: data)
+    super.init(key: key)
   }
   
   /**
@@ -39,6 +43,6 @@ public class BlockValidator : Validator {
     :param: model   The model object to validate.
     */
   public override func validate(model: Model) {
-    self.block(model, key, data)
+    self.block(model, key)
   }
 }

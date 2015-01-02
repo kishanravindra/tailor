@@ -11,9 +11,6 @@ public class Validator {
   /** The name of the property the validator operates on. */
   public let key: String
   
-  /** Additional information that is specific to the type of validation */
-  public let data: [String:Any]
-  
   /**
     This method initializes a validator.
 
@@ -21,9 +18,8 @@ public class Validator {
     :param: data  Additional information that is specific to the type of
                   validation.
     */
-  public required init(key: String, data: [String: Any] = [:]) {
+  public required init(key: String) {
     self.key = key
-    self.data = data
   }
 
   /**

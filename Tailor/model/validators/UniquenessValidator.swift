@@ -9,13 +9,15 @@ public class UniquenessValidator : Validator {
   public override func validate(model: Model) {
     if let record = model as? Record {
       let databaseKey : String! = record.dynamicType.columnNameForField(self.key)
+      
+      if databaseKey == nil {
+        return
+      }
+      
       let value : NSData? = record.valuesToPersist()[databaseKey]
       var stringValue : String? = nil
       if value != nil {
         stringValue = NSString(data: value!, encoding: NSUTF8StringEncoding)
-      }
-      if databaseKey == nil {
-        return
       }
       
       if stringValue == nil {
@@ -23,8 +25,8 @@ public class UniquenessValidator : Validator {
       }
       
       let tableName = record.dynamicType.tableName()
-      var query = "SELECT * FROM \(tableName) WHERE ? = ?"
-      var parameters = [databaseKey!, stringValue!]
+      var query = "SELECT * FROM \(tableName) WHERE \(databaseKey!) = ?"
+      var parameters = [stringValue!]
       if record.id != nil {
         query += " AND id != ?"
         parameters.append(record.id.stringValue)

@@ -6,7 +6,7 @@ import Foundation
   If the value does not exist or is not an NSNumber object, it will fail this 
   validation.
 
-  The validator requires one of these additional keys:
+  The validator requires one of these additional fields:
 
   * min: An Int with the minimum permitted value
   * max: An Int with the maximum permitted value
@@ -15,6 +15,37 @@ import Foundation
   of the range.
   */
 public class RangeValidator : Validator {
+  /** The minimum value that this validator will accept. */
+  let min: Int?
+  
+  /** The maximum value that this validator will accept. */
+  let max: Int?
+  
+  /**
+    This method creates a range validator.
+
+    :param: key   The name of the field that this will validate.
+    :param: min   The minimum value that this will accept.
+    :param: max   The maximum value that this will accept.
+    */
+  public required init(key: String, min: Int? = nil, max: Int? = nil) {
+    self.min = min
+    self.max = max
+    super.init(key: key)
+  }
+
+  /**
+    This method creates a range validator.
+  
+    This initializer doesn't set a minimum or maximum value, which means that it
+    will only check that the value is present and is a number.
+
+    :param: key   The name of the field that this will validate.
+    */
+  public required init(key: String) {
+    super.init(key: key)
+  }
+  
   /**
     This method applies the range validation.
 
@@ -24,18 +55,20 @@ public class RangeValidator : Validator {
     switch(model.valueForKey(self.key)) {
     case let number as NSNumber:
       var matched = true
-      if let max = self.data["max"] as? Int {
-        if number.integerValue > max {
-          model.errors.add(key, "must be at most \(max)")
+      if max != nil {
+        if number.integerValue > max! {
+          model.errors.add(key, "must be at most \(max!)")
         }
       }
-      if let min = self.data["min"] as? Int {
-        if number.integerValue < min {
-          model.errors.add(key, "must be at least \(min)")
+      if min != nil {
+        if number.integerValue < min! {
+          model.errors.add(key, "must be at least \(min!)")
         }
       }
-    default:
+    case nil:
       model.errors.add(key, "cannot be blank")
+    default:
+      model.errors.add(key, "must be a number")
     }
   }
 }
