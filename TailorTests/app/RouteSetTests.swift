@@ -3,14 +3,6 @@ import XCTest
 class RouteSetTests: XCTestCase {
   var routeSet = RouteSet()
   
-  class TestApplication : Application {
-    override func configFromFile(file: String) -> NSDictionary {
-      return [
-        "encryptionKey": "0FC7ECA7AADAD635DCC13A494F9A2EA8D8DAE366382CDB3620190F6F20817124"
-      ]
-    }
-  }
-  
   
   class TestController : Controller {
     override class func name() -> String { return "TestController" }
@@ -23,7 +15,11 @@ class RouteSetTests: XCTestCase {
   
   override func setUp() {
     super.setUp()
-    SHARED_APPLICATION = TestApplication(arguments: ["tailor.exit"])
+    TestApplication.start()
+  }
+  
+  override func tearDown() {
+    super.tearDown()
   }
   
   func createTestRoute(pattern: String) -> RouteSet.Route {

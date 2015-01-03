@@ -44,23 +44,13 @@ public class Sanitizer {
     :params: string   The text to sanitize.
     :returns:         The sanitized text.
     */
-  public func sanitize(string: String) -> String {
+  public func sanitizeString(string: String) -> String {
     var sanitized = ""
     for character in string {
       var result = mapping[character] ?? String(character)
       sanitized += result
     }
     return sanitized
-  }
-  
-  /**
-    This method sanitizes text and puts it in a sanitized text wrapper.
-
-    :param: string  The text to sanitize
-    :returns:       The sanitized text wrapper.
-    */
-  public func sanitizeString(string: String) -> SanitizedText {
-    return SanitizedText(text: self.sanitize(string), sanitizers: [self.dynamicType])
   }
   
   /**
@@ -73,11 +63,11 @@ public class Sanitizer {
     :param: text  The sanitized text wrapper
     :returns:     The sanitized text wrapper for the new level of sanitization.
     */
-  public func sanitizeText(text: SanitizedText) -> SanitizedText {
+  public func sanitize(text: SanitizedText) -> SanitizedText {
     if self.dynamicType.isSanitized(text) {
       return text
     }
-    return SanitizedText(text: self.sanitize(text.text), sanitizers: text.sanitizers + [self.dynamicType])
+    return SanitizedText(text: self.sanitizeString(text.text), sanitizers: text.sanitizers + [self.dynamicType])
   }
   
   /**

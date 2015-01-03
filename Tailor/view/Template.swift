@@ -51,8 +51,8 @@ public class Template {
     :param: localize  Whether we should attempt to localize the text.
     */
   public func text(text: String, localize: Bool = true) {
-    let localizedText = self.controller?.localize(text) ?? text
-    let sanitizedText = HtmlSanitizer().sanitizeString(localizedText)
+    let localizedText = localize ? self.controller?.localize(text) ?? text : text
+    let sanitizedText = HtmlSanitizer().sanitize(SanitizedText(stringLiteral: localizedText))
     self.addSanitizedText(sanitizedText)
   }
   
@@ -64,8 +64,8 @@ public class Template {
     :param: text    The text to add.
     */
   public func raw(text: String, localize: Bool = true) {
-    let localizedText = self.controller?.localize(text) ?? text
-    self.addSanitizedText(HtmlSanitizer().accept(text))
+    let localizedText = localize ? self.controller?.localize(text) ?? text : text
+    self.addSanitizedText(HtmlSanitizer().accept(localizedText))
   }
   
   /**
@@ -78,9 +78,11 @@ public class Template {
     */
   public func addSanitizedText(text: SanitizedText) {
     if !HtmlSanitizer.isSanitized(text) {
-      self.addSanitizedText(HtmlSanitizer().sanitizeText(text))
+      self.addSanitizedText(HtmlSanitizer().sanitize(text))
     }
-    self.buffer.appendString(text.text)
+    else {
+      self.buffer.appendString(text.text)
+    }
   }
   
   /**
@@ -113,7 +115,7 @@ public class Template {
     :param: name          The name of the element.
     :param: contents      A closure that adds the contents of the tag.
     */
-  public func tag(name: String, contents: ()->() = {}) -> () {
+  public func tag(name: String, with contents: ()->() = {}) -> () {
     self.tag(name, [:], with: contents)
   }
   
@@ -135,7 +137,7 @@ public class Template {
                             current controller.
     :param: action          The action to link to.
     :param: parameters      Additional parameters for the path.
-    :reutrns:               The path
+    :returns:               The path
     */
   public func urlFor(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:]) -> String? {
     return self.controller?.urlFor(controllerName: controllerName, action: action, parameters: parameters)

@@ -43,7 +43,7 @@ public class FormBuilder {
           var mergedAttributes = attributes
           mergedAttributes["name"] = "\(form.name)[\(form.model.dynamicType.humanAttributeName(key))]"
           mergedAttributes["value"] = value
-          form.template.tag("input", attributes)
+          form.template.tag("input", mergedAttributes)
         }
       }
     }
