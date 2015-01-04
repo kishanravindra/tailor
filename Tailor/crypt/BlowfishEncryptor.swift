@@ -14,6 +14,10 @@ public class BlowfishEncryptor {
   
   /**
     This method creates an encryptor with an already-formatted setting string.
+  
+    The setting string should have the format "$2a$07salt", where "a is the
+    blowfish, "7" is the base-2 logarithm of the number of rounds to perform,
+    and "salt" is the salt.
 
     :param: blowfishSetting
       The setting string for the encryption.
@@ -29,7 +33,8 @@ public class BlowfishEncryptor {
       The Blowfish version.
 
     :param: salt
-      The binary salt
+      The binary salt. If this is omitted, this will generate a random salt,
+      which is generally preferable if you want to encrypt plaintext.
 
     :param rounds
       The number of rounds of encryption to perform.

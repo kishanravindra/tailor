@@ -111,6 +111,8 @@ public class AesEncryptor {
   deinit {
     key.release()
   }
+  
+  //MARK: - Encryption
 
   /**
     This method encrypts data with our key.

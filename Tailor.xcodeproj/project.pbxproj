@@ -123,6 +123,8 @@
 		52DDCF011A538C5800D3A47E /* QueryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DDCF001A538C5800D3A47E /* QueryTests.swift */; };
 		52E784B11A596FB70065C10D /* RestfulControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784B01A596FB70065C10D /* RestfulControllerTests.swift */; };
 		52E784B51A59C12D0065C10D /* SessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784B41A59C12D0065C10D /* SessionTests.swift */; };
+		52E784B81A59F2030065C10D /* AesEncryptorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784B71A59F2030065C10D /* AesEncryptorTests.swift */; };
+		52E784BA1A5A04590065C10D /* BlowfishEncryptorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784B91A5A04590065C10D /* BlowfishEncryptorTests.swift */; };
 		52EADCCA1A40504000D9A8CF /* RequestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EADCC91A40504000D9A8CF /* RequestTests.swift */; };
 		52EC6D481A475B8000A4D822 /* ResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EC6D471A475B8000A4D822 /* ResponseTests.swift */; };
 		52EC6D4A1A47B3F100A4D822 /* RouteSetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EC6D491A47B3F100A4D822 /* RouteSetTests.swift */; };
@@ -226,6 +228,8 @@
 		52DDCF001A538C5800D3A47E /* QueryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryTests.swift; sourceTree = "<group>"; };
 		52E784B01A596FB70065C10D /* RestfulControllerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RestfulControllerTests.swift; sourceTree = "<group>"; };
 		52E784B41A59C12D0065C10D /* SessionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionTests.swift; sourceTree = "<group>"; };
+		52E784B71A59F2030065C10D /* AesEncryptorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AesEncryptorTests.swift; sourceTree = "<group>"; };
+		52E784B91A5A04590065C10D /* BlowfishEncryptorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlowfishEncryptorTests.swift; sourceTree = "<group>"; };
 		52EADCC91A40504000D9A8CF /* RequestTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestTests.swift; sourceTree = "<group>"; };
 		52EC6D471A475B8000A4D822 /* ResponseTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResponseTests.swift; sourceTree = "<group>"; };
 		52EC6D491A47B3F100A4D822 /* RouteSetTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteSetTests.swift; sourceTree = "<group>"; };
@@ -423,6 +427,7 @@
 				5209E2871A5091BE0044EE70 /* model */,
 				528D6FA31A562D1F00783BE5 /* view */,
 				523F293C1A584F4E00C1BBC0 /* controller */,
+				52E784B61A59F1720065C10D /* crypt */,
 				52BD13AD19E9D7E4006D72B0 /* Supporting Files */,
 			);
 			path = TailorTests;
@@ -542,6 +547,15 @@
 				52C76A511A56134300134DB9 /* UniquenessValidatorTests.swift */,
 			);
 			path = validators;
+			sourceTree = "<group>";
+		};
+		52E784B61A59F1720065C10D /* crypt */ = {
+			isa = PBXGroup;
+			children = (
+				52E784B71A59F2030065C10D /* AesEncryptorTests.swift */,
+				52E784B91A5A04590065C10D /* BlowfishEncryptorTests.swift */,
+			);
+			path = crypt;
 			sourceTree = "<group>";
 		};
 		52EF127219F0A54A00B61DF4 /* localization */ = {
@@ -722,6 +736,7 @@
 				529230201A3CF68D006DD6EB /* PresenceValidator.swift in Sources */,
 				52F41F361A561E5500EE7178 /* PresenceValidatorTests.swift in Sources */,
 				5292302E1A3CF6A4006DD6EB /* Array.swift in Sources */,
+				52E784B81A59F2030065C10D /* AesEncryptorTests.swift in Sources */,
 				52C76A521A56134300134DB9 /* UniquenessValidatorTests.swift in Sources */,
 				528D6FA71A56354400783BE5 /* TemplateTests.swift in Sources */,
 				5292302F1A3CF6A4006DD6EB /* NSDate.swift in Sources */,
@@ -744,6 +759,7 @@
 				528D6FA51A562D5900783BE5 /* FormBuilderTests.swift in Sources */,
 				52192ADB1A50EBEA007BB2AF /* TailorTestHelpers.swift in Sources */,
 				529230231A3CF695006DD6EB /* FormBuilder.swift in Sources */,
+				52E784BA1A5A04590065C10D /* BlowfishEncryptorTests.swift in Sources */,
 				529230391A3CF6B5006DD6EB /* RestfulController.swift in Sources */,
 				528D6FA21A56224900783BE5 /* RangeValidatorTests.swift in Sources */,
 				52178E671A4F359F001F6D57 /* MysqlConnectionTests.swift in Sources */,
