@@ -92,6 +92,19 @@ public class CookieJar {
     }
   }
   
+  /**
+    This method gets a dictionary mapping cookie keys to values.
+
+    :returns:   The mapping.
+    */
+  public func cookieDictionary() -> [String:String] {
+    var dictionary = [String:String]()
+    for cookie in self.cookies {
+      dictionary[cookie.key] = cookie.value
+    }
+    return dictionary
+  }
+  
   //MARK: - Serialization
   
   /**

@@ -77,7 +77,7 @@ public class Controller {
     */
   public var layout = Template { $0.body($0,$1) }
   
-  //MARK - Responses
+  //MARK: - Responses
   
   /**
     This method executes our current action.
@@ -113,7 +113,6 @@ public class Controller {
     var response = Response()
     response.cookies = request.cookies
     contents(&response)
-    session["_flash_notice"] = nil
     session.storeInCookies(response.cookies)
     self.responded = true
     self.callback(response)
@@ -315,11 +314,11 @@ public class Controller {
   }
   
   /**
-  This method signs in a user by providing their credentials.
-  
-  :param: emailAddress  The email address the user has provided.
-  :param: password      The password the user has provided.
-  :returns:             Whether we were able to authenticate the user.
+    This method signs in a user by providing their credentials.
+    
+    :param: emailAddress  The email address the user has provided.
+    :param: password      The password the user has provided.
+    :returns:             Whether we were able to authenticate the user.
   */
   public func signIn(emailAddress: String, password: String) -> Bool {
     if let user = User.authenticate(emailAddress, password: password) {
@@ -381,5 +380,49 @@ public class Controller {
     else {
       return self.localization.fetch(key)
     }
+  }
+  
+  //MARK: - Test Helpers
+  
+  /**
+    This method calls an action manually on a controller. It is intended for use
+    in testing.
+
+    :param: action    The name of the action to call.
+    :param: request   The request to provide to the controller.
+    :param: callback  The callback to call with the response.
+    */
+  public class func callAction(action: String, _ request: Request, callback: Server.ResponseCallback) {
+    let controller = self.init(
+      request: request,
+      action: action,
+      callback: callback
+    )
+    controller.respond()
+  }
+  
+  /**
+    This method calls an action manually on a controller. It is intended for use
+    in testing.
+  
+    This will give the controller a request with no parameters.
+
+    :param: action    The name of the action to call.
+    :param: callback  The callback to call with the response.
+    */
+  public class func callAction(action: String, callback: Server.ResponseCallback) {
+    self.callAction(action, Request(), callback: callback)
+  }
+  
+  /**
+    This method calls an action manually on a controller. It is intended for use
+    in testing.
+    
+    :param: action        The name of the action to call.
+    :param: parameters    The request parameters.
+    :param: callback      The callback to call with the response.
+    */
+  public class func callAction(action: String, parameters: [String:String], callback: Server.ResponseCallback) {
+    self.callAction(action, Request(parameters: parameters), callback: callback)
   }
 }

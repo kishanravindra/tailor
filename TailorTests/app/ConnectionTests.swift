@@ -50,7 +50,6 @@ class ConnectionTests: XCTestCase {
     handler = {
       (request, callback) in
       receivedExpectation.fulfill()
-      NSLog("Request has Client address: %@", request.clientAddress)
       if request.data == self.fileContents.dataUsingEncoding(NSUTF8StringEncoding) {
         dataExpectation.fulfill()
       }

@@ -217,7 +217,7 @@ public class Record : Model, Equatable {
     :param: data    The fields to set on the record.
     :returns:       The record
     */
-  public class func create(data: [String: Any]) -> Self {
+  public class func create(_ data: [String: Any] = [:]) -> Self {
     let record = self.init(data: data)
     record.save()
     return record

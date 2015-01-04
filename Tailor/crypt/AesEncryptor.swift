@@ -4,11 +4,8 @@ import Foundation
   This class provides a high-level interface for doing AES encryption.
   */
 public class AesEncryptor {
-  /** The transform for encrypting data. */
-  private let encryptor: Unmanaged<SecTransform>
-  
-  /** The transform for decrypting data. */
-  private let decryptor: Unmanaged<SecTransform>
+  /** The low-level key for the encryption. */
+  private let key: Unmanaged<SecKey>
   
   //MARK: - Encodings
   
@@ -98,14 +95,12 @@ public class AesEncryptor {
         keyData.appendBytes(&byte, length: 1)
       }
     }
+    
     let keyParams = [
       kSecAttrKeyType as NSString: kSecAttrKeyTypeAES as NSString,
       kSecAttrKeySizeInBits as NSString: NSNumber(int: 256)
     ]
-    let key = SecKeyCreateFromData(keyParams, keyData, nil)
-    encryptor = SecEncryptTransformCreate(key.takeUnretainedValue(), nil)
-    decryptor = SecDecryptTransformCreate(key.takeUnretainedValue(), nil)
-    key.release()
+    self.key = SecKeyCreateFromData(keyParams, keyData, nil)
   }
   
   /**
@@ -114,8 +109,7 @@ public class AesEncryptor {
     This will release our hold on the underlying security transforms.
     */
   deinit {
-    encryptor.release()
-    decryptor.release()
+    key.release()
   }
 
   /**
@@ -125,8 +119,9 @@ public class AesEncryptor {
     :returns:         The encrypted data.
     */
   public func encrypt(data: NSData) -> NSData {
+    let encryptor = SecEncryptTransformCreate(key.takeUnretainedValue(), nil)
     SecTransformSetAttribute(encryptor.takeUnretainedValue(), kSecTransformInputAttributeName, data, nil)
-    return SecTransformExecute(encryptor.takeUnretainedValue(), nil) as NSData
+    return SecTransformExecute(encryptor.takeUnretainedValue(), nil) as? NSData ?? NSData()
   }
   
   /**
@@ -136,6 +131,7 @@ public class AesEncryptor {
     :returns:       The plaintext.
     */
   public func decrypt(data: NSData) -> NSData {
+    let decryptor = SecDecryptTransformCreate(key.takeUnretainedValue(), nil)
     SecTransformSetAttribute(decryptor.takeUnretainedValue(), kSecTransformInputAttributeName, data, nil)
     return (SecTransformExecute(decryptor.takeUnretainedValue(), nil) as? NSData) ?? NSData()
   }
@@ -171,6 +167,4 @@ public class AesEncryptor {
     key.release()
     return keyString
   }
-  
-
 }

@@ -12,6 +12,7 @@
   application bundle.
 * Shorthands for date arithmetic
 * Caching
+* Clarify language surrounding URLs vs paths in routing
 
 ### Routing and Controllers
 

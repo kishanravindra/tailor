@@ -247,4 +247,30 @@ class RequestTests: XCTestCase {
       XCTFail("gets key2")
     }
   }
+  
+  //MARK: - Test Helpers
+  
+  func testInitializerCanInitializeRequestInfo() {
+    let params = ["key1": "value1", "key2": "value2"]
+    let request = Request(clientAddress: "127.0.0.1", method: "POST", parameters: params)
+    XCTAssertEqual(request.requestParameters, params, "sets request parameters")
+    XCTAssertEqual(request.method, "POST", "sets method")
+    XCTAssertEqual(request.clientAddress, "127.0.0.1", "sets client address")
+  }
+  
+  func testInitializerCanInitializeSessionInfo() {
+    TestApplication.start()
+    let request = Request(sessionData: ["mobile": "1"])
+    let session = Session(request: request)
+    let value = session["mobile"]
+    XCTAssertNotNil(value, "sets session value")
+    if value != nil { XCTAssertEqual(value!, "1", "sets session value") }
+  }
+  
+  func testInitializerCanInitializeCookieInfo() {
+    let request = Request(cookies: ["tracker": "test.com"])
+    let cookieValue = request.cookies["tracker"]
+    XCTAssertNotNil(cookieValue)
+    if cookieValue != nil { XCTAssertEqual(cookieValue!, "test.com", "sets cookie value") }
+  }
 }

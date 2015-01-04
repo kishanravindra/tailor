@@ -59,6 +59,9 @@ public class RestfulController<RecordType: Record> : Controller {
         "records": records
       ])
     }
+    else {
+      self.render404()
+    }
   }
   
   /**
@@ -97,6 +100,9 @@ public class RestfulController<RecordType: Record> : Controller {
         self.respondWith(template, parameters: [
           "record": record
         ])
+      }
+      else {
+        self.render404()
       }
     }
     else {

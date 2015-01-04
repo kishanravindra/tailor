@@ -66,6 +66,12 @@ class CookieJarTests: XCTestCase {
     XCTAssertEqual(cookie.value, "value1", "sets cookie value")
   }
   
+  func testCookieDictionaryGetsHashOfValues() {
+    cookieJar.setCookie("key1", "value1")
+    cookieJar.setCookie("key2", "value2")
+    XCTAssertEqual(cookieJar.cookieDictionary(), ["key1": "value1", "key2": "value2"], "has hash of cookie keys and values")
+  }
+  
   //MARK: - Serialization
   
   func setHeaderStringIncludesChanges() {

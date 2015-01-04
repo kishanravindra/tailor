@@ -89,11 +89,19 @@ public class Session {
   }
   
   /**
-    This method stores the information for this session in a cookie jar.
-
-    :param: cookies   The cookie jar to put the session info in.
+    :returns:   Whether the session has any data in it.
     */
-  public func storeInCookies(cookies: CookieJar) {
+  public func isEmpty() -> Bool {
+    return self.data.isEmpty
+  }
+  
+  //MARK: - Serialization
+  
+  /**
+    This method gets the string for encoding this session in a cookie.
+    :returns:   The encoded string.
+    */
+  public func cookieString() -> String {
     var mergedData = self.data
     mergedData["clientAddress"] = clientAddress
     mergedData["expirationDate"] = COOKIE_DATE_FORMATTER.stringFromDate(self.expirationDate)
@@ -105,7 +113,15 @@ public class Session {
     let jsonData = NSJSONSerialization.dataWithJSONObject(mergedData, options: nil, error: nil) ?? NSData()
     let encryptedData = encryptor.encrypt(jsonData)
     let encryptedDataString = encryptedData.base64EncodedStringWithOptions(nil)
-    cookies["_session"] = encryptedDataString
+    return encryptedDataString
+  }
+  /**
+    This method stores the information for this session in a cookie jar.
+
+    :param: cookies   The cookie jar to put the session info in.
+    */
+  public func storeInCookies(cookies: CookieJar) {
+    cookies["_session"] = self.cookieString()
   }
   
   //MARK: - Flash

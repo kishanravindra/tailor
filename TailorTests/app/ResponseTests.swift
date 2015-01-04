@@ -55,4 +55,15 @@ class ResponseTests: XCTestCase {
     setUpFullResponse()
     XCTAssertEqual(responseLines[6], "You are being redirected")
   }
+  
+  func testResponseBodyStringContainsBody() {
+    setUpFullResponse()
+    response.appendString(". Test")
+    response.appendString("Body")
+    let string = response.bodyString
+    XCTAssertNotNil(string)
+    if string != nil {
+      XCTAssertEqual(string!, "You are being redirected. TestBody", "has the full body")
+    }
+  }
 }

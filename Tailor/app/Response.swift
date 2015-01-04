@@ -64,4 +64,9 @@ public struct Response {
     data.appendData(bodyData)
     return data
   } }
+  
+  /** The string version of the response body. */
+  public var bodyString: String! { get {
+    return NSString(data: self.bodyData, encoding: NSUTF8StringEncoding)
+  } }
 }

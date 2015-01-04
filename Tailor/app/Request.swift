@@ -229,4 +229,51 @@ public struct Request {
     }
     return params
   }
+  
+  //MARK: - Test Helpers
+  
+  /**
+    This method crafts a request with desired properties. It is intended for use
+    in testing.
+
+    :param: parameters      The request parameters.
+    :param: sessionData     The data for the session.
+    :param: cookies         The cookie data.
+    :param: method          The HTTP method
+    :param: clientAddress   The client's remote IP address.
+    */
+  public init(clientAddress: String = "0.0.0.0", method: String = "GET", parameters: [String: String] = [:], sessionData: [String: String] = [:], cookies: [String:String] = [:]) {
+    var lines = [
+      "\(method) / HTTP/1.1"
+    ]
+    
+    lines.append("Content-Type: application/x-www-form-urlencoded")
+    
+    if !sessionData.isEmpty {
+      let session = Session(request: Request(clientAddress: clientAddress, data: NSData()))
+      for (key, value) in sessionData {
+        session[key] = value
+      }
+      lines.append("Cookie: _session=\(session.cookieString())")
+    }
+    for (key,value) in cookies {
+      lines.append("Cookie: \(key)=\(value)")
+    }
+    
+    lines.append("")
+    
+    var queryString = ""
+    
+    for (key, value) in parameters {
+      if !queryString.isEmpty {
+        queryString += "&"
+      }
+      let convertedValue = value.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
+      queryString += key + "=" + value
+    }
+    lines.append(queryString)
+    var stringData = join("\r\n", lines)
+    var data = stringData.dataUsingEncoding(NSUTF8StringEncoding)!
+    self.init(clientAddress: clientAddress, data: data)
+  }
 }
