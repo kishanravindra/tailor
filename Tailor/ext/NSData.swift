@@ -1,6 +1,15 @@
 import Foundation
 
-extension NSData {
+public extension NSData {
+  /**
+    This method initializes an NSData object from a byte array.
+
+    :param: bytes   The array of bytes.
+    */
+  public convenience init(bytes: [UInt8]) {
+    self.init(bytes: UnsafePointer(bytes), length: sizeof(UInt8) * bytes.count)
+  }
+  
   /**
     This method searches for a string in this data and uses it to separate out
     subcomponents of the data.
@@ -10,7 +19,7 @@ extension NSData {
                         reached, the rest of the data will be kept as one piece.
     :returns:           The subcomponents.
     */
-  func componentsSeparatedByString(separator: String, limit: Int? = nil) -> [NSData] {
+  public func componentsSeparatedByString(separator: String, limit: Int? = nil) -> [NSData] {
     var components = [NSData]()
     let separatorData = separator.dataUsingEncoding(NSUTF8StringEncoding)!
     if self.length == 0 {
