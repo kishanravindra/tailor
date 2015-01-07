@@ -1,4 +1,4 @@
- import Foundation
+import Foundation
 
 /**
   This class represents a web application.

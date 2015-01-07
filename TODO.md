@@ -7,7 +7,6 @@
 * Logging
 * Fix parsing of spaces in parameters from Xcode prompt
 * More load testing and checks for bugs
-* Unit tests
 * Make template project have a build stage for copying the Framework into the
   application bundle.
 * Shorthands for date arithmetic

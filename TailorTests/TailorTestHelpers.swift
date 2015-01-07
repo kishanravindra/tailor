@@ -43,13 +43,31 @@ class TestApplication: Application {
     case "strings":
       return [
         "en": [
-          "template.test": "Localized Text",
-          "template.test_raw": "<b>Hello</b>",
-          "record.shelf.attributes.store": "hat store",
-          "controller.test.message": "Hello"
+          "localization_test": "Yes",
+          "template": [
+            "test": "Localized Text",
+            "test_raw": "<b>Hello</b>"
+          ],
+          "record": [
+            "shelf": [
+              "attributes": [
+                "store": "hat store"
+              ]
+            ]
+          ],
+          "controller": [
+            "test": [
+              "message": "Hello"
+            ]
+          ]
         ],
         "es": [
-          "controller.test.message": "Hola"
+          "localization_test": "Si",
+          "controller": [
+            "test": [
+              "message": "Hola"
+            ]
+          ]
         ]
       ]
     default:
