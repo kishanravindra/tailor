@@ -17,7 +17,7 @@ class UserTests: XCTestCase {
   }
   
   func testInitializationSetsEncryptedPassword() {
-    XCTAssertTrue(BlowfishEncryptor.isMatch("Monkey", encryptedHash: user.encryptedPassword), "sets encrypted password")
+    XCTAssertTrue(BcryptHasher.isMatch("Monkey", encryptedHash: user.encryptedPassword), "sets encrypted password")
   }
   
   //MARK: - Authentication

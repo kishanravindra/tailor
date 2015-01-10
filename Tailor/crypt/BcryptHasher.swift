@@ -1,36 +1,36 @@
 import Foundation
 
 /**
-  This class provides a Swift wrapper for encrypting a string with Blowfish.
+  This class provides a Swift wrapper for hashing a string with Bcrypt.
   */
-public class BlowfishEncryptor {
+public class BcryptHasher {
   /**
-    The setting string for Blowfish.
+    The setting string for bcrypt.
   
-    It contains an encoding of the Blowfish version, the number of rounds, and
+    It contains an encoding of the bcrypt version, the number of rounds, and
     the salt, and will be the prefix for the resulting hash.
     */
-  private let blowfishSetting : String
+  private let setting : String
   
   /**
     This method creates an encryptor with an already-formatted setting string.
   
-    The setting string should have the format "$2a$07salt", where "a is the
-    blowfish, "7" is the base-2 logarithm of the number of rounds to perform,
-    and "salt" is the salt.
+    The setting string should have the format "$2a$07salt", where "a" is the
+    bcrypt version, "7" is the base-2 logarithm of the number of rounds to
+    perform, and "salt" is the salt.
 
-    :param: blowfishSetting
+    :param: setting
       The setting string for the encryption.
     */
-  public init(blowfishSetting: String) {
-    self.blowfishSetting = blowfishSetting
+  public init(setting: String) {
+    self.setting = setting
   }
   
   /**
-    This method creates an encryptor with options for Blowfish.
+    This method creates an encryptor with options for bcrypt.
 
     :param: version
-      The Blowfish version.
+      The bcrypt version.
 
     :param: salt
       The binary salt. If this is omitted, this will generate a random salt,
@@ -42,14 +42,12 @@ public class BlowfishEncryptor {
   public convenience init(version: String = "a", salt: [UInt8]? = nil, rounds: Int = 6) {
     var sanitizedSalt : [UInt8]! = salt
     if salt == nil {
-      sanitizedSalt = [UInt8]()
-      for byte in 0..<16 { sanitizedSalt.append(0) }
+      sanitizedSalt = [UInt8](count: 16, repeatedValue: 0)
       SecRandomCopyBytes(kSecRandomDefault, UInt(sanitizedSalt.count), &sanitizedSalt!)
     }
     
     while sanitizedSalt.count < 16 { sanitizedSalt.append(0) }
-    var setting = [Int8]()
-    for byte in 0..<128 { setting.append(0) }
+    var setting = [Int8](count: 128, repeatedValue: 0)
     
     _crypt_gensalt_blowfish_rn(
       UnsafePointer<Int8>("$2".stringByAppendingString(version).dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!.bytes),
@@ -61,7 +59,7 @@ public class BlowfishEncryptor {
     )
     
     let settingString = NSString(CString: &setting, encoding: NSUTF8StringEncoding)!
-    self.init(blowfishSetting: settingString)
+    self.init(setting: settingString)
   }
   
   /**
@@ -74,24 +72,24 @@ public class BlowfishEncryptor {
       The encrypted hash with the salt.
     */
   public func encrypt(input: String) -> String? {
-    var output = [Int8]()
-    for i in 0..<128 { output.append(0) }
+    var output = [Int8](count: 128, repeatedValue: 0)
     
-    let inputData = input.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)
-    let settingData = self.blowfishSetting.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)
+    let inputPointer : [CChar]! = input.cStringUsingEncoding(NSUTF8StringEncoding)
+    let settingPointer : [CChar]! = self.setting.cStringUsingEncoding(NSUTF8StringEncoding)
     
-    if inputData == nil || settingData == nil {
+    if inputPointer == nil || settingPointer == nil {
       return nil
     }
     
     _crypt_blowfish_rn(
-      UnsafePointer<Int8>(inputData!.bytes),
-      UnsafePointer<Int8>(settingData!.bytes),
+      UnsafePointer<Int8>(inputPointer),
+      UnsafePointer<Int8>(settingPointer),
       &output,
       Int32(output.count)
     )
     
-    return NSString(CString: &output, encoding: NSUTF8StringEncoding)
+    let result = NSString(CString: &output, encoding: NSUTF8StringEncoding)
+    return result
   }
   
   /**
@@ -108,7 +106,7 @@ public class BlowfishEncryptor {
     */
   public class func isMatch(input: String, encryptedHash: String) -> Bool {
     let setting = encryptedHash.substringToIndex(advance(encryptedHash.startIndex, 29))
-    let encryptedInput = BlowfishEncryptor(blowfishSetting: setting).encrypt(input)
+    let encryptedInput = BcryptHasher(setting: setting).encrypt(input)
     return encryptedInput != nil && encryptedInput! == encryptedHash
   }
 }

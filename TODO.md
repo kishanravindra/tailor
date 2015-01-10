@@ -17,12 +17,14 @@
 
 * Better CSRF prevention
 * Supporting select tags, checkboxes, etc in forms
+* Consider using subclasses for templates
 
 ### Modelling
 
 * Resetting local database
 * Storing seed data
 * Reversing alterations
+* Getting last item from a query
 
 ### Authentication
 

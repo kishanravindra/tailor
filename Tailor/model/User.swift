@@ -31,7 +31,7 @@ public class User : Record {
   public convenience init(emailAddress: String, password: String) {
     self.init()
     self.emailAddress = emailAddress
-    self.encryptedPassword = BlowfishEncryptor().encrypt(password)
+    self.encryptedPassword = BcryptHasher().encrypt(password)
   }
   
   //MARK: Authentication
@@ -43,7 +43,7 @@ public class User : Record {
     :returns:           Whether the password is correct.
     */
   public func hasPassword(password: String) -> Bool {
-    return BlowfishEncryptor.isMatch(password, encryptedHash: self.encryptedPassword)
+    return BcryptHasher.isMatch(password, encryptedHash: self.encryptedPassword)
   }
   
   /**
