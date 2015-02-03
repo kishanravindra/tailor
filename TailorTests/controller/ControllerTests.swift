@@ -556,9 +556,12 @@ class ControllerTests: XCTestCase {
     }
     
     TestController.callAction("runTest", Request(parameters: ["test1": "value1"])) {
-      response in
+      response, controller in
       expectation.fulfill()
       XCTAssertEqual(response.bodyString, "Test Response", "gets test response")
+      
+      if let castController = controller as? TestController {}
+      else { XCTFail("gives a test controller") }
     }
     
     waitForExpectationsWithTimeout(0.1, handler: nil)
@@ -567,7 +570,7 @@ class ControllerTests: XCTestCase {
   func testCallActionCanCallActionWithImplicitRequest() {
     let expectation = expectationWithDescription("respond method called")
     TestController.callAction("index") {
-      response in
+      response, _ in
       expectation.fulfill()
       XCTAssertEqual(response.bodyString, "Index Action", "gets body from action")
     }
@@ -577,9 +580,38 @@ class ControllerTests: XCTestCase {
   func testCallActionCanCallActionWithParameters() {
     let expectation = expectationWithDescription("respond method called")
     TestController.callAction("index", parameters: ["failFilter": "1"]) {
-      response in
+      response, _ in
       expectation.fulfill()
       XCTAssertEqual(response.code, 419, "gets response appropriate for parameters")
+    }
+    waitForExpectationsWithTimeout(0.01, handler: nil)
+  }
+  
+  func testCallActionCanCallActionWithUserAndParameters() {
+    let expectation = expectationWithDescription("respond method called")
+    let user = User(emailAddress: "test@test.com", password: "test")
+    user.save()
+    TestController.callAction("index", user: user, parameters: ["id": "5"]) {
+      response, controller in
+      expectation.fulfill()
+      XCTAssertEqual(controller.request.requestParameters, ["id": "5"], "sets request parameters")
+      let currentUser = controller.currentUser
+      XCTAssertNotNil(currentUser, "has a user")
+      if currentUser != nil { XCTAssertEqual(currentUser!, user, "has the user given") }
+    }
+    waitForExpectationsWithTimeout(0.01, handler: nil)
+  }
+  
+  func testCallActionCanCallActionWithUser() {
+    let expectation = expectationWithDescription("respond method called")
+    let user = User(emailAddress: "test@test.com", password: "test")
+    user.save()
+    TestController.callAction("index", user: user) {
+      response, controller in
+      expectation.fulfill()
+      let currentUser = controller.currentUser
+      XCTAssertNotNil(currentUser, "has a user")
+      if currentUser != nil { XCTAssertEqual(currentUser!, user, "has the user given") }
     }
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }

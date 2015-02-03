@@ -392,11 +392,13 @@ public class Controller {
     :param: request   The request to provide to the controller.
     :param: callback  The callback to call with the response.
     */
-  public class func callAction(action: String, _ request: Request, callback: Server.ResponseCallback) {
-    let controller = self.init(
+  public class func callAction(action: String, _ request: Request, callback: (Response,Controller)->()) {
+    var controller: Controller!
+    
+    controller = self.init(
       request: request,
       action: action,
-      callback: callback
+      callback: { response in callback(response, controller) }
     )
     controller.respond()
   }
@@ -410,8 +412,25 @@ public class Controller {
     :param: action    The name of the action to call.
     :param: callback  The callback to call with the response.
     */
-  public class func callAction(action: String, callback: Server.ResponseCallback) {
+  public class func callAction(action: String, callback: (Response,Controller)->()) {
     self.callAction(action, Request(), callback: callback)
+  }
+  
+  /**
+    This method calls an action manually on a controller. It is intended for use
+    in testing.
+    
+    :param: action        The name of the action to call.
+    :param: user          The user for the request.
+    :param: parameters    The request parameters.
+    :param: callback      The callback to call with the response.
+  */
+  public class func callAction(action: String, user: User?, parameters: [String:String], callback: (Response,Controller)->()) {
+    var sessionData = [String:String]()
+    if user != nil {
+      sessionData["userId"] = user!.id.stringValue
+    }
+    self.callAction(action, Request(parameters: parameters, sessionData: sessionData), callback: callback)
   }
   
   /**
@@ -421,8 +440,20 @@ public class Controller {
     :param: action        The name of the action to call.
     :param: parameters    The request parameters.
     :param: callback      The callback to call with the response.
-    */
-  public class func callAction(action: String, parameters: [String:String], callback: Server.ResponseCallback) {
-    self.callAction(action, Request(parameters: parameters), callback: callback)
+  */
+  public class func callAction(action: String, parameters: [String:String], callback: (Response,Controller)->()) {
+    self.callAction(action, user: nil, parameters: parameters, callback: callback)
+  }
+  
+  /**
+    This method calls an action manually on a controller. It is intended for use
+    in testing.
+    
+    :param: action        The name of the action to call.
+    :param: user          The user for the request.
+    :param: callback      The callback to call with the response.
+  */
+  public class func callAction(action: String, user: User?, callback: (Response,Controller)->()) {
+    self.callAction(action, user: user, parameters: [:], callback: callback)
   }
 }

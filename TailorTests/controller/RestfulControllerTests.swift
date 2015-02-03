@@ -104,7 +104,7 @@ class RestfulControllerTests: XCTestCase {
     let hat1 = Hat.create(["color": "red"])
     let hat2 = Hat.create(["color": "black"])
     TestRestfulController<Hat>.callAction("index") {
-      response in
+      response, _ in
       expectation.fulfill()
       XCTAssertEqual(response.code, 200, "gives a successful response")
       XCTAssertEqual(response.bodyString, "<ul><li>\(hat1.id)</li><li>\(hat2.id)</li></ul>", "puts hats into the index template")
@@ -115,7 +115,7 @@ class RestfulControllerTests: XCTestCase {
   func testIndexActionWithNoTemplateRenders404() {
     let expectation = expectationWithDescription("callback called")
     RestfulController<Hat>.callAction("index") {
-      response in
+      response, _ in
       expectation.fulfill()
       XCTAssertEqual(response.code, 404, "gives a 404 response")
     }
@@ -126,7 +126,7 @@ class RestfulControllerTests: XCTestCase {
     let hat = Hat.create()
     let expectation = expectationWithDescription("callback called")
     TestRestfulController<Hat>.callAction("show", parameters: ["id": hat.id.stringValue]) {
-      response in
+      response, _ in
       expectation.fulfill()
       XCTAssertEqual(response.code, 200, "gives a successful response")
       XCTAssertEqual(response.bodyString, "<h1>\(hat.id)</h1>", "puts the template body in the response")
@@ -138,7 +138,7 @@ class RestfulControllerTests: XCTestCase {
     let hat = Hat.create()
     let expectation = expectationWithDescription("callback called")
     TestRestfulController<Hat>.callAction("show", parameters: ["id": String(hat.id.integerValue + 1)]) {
-      response in
+      response, _ in
       expectation.fulfill()
       XCTAssertEqual(response.code, 404, "gives a 404 response")
     }
@@ -149,7 +149,7 @@ class RestfulControllerTests: XCTestCase {
     let hat = Hat.create()
     let expectation = expectationWithDescription("callback called")
     RestfulController<Hat>.callAction("show", parameters: ["id": hat.id.stringValue]) {
-      response in
+      response, _ in
       expectation.fulfill()
       XCTAssertEqual(response.code, 404, "gives a 404 response")
     }
@@ -159,7 +159,7 @@ class RestfulControllerTests: XCTestCase {
   func testNewActionRendersTemplate() {
     let expectation = expectationWithDescription("callback called")
     TestRestfulController<Hat>.callAction("new") {
-      response in
+      response, _ in
       expectation.fulfill()
       XCTAssertEqual(response.code, 200, "gives a successful response")
       XCTAssertEqual(response.bodyString, "<form><h1>New Record</h1></form>", "has the form data for a new response")
@@ -170,7 +170,7 @@ class RestfulControllerTests: XCTestCase {
   func testNewActionWithNoTemplateGives404() {
     let expectation = expectationWithDescription("callback called")
     RestfulController<Hat>.callAction("new") {
-      response in
+      response, _ in
       expectation.fulfill()
       XCTAssertEqual(response.code, 404)
     }
@@ -180,7 +180,7 @@ class RestfulControllerTests: XCTestCase {
   func testCreateActionCreatesRecord() {
     let expectation = expectationWithDescription("callback called")
     TestRestfulController<Hat>.callAction("create", Request(parameters: ["color": "black"], method: "POST")) {
-      response in
+      response, _ in
       expectation.fulfill()
       let hats = Query<Hat>().all()
       XCTAssertEqual(hats.count, 1, "creates a record")
@@ -198,7 +198,7 @@ class RestfulControllerTests: XCTestCase {
   func testCreateActionRedirectsToIndexPath() {
     let expectation = expectationWithDescription("callback called")
     TestRestfulController<Hat>.callAction("create", Request(method: "POST")) {
-      response in
+      response, _ in
       expectation.fulfill()
       XCTAssertEqual(response.code, 302, "gives a 302 response")
       
@@ -220,7 +220,7 @@ class RestfulControllerTests: XCTestCase {
     }
     
     TestRestfulController<TestHat>.callAction("create", Request(method: "POST")) {
-      response in
+      response, _ in
       expectation.fulfill()
       XCTAssertEqual(response.code, 200, "gives a success response")
       XCTAssertEqual(response.bodyString, "<form><h1>New Record</h1></form>", "renders the form template")
@@ -237,7 +237,7 @@ class RestfulControllerTests: XCTestCase {
     }
     
     RestfulController<TestHat>.callAction("create", Request(method: "POST")) {
-      response in
+      response, _ in
       expectation.fulfill()
       XCTAssertEqual(response.code, 404, "gives a 404 response")
     }
@@ -248,7 +248,7 @@ class RestfulControllerTests: XCTestCase {
     let hat = Hat.create()
     let expectation = expectationWithDescription("callback called")
     TestRestfulController<Hat>.callAction("edit", parameters: ["id": hat.id.stringValue]) {
-      response in
+      response, _ in
       expectation.fulfill()
       XCTAssertEqual(response.code, 200, "gives a 200 response")
       XCTAssertEqual(response.bodyString, "<form><h1>\(hat.id)</h1></form>")
@@ -260,7 +260,7 @@ class RestfulControllerTests: XCTestCase {
     let hat = Hat.create()
     let expectation = expectationWithDescription("callback called")
     TestRestfulController<Hat>.callAction("edit", parameters: ["id": String(hat.id.integerValue + 1)]) {
-      response in
+      response, _ in
       expectation.fulfill()
       XCTAssertEqual(response.code, 404, "gives a 404 response")
     }
@@ -271,7 +271,7 @@ class RestfulControllerTests: XCTestCase {
     let hat = Hat.create()
     let expectation = expectationWithDescription("callback called")
     RestfulController<Hat>.callAction("edit", parameters: ["id": hat.id.stringValue]) {
-      response in
+      response, _ in
       expectation.fulfill()
       XCTAssertEqual(response.code, 404, "gives a 200 response")
     }
@@ -294,7 +294,7 @@ class RestfulControllerTests: XCTestCase {
     let hat = Hat.create(["color": "red"])
     let expectation = expectationWithDescription("callback called")
     TestRestfulController<Hat>.callAction("update", parameters: ["id": hat.id.stringValue, "color": "black"]) {
-      response in
+      response, _ in
       expectation.fulfill()
       XCTAssertEqual(response.code, 302)
       let location = response.headers["Location"]
@@ -310,7 +310,7 @@ class RestfulControllerTests: XCTestCase {
     let hat = Hat.create(["color": "red"])
     let expectation = expectationWithDescription("callback called")
     TestRestfulController<Hat>.callAction("update", parameters: ["id": String(hat.id.integerValue + 1), "color": "black"]) {
-      response in
+      response, _ in
       expectation.fulfill()
       XCTAssertEqual(response.code, 404)
     }

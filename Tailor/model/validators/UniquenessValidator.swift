@@ -14,7 +14,7 @@ public class UniquenessValidator : Validator {
         return
       }
       
-      let value : NSData? = record.valuesToPersist()[databaseKey]
+      let value : NSData? = record.valuesToPersist()[self.key]
       var stringValue : String? = nil
       if value != nil {
         stringValue = NSString(data: value!, encoding: NSUTF8StringEncoding)

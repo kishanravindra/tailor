@@ -7,6 +7,7 @@ class UniquenessValidatorTests: XCTestCase {
   override func setUp() {
     TestApplication.start()
     DatabaseConnection.sharedConnection().executeQuery("TRUNCATE TABLE stores")
+    DatabaseConnection.sharedConnection().executeQuery("TRUNCATE TABLE hats")
     store.save()
   }
   
@@ -50,5 +51,15 @@ class UniquenessValidatorTests: XCTestCase {
     model.name = "Test"
     validator.validate(model)
     XCTAssertTrue(model.errors.isEmpty(), "puts no error on model")
+  }
+  
+  func testUniquenessValidatorPutsErrorsWithMultiWordKey() {
+    let validator2 = UniquenessValidator(key: "shelfId")
+    let hat1 = Hat.create(["shelfId": NSNumber(int: 1)])
+    let hat2 = Hat(data: ["shelfId": NSNumber(int: 1)])
+    validator2.validate(hat1)
+    validator2.validate(hat2)
+    XCTAssertTrue(hat1.errors.isEmpty(), "puts no error on the first record")
+    XCTAssertFalse(hat2.errors.isEmpty(), "puts an error on the second record")
   }
 }
