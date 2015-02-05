@@ -22,7 +22,7 @@ class QueryTests: XCTestCase {
   
   func testInitializationWithNoParametersHasDefaultClauses() {
     let query = Query<Hat>()
-    XCTAssertEqual(query.selectClause, "*", "selects all fields")
+    XCTAssertEqual(query.selectClause, "hats.*", "selects all fields")
     XCTAssertEqual(query.whereClause.query, "", "has an empty where clause")
     XCTAssertEqual(query.whereClause.parameters, [], "has an empty where clause")
     XCTAssertEqual(query.orderClause.query, "", "has an empty order clause")

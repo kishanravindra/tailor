@@ -45,7 +45,7 @@ public class Query<RecordType: Record> {
                             should be returned.
     */
   public required init(copyFrom: Query<RecordType>? = nil, selectClause: String? = nil, whereClause: SqlFragment? = nil, orderClause: SqlFragment? = nil, limitClause: SqlFragment? = nil, joinClause: SqlFragment? = nil, conditions: [String:AnyObject?]? = nil) {
-    self.selectClause = selectClause ?? copyFrom?.selectClause ?? "*"
+    self.selectClause = selectClause ?? copyFrom?.selectClause ?? "\(RecordType.tableName()).*"
     self.whereClause = whereClause ?? copyFrom?.whereClause ?? ("", [])
     self.orderClause = orderClause ?? copyFrom?.orderClause ?? ("", [])
     self.limitClause = limitClause ?? copyFrom?.limitClause ?? ("", [])
