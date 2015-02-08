@@ -16,21 +16,21 @@ class FormBuilderTests: XCTestCase {
   func testFormPutsFormTagInTemplate() {
     builder.form("/test/path", with: {
     })
-    XCTAssertEqual(template.buffer, "<form method=\"POST\" action=\"/test/path\"></form>")
+    XCTAssertEqual(template.buffer, "<form action=\"/test/path\" method=\"POST\"></form>")
   }
   
   func testFormUsesCustomAction() {
     builder.form("/test/path", "GET", with: {
       
     })
-    XCTAssertEqual(template.buffer, "<form method=\"GET\" action=\"/test/path\"></form>")
+    XCTAssertEqual(template.buffer, "<form action=\"/test/path\" method=\"GET\"></form>")
   }
   
   func testFormAddsContentInBlock() {
     builder.form("/test/path", with: {
       self.template.text("Form Contents", localize: false)
     })
-    XCTAssertEqual(template.buffer, "<form method=\"POST\" action=\"/test/path\">Form Contents</form>")
+    XCTAssertEqual(template.buffer, "<form action=\"/test/path\" method=\"POST\">Form Contents</form>")
   }
   
   func testInputCallsInputBuilder() {
@@ -76,6 +76,6 @@ class FormBuilderTests: XCTestCase {
   func testDefaultInputBuilderAddsLabelAndTextField() {
     model.color = "black"
     builder.input("color", attributes: ["maxLength": "20"])
-    XCTAssertEqual(template.buffer, "<div><label>color</label><input maxLength=\"20\" value=\"black\" name=\"hat[color]\"></input></div>", "puts label and input in template")
+    XCTAssertEqual(template.buffer, "<div><label>color</label><input maxLength=\"20\" name=\"hat[color]\" value=\"black\"></input></div>", "puts label and input in template")
   }
 }

@@ -99,7 +99,7 @@ class TemplateTests: XCTestCase {
     template.tag("p", ["class": "warning", "style": "font-weight: bold"], with: {
       self.template.text("Stop")
     })
-    XCTAssertEqual(template.buffer, "<p style=\"font-weight: bold\" class=\"warning\">Stop</p>", "puts tag in the buffer")
+    XCTAssertEqual(template.buffer, "<p class=\"warning\" style=\"font-weight: bold\">Stop</p>", "puts tag in the buffer")
   }
   
   func testTagMethodWithoutAttributesPutsTagInBuffer() {
@@ -117,8 +117,8 @@ class TemplateTests: XCTestCase {
   }
   
   func testTagWithTextAndAttributesPutsTagInBuffer() {
-    template.tag("p", text: "Hello", attributes: ["class": "greeting"])
-    XCTAssertEqual(template.buffer, "<p class=\"greeting\">Hello</p>")
+    template.tag("p", text: "Hello", attributes: ["class": "greeting", "data-hover": "Hi"])
+    XCTAssertEqual(template.buffer, "<p class=\"greeting\" data-hover=\"Hi\">Hello</p>")
   }
   
   func testUrlForGetsUrlFromController() {
@@ -161,7 +161,7 @@ class TemplateTests: XCTestCase {
     template.link(controllerName: "TestController", action: "index", parameters: ["id": "5"], attributes: ["class": "btn"]) {
       self.template.text("Click here")
     }
-    XCTAssertEqual(template.buffer, "<a href=\"/test/path\" class=\"btn\">Click here</a>", "puts the tag in the buffer")
+    XCTAssertEqual(template.buffer, "<a class=\"btn\" href=\"/test/path\">Click here</a>", "puts the tag in the buffer")
   }
   
   func testRenderTemplatePutsTemplateContentsInBuffer() {

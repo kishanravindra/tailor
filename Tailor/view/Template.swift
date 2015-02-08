@@ -96,7 +96,8 @@ public class Template {
     var text = ""
     var openingTag = "<\(name)"
     
-    for (key,value) in attributes {
+    for key in sorted(attributes.keys) {
+      let value = attributes[key]!
       openingTag += " \(key)=\"\(value)\""
     }
     openingTag += ">"
