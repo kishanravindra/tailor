@@ -8,7 +8,7 @@ public class Template {
   public let buffer = NSMutableString()
   
   /** The controller that is requesting the rendering. */
-  public var controller: Controller
+  public let controller: Controller
   
   /**
     This method initializes a template.
@@ -172,7 +172,6 @@ public class Template {
     :param: parameters  The parameters to pass to the other template.
   */
   public func renderTemplate(template: Template) {
-    template.controller = self.controller
     self.buffer.appendString(template.generate())
   }
   
@@ -180,7 +179,15 @@ public class Template {
   //MARK: - Controller Information
 
   /**
-    This method gets a subset of the request parameters from the controll.er
+    This method gets a single request parameter from the controller.
+    */
+  public func requestParameter(key: String) -> String? {
+    let params = self.controller.request.requestParameters
+    return params[key]
+  }
+  
+  /**
+    This method gets a subset of the request parameters from the controller
 
     :param: keys
       The keys to extract

@@ -6,7 +6,7 @@
   */
 public class Layout: Template {
   /** The template that provides the page contents. */
-  let template: Template
+  public let template: Template
   
   /**
     This method initializes a layout.

@@ -151,11 +151,12 @@ class TemplateTests: XCTestCase {
         return "/test/path"
       }
     }
-    template.controller = TestController(
+    
+    let template = Template(controller: TestController(
       request: controller.request,
       action: controller.action,
       callback: controller.callback
-    )
+    ))
     let result = template.urlFor(controllerName: "TestController", action: "index", parameters: ["id": "5"])
     XCTAssertNotNil(result, "has a result")
     if result != nil {
@@ -172,15 +173,15 @@ class TemplateTests: XCTestCase {
         return "/test/path"
       }
     }
-    template.controller = TestController(
+    let template2 = Template(controller: TestController(
       request: controller.request,
       action: controller.action,
       callback: controller.callback
-    )
-    template.link(controllerName: "TestController", action: "index", parameters: ["id": "5"], attributes: ["class": "btn"]) {
-      self.template.text("Click here")
+    ))
+    template2.link(controllerName: "TestController", action: "index", parameters: ["id": "5"], attributes: ["class": "btn"]) {
+      template2.text("Click here")
     }
-    XCTAssertEqual(template.buffer, "<a class=\"btn\" href=\"/test/path\">Click here</a>", "puts the tag in the buffer")
+    XCTAssertEqual(template2.buffer, "<a class=\"btn\" href=\"/test/path\">Click here</a>", "puts the tag in the buffer")
   }
   
   func testRenderTemplatePutsTemplateContentsInBuffer() {
@@ -207,13 +208,32 @@ class TemplateTests: XCTestCase {
   func testRequestParametersGetsKeysFromRequest() {
     var request = controller.request
     request.requestParameters = ["id": "5", "color": "red", "size": "10"]
-    template.controller = Controller(
+    let template = Template(controller: Controller(
       request: request,
       action: controller.action,
       callback: controller.callback
-    )
+    ))
     let parameters = template.requestParameters("id", "color", "shelf")
     XCTAssertEqual(parameters, ["id": "5", "color": "red"], "gets a subset of the request parameters")
+  }
+  
+  func testRequestParameterGetsKeyFromRequest() {
+    var request = controller.request
+    request.requestParameters = ["id": "5", "color": "red", "size": "10"]
+    let template = Template(controller: Controller(
+      request: request,
+      action: controller.action,
+      callback: controller.callback
+      ))
+    if let param1 = template.requestParameter("id") {
+      XCTAssertEqual(param1, "5", "gets the parameter from the controller")
+    }
+    else {
+      XCTFail("gets the parameter from the controller")
+    }
+    
+    let param2 = template.requestParameter("foo")
+    XCTAssertNil(param2, "gives nil for a missing parameter")
   }
   
   func testAttributeNameGetsNameFromModel() {
