@@ -12,12 +12,12 @@
 * Shorthands for date arithmetic
 * Caching
 * Clarify language surrounding URLs vs paths in routing
+* Reduce use of global variables
 
 ### Routing and Controllers
 
 * Better CSRF prevention
 * Supporting select tags, checkboxes, etc in forms
-* Consider using subclasses for templates
 * Recording which templates a controller renders
 
 ### Modelling
@@ -44,3 +44,8 @@
 * Fallbacks to default locales
 * Inferring locales for templates
 * Translating error messages
+
+### Testing
+
+* Helpers for common test patterns
+* Assertions for HTML content

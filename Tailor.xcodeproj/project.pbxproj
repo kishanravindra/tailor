@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		5209E2891A50920C0044EE70 /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5209E2881A50920C0044EE70 /* ModelTests.swift */; };
 		52178E671A4F359F001F6D57 /* MysqlConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52178E661A4F359F001F6D57 /* MysqlConnectionTests.swift */; };
-		52192ADB1A50EBEA007BB2AF /* TailorTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52192ADA1A50EBEA007BB2AF /* TailorTestHelpers.swift */; };
 		521E87481A0FCEDA00D84B7B /* NSData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 521E87471A0FCEDA00D84B7B /* NSData.swift */; };
 		522B56CA1A18C849009BBE32 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522B56C91A18C849009BBE32 /* Array.swift */; };
 		522B56CC1A191475009BBE32 /* UniquenessValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522B56CB1A191475009BBE32 /* UniquenessValidator.swift */; };
@@ -20,6 +19,9 @@
 		523F293E1A584F7A00C1BBC0 /* ControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523F293D1A584F7A00C1BBC0 /* ControllerTests.swift */; };
 		5258989F1A4F289800DD853D /* DatabaseConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5258989E1A4F289800DD853D /* DatabaseConnectionTests.swift */; };
 		525C80851A1C1B4900E7035F /* Query.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525C80841A1C1B4900E7035F /* Query.swift */; };
+		528D183F1A8FDD4A00A6E116 /* TailorTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D183E1A8FDD4A00A6E116 /* TailorTestHelpers.swift */; };
+		528D18411A8FE15D00A6E116 /* Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D18401A8FE15D00A6E116 /* Layout.swift */; };
+		528D18421A8FE3C200A6E116 /* Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D18401A8FE15D00A6E116 /* Layout.swift */; };
 		528D6FA21A56224900783BE5 /* RangeValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D6FA11A56224900783BE5 /* RangeValidatorTests.swift */; };
 		528D6FA51A562D5900783BE5 /* FormBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D6FA41A562D5900783BE5 /* FormBuilderTests.swift */; };
 		528D6FA71A56354400783BE5 /* TemplateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D6FA61A56354400783BE5 /* TemplateTests.swift */; };
@@ -67,7 +69,6 @@
 		529230361A3CF6AB006DD6EB /* BcryptHasher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C6251F19EE12810024453F /* BcryptHasher.swift */; };
 		529230371A3CF6AE006DD6EB /* TailorC.m in Sources */ = {isa = PBXBuildFile; fileRef = 52BD141419E9DA1D006D72B0 /* TailorC.m */; };
 		529230381A3CF6B5006DD6EB /* Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140B19E9DA1D006D72B0 /* Controller.swift */; };
-		529230391A3CF6B5006DD6EB /* RestfulController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140C19E9DA1D006D72B0 /* RestfulController.swift */; };
 		5292303A1A3CF6B5006DD6EB /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140D19E9DA1D006D72B0 /* Session.swift */; };
 		5292303C1A3CF9AA006DD6EB /* libmysqlclient.18.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D61A7319FDB27800FFA2EF /* libmysqlclient.18.dylib */; };
 		5292303E1A3CFB93006DD6EB /* ExitTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5292303D1A3CFB93006DD6EB /* ExitTask.swift */; };
@@ -96,7 +97,6 @@
 		52BD142C19E9DA1D006D72B0 /* RouteSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140719E9DA1D006D72B0 /* RouteSet.swift */; };
 		52BD142D19E9DA1D006D72B0 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140819E9DA1D006D72B0 /* Server.swift */; };
 		52BD142F19E9DA1D006D72B0 /* Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140B19E9DA1D006D72B0 /* Controller.swift */; };
-		52BD143019E9DA1D006D72B0 /* RestfulController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140C19E9DA1D006D72B0 /* RestfulController.swift */; };
 		52BD143119E9DA1D006D72B0 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140D19E9DA1D006D72B0 /* Session.swift */; };
 		52BD143219E9DA1D006D72B0 /* DatabaseConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140F19E9DA1D006D72B0 /* DatabaseConnection.swift */; };
 		52BD143519E9DA1D006D72B0 /* MysqlConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD141219E9DA1D006D72B0 /* MysqlConnection.swift */; };
@@ -121,7 +121,6 @@
 		52C76A521A56134300134DB9 /* UniquenessValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C76A511A56134300134DB9 /* UniquenessValidatorTests.swift */; };
 		52D61A7419FDB27800FFA2EF /* libmysqlclient.18.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D61A7319FDB27800FFA2EF /* libmysqlclient.18.dylib */; };
 		52DDCF011A538C5800D3A47E /* QueryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DDCF001A538C5800D3A47E /* QueryTests.swift */; };
-		52E784B11A596FB70065C10D /* RestfulControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784B01A596FB70065C10D /* RestfulControllerTests.swift */; };
 		52E784B51A59C12D0065C10D /* SessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784B41A59C12D0065C10D /* SessionTests.swift */; };
 		52E784B81A59F2030065C10D /* AesEncryptorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784B71A59F2030065C10D /* AesEncryptorTests.swift */; };
 		52E784BA1A5A04590065C10D /* BcryptHasherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784B91A5A04590065C10D /* BcryptHasherTests.swift */; };
@@ -159,7 +158,6 @@
 /* Begin PBXFileReference section */
 		5209E2881A50920C0044EE70 /* ModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelTests.swift; sourceTree = "<group>"; };
 		52178E661A4F359F001F6D57 /* MysqlConnectionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MysqlConnectionTests.swift; sourceTree = "<group>"; };
-		52192ADA1A50EBEA007BB2AF /* TailorTestHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TailorTestHelpers.swift; sourceTree = "<group>"; };
 		521E87471A0FCEDA00D84B7B /* NSData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSData.swift; sourceTree = "<group>"; };
 		522B56C91A18C849009BBE32 /* Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
 		522B56CB1A191475009BBE32 /* UniquenessValidator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UniquenessValidator.swift; sourceTree = "<group>"; };
@@ -173,6 +171,8 @@
 		5247FF9F19F462C200C08156 /* ___PACKAGENAME___Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "___PACKAGENAME___Application.swift"; sourceTree = "<group>"; };
 		5258989E1A4F289800DD853D /* DatabaseConnectionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseConnectionTests.swift; sourceTree = "<group>"; };
 		525C80841A1C1B4900E7035F /* Query.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Query.swift; sourceTree = "<group>"; };
+		528D183E1A8FDD4A00A6E116 /* TailorTestHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TailorTestHelpers.swift; sourceTree = "<group>"; };
+		528D18401A8FE15D00A6E116 /* Layout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Layout.swift; sourceTree = "<group>"; };
 		528D6FA11A56224900783BE5 /* RangeValidatorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RangeValidatorTests.swift; path = TailorTests/model/validators/RangeValidatorTests.swift; sourceTree = SOURCE_ROOT; };
 		528D6FA41A562D5900783BE5 /* FormBuilderTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FormBuilderTests.swift; path = TailorTests/view/FormBuilderTests.swift; sourceTree = SOURCE_ROOT; };
 		528D6FA61A56354400783BE5 /* TemplateTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TemplateTests.swift; path = TailorTests/view/TemplateTests.swift; sourceTree = SOURCE_ROOT; };
@@ -208,7 +208,6 @@
 		52BD140719E9DA1D006D72B0 /* RouteSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteSet.swift; sourceTree = "<group>"; };
 		52BD140819E9DA1D006D72B0 /* Server.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
 		52BD140B19E9DA1D006D72B0 /* Controller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Controller.swift; sourceTree = "<group>"; };
-		52BD140C19E9DA1D006D72B0 /* RestfulController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RestfulController.swift; sourceTree = "<group>"; };
 		52BD140D19E9DA1D006D72B0 /* Session.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
 		52BD140F19E9DA1D006D72B0 /* DatabaseConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseConnection.swift; sourceTree = "<group>"; };
 		52BD141219E9DA1D006D72B0 /* MysqlConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MysqlConnection.swift; sourceTree = "<group>"; };
@@ -237,7 +236,6 @@
 		52C76A511A56134300134DB9 /* UniquenessValidatorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UniquenessValidatorTests.swift; sourceTree = "<group>"; };
 		52D61A7319FDB27800FFA2EF /* libmysqlclient.18.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmysqlclient.18.dylib; path = ../../../../../usr/local/Cellar/mysql/5.6.19/lib/libmysqlclient.18.dylib; sourceTree = "<group>"; };
 		52DDCF001A538C5800D3A47E /* QueryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryTests.swift; sourceTree = "<group>"; };
-		52E784B01A596FB70065C10D /* RestfulControllerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RestfulControllerTests.swift; sourceTree = "<group>"; };
 		52E784B41A59C12D0065C10D /* SessionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionTests.swift; sourceTree = "<group>"; };
 		52E784B71A59F2030065C10D /* AesEncryptorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AesEncryptorTests.swift; sourceTree = "<group>"; };
 		52E784B91A5A04590065C10D /* BcryptHasherTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BcryptHasherTests.swift; sourceTree = "<group>"; };
@@ -309,7 +307,6 @@
 			isa = PBXGroup;
 			children = (
 				523F293D1A584F7A00C1BBC0 /* ControllerTests.swift */,
-				52E784B01A596FB70065C10D /* RestfulControllerTests.swift */,
 				52E784B41A59C12D0065C10D /* SessionTests.swift */,
 			);
 			path = controller;
@@ -443,7 +440,7 @@
 			isa = PBXGroup;
 			children = (
 				5292303B1A3CF74A006DD6EB /* TailorTests.h */,
-				52192ADA1A50EBEA007BB2AF /* TailorTestHelpers.swift */,
+				528D183E1A8FDD4A00A6E116 /* TailorTestHelpers.swift */,
 				529230041A3CF4AF006DD6EB /* app */,
 				525898A01A4F28A900DD853D /* db */,
 				5209E2871A5091BE0044EE70 /* model */,
@@ -485,7 +482,6 @@
 			isa = PBXGroup;
 			children = (
 				52BD140B19E9DA1D006D72B0 /* Controller.swift */,
-				52BD140C19E9DA1D006D72B0 /* RestfulController.swift */,
 				52BD140D19E9DA1D006D72B0 /* Session.swift */,
 			);
 			path = controller;
@@ -545,6 +541,7 @@
 			isa = PBXGroup;
 			children = (
 				52BD142419E9DA1D006D72B0 /* FormBuilder.swift */,
+				528D18401A8FE15D00A6E116 /* Layout.swift */,
 				52BD142519E9DA1D006D72B0 /* Template.swift */,
 				52B2B6EA19F3F70A0086261B /* sanitization */,
 			);
@@ -736,7 +733,6 @@
 				52BD143A19E9DA1D006D72B0 /* String.swift in Sources */,
 				52B2B69A19F1DCF10086261B /* Dictionary.swift in Sources */,
 				525C80851A1C1B4900E7035F /* Query.swift in Sources */,
-				52BD143019E9DA1D006D72B0 /* RestfulController.swift in Sources */,
 				52BD142C19E9DA1D006D72B0 /* RouteSet.swift in Sources */,
 				52BD143719E9DA1D006D72B0 /* TailorC.m in Sources */,
 				52B2B6EE19F3F75C0086261B /* Sanitizer.swift in Sources */,
@@ -766,6 +762,7 @@
 				52BD144319E9DA1D006D72B0 /* FormBuilder.swift in Sources */,
 				5292303E1A3CFB93006DD6EB /* ExitTask.swift in Sources */,
 				52BD143919E9DA1D006D72B0 /* NSString.swift in Sources */,
+				528D18411A8FE15D00A6E116 /* Layout.swift in Sources */,
 				52BD143C19E9DA1D006D72B0 /* Model.swift in Sources */,
 				52BD143519E9DA1D006D72B0 /* MysqlConnection.swift in Sources */,
 				52BD144119E9DA1D006D72B0 /* RangeValidator.swift in Sources */,
@@ -789,6 +786,7 @@
 				529230321A3CF6A4006DD6EB /* String.swift in Sources */,
 				52F41F341A561D0500EE7178 /* ErrorCollectionTests.swift in Sources */,
 				529230291A3CF69C006DD6EB /* Task.swift in Sources */,
+				528D183F1A8FDD4A00A6E116 /* TailorTestHelpers.swift in Sources */,
 				529230161A3CF671006DD6EB /* Server.swift in Sources */,
 				529230201A3CF68D006DD6EB /* PresenceValidator.swift in Sources */,
 				52E784C51A5B6E2D0065C10D /* StringTests.swift in Sources */,
@@ -820,10 +818,8 @@
 				52A684561A3FC14D00F4AA47 /* CookieJarTests.swift in Sources */,
 				528D6FA51A562D5900783BE5 /* FormBuilderTests.swift in Sources */,
 				52E784D31A5CCA9F0065C10D /* AlterationTests.swift in Sources */,
-				52192ADB1A50EBEA007BB2AF /* TailorTestHelpers.swift in Sources */,
 				529230231A3CF695006DD6EB /* FormBuilder.swift in Sources */,
 				52E784BA1A5A04590065C10D /* BcryptHasherTests.swift in Sources */,
-				529230391A3CF6B5006DD6EB /* RestfulController.swift in Sources */,
 				528D6FA21A56224900783BE5 /* RangeValidatorTests.swift in Sources */,
 				52E784C31A5B6BFA0065C10D /* NSStringTests.swift in Sources */,
 				52178E671A4F359F001F6D57 /* MysqlConnectionTests.swift in Sources */,
@@ -838,6 +834,7 @@
 				529230121A3CF671006DD6EB /* CookieJar.swift in Sources */,
 				529230061A3CF4E4006DD6EB /* ApplicationTests.swift in Sources */,
 				529230191A3CF687006DD6EB /* Model.swift in Sources */,
+				528D18421A8FE3C200A6E116 /* Layout.swift in Sources */,
 				529230181A3CF681006DD6EB /* MysqlConnection.swift in Sources */,
 				52E784CF1A5CC6350065C10D /* ServerTaskTests.swift in Sources */,
 				529230171A3CF681006DD6EB /* DatabaseConnection.swift in Sources */,
@@ -856,7 +853,6 @@
 				52A684521A3D0C5B00F4AA47 /* ConnectionTests.swift in Sources */,
 				5292301E1A3CF68D006DD6EB /* BlockValidator.swift in Sources */,
 				529230381A3CF6B5006DD6EB /* Controller.swift in Sources */,
-				52E784B11A596FB70065C10D /* RestfulControllerTests.swift in Sources */,
 				52E784C11A5B64030065C10D /* NSDataTests.swift in Sources */,
 				529230311A3CF6A4006DD6EB /* NSString.swift in Sources */,
 				529230131A3CF671006DD6EB /* Request.swift in Sources */,
@@ -1040,6 +1036,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 					"$(inherited)",
+					./build,
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -1064,6 +1061,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 					"$(inherited)",
+					./build,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",

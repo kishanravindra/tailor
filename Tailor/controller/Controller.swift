@@ -69,13 +69,13 @@ public class Controller {
   }
   
   /**
-    The template that provides the layout for the views in this controller.
+    The template class that provides the layout for the views in this
+    controller.
 
-    This template's body will be called with a different template as the first
-    argument. At some point in its body, this should call that other template's
-    body.
+    This class will be instantiated with the template providing the content for
+    a particular page.
     */
-  public var layout = Template { $0.body($0,$1) }
+  public var layout = Layout.self
   
   //MARK: - Responses
   
@@ -122,15 +122,12 @@ public class Controller {
     This method generates a response with a template.
   
     :param: template    The template to use for the request.
-    :param: parameters  The parameters to pass to the template.
     */
-  public func respondWith(template: Template, parameters: [String:Any] = [:]) {
-    template.controller = self
-    template.buffer.setString("")
-    self.layout.body(template, parameters)
+  public func respondWith(template: Template) {
+    let contents = self.layout(controller: self, template: template).generate()
     self.generateResponse {
       (inout response : Response) in
-      response.appendString(template.buffer)
+      response.appendString(contents)
     }
   }
   

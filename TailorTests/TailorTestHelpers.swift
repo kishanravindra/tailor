@@ -128,3 +128,9 @@ class Store : Record {
     return ["name"]
   }
 }
+
+extension Controller {
+  convenience init() {
+    self.init(request: Request(), action: "index", callback: {_ in })
+  }
+}

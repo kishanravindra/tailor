@@ -200,15 +200,17 @@ class ControllerTests: XCTestCase {
   
   func testRespondWithRendersTemplateInLayout() {
     let expectation = expectationWithDescription("callback called")
-    let template = Template {
-      t,p in
-      t.tag("p", text: p["message"] as String)
+    class TestTemplate: Template {
+      override func body() {
+        tag("p", text: "Nesting")
+      }
     }
-    controller.layout = Template {
-      t,p in
-      t.tag("html") {
-        t.tag("body") {
-          t.body(t, p)
+    class TestLayout: Layout {
+      override func body() {
+        self.tag("html") {
+          self.tag("body") {
+            self.renderTemplate(self.template)
+          }
         }
       }
     }
@@ -220,7 +222,8 @@ class ControllerTests: XCTestCase {
       XCTAssertEqual(body, "<html><body><p>Nesting</p></body></html>", "sets body")
     }
     
-    controller.respondWith(template, parameters: ["message": "Nesting"])
+    controller.layout = TestLayout.self
+    controller.respondWith(TestTemplate(controller: controller))
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   

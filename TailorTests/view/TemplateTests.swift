@@ -1,8 +1,8 @@
 import XCTest
 
 class TemplateTests: XCTestCase {
-  
-  let template = Template(body: {_,_ in})
+  var controller: Controller!
+  var template: Template!
   
   class TestLocalization : Localization {
     var customStrings: [String:String]
@@ -26,24 +26,45 @@ class TemplateTests: XCTestCase {
     let callback = {
       (response: Response) -> () in
     }
-    template.controller = Controller(
+    self.controller = Controller(
       request: request,
       action: "index",
       callback: callback
     )
-    template.controller?.localization = TestLocalization(locale: "en")
+    self.controller.localization = TestLocalization(locale: "en")
+    template = Template(controller: controller)
   }
   //MARK: - Body
   
   func testGenerateCallsBodyAndReturnsBuffer() {
-    let template2 = Template {
-      template, attributes in
-      let color = attributes["hat color"] as String
-      template.text("Test Value \(color)")
+    class TestTemplate: Template {
+      let hatColor: String
+      
+      init(controller: Controller, hatColor: String = "red") {
+        self.hatColor = hatColor
+        super.init(controller: controller)
+      }
+      
+      override func body() {
+        self.text("Test value \(hatColor)")
+      }
     }
     
-    let result = template2.generate(["hat color": "red"])
-    XCTAssertEqual(result, "Test Value red", "returns template body")
+    let result = TestTemplate(controller: controller, hatColor: "red").generate()
+    XCTAssertEqual(result, "Test value red", "returns template body")
+  }
+  
+  func testGenerateErasesExistingContents() {
+    class TestTemplate: Template {
+      override func body() {
+        self.text("Test 2")
+      }
+    }
+    var template2 = TestTemplate(controller: controller)
+    template2.text("Test 1")
+    XCTAssertEqual(template2.buffer, "Test 1", "starts out with hardcoded text")
+    template2.generate()
+    XCTAssertEqual(template2.buffer, "Test 2", "replaces with new contents")
   }
   
   //MARK: - Helpers
@@ -130,11 +151,10 @@ class TemplateTests: XCTestCase {
         return "/test/path"
       }
     }
-    let oldController = template.controller!
     template.controller = TestController(
-      request: oldController.request,
-      action: oldController.action,
-      callback: oldController.callback
+      request: controller.request,
+      action: controller.action,
+      callback: controller.callback
     )
     let result = template.urlFor(controllerName: "TestController", action: "index", parameters: ["id": "5"])
     XCTAssertNotNil(result, "has a result")
@@ -152,11 +172,10 @@ class TemplateTests: XCTestCase {
         return "/test/path"
       }
     }
-    let oldController = template.controller!
     template.controller = TestController(
-      request: oldController.request,
-      action: oldController.action,
-      callback: oldController.callback
+      request: controller.request,
+      action: controller.action,
+      callback: controller.callback
     )
     template.link(controllerName: "TestController", action: "index", parameters: ["id": "5"], attributes: ["class": "btn"]) {
       self.template.text("Click here")
@@ -166,37 +185,32 @@ class TemplateTests: XCTestCase {
   
   func testRenderTemplatePutsTemplateContentsInBuffer() {
     template.tag("p", text: "Hello")
-    let otherTemplate = Template {
-      (t, p) in
-      t.tag("p", text: "template.test")
-      let name = p["name"] as String
-      t.tag("p", text: name)
+    class TestTemplate: Template {
+      let name: String
+      
+      init(controller: Controller, name: String = "Anonymous") {
+        self.name = name
+        super.init(controller: controller)
+      }
+      
+      override func body() {
+        tag("p", text: "template.test")
+        tag("p", text: name)
+      }
     }
-    template.renderTemplate(otherTemplate, ["name": "John"])
+    template.renderTemplate(TestTemplate(controller: controller, name: "John"))
     XCTAssertEqual(template.buffer, "<p>Hello</p><p>Localized Text</p><p>John</p>", "buffer has text from original template and sub-template")
-  }
-  
-  func testRenderTemplateErasesExistingContents() {
-    template.tag("p", text: "Hello")
-    let otherTemplate = Template {
-      (t, p) in
-      t.tag("p", text: "template.test")
-    }
-    otherTemplate.text("Stuff")
-    template.renderTemplate(otherTemplate, [:])
-    XCTAssertEqual(template.buffer, "<p>Hello</p><p>Localized Text</p>")
   }
   
   //MARK: - Controller Information
   
   func testRequestParametersGetsKeysFromRequest() {
-    let oldController = template.controller!
-    var request = oldController.request
+    var request = controller.request
     request.requestParameters = ["id": "5", "color": "red", "size": "10"]
     template.controller = Controller(
       request: request,
-      action: oldController.action,
-      callback: oldController.callback
+      action: controller.action,
+      callback: controller.callback
     )
     let parameters = template.requestParameters("id", "color", "shelf")
     XCTAssertEqual(parameters, ["id": "5", "color": "red"], "gets a subset of the request parameters")

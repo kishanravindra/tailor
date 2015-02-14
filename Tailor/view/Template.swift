@@ -4,40 +4,44 @@ import Foundation
   This class provides a template for generating a response to a request.
   */
 public class Template {
-  /**
-    A closure providing the body of the response.
-
-    The first argument is the template itself, and the second argument is a
-    hash of parameters from the controller.
-    */
-  public let body: (Template, [String: Any])->()
-  
   /** The buffer that we use to build our result. */
   public let buffer = NSMutableString()
   
   /** The controller that is requesting the rendering. */
-  public var controller: Controller?
+  public var controller: Controller
   
   /**
-    This method creates a template.
+    This method initializes a template.
 
-    :param: body    The closure for the body.
+    :param: controller    The controller that is rendering the template.
     */
-  public required init(body: (Template, [String: Any])->()){
-    self.body = body
+  public init(controller: Controller) {
+    self.controller = controller
   }
   
   //MARK: - Body
   
   /**
     This method generates the body using the template.
-
-    :param: parameters  The parameters to pass to the template.
+    
     :returns:           The body.
     */
-  public func generate(parameters: [String: Any]) -> String {
-    self.body(self, parameters)
+  public func generate() -> String {
+    self.buffer.setString("")
+    self.body()
     return self.buffer
+  }
+  
+  /**
+    This method runs the body.
+
+    This implementation does nothing. Subclasses must override this to provide
+    the real rendered content.
+
+    The content should be added to the buffer instance variable.
+    */
+  public func body() {
+    
   }
   
   //MARK: - Helpers
@@ -51,7 +55,7 @@ public class Template {
     :param: localize  Whether we should attempt to localize the text.
     */
   public func text(text: String, localize: Bool = true) {
-    let localizedText = localize ? self.controller?.localize(text) ?? text : text
+    let localizedText = localize ? self.controller.localize(text) ?? text : text
     let sanitizedText = HtmlSanitizer().sanitize(SanitizedText(stringLiteral: localizedText))
     self.addSanitizedText(sanitizedText)
   }
@@ -64,7 +68,7 @@ public class Template {
     :param: text    The text to add.
     */
   public func raw(text: String, localize: Bool = true) {
-    let localizedText = localize ? self.controller?.localize(text) ?? text : text
+    let localizedText = localize ? self.controller.localize(text) ?? text : text
     self.addSanitizedText(HtmlSanitizer().accept(localizedText))
   }
   
@@ -141,7 +145,7 @@ public class Template {
     :returns:               The path
     */
   public func urlFor(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:]) -> String? {
-    return self.controller?.urlFor(controllerName: controllerName, action: action, parameters: parameters)
+    return self.controller.urlFor(controllerName: controllerName, action: action, parameters: parameters)
   }
   
   /**
@@ -167,10 +171,9 @@ public class Template {
     :param: template    The template to render
     :param: parameters  The parameters to pass to the other template.
   */
-  public func renderTemplate(template: Template, _ parameters: [String: Any]) {
+  public func renderTemplate(template: Template) {
     template.controller = self.controller
-    template.buffer.setString("")
-    self.buffer.appendString(template.generate(parameters))
+    self.buffer.appendString(template.generate())
   }
   
 
@@ -186,22 +189,18 @@ public class Template {
       A hash with the extracted values.
     */
   public func requestParameters(keys: String...) -> [String:String] {
-    if let params = self.controller?.request.requestParameters {
-      var filteredParams = [String:String]()
-      for key in keys {
-        filteredParams[key] = params[key]
-      }
-      return filteredParams
+    let params = self.controller.request.requestParameters
+    var filteredParams = [String:String]()
+    for key in keys {
+      filteredParams[key] = params[key]
     }
-    else {
-      return [:]
-    }
+    return filteredParams
   }
   
   //MARK: - Localization
   
   /** The localization that this template will use by default, if it has one. */
-  public var localization: Localization? { get { return self.controller?.localization } }
+  public var localization: Localization { get { return self.controller.localization } }
   
   /**
     This method gets a localized, capitalized attribute name.

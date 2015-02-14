@@ -1,11 +1,12 @@
 import XCTest
 
 class FormBuilderTests: XCTestCase {
-  let template = Template() { _,_ in }
+  var template : Template!
   let model = Hat()
   var builder : FormBuilder!
   
   override func setUp() {
+    template = Template(controller: Controller())
     builder = FormBuilder(template: template, model: model)
   }
   
