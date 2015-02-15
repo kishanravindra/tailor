@@ -10,6 +10,9 @@ public class Template {
   /** The controller that is requesting the rendering. */
   public let controller: Controller
   
+  /** The other templates this template has rendered. */
+  public private(set) var renderedTemplates: [Template] = []
+  
   /**
     This method initializes a template.
 
@@ -172,6 +175,7 @@ public class Template {
     :param: parameters  The parameters to pass to the other template.
   */
   public func renderTemplate(template: Template) {
+    self.renderedTemplates.append(template)
     self.buffer.appendString(template.generate())
   }
   

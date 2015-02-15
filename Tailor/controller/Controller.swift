@@ -41,6 +41,12 @@ public class Controller {
   /** The filters that this controller runs. */
   var filters: [Filter] = []
   
+  /**
+    The templates that this controller has rendered in the course of responding
+    to its action.
+    */
+  public private(set) var renderedTemplates: [Template] = []
+  
   /** Whether we have responded to our request. */
   var responded = false
   
@@ -125,6 +131,7 @@ public class Controller {
     */
   public func respondWith(template: Template) {
     let contents = self.layout(controller: self, template: template).generate()
+    self.renderedTemplates.append(template)
     self.generateResponse {
       (inout response : Response) in
       response.appendString(contents)

@@ -227,6 +227,39 @@ class ControllerTests: XCTestCase {
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
+  func testRespondWithAddsTemplateToList() {
+    let expectation = expectationWithDescription("callback called")
+    class TestTemplate: Template {
+      let message: String
+      
+      init(controller: Controller, message: String = "") {
+        self.message = message
+        super.init(controller: controller)
+      }
+      override func body() {
+        tag("p", text: message)
+      }
+    }
+    
+    self.callback = {
+      response in
+      expectation.fulfill()
+      XCTAssertEqual(self.controller.renderedTemplates.count, 1, "has 1 template in the list")
+      if !self.controller.renderedTemplates.isEmpty {
+        if let template = self.controller.renderedTemplates[0] as? TestTemplate {
+          XCTAssertEqual(template.message, "hello", "puts the right template in the list")
+        }
+        else {
+          XCTFail("Puts the right template in the list")
+        }
+      }
+      
+    }
+    
+    controller.respondWith(TestTemplate(controller: controller, message: "hello"))
+    waitForExpectationsWithTimeout(0.01, handler: nil)
+  }
+  
   func testFilterForJsonWithStringReturnsString() {
     let input = "Test"
     if let s = Controller.filterForJson(input) as? String {

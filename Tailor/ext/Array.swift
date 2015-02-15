@@ -1,5 +1,6 @@
 import Foundation
 
+
 /**
   This method removes the nil values from an array.
 

@@ -203,6 +203,32 @@ class TemplateTests: XCTestCase {
     XCTAssertEqual(template.buffer, "<p>Hello</p><p>Localized Text</p><p>John</p>", "buffer has text from original template and sub-template")
   }
   
+  func testRenderTemplatePutsTemplateInList() {
+    class TestTemplate: Template {
+      let name: String
+      
+      init(controller: Controller, name: String = "Anonymous") {
+        self.name = name
+        super.init(controller: controller)
+      }
+      
+      override func body() {
+        tag("p", text: "template.test")
+        tag("p", text: name)
+      }
+    }
+    template.renderTemplate(TestTemplate(controller: controller, name: "John"))
+    XCTAssertEqual(template.renderedTemplates.count, 1, "puts a template in the list")
+    if !template.renderedTemplates.isEmpty {
+      if let otherTemplate = template.renderedTemplates[0] as? TestTemplate {
+        XCTAssertEqual(otherTemplate.name, "John", "puts the right template in the list")
+      }
+      else {
+        XCTFail("puts the right template in the list")
+      }
+    }
+  }
+  
   //MARK: - Controller Information
   
   func testRequestParametersGetsKeysFromRequest() {

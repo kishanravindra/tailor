@@ -18,7 +18,6 @@
 
 * Better CSRF prevention
 * Supporting select tags, checkboxes, etc in forms
-* Recording which templates a controller renders
 
 ### Modelling
 
@@ -49,3 +48,4 @@
 
 * Helpers for common test patterns
 * Assertions for HTML content
+* Truncating tables when running tests
