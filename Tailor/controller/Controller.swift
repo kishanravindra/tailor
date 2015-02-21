@@ -67,7 +67,7 @@ public class Controller {
     self.action = action
     self.callback = callback
     self.session = Session(request: request)
-    self.localization = Localization(locale: "en")
+    self.localization = Application.sharedApplication().localization("en")
     
     if let userId = self.session["userId"]?.toInt() {
       self.currentUser = Query<User>().find(userId)
@@ -379,7 +379,7 @@ public class Controller {
     */
   public func localize(key: String, locale: String? = nil) -> String? {
     if locale != nil {
-      return self.localization.dynamicType.init(locale: locale!).fetch(key)
+      return Application.sharedApplication().localization(locale!).fetch(key)
     }
     else {
       return self.localization.fetch(key)

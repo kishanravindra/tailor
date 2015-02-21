@@ -29,7 +29,7 @@ class ApplicationTests : XCTestCase {
       , "initalizes IP address to dummy address")
     XCTAssertEqual(application.port, 8080, "initializes port to HTTP Alt")
     XCTAssertEqual(application.routeSet.routes.count, 0, "initializes route set to an empty one")
-    XCTAssertEqual(application.rootPath, ".", "initalizes root path to the current path")
+    XCTAssertEqual(application.rootPath(), ".", "initalizes root path to the current path")
   }
   
   func testInitializationSetsArguments() {
@@ -81,5 +81,24 @@ class ApplicationTests : XCTestCase {
     let types = application.registeredSubclassList(TestClassWithSubclasses)
     var ids = types.map { $0.id() }
     XCTAssertEqual(sorted(ids), [1, 2, 3], "registers all subclasses of the type given, including the type itself")
+  }
+  
+  //MARK: - Configuration
+  
+  func testLoadConfigPutsContentsInConfiguration() {
+    application.loadConfigFromFile("TailorTests/Info.plist")
+    let value = application.configuration["Info.CFBundlePackageType"]
+    XCTAssertNotNil(value, "has a setting")
+    if value != nil {
+      XCTAssertEqual(value!, "BNDL", "has the setting from the file")
+    }
+  }
+  
+  func testLocalizationBuildsLocalizationFromClassName() {
+    application.configuration["localization.class"] = "TailorTests.DatabaseLocalization"
+    let localization = application.localization("en")
+    XCTAssertEqual(localization.locale, "en", "sets the localization")
+    XCTAssertNotNil(localization as? DatabaseLocalization, "uses the class from the configuration")
+    application.configuration["localization.class"] = "TailorTests.PropertyListLocalization"
   }
 }

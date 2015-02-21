@@ -13,13 +13,6 @@ public class Application {
   /** The routes that process requests for the app. */
   public var routeSet = RouteSet()
   
-  /**
-    The path to the root of the application.
-  
-    This defaults to the path of the executable
-    */
-  public var rootPath = "."
-  
   /** The formatters that we have available for dates. */
   public var dateFormatters: [String:NSDateFormatter] = [:]
   
@@ -45,6 +38,11 @@ public class Application {
   public private(set) var flags: [String:String] = [:]
   
   /**
+    The configuration settings for the application.
+    */
+  public let configuration = ConfigurationSetting()
+    
+  /**
     This method initializes the application.
   
     This implementation parses command-line arguments, loads date formatters,
@@ -59,6 +57,10 @@ public class Application {
     self.loadDateFormatters()
     self.registerSubclasses(Task.self, Alteration.self)
     self.parseArguments()
+    self.loadConfigFromFile("sessions")
+    self.loadConfigFromFile("database")
+    self.loadConfigFromFile("localization")
+    self.configuration.setDefaultValue("localization.class", value: "PropertyListLocalization")
   }
   
   /** The application that we are running. */
@@ -283,18 +285,41 @@ public class Application {
     return classes.map { $0 as ParentType.Type }
   }
   
-  /**
-    This method gets the config from our config file based on the filename.
+  //MARK: - Configuration
   
-    :param: file    The name of the file, with no extension.
-    :returns:       The config from the file, or an empty dictionary if we could
-                    not load the config.
+  /**
+    The path to the root of the application.
+  
+    This defaults to the path of the executable
     */
-  public func configFromFile(file: String) -> NSDictionary {
-    let filename = "\(self.rootPath)/\(file).plist"
-    let data = NSData(contentsOfFile: filename) ?? NSData()
-    let propertyList = NSPropertyListSerialization.propertyListWithData(data, options: Int(NSPropertyListMutabilityOptions.Immutable.rawValue), format: nil, error: nil) as? NSDictionary
-    return propertyList ?? NSDictionary()
+  public func rootPath() -> String {
+    return "."
+  }
+  
+  /**
+    This method loads configuration from a file into the application's settings.
+  
+    The settings will be put into the configuration with a prefix taken from the
+    filename of the path.
+  
+    :param: path    The path to the file, relative to the application's root
+                    path.
+    */
+  public func loadConfigFromFile(path: String) {
+    let name = path.lastPathComponent.stringByDeletingPathExtension
+    self.configuration.child(name).addDictionary(ConfigurationSetting(contentsOfFile: path).toDictionary())
+  }
+  
+  /**
+    This method constructs a localization based on the configuration settings.
+  
+    :param: locale    The locale for the localization
+    :returns:         The localization
+    */
+  public func localization(locale: String) -> Localization {
+    let name = self.configuration["localization.class"]
+    var klass = NSClassFromString(self.configuration["localization.class"] ?? "") as? Localization.Type ?? Localization.self
+    return klass(locale: locale)
   }
 }
 

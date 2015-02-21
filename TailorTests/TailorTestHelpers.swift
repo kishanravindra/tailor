@@ -4,11 +4,23 @@ class TestApplication: Application {
   override class func extractArguments() -> [String] { return ["tailor.exit"] }
   required init(arguments: [String]? = nil) {
     super.init(arguments: arguments)
-    self.rootPath = "./TailorTests/config"
+    self.configuration.addDictionary([
+    "database": [
+      "host": "127.0.0.1",
+      "username": "tailor",
+      "password": "tailor",
+      "database": "tailor_tests"
+    ],
+    "sessions": [
+      "encryptionKey": "0FC7ECA7AADAD635DCC13A494F9A2EA8D8DAE366382CDB3620190F6F20817124"
+    ],
+    "localization":[
+      "class": "TailorTests.PropertyListLocalization"
+    ]])
   }
   
   override func openDatabaseConnection() -> DatabaseConnection {
-    let config = self.configFromFile("database") as [String:String]
+    let config = self.configuration.child("database").toDictionary() as [String: String]
     return MysqlConnection(config: config)
   }
   
@@ -25,54 +37,6 @@ class TestApplication: Application {
     
     DatabaseConnection.sharedConnection().executeQuery("DROP TABLE IF EXISTS `users`")
     DatabaseConnection.sharedConnection().executeQuery("CREATE TABLE `users` ( `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, `email_address` varchar(255), `encrypted_password` varchar(255))")
-  }
-  
-  override func configFromFile(file: String) -> NSDictionary {
-    switch(file) {
-    case "database":
-      return [
-        "host": "127.0.0.1",
-        "username": "tailor",
-        "password": "tailor",
-        "database": "tailor_tests"
-      ]
-    case "sessions":
-      return [
-        "encryptionKey": "0FC7ECA7AADAD635DCC13A494F9A2EA8D8DAE366382CDB3620190F6F20817124"
-      ]
-    case "strings":
-      return [
-        "en": [
-          "localization_test": "Yes",
-          "template": [
-            "test": "Localized Text",
-            "test_raw": "<b>Hello</b>"
-          ],
-          "record": [
-            "shelf": [
-              "attributes": [
-                "store": "hat store"
-              ]
-            ]
-          ],
-          "controller": [
-            "test": [
-              "message": "Hello"
-            ]
-          ]
-        ],
-        "es": [
-          "localization_test": "Si",
-          "controller": [
-            "test": [
-              "message": "Hola"
-            ]
-          ]
-        ]
-      ]
-    default:
-      return [:]
-    }
   }
 }
 

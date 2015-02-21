@@ -560,6 +560,7 @@ class ControllerTests: XCTestCase {
   }
   
   func testLocalizeWithNoLocaleUsesLocalization() {
+    Application.sharedApplication().configuration["localization.content.en.controller.test.message"] = "Hello"
     let string = controller.localize("controller.test.message")
     XCTAssertNotNil(string, "returns a string")
     if string != nil {
@@ -568,6 +569,7 @@ class ControllerTests: XCTestCase {
   }
   
   func testLocalizeWithLocaleSwitchesToThatLanguage() {
+    Application.sharedApplication().configuration["localization.content.es.controller.test.message"] = "Hola"
     let string = controller.localize("controller.test.message", locale: "es")
     XCTAssertNotNil(string, "returns a string")
     if string != nil {

@@ -4,22 +4,6 @@ class TemplateTests: XCTestCase {
   var controller: Controller!
   var template: Template!
   
-  class TestLocalization : Localization {
-    var customStrings: [String:String]
-    override init(locale: String) {
-      customStrings = [
-        "template.test": "Localized Text",
-        "template.test_raw": "<b>Hello</b>",
-        "record.shelf.attributes.store": "hat store"
-      ]
-      super.init(locale: locale)
-    }
-    
-    override func fetch(key: String) -> String? {
-      return customStrings[key]
-    }
-  }
-  
   override func setUp() {
     TestApplication.start()
     let request = Request(clientAddress: "1.1.1.1", data: NSData())
@@ -31,7 +15,12 @@ class TemplateTests: XCTestCase {
       action: "index",
       callback: callback
     )
-    self.controller.localization = TestLocalization(locale: "en")
+    self.controller.localization = PropertyListLocalization(locale: "en")
+    Application.sharedApplication().configuration.child("localization.content.en").addDictionary([
+      "template.test": "Localized Text",
+      "template.test_raw": "<b>Hello</b>",
+      "record.shelf.attributes.store": "hat store"
+    ])
     template = Template(controller: controller)
   }
   //MARK: - Body
