@@ -66,11 +66,17 @@ public class Localization {
     different behavior for fetching the content in a given locale, they should
     override fetchInLocale. If they need to change the way the fallbacks work,
     they should override fallbackLocales.
+  
+    This can also interpolate dynamic values into the content, as provided in
+    the interpolations parameter. If there is a key "name" in that dictionary
+    mapped to the value "John", then all occurrences of "\(name)" in the content
+    will be replaced with "John".
     
-    :param: key   The key for the content.
-    :returns:     The content.
+    :param: key             The key for the content.
+    :param: interpolations  The values to interpolate into the content.
+    :returns:               The content.
     */
-  public func fetch(key: String) -> String? {
+  public func fetch(key: String, interpolations: [String:String] = [:]) -> String? {
     var result = self.fetch(key, inLocale: self.locale)
     if result == nil {
       for fallbackLocale in self.dynamicType.fallbackLocales(self.locale) {
@@ -79,6 +85,9 @@ public class Localization {
           break
         }
       }
+    }
+    for (key,value) in interpolations {
+      result = result?.stringByReplacingOccurrencesOfString("\\(\(key))", withString: value, options: nil, range: nil)
     }
     return result
   }

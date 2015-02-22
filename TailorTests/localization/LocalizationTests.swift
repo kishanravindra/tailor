@@ -3,14 +3,22 @@ import XCTest
 class LocalizationTests: XCTestCase {
   class TestLocalization: Localization {
     override func fetch(key: String, inLocale locale: String) -> String? {
-      switch(locale) {
-      case "en-gb":
-        return "British"
-      case "en":
-        return "English"
-      case "es":
-        return "Spanish"
-      default:
+      if key == "description" {
+        switch(locale) {
+        case "en-gb":
+          return "British"
+        case "en":
+          return "English"
+        case "es":
+          return "Spanish"
+        default:
+          return nil
+        }
+      }
+      else if key == "interpolation_test" {
+        return "My name is \\(name)"
+      }
+      else {
         return nil
       }
     }
@@ -75,5 +83,14 @@ class LocalizationTests: XCTestCase {
     let localization = Localization(locale: "en")
     let string = localization.fetch("localization_test", inLocale: "en")
     XCTAssertNil(string, "gets a nil result from fetchInLocale")
+  }
+  
+  func testFetchWithInterpolationPutsValueInTranslation() {
+    let localization = TestLocalization(locale: "en")
+    let result = localization.fetch("interpolation_test", interpolations: ["name": "John"])
+    XCTAssertNotNil(result, "gets a result")
+    if result != nil {
+      XCTAssertEqual(result!, "My name is John", "puts the interpolated value in the content")
+    }
   }
 }

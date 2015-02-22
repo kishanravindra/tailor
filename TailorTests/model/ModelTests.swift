@@ -101,7 +101,7 @@ class ModelTests: XCTestCase {
   
   func testHumanAttributeNameCanGetNameFromLocalization() {
     class TestLocalization : Localization {
-      override func fetch(key: String) -> String? {
+      override func fetch(key: String, inLocale locale: String) -> String? {
         return key + " translated"
       }
     }
