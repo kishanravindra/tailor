@@ -63,7 +63,7 @@ public class RouteSet {
       
       var parameterNames : [String] = []
       
-      parameterPattern.enumerateMatchesInString(pathPattern, options: nil, range: NSMakeRange(0, countElements(pathPattern)), usingBlock: {
+      parameterPattern.enumerateMatchesInString(pathPattern, options: nil, range: NSMakeRange(0, count(pathPattern)), usingBlock: {
         (match, _, _) in
         let range = Range<String.Index>(start: advance(pathPattern.startIndex, match.range.location + 1), end: advance(pathPattern.startIndex, match.range.location + match.range.length))
         parameterNames.append(pathPattern.substringWithRange(range))
@@ -73,8 +73,8 @@ public class RouteSet {
       
       var filteredPathPattern = NSMutableString(string: pathPattern)
       
-      parameterPattern.replaceMatchesInString(filteredPathPattern, options: nil, range: NSMakeRange(0, countElements(pathPattern)), withTemplate: "([^/]*)")
-      self.regex = NSRegularExpression(pattern: "^" + filteredPathPattern + "/?$", options: nil, error: nil) ?? NSRegularExpression(pattern: "^$", options: nil, error: nil)!
+      parameterPattern.replaceMatchesInString(filteredPathPattern, options: nil, range: NSMakeRange(0, count(pathPattern)), withTemplate: "([^/]*)")
+      self.regex = NSRegularExpression(pattern: "^" + (filteredPathPattern as String) + "/?$", options: nil, error: nil) ?? NSRegularExpression(pattern: "^$", options: nil, error: nil)!
     }
     
     //MARK: - Description
@@ -84,7 +84,7 @@ public class RouteSet {
       :returns: The description
       */
     func fullDescription() -> String {
-      return NSString(format: "%@ %@ %@", self.method, self.pathPattern, self.description)
+      return NSString(format: "%@ %@ %@", self.method, self.pathPattern, self.description) as! String
     }
     
     //MARK: - Request Handling
@@ -97,7 +97,7 @@ public class RouteSet {
       */
     func canHandleRequest(request: Request) -> Bool {
       let path = request.path
-      let range = NSRange(location: 0, length: countElements(path))
+      let range = NSRange(location: 0, length: count(path))
       let match = self.regex.firstMatchInString(path, options: nil, range: range)
       return match != nil && request.method == self.method
     }
@@ -112,7 +112,7 @@ public class RouteSet {
       NSLog("Processing with %@", self.description)
       var requestCopy = request
       let path = request.path
-      let range = NSRange(location: 0, length: countElements(path))
+      let range = NSRange(location: 0, length: count(path))
       
       let parameterValues = Request.extractWithPattern(path, pattern: self.regex.pattern)
       for (index, key) in enumerate(self.pathParameters) {
@@ -236,7 +236,7 @@ public class RouteSet {
       (request: Request, callback: Server.ResponseCallback) -> () in
       controller(request: request, action: action, callback: callback).respond()
     }
-    self.addRoute(pathPattern, method: method, handler: handler, description: description)
+    self.addRoute(pathPattern, method: method, handler: handler, description: description as! String)
     if let route = self.routes.last {
       route.controller = controller
       route.action = action

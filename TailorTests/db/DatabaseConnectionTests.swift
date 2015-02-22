@@ -25,7 +25,7 @@ class DatabaseConnectionTests: XCTestCase {
     SHARED_APPLICATION = nil
     TestApplication.start()
     DatabaseConnection.openSharedConnection()
-    let application = SHARED_APPLICATION as TestApplication
+    let application = SHARED_APPLICATION as! TestApplication
     XCTAssertEqual(NSStringFromClass(DatabaseConnection.sharedConnection().dynamicType), NSStringFromClass(MysqlConnection.self), "has a mysql connection as the shared connection")
     XCTAssertEqual(application.connectionCount, 1, "increments the connection count")
     SHARED_APPLICATION = nil
@@ -35,7 +35,7 @@ class DatabaseConnectionTests: XCTestCase {
     SHARED_APPLICATION = nil
     TestApplication.start()
     DatabaseConnection.openSharedConnection()
-    let application = SHARED_APPLICATION as TestApplication
+    let application = SHARED_APPLICATION as! TestApplication
     let expectation = expectationWithDescription("executes block in thread")
     DatabaseConnection.sharedConnection()
     NSOperationQueue().addOperationWithBlock {

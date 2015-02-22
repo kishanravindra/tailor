@@ -48,7 +48,7 @@ public class AesEncryptor {
     :returns:       The hex byte.
     */
   public class func getHex(byte: String) -> UInt8? {
-    switch(countElements(byte)) {
+    switch(count(byte)) {
     case 1:
       switch(byte) {
       case "A": return 10
@@ -89,7 +89,7 @@ public class AesEncryptor {
     */
   public init(key hexKey: String) {
     var keyData = NSMutableData()
-    for indexOfByte in (0..<countElements(hexKey)/2) {
+    for indexOfByte in (0..<count(hexKey)/2) {
       let range = Range(start: advance(hexKey.startIndex, indexOfByte), end: advance(hexKey.startIndex, indexOfByte + 2))
       if var byte = AesEncryptor.getHex(hexKey.substringWithRange(range)) {
         keyData.appendBytes(&byte, length: 1)
@@ -123,7 +123,7 @@ public class AesEncryptor {
   public func encrypt(data: NSData) -> NSData {
     let encryptor = SecEncryptTransformCreate(key.takeUnretainedValue(), nil)
     SecTransformSetAttribute(encryptor.takeUnretainedValue(), kSecTransformInputAttributeName, data, nil)
-    return SecTransformExecute(encryptor.takeUnretainedValue(), nil) as? NSData ?? NSData()
+    return (SecTransformExecute(encryptor.takeUnretainedValue(), nil) as? NSData) ?? NSData()
   }
   
   /**

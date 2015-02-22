@@ -32,7 +32,7 @@ public class Template {
   public func generate() -> String {
     self.buffer.setString("")
     self.body()
-    return self.buffer
+    return self.buffer as String
   }
   
   /**

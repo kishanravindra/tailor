@@ -63,7 +63,7 @@ public struct Request {
     
     let headerString = NSString(data: headerData, encoding: NSUTF8StringEncoding) ?? ""
     
-    var lines = headerString.componentsSeparatedByString("\r\n") as [String]
+    var lines = headerString.componentsSeparatedByString("\r\n") as! [String]
     let introMatches = Request.extractWithPattern(lines[0], pattern: "^([\\S]*) ([\\S]*) HTTP/([\\d.]*)$")
     
     if introMatches.isEmpty {
@@ -86,6 +86,7 @@ public struct Request {
     }
     
     var headers : [String:String] = [:]
+    var cookieHeaders = [String]()
     for index in 0..<lines.count {
       let line = lines[index].stringByTrimmingCharactersInSet(NSCharacterSet.newlineCharacterSet())
       if line.isEmpty {
@@ -94,7 +95,7 @@ public struct Request {
       let headerMatch = Request.extractWithPattern(line, pattern: "^([\\w-]*): (.*)$")
       
       if headerMatch[0] == "Cookie" {
-        self.cookies.addHeaderString(headerMatch[1])
+        cookieHeaders.append(headerMatch[1])
       }
       else {
         headers[headerMatch[0]] = headerMatch[1]
@@ -103,6 +104,10 @@ public struct Request {
     
     self.headers = headers
     
+    for header in cookieHeaders {
+      self.cookies.addHeaderString(header)
+    }
+    
     self.parseRequestParameters()
   }
   
@@ -110,7 +115,7 @@ public struct Request {
   
   /** The text of the request body. */
   public var bodyText : String { get {
-    return NSString(data: self.body, encoding: NSUTF8StringEncoding) ?? ""
+    return (NSString(data: self.body, encoding: NSUTF8StringEncoding) as? String) ?? ""
   } }
   
   /**
@@ -173,7 +178,7 @@ public struct Request {
         ]
       }
       else {
-        self.requestParameters[parameterName] = NSString(data: subRequest.body, encoding: NSUTF8StringEncoding)
+        self.requestParameters[parameterName] = NSString(data: subRequest.body, encoding: NSUTF8StringEncoding) as? String
       }
     }
 
@@ -193,7 +198,7 @@ public struct Request {
     let regex = NSRegularExpression(pattern: pattern, options: nil, error: nil)
     var sections : [String] = []
     
-    regex?.enumerateMatchesInString(line, options: nil, range: NSMakeRange(0,countElements(line)), usingBlock: {
+    regex?.enumerateMatchesInString(line, options: nil, range: NSMakeRange(0,count(line)), usingBlock: {
       (result: NSTextCheckingResult!, _, _) in
       sections = []
       for index in 1..<result.numberOfRanges {

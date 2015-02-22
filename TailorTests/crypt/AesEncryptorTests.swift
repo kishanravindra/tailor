@@ -82,9 +82,9 @@ class AesEncryptorTests: XCTestCase {
   
   func testGenerateKeyGetsHexString() {
     let string = AesEncryptor.generateKey()
-    XCTAssertEqual(countElements(string), 64, "is a 64 character string")
+    XCTAssertEqual(count(string), 64, "is a 64 character string")
     let regex = NSRegularExpression(pattern: "^[A-F0-9]*$", options: nil, error: nil)
-    let matchCount = regex?.numberOfMatchesInString(string, options: nil, range: NSMakeRange(0, countElements(string))) ?? 0
+    let matchCount = regex?.numberOfMatchesInString(string, options: nil, range: NSMakeRange(0, count(string))) ?? 0
     XCTAssertEqual(matchCount, 1, "matches hex regex")
   }
 }

@@ -58,7 +58,7 @@ public class BcryptHasher {
       Int32(setting.count)
     )
     
-    let settingString = NSString(CString: &setting, encoding: NSUTF8StringEncoding)!
+    let settingString = NSString(CString: &setting, encoding: NSUTF8StringEncoding) as! String
     self.init(setting: settingString)
   }
   
@@ -89,7 +89,7 @@ public class BcryptHasher {
     )
     
     let result = NSString(CString: &output, encoding: NSUTF8StringEncoding)
-    return result
+    return result as? String
   }
   
   /**

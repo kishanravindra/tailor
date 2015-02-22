@@ -55,7 +55,7 @@ public class Alteration {
       alteration in
       previousAlterations.filter {
         previousAlteration in
-        let id = previousAlteration.data["id"] as String
+        let id = previousAlteration.data["id"] as! String
         return id == alteration.id()
       }.isEmpty
     }.sorted {

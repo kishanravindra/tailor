@@ -117,7 +117,7 @@ public class DatabaseConnection {
     */
   public class func sanitizeColumnName(columnName: String) -> String {
     let keyRegex = NSRegularExpression(pattern: "[^A-Za-z_0-9]", options: nil, error: nil)!
-    let range = NSMakeRange(0, countElements(columnName))
+    let range = NSMakeRange(0, count(columnName))
     let sanitizedColumn = keyRegex.stringByReplacingMatchesInString(columnName, options: nil, range: range, withTemplate: "")
     return sanitizedColumn
   }

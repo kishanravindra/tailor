@@ -17,7 +17,7 @@ public class Localization {
     */
   public init(locale: String) {
     self.locale = locale
-    let config = Application.sharedApplication().configFromFile("strings")[locale] as NSDictionary?
+    let config = Application.sharedApplication().configFromFile("strings")[locale] as! NSDictionary?
     self.strings = Localization.flattenDictionary(config ?? NSDictionary())
   }
   
@@ -44,7 +44,7 @@ public class Localization {
   public class func flattenDictionary(dictionary: NSDictionary) -> [String:String] {
     var results = [String:String]()
     for (key,value) in dictionary {
-      let stringKey = key as String
+      let stringKey = key as! String
       switch(value) {
       case let string as String:
         results[stringKey] = string

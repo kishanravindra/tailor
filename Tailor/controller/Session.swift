@@ -33,7 +33,7 @@ public class Session {
   public init(request: Request) {
     let cookies = request.cookies
     self.clientAddress = request.clientAddress
-    self.expirationDate = NSDate(timeIntervalSinceNow: 3600)
+    
     let key = Application.sharedApplication().configFromFile("sessions")["encryptionKey"] as? String
     encryptor = AesEncryptor(key: key ?? "")
     if let encryptedDataString = cookies["_session"] {
@@ -41,6 +41,7 @@ public class Session {
       let decryptedData = encryptor.decrypt(encryptedData)
       
       var cookieData = (NSJSONSerialization.JSONObjectWithData(decryptedData, options: nil, error: nil) as? [String:String]) ?? [:]
+      self.expirationDate = COOKIE_DATE_FORMATTER.dateFromString(cookieData["expirationDate"]!) ?? NSDate(timeIntervalSinceNow: 3600)
       
       if cookieData["clientAddress"] == nil {
         return
@@ -51,14 +52,9 @@ public class Session {
       if cookieData["expirationDate"] == nil {
         return
       }
-      let date : NSDate! = COOKIE_DATE_FORMATTER.dateFromString(cookieData["expirationDate"]!)
-      if date == nil {
+      if self.expirationDate.compare(NSDate()) == NSComparisonResult.OrderedAscending {
         return
       }
-      if date.compare(NSDate()) == NSComparisonResult.OrderedAscending {
-        return
-      }
-      self.expirationDate = date
       self.data = cookieData
       
       self.data["clientAddress"] = nil
@@ -71,6 +67,9 @@ public class Session {
           self.data[key] = nil
         }
       }
+    }
+    else {
+      self.expirationDate = NSDate(timeIntervalSinceNow: 3600)
     }
   }
   

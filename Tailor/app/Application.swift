@@ -130,8 +130,8 @@ public class Application {
     */
   public class func extractArguments() -> [String] {
     var arguments = [String]()
-    for indexOfArgument in 1..<C_ARGC {
-      if let argument = String.fromCString(C_ARGV[Int(indexOfArgument)]) {
+    for indexOfArgument in 1..<Process.argc {
+      if let argument = String.fromCString(Process.unsafeArgv[Int(indexOfArgument)]) {
         arguments.append(argument)
       }
     }
@@ -280,7 +280,7 @@ public class Application {
     let klass : AnyClass = ParentType.self
     let description = NSStringFromClass(klass)
     let classes = self.registeredSubclasses[description] ?? []
-    return classes.map { $0 as ParentType.Type }
+    return classes.map { $0 as! ParentType.Type }
   }
   
   /**

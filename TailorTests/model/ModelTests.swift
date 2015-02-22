@@ -12,7 +12,7 @@ class ModelTests: XCTestCase {
   }
   class TestValidator : Validator {
     override func validate(model: Model) {
-      let hat = model as Hat
+      let hat = model as! Hat
       if(contains(hat.keysToFail, key)) {
         hat.errors.add(key, "failed validation")
       }
@@ -113,7 +113,7 @@ class ModelTests: XCTestCase {
   func testValueForKeyGetsValueFromInstanceVariable() {
     let hat = Hat()
     hat.color = "black"
-    let result = hat.valueForKey("color") as String
+    let result = hat.valueForKey("color") as! String
     XCTAssertEqual(result, "black", "gets the value stored on the object")
   }
   

@@ -8,7 +8,7 @@ class TestApplication: Application {
   }
   
   override func openDatabaseConnection() -> DatabaseConnection {
-    let config = self.configFromFile("database") as [String:String]
+    let config = self.configFromFile("database") as! [String:String]
     return MysqlConnection(config: config)
   }
   

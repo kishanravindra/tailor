@@ -43,6 +43,8 @@ public class RangeValidator : Validator {
     :param: key   The name of the field that this will validate.
     */
   public required init(key: String) {
+    self.min = nil
+    self.max = nil
     super.init(key: key)
   }
   

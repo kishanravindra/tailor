@@ -25,9 +25,10 @@ public class MysqlConnection : DatabaseConnection {
         }
 
         if let value = MysqlRow.extractBindResult(bindResult, type: fieldType.type) {
-          data[name!] = value
+          data[name! as! String] = value
         }
       }
+      
       self.init(data: data)
     }
     
@@ -153,7 +154,7 @@ public class MysqlConnection : DatabaseConnection {
     
     let timeZoneInfo = self.executeQuery("SELECT @@session.time_zone as timeZone")
     if timeZoneInfo.count > 0 {
-      let timeZoneDescription = timeZoneInfo[0].data["timeZone"] as String
+      let timeZoneDescription = timeZoneInfo[0].data["timeZone"] as! String
       let components = Request.extractWithPattern(timeZoneDescription, pattern: "([-+])(\\d\\d):(\\d\\d)")
       if components.count == 3 {
         let hour = components[1].toInt()!
@@ -206,7 +207,7 @@ public class MysqlConnection : DatabaseConnection {
     
     if hasPrepareError != 0 {
       let errorPointer = mysql_stmt_error(statement)
-      let error : String = NSString(CString: errorPointer, encoding: NSUTF8StringEncoding) ?? ""
+      let error : String = (NSString(CString: errorPointer, encoding: NSUTF8StringEncoding) as? String) ?? ""
       if !error.isEmpty {
         NSLog("Error in query: %@", error)
         return [MysqlRow(error: error)]
@@ -230,7 +231,7 @@ public class MysqlConnection : DatabaseConnection {
     mysql_stmt_execute(statement)
     
     let errorPointer = mysql_stmt_error(statement)
-    let error : String = NSString(CString: errorPointer, encoding: NSUTF8StringEncoding) ?? ""
+    let error : String = (NSString(CString: errorPointer, encoding: NSUTF8StringEncoding) as? String) ?? ""
     if !error.isEmpty {
       NSLog("Error in query: %@", error)
       return [MysqlRow(error: error)]

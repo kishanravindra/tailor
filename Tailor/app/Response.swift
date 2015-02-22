@@ -53,11 +53,11 @@ public struct Response {
       }
     }
     
-    add(NSString(format: "HTTP/1.1 %d\n", code))
-    add(NSString(format: "Content-Length: %d\n", bodyData.length))
+    add(NSString(format: "HTTP/1.1 %d\n", code) as! String)
+    add(NSString(format: "Content-Length: %d\n", bodyData.length) as! String)
     
     for (key,value) in self.headers {
-      add(NSString(format: "%@: %@\n", key, value))
+      add(NSString(format: "%@: %@\n", key, value) as! String)
     }
     add(cookies.headerStringForChanges)
     add("\n")
@@ -67,6 +67,6 @@ public struct Response {
   
   /** The string version of the response body. */
   public var bodyString: String! { get {
-    return NSString(data: self.bodyData, encoding: NSUTF8StringEncoding)
+    return NSString(data: self.bodyData, encoding: NSUTF8StringEncoding) as! String
   } }
 }

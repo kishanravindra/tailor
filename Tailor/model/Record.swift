@@ -322,7 +322,7 @@ public class Record : Model, Equatable {
       return false
     }
     else {
-      self.id = result.data["id"] as Int
+      self.id = result.data["id"] as! Int
       return true
     }
   }

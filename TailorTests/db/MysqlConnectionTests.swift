@@ -1,7 +1,7 @@
 import XCTest
 
 class MysqlConnectionTests: XCTestCase {
-  var connection: MysqlConnection { get { return DatabaseConnection.sharedConnection() as MysqlConnection } }
+  var connection: MysqlConnection { get { return DatabaseConnection.sharedConnection() as! MysqlConnection } }
   
   override func setUp() {
     TestApplication.start()
@@ -10,7 +10,7 @@ class MysqlConnectionTests: XCTestCase {
   }
   
   func testInitializationGetsTimeZoneFromDatabaseSettings() {
-    let initialZone = connection.executeQuery("SELECT @@global.time_zone AS time_zone")[0].data["time_zone"] as String
+    let initialZone = connection.executeQuery("SELECT @@global.time_zone AS time_zone")[0].data["time_zone"] as! String
     
     connection.executeQuery("SET GLOBAL time_zone='UTC'")
     DatabaseConnection.openSharedConnection()
