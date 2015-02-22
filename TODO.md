@@ -25,6 +25,7 @@
 * Storing seed data
 * Reversing alterations
 * Getting last item from a query
+* Support for text columns
 
 ### Authentication
 
