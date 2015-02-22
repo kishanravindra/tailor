@@ -34,7 +34,7 @@ public class DatabaseLocalization: Localization {
     }
   }
   
-  public override func fetch(key: String) -> String? {
+  public override func fetch(key: String, inLocale locale: String) -> String? {
     let translation = Query<Translation>().filter(["locale": locale, "translationKey": key]).first()
     return translation?.translatedText
   }

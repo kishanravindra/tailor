@@ -11,7 +11,7 @@ public class PropertyListLocalization: Localization {
     :param: key   The key for the content
     :returns:     The content.
   */
-  public override func fetch(key: String) -> String? {
-    return Application.sharedApplication().configuration.fetch("localization.content.\(self.locale).\(key)")
+  public override func fetch(key: String, inLocale locale: String) -> String? {
+    return Application.sharedApplication().configuration.fetch("localization.content.\(locale).\(key)")
   }
 }

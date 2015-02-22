@@ -6,7 +6,7 @@ class DatabaseLocalizationTests: XCTestCase {
     super.setUp()
     TestApplication.start()
     DatabaseConnection.sharedConnection().executeQuery("TRUNCATE TABLE `tailor_translations`")
-    localization = DatabaseLocalization(locale: "es")
+    localization = DatabaseLocalization(locale: "en")
     DatabaseLocalization.Translation.create(["translationKey": "database.message", "locale": "en", "translatedText": "Hello"])
   }
   
@@ -25,18 +25,17 @@ class DatabaseLocalizationTests: XCTestCase {
     XCTAssertFalse(translation.validate())
   }
   
-  func testFetchGetsValueFromTranslation() {
+  func testFetchInLocaleGetsValueFromTranslation() {
     DatabaseLocalization.Translation.create(["translationKey": "database.message", "locale": "es", "translatedText": "Hola"])
-    let value = localization.fetch("database.message")
+    let value = localization.fetch("database.message", inLocale: "es")
     XCTAssertNotNil(value, "gets a value")
     if value != nil {
       XCTAssertEqual(value!, "Hola", "gets the value for that locale")
     }
   }
   
-  func testFetchGetsNilForMissingValue() {
-    let localization = DatabaseLocalization(locale: "es")
-    let value = localization.fetch("database.message")
+  func testFetchInLocaleGetsNilForMissingValue() {
+    let value = localization.fetch("database.message", inLocale: "es")
     XCTAssertNil(value, "does not get a value")
   }
 }
