@@ -87,18 +87,20 @@ public struct Request {
     
     var headers : [String:String] = [:]
     var cookieHeaders = [String]()
-    for index in 0..<lines.count {
+    for index in 1..<lines.count {
       let line = lines[index].stringByTrimmingCharactersInSet(NSCharacterSet.newlineCharacterSet())
       if line.isEmpty {
         continue
       }
       let headerMatch = Request.extractWithPattern(line, pattern: "^([\\w-]*): (.*)$")
       
-      if headerMatch[0] == "Cookie" {
-        cookieHeaders.append(headerMatch[1])
-      }
-      else {
-        headers[headerMatch[0]] = headerMatch[1]
+      if !headerMatch.isEmpty {
+        if headerMatch[0] == "Cookie" {
+          cookieHeaders.append(headerMatch[1])
+        }
+        else {
+          headers[headerMatch[0]] = headerMatch[1]
+        }
       }
     }
     

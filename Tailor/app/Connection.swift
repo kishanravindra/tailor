@@ -80,7 +80,7 @@ public class Connection : NSObject {
     for _ in 0..<bufferLength { buffer.append(0) }
     
     while true {
-      let length = read(connectionDescriptor, &buffer, bufferLength)
+      let length = read(connectionDescriptor, &buffer, Int(bufferLength))
       if length < 0 || length > Int(bufferLength) {
         close(connectionDescriptor)
         return
@@ -103,7 +103,7 @@ public class Connection : NSObject {
     let request = Request(clientAddress: clientAddressString, data: data)
     self.handler(request) {
       let responseData = $0.data
-      write(connectionDescriptor, responseData.bytes, UInt(responseData.length))
+      write(connectionDescriptor, responseData.bytes, responseData.length)
       close(connectionDescriptor)
       self.activeConnections -= 1
       NSLog("Finished processing %@", request.path)

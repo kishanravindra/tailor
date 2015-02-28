@@ -344,7 +344,7 @@ public class Controller {
     :param: only      The actions to run the filter for.
     :param: except    The actions not to run the filter for.
   */
-  public func addFilter(filter: ()->Bool, only: [String] = [], except: [String] = []) {
+  public func addFilter(only: [String] = [], except: [String] = [], filter: ()->Bool) {
     filters.append((filter, only, except))
   }
   
@@ -432,7 +432,7 @@ public class Controller {
   public class func callAction(action: String, user: User?, parameters: [String:String], callback: (Response,Controller)->()) {
     var sessionData = [String:String]()
     if user != nil {
-      sessionData["userId"] = user!.id.stringValue
+      sessionData["userId"] = user?.id?.stringValue ?? ""
     }
     self.callAction(action, Request(parameters: parameters, sessionData: sessionData), callback: callback)
   }

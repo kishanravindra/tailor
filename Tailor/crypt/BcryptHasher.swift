@@ -43,7 +43,7 @@ public class BcryptHasher {
     var sanitizedSalt : [UInt8]! = salt
     if salt == nil {
       sanitizedSalt = [UInt8](count: 16, repeatedValue: 0)
-      SecRandomCopyBytes(kSecRandomDefault, UInt(sanitizedSalt.count), &sanitizedSalt!)
+      SecRandomCopyBytes(kSecRandomDefault, sanitizedSalt.count, &sanitizedSalt!)
     }
     
     while sanitizedSalt.count < 16 { sanitizedSalt.append(0) }

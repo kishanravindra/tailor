@@ -1,6 +1,6 @@
 import XCTest
 class SessionTests: XCTestCase {
-  let session: Session!
+  var session: Session!
   
   func createCookieString(data: [String:String] = [:], flashData: [String:String] = [:], clientAddress: String = "0.0.0.0", expirationDate: NSDate = NSDate(timeIntervalSinceNow: 3600)) -> String {
     var mergedData = data

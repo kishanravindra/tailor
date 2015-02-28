@@ -239,7 +239,7 @@ public class Application {
     */
   public func registerSubclasses(types: AnyClass...) {
     var classCount = objc_getClassList(nil, 0)
-    var allClasses = UnsafeMutablePointer<AnyClass?>(calloc(UInt(sizeof(AnyClass)), UInt(classCount)))
+    var allClasses = UnsafeMutablePointer<AnyClass?>(calloc(sizeof(AnyClass), Int(classCount)))
     
     objc_getClassList(AutoreleasingUnsafeMutablePointer<AnyClass?>(allClasses), classCount)
     

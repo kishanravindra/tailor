@@ -4,7 +4,7 @@ class ControllerTests: XCTestCase {
   class TestController : Controller {
     required init(request: Request, action: String, callback: Server.ResponseCallback) {
       super.init(request: request, action: action, callback: callback)
-      self.addFilter(self.checkParams)
+      self.addFilter(filter: self.checkParams)
     }
     
     func checkParams() -> Bool {
@@ -507,7 +507,7 @@ class ControllerTests: XCTestCase {
       expectation.fulfill()
       return true
     }
-    controller.addFilter(filterMethod, only: ["index", "show"], except: ["edit"])
+    controller.addFilter(only: ["index", "show"], except: ["edit"], filter: filterMethod)
     XCTAssertEqual(controller.filters.count, 1, "has one filter")
     if controller.filters.count == 1 {
       let filter = controller.filters[0]
@@ -536,25 +536,25 @@ class ControllerTests: XCTestCase {
   }
   
   func testRunFiltersReturnsTrueWithNoFiltersForAction() {
-    controller.addFilter({
+    controller.addFilter(only: ["show"]) {
       return false
-    }, only: ["show"])
+    }
     let result = controller.runFilters()
     XCTAssertTrue(result, "returns true")
   }
   
   func testRunFiltersReturnsTrueWithFilterThatExcludesAction() {
-    controller.addFilter({
+    controller.addFilter(except: ["index"]) {
       return false
-      }, except: ["index"])
+    }
     let result = controller.runFilters()
     XCTAssertTrue(result, "returns true")
   }
   
   func testRunFiltersReturnsFalseWithFilterThatExcludesOtherAction() {
-    controller.addFilter({
+    controller.addFilter(except: ["show"]) {
       return false
-    }, except: ["show"])
+    }
     let result = controller.runFilters()
     XCTAssertFalse(result, "returns false")
   }
@@ -583,7 +583,10 @@ class ControllerTests: XCTestCase {
       override func respond() {
         XCTAssertEqual(action, "runTest", "sets the controller's action")
         let value1 = request.requestParameters["test1"]
-        XCTAssertEqual(value1!, "value1")
+        XCTAssertNotNil(value1)
+        if value1 != nil {
+          XCTAssertEqual(value1!, "value1")
+        }
         self.generateResponse {
           (inout response: Response) in
           response.appendString("Test Response")
