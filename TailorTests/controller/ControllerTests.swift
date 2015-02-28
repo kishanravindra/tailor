@@ -7,6 +7,10 @@ class ControllerTests: XCTestCase {
       self.addFilter(self.checkParams)
     }
     
+    override class func name() -> String {
+      return "TailorTests.TestController"
+    }
+    
     func checkParams() -> Bool {
       if let param = request.requestParameters["failFilter"] {
         var response = Response()
@@ -25,7 +29,6 @@ class ControllerTests: XCTestCase {
   }
   
   class SecondTestController : Controller {
-    
   }
   
   var user: User!
@@ -559,12 +562,31 @@ class ControllerTests: XCTestCase {
     XCTAssertFalse(result, "returns false")
   }
   
+  //MARK: - Localization
+  
+  func testLocalizationPrefixGetsUnderscoredControllerNameAndAction() {
+    let controller = TestController(request: Request(), action: "index", callback: {_ in })
+    let prefix = controller.localizationPrefix
+    XCTAssertEqual(prefix, "tailor_tests.test_controller.index")
+  }
+  
   func testLocalizeWithNoLocaleUsesLocalization() {
     Application.sharedApplication().configuration["localization.content.en.controller.test.message"] = "Hello"
     let string = controller.localize("controller.test.message")
     XCTAssertNotNil(string, "returns a string")
     if string != nil {
       XCTAssertEqual(string!, "Hello", "returns the string from the localization")
+    }
+  }
+  
+  func testLocalizeWithDotPrependsPrefix() {
+    let key = ".test.message"
+    let fullKey = controller.localizationPrefix + key
+    Application.sharedApplication().configuration["localization.content.en.\(fullKey)"] = "Hello 2"
+    let string = controller.localize(key)
+    XCTAssertNotNil(string, "returns a string")
+    if string != nil {
+      XCTAssertEqual(string!, "Hello 2", "returns the string from the localization")
     }
   }
   

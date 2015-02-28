@@ -58,6 +58,32 @@ class TemplateTests: XCTestCase {
   
   //MARK: - Helpers
   
+  func testLocalizationPrefixHasClassName() {
+    class TestTemplate: Template {
+    }
+    let template = TestTemplate(controller: controller)
+    let prefix = template.localizationPrefix
+    XCTAssertEqual(prefix, NSStringFromClass(TestTemplate.self).underscored(), "has the underscored class name")
+  }
+  
+  func testLocalizeMethodGetsLocalizationFromController() {
+    let result = template.localize("template.test")
+    XCTAssertNotNil(result)
+    if result != nil {
+      XCTAssertEqual(result!, "Localized Text", "gets the text from the controller's localization")
+    }
+  }
+  
+  func testLocalizeMethodPrependsPrefixForKeyWithDot() {
+    Application.sharedApplication().configuration["localization.content.en.tailor_tests.template.prefix_test"] = "Localized Text with Prefix"
+    let result = template.localize(".prefix_test")
+    XCTAssertNotNil(result)
+    if result != nil {
+      XCTAssertEqual(result!, "Localized Text with Prefix", "gets the text that ")
+    }
+    
+  }
+  
   func testTextMethodAddsTextToTemplate() {
     template.text("Test Text")
     XCTAssertEqual(template.buffer, "Test Text", "adds text to buffer")
