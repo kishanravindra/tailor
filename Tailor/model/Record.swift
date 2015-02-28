@@ -315,14 +315,21 @@ public class Record : Model, Equatable {
       parameters.append(value!)
     }
     query += ") VALUES (\(parameterString))"
-    let result = DatabaseConnection.sharedConnection().executeQuery(query, parameters: parameters)[0]
     
-    if let error = result.error {
+    let results = DatabaseConnection.sharedConnection().executeQuery(query, parameters: parameters)
+    
+    let result : DatabaseConnection.Row? = results.isEmpty ? nil : results[0]
+    
+    if result == nil {
+      self.id = 0
+      return false
+    }
+    else if let error = result?.error {
       self.errors.add("_database", error)
       return false
     }
     else {
-      self.id = result.data["id"] as! Int
+      self.id = result!.data["id"] as! Int
       return true
     }
   }

@@ -87,7 +87,7 @@ public struct Request {
     
     var headers : [String:String] = [:]
     var cookieHeaders = [String]()
-    for index in 1..<lines.count {
+    for index in 0..<lines.count {
       let line = lines[index].stringByTrimmingCharactersInSet(NSCharacterSet.newlineCharacterSet())
       if line.isEmpty {
         continue
@@ -279,7 +279,7 @@ public struct Request {
       queryString += key + "=" + value
     }
     lines.append(queryString)
-    var stringData = join("\r\n", lines)
+    var stringData = reduce(lines, "") { buffer, element in buffer.isEmpty ? element : buffer + "\r\n" + element }
     var data = stringData.dataUsingEncoding(NSUTF8StringEncoding)!
     self.init(clientAddress: clientAddress, data: data)
   }

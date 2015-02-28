@@ -10,7 +10,8 @@ class MysqlConnectionTests: XCTestCase {
   }
   
   func testInitializationGetsTimeZoneFromDatabaseSettings() {
-    let initialZone = connection.executeQuery("SELECT @@global.time_zone AS time_zone")[0].data["time_zone"] as! String
+    let results = connection.executeQuery("SELECT @@global.time_zone AS time_zone")
+    let initialZone = results.isEmpty ? "UTC" : results[0].data["time_zone"] as! String
     
     connection.executeQuery("SET GLOBAL time_zone='UTC'")
     DatabaseConnection.openSharedConnection()

@@ -10,8 +10,9 @@
 #include <objc/message.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
-@import mysql;
+#include <Foundation/Foundation.h>
 
+@import mysql;
 
 /**
  This function invokes a property setter dynamically.
@@ -20,7 +21,7 @@
  :param: method  The method container for the setter
  :param: value   The new value to set.
  */
-void tailorInvokeSetter(id object, Method method, id value);
+void tailorInvokeSetter(__nonnull id object, __nonnull Method method, __nullable id value);
 
 /**
  This function invokes a property getter dynamically.
@@ -29,7 +30,7 @@ void tailorInvokeSetter(id object, Method method, id value);
  :param: method  The method container for the property.
  :returns:       The current value for the property.
  */
-id tailorInvokeGetter(id object, Method method);
+__nullable id tailorInvokeGetter(__nonnull id object, __nonnull Method method);
 
 /**
   This function invokes a function with no arguments or return values.
@@ -37,7 +38,7 @@ id tailorInvokeGetter(id object, Method method);
   :param: object  The object to call the functio on.
   :param: method  The method for the function.
 */
-void tailorInvokeFunction(id object, Method method);
+void tailorInvokeFunction(__nonnull id object, __nonnull Method method);
 
 /**
  This function creates a socket address for a connection on a port.
@@ -47,10 +48,26 @@ void tailorInvokeFunction(id object, Method method);
  */
 struct sockaddr_in createSocketAddress(int port);
 
-/**
- This function initializes an empty MySQL bind container.
- 
- :returns: The container.
- */
+@interface BindParameter : NSObject {
+  
+}
 
-MYSQL_BIND emptyMysqlBindParam();
+- (nonnull id) initWithParameter:(MYSQL_BIND)parameter;
+- (nonnull id) initWithData:(nonnull NSData*)data;
+- (nonnull id) initWithType:(MYSQL_FIELD)type;
+- (BOOL) isNull;
+- (nullable void*) buffer;
+- (NSInteger) length;
+
+- (MYSQL_BIND) parameter;
+@end
+
+@interface BindParameterSet: NSObject {
+  
+}
+- (nonnull id) initWithStatement:(nonnull MYSQL_STMT*)statement;
+- (nonnull id) initWithData:(nonnull NSArray*)parameterData;
+- (void) bindToInputOfStatement:(nonnull MYSQL_STMT*)statement;
+- (void) bindToOutputOfStatement:(nonnull MYSQL_STMT*)statement;
+- (nonnull NSArray*) parameters;
+@end

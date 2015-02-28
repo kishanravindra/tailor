@@ -41,7 +41,9 @@ public class Session {
       let decryptedData = encryptor.decrypt(encryptedData)
       
       var cookieData = (NSJSONSerialization.JSONObjectWithData(decryptedData, options: nil, error: nil) as? [String:String]) ?? [:]
-      self.expirationDate = COOKIE_DATE_FORMATTER.dateFromString(cookieData["expirationDate"]!) ?? NSDate(timeIntervalSinceNow: 3600)
+      let dateString = cookieData["expirationDate"] ?? ""
+      
+      self.expirationDate = COOKIE_DATE_FORMATTER.dateFromString(dateString) ?? NSDate(timeIntervalSinceNow: 3600)
       
       if cookieData["clientAddress"] == nil {
         return
