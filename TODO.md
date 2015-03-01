@@ -25,6 +25,7 @@
 * Storing seed data
 * Reversing alterations
 * Getting last item from a query
+* SQLite support.
 
 ### Authentication
 
@@ -53,3 +54,4 @@
 # Workarounds to Revisit
 
 * Moving BindParameter class to Swift
+* Getting rid of connection parameter for MysqlStatement class

@@ -1,5 +1,7 @@
 #import <Foundation/Foundation.h>
+
 @import mysql;
+@class MysqlResultSet;
 
 /**
  This class represents a set of bind parameters being passed to a MySQL
@@ -12,12 +14,13 @@
 //MARK: - Creation
 
 /**
- This method initializes a parameter set with empty parameters for a statement.
+ This method initializes a parameter set with empty parameters for holding a
+ result set.
 
- @param statement   The statement that these parameters are for.
+ @param resultSet   The result set describing the fields.
  @returns           The newly initialized parameter set.
  */
-- (nonnull id) initWithStatement:(nonnull MYSQL_STMT*)statement;
+- (nonnull id) initWithResultSet:(nonnull MysqlResultSet*)resultSet;
 
 /**
  This method initializes a parameter set with data for the buffer.

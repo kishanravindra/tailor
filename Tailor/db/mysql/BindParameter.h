@@ -4,6 +4,8 @@
 #import <Foundation/Foundation.h>
 #import <mysql.h>
 
+@class MysqlField;
+
 /**
  This class wraps around a MySQL bind parameter.
  
@@ -45,7 +47,7 @@
   @param field   The field
   @returns      The newly initialized parameter.
   */
-- (nonnull id) initWithField:(MYSQL_FIELD)field;
+- (nonnull id) initWithField:(nonnull MysqlField*)field;
 
 //MARK: - Field Information
 

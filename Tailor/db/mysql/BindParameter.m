@@ -27,61 +27,13 @@
   return self;
 }
 
-- (id) initWithField:(MYSQL_FIELD)field {
+- (id) initWithField:(MysqlField*)field {
   self = [self init];
   
-  enum enum_field_types bufferType = field.type;
-  size_t unitSize = sizeof(UInt8);
-  size_t count = 1;
-  
-  switch(field.type) {
-    case MYSQL_TYPE_TINY:
-      unitSize = sizeof(char);
-      break;
-    case MYSQL_TYPE_SHORT:
-      unitSize = sizeof(short);
-      break;
-    case MYSQL_TYPE_LONG:
-    case MYSQL_TYPE_INT24:
-      unitSize = sizeof(int);
-      break;
-    case MYSQL_TYPE_LONGLONG:
-      unitSize = sizeof(long long);
-      break;
-    case MYSQL_TYPE_FLOAT:
-      unitSize = sizeof(float);
-      break;
-    case MYSQL_TYPE_DOUBLE:
-      unitSize = sizeof(double);
-      break;
-    case MYSQL_TYPE_TIME:
-    case MYSQL_TYPE_DATE:
-    case MYSQL_TYPE_DATETIME:
-    case MYSQL_TYPE_TIMESTAMP:
-      unitSize = sizeof(MYSQL_TIME);
-      break;
-    case MYSQL_TYPE_TINY_BLOB:
-      count = 1 << 8;
-      break;
-    case MYSQL_TYPE_BLOB:
-      count = 1 << 16;
-      break;
-    case MYSQL_TYPE_MEDIUM_BLOB:
-      count = 1 << 24;
-      break;
-    case MYSQL_TYPE_LONG_BLOB:
-      count = 1 << 31;
-      break;
-    default:
-      bufferType = MYSQL_TYPE_STRING;
-      count = 1024;
-      break;
-  }
-  
-  void* buffer = calloc(count, unitSize);
+  void* buffer = calloc(field.bufferLength, field.bufferSize);
   parameter.buffer = buffer;
-  parameter.buffer_type = bufferType;
-  parameter.buffer_length = (UInt)count;
+  parameter.buffer_type = field.bufferType;
+  parameter.buffer_length = (UInt)field.bufferLength;
   
   parameter.length = malloc(sizeof(NSInteger));
   parameter.is_null = malloc(sizeof(my_bool));

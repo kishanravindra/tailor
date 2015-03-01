@@ -3,37 +3,7 @@ import Foundation
 /**
   This class represents a connection to a MySQL database.
   */
-public class MysqlConnection : DatabaseConnection {
-  /**
-    This class represents a row fetched from a MySQL daatabase. */
-  class MysqlRow : DatabaseConnection.Row {
-    /**
-      This method initializes a row from a MySQL result.
-
-      :param: metadata      The metadata about the result set.
-      :param: bindResults   The containers for the result columns.
-      */
-    convenience init(metadata: UnsafeMutablePointer<MYSQL_RES>, bindResults: [BindParameter]) {
-      var data : [String:Any] = [:]
-      
-      for (index,bindResult) in enumerate(bindResults) {
-        let fieldType = mysql_fetch_field_direct(metadata, UInt32(index)).memory
-
-        let name = NSString(bytes: fieldType.name, length: Int(fieldType.name_length), encoding: NSASCIIStringEncoding)
-        
-        if name == nil {
-          continue
-        }
-
-        if let value: AnyObject = bindResult.data() {
-          data[name! as! String] = value
-        }
-      }
-      
-      self.init(data: data)
-    }
-  }
-  
+public class MysqlConnection : DatabaseConnection {  
   /** The underlying MySQL connection. */
   var connection : UnsafeMutablePointer<MYSQL>
   
@@ -98,51 +68,25 @@ public class MysqlConnection : DatabaseConnection {
     }
     NSLog("Executing %@ %@", query, stringParameters)
     
-    let statement = mysql_stmt_init(connection)
-    let encodedQuery = query.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!
-    let hasPrepareError = mysql_stmt_prepare(statement, UnsafePointer<Int8>(encodedQuery.bytes), UInt(encodedQuery.length))
+    let statement = MysqlStatement(connection: self, query: query)
     
-    if hasPrepareError != 0 {
-      let errorPointer = mysql_stmt_error(statement)
-      let error : String = (NSString(CString: errorPointer, encoding: NSUTF8StringEncoding) as? String) ?? ""
-      if !error.isEmpty {
-        NSLog("Error in query: %@", error)
-        return [MysqlRow(error: error)]
-      }
-    }
-    
-    let metadataResult = mysql_stmt_result_metadata(statement)
-    
-    var inputParameters = BindParameterSet(data: bindParameters)
-    inputParameters.bindToInputOfStatement(statement)
-    var outputParameters = BindParameterSet(statement: statement)
-    outputParameters.bindToOutputOfStatement(statement)
-    mysql_stmt_execute(statement)
-    
-    let errorPointer = mysql_stmt_error(statement)
-    let error : String = (NSString(CString: errorPointer, encoding: NSUTF8StringEncoding) as? String) ?? ""
-    if !error.isEmpty {
+    if let error = statement.error {
       NSLog("Error in query: %@", error)
-      return [MysqlRow(error: error)]
+      return [Row(error: error)]
     }
     
-    if metadataResult == nil {
-      let insertId = mysql_stmt_insert_id(statement)
-      return [DatabaseConnection.Row(data: ["id": Int(insertId)])]
+    let results = statement.execute(bindParameters)
+    
+    if let error = statement.error {
+      NSLog("Error in query: %@", error)
+      return [Row(error: error)]
     }
     
-    var rows : [MysqlRow] = []
-    
-    let parameterList = outputParameters.parameters() as! [BindParameter]
-    while mysql_stmt_fetch(statement) == 0 {
-      let row = MysqlRow(metadata: metadataResult, bindResults: parameterList)
-      rows.append(row)
+    if let insertId = statement.insertId {
+      return [Row(data: ["id": insertId])]
     }
     
-    mysql_free_result(metadataResult)
-    mysql_stmt_close(statement)
-    
-    return rows
+    return results.map { Row(data: $0) }
   }
 
   //MARK: Transactions

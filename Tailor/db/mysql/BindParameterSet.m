@@ -1,6 +1,12 @@
 #import "BindParameterSet.h"
 #import "BindParameter.h"
 
+#ifdef TEST_SUITE
+#import "TailorTests-Swift.h"
+#else
+#import <Tailor/Tailor-Swift.h>
+#endif
+
 @implementation BindParameterSet {
   MYSQL_BIND* mysqlParameters;
   NSUInteger parameterCount;
@@ -24,22 +30,15 @@
   return self;
 }
 
-- (id) initWithStatement:(nonnull MYSQL_STMT *)statement {
+- (id) initWithResultSet:(nonnull MysqlResultSet*)resultSet {
   self = [super init];
-  
-  MYSQL_RES* metadataResult = mysql_stmt_result_metadata(statement);
-  if(metadataResult == nil) {
-    parameterCount = 0;
-    mysqlParameters = NULL;
-    return self;
-  }
-  
-  parameterCount = mysql_num_fields(metadataResult);
+  NSArray* fields = resultSet.fields;
+  parameterCount = fields.count;
   mysqlParameters = calloc(parameterCount, sizeof(MYSQL_BIND));
   
   for(int indexOfParameter = 0; indexOfParameter < parameterCount; indexOfParameter++) {
-    MYSQL_FIELD* field = mysql_fetch_field_direct(metadataResult, (UInt32)indexOfParameter);
-    mysqlParameters[indexOfParameter] = [[[BindParameter alloc] initWithField:*field] parameter];
+    MysqlField* field = [fields objectAtIndex:indexOfParameter];
+    mysqlParameters[indexOfParameter] = [[[BindParameter alloc] initWithField:field] parameter];
   }
   
   return self;

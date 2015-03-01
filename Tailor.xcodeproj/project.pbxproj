@@ -80,6 +80,11 @@
 		52A500841AA27ADA00F3F031 /* BindParameter.m in Sources */ = {isa = PBXBuildFile; fileRef = 52A5006E1AA2624400F3F031 /* BindParameter.m */; };
 		52A500851AA27D5F00F3F031 /* TailorC.m in Sources */ = {isa = PBXBuildFile; fileRef = 52BD141419E9DA1D006D72B0 /* TailorC.m */; };
 		52A500871AA2993C00F3F031 /* MysqlStatement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A500861AA2993C00F3F031 /* MysqlStatement.swift */; };
+		52A500881AA2C79C00F3F031 /* MysqlStatement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A500861AA2993C00F3F031 /* MysqlStatement.swift */; };
+		52A5008C1AA34DF800F3F031 /* MysqlResultSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A5008B1AA34DF800F3F031 /* MysqlResultSet.swift */; };
+		52A5008E1AA34F6A00F3F031 /* MysqlField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A5008D1AA34F6A00F3F031 /* MysqlField.swift */; };
+		52A5008F1AA356BA00F3F031 /* MysqlResultSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A5008B1AA34DF800F3F031 /* MysqlResultSet.swift */; };
+		52A500901AA356BE00F3F031 /* MysqlField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A5008D1AA34F6A00F3F031 /* MysqlField.swift */; };
 		52A684521A3D0C5B00F4AA47 /* ConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A684511A3D0C5B00F4AA47 /* ConnectionTests.swift */; };
 		52A684541A3EFB1000F4AA47 /* CookieTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A684531A3EFB1000F4AA47 /* CookieTests.swift */; };
 		52A684561A3FC14D00F4AA47 /* CookieJarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A684551A3FC14D00F4AA47 /* CookieJarTests.swift */; };
@@ -192,6 +197,8 @@
 		52A500711AA271AF00F3F031 /* BindParameterSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BindParameterSet.h; sourceTree = "<group>"; };
 		52A500721AA271AF00F3F031 /* BindParameterSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BindParameterSet.m; sourceTree = "<group>"; };
 		52A500861AA2993C00F3F031 /* MysqlStatement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MysqlStatement.swift; sourceTree = "<group>"; };
+		52A5008B1AA34DF800F3F031 /* MysqlResultSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MysqlResultSet.swift; sourceTree = "<group>"; };
+		52A5008D1AA34F6A00F3F031 /* MysqlField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MysqlField.swift; sourceTree = "<group>"; };
 		52A684511A3D0C5B00F4AA47 /* ConnectionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionTests.swift; sourceTree = "<group>"; };
 		52A684531A3EFB1000F4AA47 /* CookieTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CookieTests.swift; sourceTree = "<group>"; };
 		52A684551A3FC14D00F4AA47 /* CookieJarTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CookieJarTests.swift; sourceTree = "<group>"; };
@@ -361,11 +368,13 @@
 			isa = PBXGroup;
 			children = (
 				52BD141219E9DA1D006D72B0 /* MysqlConnection.swift */,
+				52A500861AA2993C00F3F031 /* MysqlStatement.swift */,
+				52A5008B1AA34DF800F3F031 /* MysqlResultSet.swift */,
+				52A5008D1AA34F6A00F3F031 /* MysqlField.swift */,
 				52A5006D1AA2624400F3F031 /* BindParameter.h */,
 				52A5006E1AA2624400F3F031 /* BindParameter.m */,
 				52A500711AA271AF00F3F031 /* BindParameterSet.h */,
 				52A500721AA271AF00F3F031 /* BindParameterSet.m */,
-				52A500861AA2993C00F3F031 /* MysqlStatement.swift */,
 			);
 			path = mysql;
 			sourceTree = "<group>";
@@ -778,6 +787,7 @@
 				52EF126419EF545000B61DF4 /* User.swift in Sources */,
 				52BD142A19E9DA1D006D72B0 /* Request.swift in Sources */,
 				52BD143F19E9DA1D006D72B0 /* ErrorCollection.swift in Sources */,
+				52A5008C1AA34DF800F3F031 /* MysqlResultSet.swift in Sources */,
 				52C6252019EE12810024453F /* BcryptHasher.swift in Sources */,
 				52BD142F19E9DA1D006D72B0 /* Controller.swift in Sources */,
 				52BD142819E9DA1D006D72B0 /* Cookie.swift in Sources */,
@@ -793,6 +803,7 @@
 				52BD143919E9DA1D006D72B0 /* NSString.swift in Sources */,
 				528D18411A8FE15D00A6E116 /* Layout.swift in Sources */,
 				52BD143C19E9DA1D006D72B0 /* Model.swift in Sources */,
+				52A5008E1AA34F6A00F3F031 /* MysqlField.swift in Sources */,
 				52BD143519E9DA1D006D72B0 /* MysqlConnection.swift in Sources */,
 				52BD144119E9DA1D006D72B0 /* RangeValidator.swift in Sources */,
 				52BD143819E9DA1D006D72B0 /* NSDate.swift in Sources */,
@@ -836,6 +847,7 @@
 				523F293E1A584F7A00C1BBC0 /* ControllerTests.swift in Sources */,
 				529230141A3CF671006DD6EB /* Response.swift in Sources */,
 				5292300F1A3CF671006DD6EB /* Application.swift in Sources */,
+				52A5008F1AA356BA00F3F031 /* MysqlResultSet.swift in Sources */,
 				5292302B1A3CF69C006DD6EB /* AlterationsTask.swift in Sources */,
 				52A500801AA27AC600F3F031 /* Query.swift in Sources */,
 				52E784C71A5B72990065C10D /* DictionaryTests.swift in Sources */,
@@ -870,6 +882,7 @@
 				529230171A3CF681006DD6EB /* DatabaseConnection.swift in Sources */,
 				52A5007A1AA27AB100F3F031 /* RangeValidator.swift in Sources */,
 				523F293B1A5848FE00C1BBC0 /* SqlSanitizerTests.swift in Sources */,
+				52A500881AA2C79C00F3F031 /* MysqlStatement.swift in Sources */,
 				523F29391A58459200C1BBC0 /* SanitizedTextTests.swift in Sources */,
 				529230301A3CF6A4006DD6EB /* NSData.swift in Sources */,
 				529230111A3CF671006DD6EB /* Cookie.swift in Sources */,
@@ -897,6 +910,7 @@
 				5292303A1A3CF6B5006DD6EB /* Session.swift in Sources */,
 				529230101A3CF671006DD6EB /* Connection.swift in Sources */,
 				5292302C1A3CF69C006DD6EB /* Alteration.swift in Sources */,
+				52A500901AA356BE00F3F031 /* MysqlField.swift in Sources */,
 				5258989F1A4F289800DD853D /* DatabaseConnectionTests.swift in Sources */,
 				529230251A3CF695006DD6EB /* Sanitizer.swift in Sources */,
 			);
