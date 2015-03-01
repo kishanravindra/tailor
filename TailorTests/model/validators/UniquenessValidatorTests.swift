@@ -15,31 +15,32 @@ class UniquenessValidatorTests: XCTestCase {
     let store2 = Store()
     store.name = "Little Shop"
     validator.validate(store2)
-    XCTAssertTrue(store2.errors.isEmpty(), "puts no errors on record")
+    XCTAssertTrue(store2.errors.isEmpty, "puts no errors on record")
   }
   
   func testUniquenessValidatorPutsNoErrorOnSavedRecordWithUniqueValue() {
     validator.validate(store)
-    XCTAssertTrue(store.errors.isEmpty(), "puts no errors on record")
+    XCTAssertTrue(store.errors.isEmpty, "puts no errors on record")
   }
   
   func testUniquenessValidatorPutsErrorOnNewRecordWithUsedValue() {
     let store2 = Store()
     store2.name = store.name
     validator.validate(store2)
-    XCTAssertEqual(store2.errors.errors, ["name": ["is already taken"]], "has an error indicating it is already taken")
+    let error = ValidationError(modelType: Store.self, key: "name", message: "taken", data: [:])
+    XCTAssertEqual(store2.errors.errors, [error], "puts the error on the record")
   }
   
   func testUniquenessValidatorPutsNoErrorOnRecordWithoutRequestedColumn() {
     let validator2 = UniquenessValidator(key: "color")
     validator2.validate(store)
-    XCTAssertTrue(store.errors.isEmpty(), "puts no error on record")
+    XCTAssertTrue(store.errors.isEmpty, "puts no error on record")
   }
   
   func testUniquenessValidatorPutsNoErrorOnRecordWithoutValue() {
     store.name = nil
     validator.validate(store)
-    XCTAssertTrue(store.errors.isEmpty(), "puts no error on record")
+    XCTAssertTrue(store.errors.isEmpty, "puts no error on record")
   }
   
   func testUniquenessValidatorPutsNoErrorOnModelWithoutDatabase() {
@@ -50,7 +51,7 @@ class UniquenessValidatorTests: XCTestCase {
     let model = TestModel()
     model.name = "Test"
     validator.validate(model)
-    XCTAssertTrue(model.errors.isEmpty(), "puts no error on model")
+    XCTAssertTrue(model.errors.isEmpty, "puts no error on model")
   }
   
   func testUniquenessValidatorPutsErrorsWithMultiWordKey() {
@@ -59,7 +60,7 @@ class UniquenessValidatorTests: XCTestCase {
     let hat2 = Hat(data: ["shelfId": NSNumber(int: 1)])
     validator2.validate(hat1)
     validator2.validate(hat2)
-    XCTAssertTrue(hat1.errors.isEmpty(), "puts no error on the first record")
-    XCTAssertFalse(hat2.errors.isEmpty(), "puts an error on the second record")
+    XCTAssertTrue(hat1.errors.isEmpty, "puts no error on the first record")
+    XCTAssertFalse(hat2.errors.isEmpty, "puts an error on the second record")
   }
 }

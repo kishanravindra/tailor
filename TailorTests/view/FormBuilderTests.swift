@@ -41,11 +41,12 @@ class FormBuilderTests: XCTestCase {
     builder = FormBuilder(template: template, model: model, name: "test_model", inputBuilder: {
       form, key, value, attributes, errors in
       expectation.fulfill()
+      let messages = errors.map { $0.message }
       XCTAssertEqual(form.name, self.builder.name, "passes the form builder to the input")
       XCTAssertEqual(key, "color", "passes the key to the input")
       XCTAssertEqual(value, "red", "passes the value to the builder")
       XCTAssertEqual(attributes, ["length": "10"], "passes the attributes to the builder")
-      XCTAssertEqual(errors, ["too bright"], "passes the model object's errors to the builder")
+      XCTAssertEqual(messages, ["too bright"], "passes the model object's errors to the builder")
     })
     builder.input("color", attributes: ["length": "10"])
     waitForExpectationsWithTimeout(0.01, handler: nil)

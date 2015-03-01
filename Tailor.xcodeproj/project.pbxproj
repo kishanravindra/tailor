@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		5209E2891A50920C0044EE70 /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5209E2881A50920C0044EE70 /* ModelTests.swift */; };
+		5214B5D21AA38B0800624E9D /* ValidationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5214B5D11AA38B0800624E9D /* ValidationError.swift */; };
+		5214B5D31AA38D0D00624E9D /* ValidationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5214B5D11AA38B0800624E9D /* ValidationError.swift */; };
+		5214B5D51AA3903800624E9D /* ValidationErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5214B5D41AA3903800624E9D /* ValidationErrorTests.swift */; };
 		52178E671A4F359F001F6D57 /* MysqlConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52178E661A4F359F001F6D57 /* MysqlConnectionTests.swift */; };
 		521E87481A0FCEDA00D84B7B /* NSData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 521E87471A0FCEDA00D84B7B /* NSData.swift */; };
 		522B56CA1A18C849009BBE32 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522B56C91A18C849009BBE32 /* Array.swift */; };
@@ -166,6 +169,8 @@
 
 /* Begin PBXFileReference section */
 		5209E2881A50920C0044EE70 /* ModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelTests.swift; sourceTree = "<group>"; };
+		5214B5D11AA38B0800624E9D /* ValidationError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidationError.swift; sourceTree = "<group>"; };
+		5214B5D41AA3903800624E9D /* ValidationErrorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidationErrorTests.swift; sourceTree = "<group>"; };
 		52178E661A4F359F001F6D57 /* MysqlConnectionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MysqlConnectionTests.swift; sourceTree = "<group>"; };
 		521E87471A0FCEDA00D84B7B /* NSData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSData.swift; sourceTree = "<group>"; };
 		522B56C91A18C849009BBE32 /* Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
@@ -550,6 +555,7 @@
 				52BD142019E9DA1D006D72B0 /* PresenceValidator.swift */,
 				52BD142119E9DA1D006D72B0 /* RangeValidator.swift */,
 				52BD142219E9DA1D006D72B0 /* Validator.swift */,
+				5214B5D11AA38B0800624E9D /* ValidationError.swift */,
 			);
 			path = validators;
 			sourceTree = "<group>";
@@ -584,6 +590,7 @@
 				52F41F351A561E5500EE7178 /* PresenceValidatorTests.swift */,
 				528D6FA11A56224900783BE5 /* RangeValidatorTests.swift */,
 				52C76A511A56134300134DB9 /* UniquenessValidatorTests.swift */,
+				5214B5D41AA3903800624E9D /* ValidationErrorTests.swift */,
 			);
 			path = validators;
 			sourceTree = "<group>";
@@ -753,6 +760,7 @@
 			files = (
 				52BD143A19E9DA1D006D72B0 /* String.swift in Sources */,
 				52B2B69A19F1DCF10086261B /* Dictionary.swift in Sources */,
+				5214B5D21AA38B0800624E9D /* ValidationError.swift in Sources */,
 				525C80851A1C1B4900E7035F /* Query.swift in Sources */,
 				52BD142C19E9DA1D006D72B0 /* RouteSet.swift in Sources */,
 				52BD143719E9DA1D006D72B0 /* TailorC.m in Sources */,
@@ -812,6 +820,7 @@
 				529230291A3CF69C006DD6EB /* Task.swift in Sources */,
 				528D183F1A8FDD4A00A6E116 /* TailorTestHelpers.swift in Sources */,
 				523D65601A98CE04000C686B /* PropertyListLocalization.swift in Sources */,
+				5214B5D51AA3903800624E9D /* ValidationErrorTests.swift in Sources */,
 				529230161A3CF671006DD6EB /* Server.swift in Sources */,
 				529230201A3CF68D006DD6EB /* PresenceValidator.swift in Sources */,
 				52E784C51A5B6E2D0065C10D /* StringTests.swift in Sources */,
@@ -855,6 +864,7 @@
 				529230271A3CF695006DD6EB /* SanitizedText.swift in Sources */,
 				529230261A3CF695006DD6EB /* HtmlSanitizer.swift in Sources */,
 				529230371A3CF6AE006DD6EB /* TailorC.m in Sources */,
+				5214B5D31AA38D0D00624E9D /* ValidationError.swift in Sources */,
 				5292301C1A3CF687006DD6EB /* User.swift in Sources */,
 				5292301A1A3CF687006DD6EB /* Record.swift in Sources */,
 				52E784BF1A5B5A950065C10D /* NSDateTests.swift in Sources */,

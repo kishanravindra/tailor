@@ -35,7 +35,7 @@ class ModelTests: XCTestCase {
   func testValidateLeavesErrorsEmptyWhenValidationsPass() {
     let hat = Hat()
     hat.validate()
-    XCTAssertTrue(hat.errors.isEmpty(), "hat has no errors")
+    XCTAssertTrue(hat.errors.isEmpty, "hat has no errors")
   }
   
   func testValidateReturnsTrueWhenValidationsPass() {
@@ -48,14 +48,11 @@ class ModelTests: XCTestCase {
     let hat = Hat()
     hat.keysToFail.append("brimSize")
     hat.validate()
-    if let errors = hat.errors.errors["brimSize"] {
-      XCTAssertEqual(errors.count, 1, "has one error")
-      if errors.count > 0 {
-        XCTAssertEqual(errors[0], "failed validation", "has the error provided by the validator")
-      }
-    }
-    else {
-      XCTFail("has an error for brim sizes")
+    let errors = hat.errors.errors
+    XCTAssertEqual(errors.count, 1, "has one error")
+    if errors.count > 0 {
+      let error = errors[0]
+      XCTAssertEqual(error.message, "failed validation", "has the error provided by the validator")
     }
   }
   
@@ -72,19 +69,8 @@ class ModelTests: XCTestCase {
     hat.keysToFail.append("color")
     hat.validate()
     
-    if let errors = hat.errors.errors["brimSize"] {
-      XCTAssertEqual(errors.count, 1, "has one error for brim size")
-    }
-    else {
-      XCTFail("has an error for brim size")
-    }
-    
-    if let errors = hat.errors.errors["color"] {
-      XCTAssertEqual(errors.count, 1, "has one error for color")
-    }
-    else {
-      XCTFail("has an error for color")
-    }
+    XCTAssertEqual(hat.errors["brimSize"].count, 1, "has one error for brim size")
+    XCTAssertEqual(hat.errors["color"].count, 1, "has one error for color")
   }
   
   //MARK: - Dynamic Properties

@@ -9,6 +9,14 @@ import Foundation
 public class Model {
   //MARK: - Structure
   
+  /** The errors that have been set on this object in the validation process. */
+  public var errors: ErrorCollection!
+  
+  public init() {
+    self.errors = nil
+    self.errors = ErrorCollection(modelType: self.dynamicType, errors: [])
+  }
+  
   /** 
     The name of the model.
 
@@ -23,9 +31,6 @@ public class Model {
   }
   
   //MARK: - Validations
-  
-  /** The errors that have been set on this object in the validation process. */
-  public let errors = ErrorCollection()
 
   /** The validators that will be applied to model objects for this model. */
   public class func validators() -> [Validator] {
@@ -38,12 +43,12 @@ public class Model {
     :returns:   Whether the object passed all the validations.
     */
   public func validate() -> Bool {
-    self.errors.errors = [:]
+    self.errors.errors = []
     var valid = true
     for validator in self.dynamicType.validators() {
       validator.validate(self)
     }
-    return self.errors.isEmpty()
+    return self.errors.isEmpty
   }
   
   //MARK: - Dynamic Properties

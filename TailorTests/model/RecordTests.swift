@@ -310,8 +310,9 @@ class RecordTests: XCTestCase {
       let result = store.save()
       XCTAssertFalse(result, "returns false")
       
-      if let errors = store.errors.errors["_database"] {
-        XCTAssertEqual(errors, ["Lost Connection"], "sets an error on the record")
+      if !store.errors.isEmpty {
+        let error = store.errors.errors[0]
+        XCTAssertEqual(error.message, "Lost Connection", "sets an error on the record")
       }
       else {
         XCTFail("Sets an error on the record")
@@ -391,8 +392,9 @@ class RecordTests: XCTestCase {
       shelf.name = nil
       connection.response = [DatabaseConnection.Row(error: "Connection Error")]
       shelf.save()
-      if let errors = shelf.errors.errors["_database"] {
-        XCTAssertEqual(errors, ["Connection Error"], "puts an error on the record")
+      if !shelf.errors.isEmpty {
+        let error = shelf.errors.errors[0]
+        XCTAssertEqual(error.message, "Connection Error", "puts an error on the record")
       }
       else {
         XCTFail("puts an error on the record")

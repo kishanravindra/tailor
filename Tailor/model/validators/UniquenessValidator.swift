@@ -35,7 +35,7 @@ public class UniquenessValidator : Validator {
       let duplicates = DatabaseConnection.sharedConnection().executeQuery(query, stringParameters: parameters)
       
       if !duplicates.isEmpty {
-        model.errors.add(key, "is already taken")
+        model.errors.add(key, "taken")
       }
     }
   }
