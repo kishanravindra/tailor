@@ -49,3 +49,7 @@
 * Helpers for common test patterns
 * Assertions for HTML content
 * Truncating tables when running tests
+
+# Workarounds to Revisit
+
+* Moving BindParameter class to Swift

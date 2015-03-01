@@ -1,11 +1,3 @@
-//
-//  TailorC.h
-//  TailorC
-//
-//  Created by John Brownlee on 19/9/14.
-//  Copyright (c) 2014 John Brownlee. All rights reserved.
-//
-
 #include <string.h>
 #include <objc/message.h>
 #include <netinet/in.h>
@@ -47,27 +39,3 @@ void tailorInvokeFunction(__nonnull id object, __nonnull Method method);
  :returns:       The socket address.
  */
 struct sockaddr_in createSocketAddress(int port);
-
-@interface BindParameter : NSObject {
-  
-}
-
-- (nonnull id) initWithParameter:(MYSQL_BIND)parameter;
-- (nonnull id) initWithData:(nonnull NSData*)data;
-- (nonnull id) initWithType:(MYSQL_FIELD)type;
-- (BOOL) isNull;
-- (nullable void*) buffer;
-- (NSInteger) length;
-
-- (MYSQL_BIND) parameter;
-@end
-
-@interface BindParameterSet: NSObject {
-  
-}
-- (nonnull id) initWithStatement:(nonnull MYSQL_STMT*)statement;
-- (nonnull id) initWithData:(nonnull NSArray*)parameterData;
-- (void) bindToInputOfStatement:(nonnull MYSQL_STMT*)statement;
-- (void) bindToOutputOfStatement:(nonnull MYSQL_STMT*)statement;
-- (nonnull NSArray*) parameters;
-@end

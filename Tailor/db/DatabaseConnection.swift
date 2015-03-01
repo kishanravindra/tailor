@@ -4,7 +4,7 @@ import Foundation
   This method provides an abstract base class for managing database connections
   and executing queries.
   */
-public class DatabaseConnection {
+@objc public class DatabaseConnection {
   /**
     This class provides a base class for representing a row that is returned
     from a database query.

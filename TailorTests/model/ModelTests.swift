@@ -1,7 +1,7 @@
 import XCTest
 
 class ModelTests: XCTestCase {
-  @objc(HatForModel) class Hat : TailorTests.Hat {
+  @objc(HatForModel) class HatForModel : Hat {
     var keysToFail = [String]()
     override class func validators() -> [Validator] {
       return [
@@ -12,7 +12,7 @@ class ModelTests: XCTestCase {
   }
   class TestValidator : Validator {
     override func validate(model: Model) {
-      let hat = model as! Hat
+      let hat = model as! HatForModel
       if(contains(hat.keysToFail, key)) {
         hat.errors.add(key, "failed validation")
       }
@@ -26,8 +26,8 @@ class ModelTests: XCTestCase {
   //MARK: - Structure
   
   func testModelNameIsTakenFromClassName() {
-    XCTAssertEqual(TailorTests.Hat.modelName(), "hat", "gets lowercased class name for model")
-    XCTAssertEqual(Hat.modelName(), "hat_for_model", "gets lowercased class name with underscores for for HatForModel")
+    XCTAssertEqual(Hat.modelName(), "hat", "gets lowercased class name for model")
+    XCTAssertEqual(HatForModel.modelName(), "hat_for_model", "gets lowercased class name with underscores for for HatForModel")
   }
   
   //MARK: - Validations
@@ -45,7 +45,7 @@ class ModelTests: XCTestCase {
   }
   
   func testValidatePutsErrorMessageInErrorListWhenValidationFails() {
-    let hat = Hat()
+    let hat = HatForModel()
     hat.keysToFail.append("brimSize")
     hat.validate()
     if let errors = hat.errors.errors["brimSize"] {
@@ -60,14 +60,14 @@ class ModelTests: XCTestCase {
   }
   
   func testValidateReturnsFalseWhenValidationFails() {
-    let hat = Hat()
+    let hat = HatForModel()
     hat.keysToFail.append("brimSize")
     let result = hat.validate()
     XCTAssertFalse(result, "returns false")
   }
   
   func testValidateCanCollectMultipleErrors() {
-    let hat = Hat()
+    let hat = HatForModel()
     hat.keysToFail.append("brimSize")
     hat.keysToFail.append("color")
     hat.validate()
@@ -106,7 +106,7 @@ class ModelTests: XCTestCase {
       }
     }
     
-    let name = Hat.humanAttributeName("brimSize", localization: TestLocalization(locale: "en"))
+    let name = HatForModel.humanAttributeName("brimSize", localization: TestLocalization(locale: "en"))
     XCTAssertEqual(name, "record.hat_for_model.attributes.brim_size translated", "gets string from localization")
   }
   

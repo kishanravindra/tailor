@@ -25,58 +25,12 @@ public class MysqlConnection : DatabaseConnection {
           continue
         }
 
-        if let value = MysqlRow.extractBindResult(bindResult, type: fieldType.type) {
+        if let value: AnyObject = bindResult.data() {
           data[name! as! String] = value
         }
       }
       
       self.init(data: data)
-    }
-    
-    /**
-      This method gets the data from a bind container for a result.
-
-      :param: bindResult  The result container.
-      :param: type        The type of the data that we are fetching.
-      :returns:           The data in a native Swift format.
-      */
-    class func extractBindResult(bindResult: BindParameter, type: enum_field_types) -> Any? {
-      if bindResult.isNull() {
-        return nil
-      }
-      switch type.value {
-      case MYSQL_TYPE_TINY.value:
-        let buffer = UnsafeMutablePointer<CChar>(bindResult.buffer())
-        return Int(buffer.memory)
-      case MYSQL_TYPE_SHORT.value:
-        let buffer = UnsafeMutablePointer<CShort>(bindResult.buffer())
-        return Int(buffer.memory)
-      case MYSQL_TYPE_LONG.value, MYSQL_TYPE_INT24.value:
-        let buffer = UnsafeMutablePointer<CInt>(bindResult.buffer())
-        return Int(buffer.memory)
-      case MYSQL_TYPE_LONGLONG.value:
-        let buffer = UnsafeMutablePointer<CLongLong>(bindResult.buffer())
-        return Int(buffer.memory)
-      case MYSQL_TYPE_FLOAT.value:
-        let buffer = UnsafeMutablePointer<CFloat>(bindResult.buffer())
-        return Double(buffer.memory)
-      case MYSQL_TYPE_DOUBLE.value:
-        let buffer = UnsafeMutablePointer<CDouble>(bindResult.buffer())
-        return Double(buffer.memory)
-      case MYSQL_TYPE_TIME.value, MYSQL_TYPE_DATE.value,
-      MYSQL_TYPE_DATETIME.value, MYSQL_TYPE_TIMESTAMP.value:
-        let buffer = UnsafeMutablePointer<MYSQL_TIME>(bindResult.buffer())
-        let time = buffer.memory
-        var date = NSDate(year: Int(time.year), month: Int(time.month),
-          day: Int(time.day), hour: Int(time.hour), minute: Int(time.minute),
-          second: Int(time.second), timeZone: DatabaseConnection.sharedConnection().timeZone)
-        return date
-      case MYSQL_TYPE_TINY_BLOB.value, MYSQL_TYPE_BLOB.value,
-      MYSQL_TYPE_MEDIUM_BLOB.value, MYSQL_TYPE_LONG_BLOB.value:
-        return NSData(bytes: bindResult.buffer(), length: bindResult.length())
-      default:
-        return NSString(bytes: bindResult.buffer(), length: bindResult.length(), encoding: NSUTF8StringEncoding)
-      }
     }
   }
   
@@ -190,9 +144,9 @@ public class MysqlConnection : DatabaseConnection {
     
     return rows
   }
-  
+
   //MARK: Transactions
-  
+
   public override func transaction(block: ()->()) {
     mysql_query(self.connection, "START TRANSACTION;")
     block()
