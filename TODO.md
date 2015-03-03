@@ -1,20 +1,3 @@
-### General
-
-* Mailers
-* Running cron jobs
-* Running persistent background jobs
-* Console
-* Logging
-* Fix parsing of spaces in parameters from Xcode prompt
-* More load testing and checks for bugs
-* Make template project have a build stage for copying the Framework into the
-  application bundle.
-* Shorthands for date arithmetic
-* Caching
-* Clarify language surrounding URLs vs paths in routing
-* Reduce use of global variables
-* More Xcode templates for controllers, models, and templates.
-
 ### Routing and Controllers
 
 * Better CSRF prevention
