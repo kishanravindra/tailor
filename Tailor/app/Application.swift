@@ -57,10 +57,15 @@ public class Application {
     self.loadDateFormatters()
     self.registerSubclasses(Task.self, Alteration.self)
     self.parseArguments()
-    self.loadConfigFromFile("sessions")
-    self.loadConfigFromFile("database")
-    self.loadConfigFromFile("localization")
-    self.configuration.setDefaultValue("localization.class", value: "PropertyListLocalization")
+    self.loadConfigFromFile("sessions.plist")
+    self.loadConfigFromFile("database.plist")
+    self.loadConfigFromFile("localization.plist")
+    self.configuration.setDefaultValue("localization.class", value: "Tailor.PropertyListLocalization")
+    self.configuration.setDefaultValue("localization.content.en.model.errors.blank", value: "cannot be blank")
+    self.configuration.setDefaultValue("localization.content.en.model.errors.too_high", value: "cannot be more than \\(max)")
+    self.configuration.setDefaultValue("localization.content.en.model.errors.too_low", value: "cannot be less than \\(min)")
+    self.configuration.setDefaultValue("localization.content.en.model.errors.non_numeric", value: "must be a number")
+    self.configuration.setDefaultValue("localization.content.en.model.errors.taken", value: "is already taken")
   }
   
   /** The application that we are running. */
@@ -307,7 +312,8 @@ public class Application {
     */
   public func loadConfigFromFile(path: String) {
     let name = path.lastPathComponent.stringByDeletingPathExtension
-    self.configuration.child(name).addDictionary(ConfigurationSetting(contentsOfFile: path).toDictionary())
+    let fullPath = self.rootPath() + "/" + path
+    self.configuration.child(name).addDictionary(ConfigurationSetting(contentsOfFile: fullPath).toDictionary())
   }
   
   /**
@@ -317,7 +323,6 @@ public class Application {
     :returns:         The localization
     */
   public func localization(locale: String) -> Localization {
-    let name = self.configuration["localization.class"]
     var klass = NSClassFromString(self.configuration["localization.class"] ?? "") as? Localization.Type ?? Localization.self
     return klass(locale: locale)
   }

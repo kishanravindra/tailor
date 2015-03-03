@@ -86,7 +86,7 @@ class ApplicationTests : XCTestCase {
   //MARK: - Configuration
   
   func testLoadConfigPutsContentsInConfiguration() {
-    application.loadConfigFromFile("TailorTests/Info.plist")
+    application.loadConfigFromFile("Info.plist")
     let value = application.configuration["Info.CFBundlePackageType"]
     XCTAssertNotNil(value, "has a setting")
     if value != nil {

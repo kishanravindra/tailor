@@ -13,6 +13,7 @@
 * Caching
 * Clarify language surrounding URLs vs paths in routing
 * Reduce use of global variables
+* More Xcode templates for controllers, models, and templates.
 
 ### Routing and Controllers
 

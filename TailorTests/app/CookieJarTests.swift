@@ -1,4 +1,3 @@
-import Cocoa
 import XCTest
 
 class CookieJarTests: XCTestCase {

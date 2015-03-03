@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 /**
   This class encapsulates a configuration setting or family of configuration

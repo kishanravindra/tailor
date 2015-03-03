@@ -56,7 +56,7 @@ public class Template {
     This is only added to keys that start with a dot.
     */
   public var localizationPrefix: String {
-    return NSStringFromClass(self.dynamicType).underscored()
+    return reflect(self).summary.underscored()
   }
 
   /**

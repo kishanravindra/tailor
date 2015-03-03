@@ -2,7 +2,7 @@
   This class localizes content using a table in the database.
 
   It requires a table called tailor_translations, with fields for
-  translation_key, locale, and translated_ext.
+  translation_key, locale, and translated_text.
   */
 public class DatabaseLocalization: Localization {
   /**
@@ -10,16 +10,20 @@ public class DatabaseLocalization: Localization {
     */
   public class Translation: Record {
     /** The key that this is a translation for. */
-    dynamic var translationKey: String!
+    public dynamic var translationKey: String!
     
     /** The locale this translation applies to. */
-    dynamic var locale: String!
+    public dynamic var locale: String!
     
     /** The translated value. */
-    dynamic var translatedText: String!
+    public dynamic var translatedText: String?
     
     public override class func tableName() -> String {
       return "tailor_translations"
+    }
+    
+    public override class func modelName() -> String {
+      return "translation"
     }
     
     public override class func persistedProperties() -> [String] {

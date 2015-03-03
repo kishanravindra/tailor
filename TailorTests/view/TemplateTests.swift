@@ -59,11 +59,9 @@ class TemplateTests: XCTestCase {
   //MARK: - Helpers
   
   func testLocalizationPrefixHasClassName() {
-    class TestTemplate: Template {
-    }
-    let template = TestTemplate(controller: controller)
     let prefix = template.localizationPrefix
-    XCTAssertEqual(prefix, NSStringFromClass(TestTemplate.self).underscored(), "has the underscored class name")
+    
+    XCTAssertEqual(prefix, "tailor_tests.template", "has the underscored class name")
   }
   
   func testLocalizeMethodGetsLocalizationFromController() {
