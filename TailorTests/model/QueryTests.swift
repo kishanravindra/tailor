@@ -252,6 +252,33 @@ class QueryTests: XCTestCase {
     XCTAssertEqual(query.joinClause.query, baseQuery.joinClause.query, "copies join clause")
     XCTAssertEqual(query.joinClause.parameters, baseQuery.joinClause.parameters, "copies join clause")
   }
+  
+  func testReverseWithNoOrderOrdersByIdDesc() {
+    let query = baseQuery.dynamicType.init(copyFrom: baseQuery, orderClause: ("", [])).reverse()
+    XCTAssertEqual(query.orderClause.query, "id DESC", "adds an order clause in descending order by id")
+    XCTAssertEqual(query.orderClause.parameters, [], "has no parameters for the order clause")
+  }
+  
+  func testReverseWithNormalQueryReversesAscendingAndDescending() {
+    let query = baseQuery.dynamicType.init(copyFrom: baseQuery, orderClause: ("name ASC, created_at DESC", [])).reverse()
+    XCTAssertEqual(query.orderClause.query, "name DESC, created_at ASC", "reverses the order")
+    XCTAssertEqual(query.orderClause.parameters, [], "has no parameters for the order clause")
+    
+  }
+  
+  func testReverseWithLowercaseOrderReversesAscendingAndDescending() {
+    let query = baseQuery.dynamicType.init(copyFrom: baseQuery, orderClause: ("name asc, created_at desc", [])).reverse()
+    XCTAssertEqual(query.orderClause.query, "name DESC, created_at ASC", "reverses the order")
+    XCTAssertEqual(query.orderClause.parameters, [], "has no parameters for the order clause")
+    
+  }
+  
+  func testReverseWithOrderWordsInFieldNamesLeavesFieldNamesIntact() {
+    let query = baseQuery.dynamicType.init(copyFrom: baseQuery, orderClause: ("incandescence ASC, ascent_time DESC", [])).reverse()
+    XCTAssertEqual(query.orderClause.query, "incandescence DESC, ascent_time ASC", "reverses the order")
+    XCTAssertEqual(query.orderClause.parameters, [], "has no parameters for the order clause")
+    
+  }
 
   //MARK: - Running Query
   
@@ -289,6 +316,18 @@ class QueryTests: XCTestCase {
     let hat3 = Hat.create(["color": "black"])
     let query = Query<Hat>().filter(["color": "green"])
     XCTAssertNil(query.first(), "returns nil")
+  }
+  
+  func testLastGetsLastRecordBasedOnOrdering() {
+    let hat1 = Hat.create(["color": "black"])
+    let hat2 = Hat.create(["color": "red"])
+    let hat3 = Hat.create(["color": "blue"])
+    let query = Query<Hat>().order("color", .OrderedAscending)
+    let record = query.last()
+    XCTAssertNotNil(record, "gets a record")
+    if record != nil {
+      XCTAssertEqual(record!, hat2, "gets the last one by the ordering criteria")
+    }
   }
   
   func testFindGetsRecordById() {
