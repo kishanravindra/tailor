@@ -174,6 +174,38 @@ public class Application {
   }
   
   /**
+    This method prompts for a command from the standard input.
+
+    It will print out the available commands and read a line of input from the
+    prompt.
+
+    :returns:   The input from the user.
+    */
+  internal func promptForCommand() -> String {
+    print("Please provide a task by name, or from the following list:\n")
+    
+    let tasks = self.registeredSubclassList(Task.self).sorted {
+      task1, task2 in
+      task1.command().compare(task2.command()) == NSComparisonResult.OrderedAscending
+    }
+    
+    for (index,task) in enumerate(tasks) {
+      print("\(index + 1). \(task.command())\n")
+    }
+    let keyboard = NSFileHandle.fileHandleWithStandardInput()
+    let inputData = keyboard.availableData
+    let commandLine = NSString(data: inputData, encoding:NSUTF8StringEncoding)?.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()) ?? ""
+    
+    let int = Int((commandLine as NSString).intValue)
+    if int > 0 && int < tasks.count {
+      return tasks[int - 1].command()
+    }
+    else {
+      return commandLine
+    }
+  }
+  
+  /**
     This method gets the command and flags from the command-line arguments.
     
     If the command doesn't match a task, this will prompt the user to put in
@@ -182,32 +214,19 @@ public class Application {
     */
   private func parseArguments() {
     (self.command, self.flags) = self.dynamicType.parseArguments(self.arguments)
-    let tasks = self.registeredSubclassList(Task.self).sorted {
-      task1, task2 in
-      task1.command().compare(task2.command()) == NSComparisonResult.OrderedAscending
-    }
     
+    let tasks = self.registeredSubclassList(Task.self)
     while (tasks.filter { $0.command() == self.command }).isEmpty {
-      print("Please provide a task by name, or from the following list:\n")
-      
-      for (index,task) in enumerate(tasks) {
-        print("\(index + 1). \(task.command())\n")
-      }
-      let keyboard = NSFileHandle.fileHandleWithStandardInput()
-      let inputData = keyboard.availableData
-      let invocation = NSString(data: inputData, encoding:NSUTF8StringEncoding)?.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
-      if invocation == nil {
-        continue
-      }
-      let int = Int((invocation! as NSString).intValue)
-      if int > 0 && int < tasks.count {
-        self.command = tasks[int - 1].command()
-        self.flags = [:]
-      }
-      else {
-        self.arguments = invocation?.componentsSeparatedByString(" ") ?? []
-        (self.command, self.flags) = self.dynamicType.parseArguments(self.arguments)
-      }
+      let commandLine = self.promptForCommand()
+      var inQuotes = false
+      self.arguments = split(commandLine) {
+        (character: Character) -> Bool in
+        if character == "\"" {
+          inQuotes = !inQuotes
+        }
+        return character == " " && !inQuotes
+        }.map { $0.stringByReplacingOccurrencesOfString("\"", withString: "") }
+      (self.command, self.flags) = self.dynamicType.parseArguments(self.arguments)
     }
 
   }

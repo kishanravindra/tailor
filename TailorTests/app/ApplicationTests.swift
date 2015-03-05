@@ -62,6 +62,44 @@ class ApplicationTests : XCTestCase {
     XCTAssertEqual(application.dateFormatters["db"]!.dateFormat!, "yyyy-MM-dd HH:mm:ss", "sets a db date format properly")
   }
   
+  func testParseArgumentsWithNoArgumentsReadsFromPrompt() {
+    class TestApplication: Application {
+      var commands = ["tailor.exit a=5"]
+      override func promptForCommand() -> String {
+        return commands.removeLast()
+      }
+    }
+    
+    let application = TestApplication(arguments: [""])
+    XCTAssertEqual(application.command, "tailor.exit", "sets the command from the prompt")
+    XCTAssertEqual(application.flags, ["a": "5"], "sets the flags from the prompt")
+  }
+  
+  func testParseArgumentsRepeatedlyPromptsUntilValidTaskAppears() {
+    class TestApplication: Application {
+      var commands = ["tailor.exit a=7", "tailor.wait"]
+      override func promptForCommand() -> String {
+        return commands.removeLast()
+      }
+    }
+    
+    let application = TestApplication(arguments: [""])
+    XCTAssertEqual(application.command, "tailor.exit", "sets the command from the prompt")
+    XCTAssertEqual(application.flags, ["a": "7"], "sets the flags from the prompt")
+  }
+  
+  func testParseArgumentsWithSpacesInQuotesKeepsQuotedSectionTogether() {
+    class TestApplication: Application {
+      var commands = ["tailor.exit a=\"b + c\" d=23"]
+      override func promptForCommand() -> String {
+        return commands.removeLast()
+      }
+    }
+    
+    let application = TestApplication(arguments: [""])
+    XCTAssertEqual(application.flags, ["a": "b + c", "d": "23"], "keeps the quoted flags together")
+  }
+  
   //MARK: Getting Subclasses
   
   func testCanRegisterCustomSubclasses() {
