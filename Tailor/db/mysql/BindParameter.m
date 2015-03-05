@@ -7,6 +7,7 @@
 
 @implementation BindParameter {
   MYSQL_BIND parameter;
+  BOOL binary;
   NSString* fieldName;
 }
 
@@ -17,6 +18,7 @@
   
   memset(&parameter, 0, sizeof(parameter));
   fieldName = nil;
+  binary = NO;
   
   return self;
 }
@@ -38,6 +40,8 @@
   parameter.length = malloc(sizeof(NSInteger));
   parameter.is_null = malloc(sizeof(my_bool));
   parameter.error = malloc(sizeof(my_bool));
+  
+  binary = field.isBinary;
   
   return self;
 }
@@ -99,7 +103,12 @@
     case MYSQL_TYPE_BLOB:
     case MYSQL_TYPE_MEDIUM_BLOB:
     case MYSQL_TYPE_LONG_BLOB:
-      return [[NSData alloc] initWithBytes: self.buffer length:self.length];
+      if(binary) {
+        return [[NSData alloc] initWithBytes: self.buffer length:self.length];
+      }
+      else {
+        return [[NSString alloc] initWithBytes: self.buffer length:self.length encoding: NSUTF8StringEncoding];
+      }
     default:
       return [[NSString alloc] initWithBytes: self.buffer length:self.length encoding: NSUTF8StringEncoding];
   }

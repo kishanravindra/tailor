@@ -110,7 +110,6 @@ import Foundation
         result[names[index]] = parameter.data()
       }
       results.append(result)
-      i = mysql_stmt_fetch(self.statement)
     }
     return results
   }

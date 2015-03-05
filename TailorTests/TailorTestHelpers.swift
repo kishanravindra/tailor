@@ -20,7 +20,7 @@ class TestApplication: Application {
   }
   
   override func openDatabaseConnection() -> DatabaseConnection {
-    let config = self.configuration.child("database").toDictionary() as [String: String]
+    let config = self.configuration.child("database").toDictionary() as! [String: String]
     return MysqlConnection(config: config)
   }
   

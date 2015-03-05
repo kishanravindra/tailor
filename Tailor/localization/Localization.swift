@@ -25,7 +25,7 @@ public class Localization {
       return locales
     }
     var components = split(locale) { $0 == "-" }
-    if countElements(components) > 1 {
+    if count(components) > 1 {
       var fallback = ""
       for component in components {
         if !fallback.isEmpty {

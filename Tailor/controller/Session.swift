@@ -33,7 +33,6 @@ public class Session {
   public init(request: Request) {
     let cookies = request.cookies
     self.clientAddress = request.clientAddress
-    self.expirationDate = NSDate(timeIntervalSinceNow: 3600)
     let key = Application.sharedApplication().configuration["sessions.encryptionKey"]
     encryptor = AesEncryptor(key: key ?? "")
     if let encryptedDataString = cookies["_session"] {

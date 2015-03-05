@@ -75,7 +75,7 @@ public class ConfigurationSetting: Equatable {
     */
   public func child(keyPath: String) -> ConfigurationSetting {
     let keys = split(keyPath) { $0 == "." }
-    if countElements(keys) == 1 {
+    if count(keys) == 1 {
       if self.children[keyPath] == nil {
         self.children[keyPath] = ConfigurationSetting()
       }

@@ -17,6 +17,9 @@
   /** The type of data in the buffer. */
   public let bufferType: enum_field_types
   
+  /** Whether this is a binary field. */
+  public let isBinary: Bool
+  
   /**
     This method initializes the field.
 
@@ -33,6 +36,12 @@
     }
     
     self.bufferType = field.type
+    self.isBinary = (field.charsetnr == 63) && (
+      field.type.value == MYSQL_TYPE_BLOB.value ||
+      field.type.value == MYSQL_TYPE_TINY_BLOB.value ||
+      field.type.value == MYSQL_TYPE_MEDIUM_BLOB.value ||
+      field.type.value == MYSQL_TYPE_LONG_BLOB.value
+    )
     (self.bufferSize, self.bufferLength) = MysqlField.bufferSize(field.type)
   }
   

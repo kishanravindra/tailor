@@ -9,6 +9,7 @@
 
 @implementation BindParameterSet {
   MYSQL_BIND* mysqlParameters;
+  NSMutableArray* parameters;
   NSUInteger parameterCount;
 }
 
@@ -22,10 +23,13 @@
 - (id) initWithData:(nonnull NSArray*)data {
   self = [super init];
   parameterCount = data.count;
+  parameters = [NSMutableArray array];
   mysqlParameters = calloc(sizeof(MYSQL_BIND), parameterCount);
   for(NSUInteger indexOfParameter = 0; indexOfParameter < parameterCount; indexOfParameter ++) {
     NSData* dataItem = [data objectAtIndex:indexOfParameter];
-    mysqlParameters[indexOfParameter] = [[[BindParameter alloc] initWithData:dataItem] parameter];
+    BindParameter* parameter = [[BindParameter alloc] initWithData:dataItem];
+    mysqlParameters[indexOfParameter] = [parameter parameter];
+    [parameters addObject:parameter];
   }
   return self;
 }
@@ -34,11 +38,14 @@
   self = [super init];
   NSArray* fields = resultSet.fields;
   parameterCount = fields.count;
+  parameters = [NSMutableArray array];
   mysqlParameters = calloc(parameterCount, sizeof(MYSQL_BIND));
   
   for(int indexOfParameter = 0; indexOfParameter < parameterCount; indexOfParameter++) {
     MysqlField* field = [fields objectAtIndex:indexOfParameter];
-    mysqlParameters[indexOfParameter] = [[[BindParameter alloc] initWithField:field] parameter];
+    BindParameter* parameter = [[BindParameter alloc] initWithField:field];
+    mysqlParameters[indexOfParameter] = [parameter parameter];
+    [parameters addObject:parameter];
   }
   
   return self;
@@ -67,11 +74,6 @@
 }
 
 - (nonnull NSArray*) parameters {
-  NSMutableArray* parameters = [[NSMutableArray alloc] initWithCapacity:parameterCount];
-  for(NSUInteger indexOfParameter = 0; indexOfParameter < parameterCount; indexOfParameter++) {
-    
-    [parameters addObject:[[BindParameter alloc] initWithParameter: mysqlParameters[indexOfParameter]]];
-  }
   return parameters;
 }
 

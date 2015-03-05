@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		5209E2891A50920C0044EE70 /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5209E2881A50920C0044EE70 /* ModelTests.swift */; };
+		520BD5021AA90E2600CBC3DC /* PropertyListLocalizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784C91A5CC1A40065C10D /* PropertyListLocalizationTests.swift */; };
 		5214B5D21AA38B0800624E9D /* ValidationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5214B5D11AA38B0800624E9D /* ValidationError.swift */; };
 		5214B5D31AA38D0D00624E9D /* ValidationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5214B5D11AA38B0800624E9D /* ValidationError.swift */; };
 		5214B5D51AA3903800624E9D /* ValidationErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5214B5D41AA3903800624E9D /* ValidationErrorTests.swift */; };
@@ -154,7 +155,6 @@
 		52E784C31A5B6BFA0065C10D /* NSStringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784C21A5B6BFA0065C10D /* NSStringTests.swift */; };
 		52E784C51A5B6E2D0065C10D /* StringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784C41A5B6E2D0065C10D /* StringTests.swift */; };
 		52E784C71A5B72990065C10D /* DictionaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784C61A5B72990065C10D /* DictionaryTests.swift */; };
-		52E784CA1A5CC1A40065C10D /* PropertyListLocalizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784C91A5CC1A40065C10D /* PropertyListLocalizationTests.swift */; };
 		52E784CD1A5CC5A60065C10D /* TaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784CC1A5CC5A60065C10D /* TaskTests.swift */; };
 		52E784CF1A5CC6350065C10D /* ServerTaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784CE1A5CC6350065C10D /* ServerTaskTests.swift */; };
 		52E784D11A5CC7AE0065C10D /* AlterationsTaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784D01A5CC7AE0065C10D /* AlterationsTaskTests.swift */; };
@@ -742,7 +742,7 @@
 		52BD139419E9D7E3006D72B0 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0610;
+				LastUpgradeCheck = 0630;
 				ORGANIZATIONNAME = "John Brownlee";
 				TargetAttributes = {
 					52BD139C19E9D7E4006D72B0 = {
@@ -888,13 +888,11 @@
 				52E784C71A5B72990065C10D /* DictionaryTests.swift in Sources */,
 				523F29371A5844BF00C1BBC0 /* HtmlSanitizerTests.swift in Sources */,
 				529230351A3CF6AB006DD6EB /* AesEncryptor.swift in Sources */,
-				52E784CA1A5CC1A40065C10D /* LocalizationTests.swift in Sources */,
+				520BD5021AA90E2600CBC3DC /* PropertyListLocalizationTests.swift in Sources */,
 				52A500851AA27D5F00F3F031 /* TailorC.m in Sources */,
 				52A5007C1AA27AB800F3F031 /* ErrorCollection.swift in Sources */,
 				52A500771AA27A2300F3F031 /* Dictionary.swift in Sources */,
 				52A500811AA27AD100F3F031 /* Record.swift in Sources */,
-				529230211A3CF68D006DD6EB /* RangeValidator.swift in Sources */,
-				52E784CA1A5CC1A40065C10D /* PropertyListLocalizationTests.swift in Sources */,
 				523F29351A583EEB00C1BBC0 /* SanitizerTests.swift in Sources */,
 				52ACAC781A56059200E875D9 /* UserTests.swift in Sources */,
 				52A684561A3FC14D00F4AA47 /* CookieJarTests.swift in Sources */,
@@ -911,10 +909,7 @@
 				52DDCF011A538C5800D3A47E /* QueryTests.swift in Sources */,
 				529230271A3CF695006DD6EB /* SanitizedText.swift in Sources */,
 				529230261A3CF695006DD6EB /* HtmlSanitizer.swift in Sources */,
-				529230371A3CF6AE006DD6EB /* TailorC.m in Sources */,
 				5214B5D31AA38D0D00624E9D /* ValidationError.swift in Sources */,
-				5292301C1A3CF687006DD6EB /* User.swift in Sources */,
-				5292301A1A3CF687006DD6EB /* Record.swift in Sources */,
 				52E784BF1A5B5A950065C10D /* NSDateTests.swift in Sources */,
 				529230121A3CF671006DD6EB /* CookieJar.swift in Sources */,
 				523D655F1A98CD3C000C686B /* LocalizationTests.swift in Sources */,
