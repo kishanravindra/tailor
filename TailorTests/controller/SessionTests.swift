@@ -11,12 +11,7 @@ class SessionTests: XCTestCase {
       mergedData["_flash_\(key)"] = value
     }
     
-    let value: AnyObject? = Application.sharedApplication().configFromFile("sessions")["encryptionKey"]
-    
-    var key = ""
-    if let s = value as? String {
-      key = s
-    }
+    let key = Application.sharedApplication().configuration["sessions.encryptionKey"] ?? ""
     let jsonData = NSJSONSerialization.dataWithJSONObject(mergedData, options: nil, error: nil) ?? NSData()
     let encryptor = AesEncryptor(key: key)
     let encryptedData = encryptor.encrypt(jsonData)
@@ -130,7 +125,7 @@ class SessionTests: XCTestCase {
     var session = createSession(createCookieString(data: ["name": "Joan"]))
     session.setFlash("notice", "Success")
     let string = session.cookieString()
-    let key = (Application.sharedApplication().configFromFile("sessions")["encryptionKey"] as? String) ?? ""
+    let key = Application.sharedApplication().configuration["sessions.encryptionKey"]  ?? ""
     let decryptor = AesEncryptor(key: key)
     let cookieData = NSData(base64EncodedString: string, options: nil) ?? NSData()
     XCTAssertNotEqual(cookieData.length, 0, "can base-64 decode the cookie data")

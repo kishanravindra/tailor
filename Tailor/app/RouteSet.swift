@@ -353,7 +353,7 @@ public class RouteSet {
       self.addRoute(path, method: "GET") {
         (request, callback) -> () in
         
-        let fullPath = Application.sharedApplication().rootPath + "/\(localPath)"
+        let fullPath = Application.sharedApplication().rootPath() + "/\(localPath)"
         
         if let contents = NSFileManager.defaultManager().contentsAtPath(fullPath) {
           var response = Response()

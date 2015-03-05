@@ -236,6 +236,37 @@ public class Query<RecordType: Record> {
       return self
     }
   }
+
+  /**
+    This method reverses the order of a query.
+
+    If the query has no order clause, it will order the query in descending
+    order by id.
+
+    :returns:   The new query.
+    */
+  public func reverse() -> Query<RecordType> {
+    var orderClause = self.orderClause
+    if orderClause.query.isEmpty {
+      orderClause.query = "id DESC"
+    }
+    else {
+      var components = split(orderClause.query) { $0 == "," }
+      components = components.map {
+        component in
+        var reversed = component
+        if reversed.uppercaseString.hasSuffix("ASC") {
+          reversed = reversed.stringByReplacingOccurrencesOfString(" ASC", withString: " DESC", options: .CaseInsensitiveSearch)
+        }
+        else {
+          reversed = reversed.stringByReplacingOccurrencesOfString(" DESC", withString: " ASC", options: .CaseInsensitiveSearch)
+        }
+        return reversed
+      }
+      orderClause.query = ",".join(components)
+    }
+    return self.dynamicType.init(copyFrom: self, orderClause: orderClause)
+  }
   
   //MARK: - Running Query
   
@@ -290,6 +321,18 @@ public class Query<RecordType: Record> {
     else {
       return nil
     }
+  }
+  
+  /**
+    This method runs the query, getting the last result based on the current
+    ordering.
+
+    This will only pull a single row from the database.
+
+    :returns:   The fetched result.
+    */
+  public func last() -> RecordType? {
+    return self.reverse().first()
   }
  
   /**

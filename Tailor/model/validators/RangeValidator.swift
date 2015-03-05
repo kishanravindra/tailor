@@ -59,18 +59,18 @@ public class RangeValidator : Validator {
       var matched = true
       if max != nil {
         if number.integerValue > max! {
-          model.errors.add(key, "must be at most \(max!)")
+          model.errors.add(key, "tooHigh", data: ["max": String(max!)])
         }
       }
       if min != nil {
         if number.integerValue < min! {
-          model.errors.add(key, "must be at least \(min!)")
+          model.errors.add(key, "tooLow", data: ["min": String(min!)])
         }
       }
     case nil:
-      model.errors.add(key, "cannot be blank")
+      model.errors.add(key, "blank")
     default:
-      model.errors.add(key, "must be a number")
+      model.errors.add(key, "nonNumeric")
     }
   }
 }

@@ -13,13 +13,6 @@ public class Application {
   /** The routes that process requests for the app. */
   public var routeSet = RouteSet()
   
-  /**
-    The path to the root of the application.
-  
-    This defaults to the path of the executable
-    */
-  public var rootPath = "."
-  
   /** The formatters that we have available for dates. */
   public var dateFormatters: [String:NSDateFormatter] = [:]
   
@@ -45,6 +38,11 @@ public class Application {
   public private(set) var flags: [String:String] = [:]
   
   /**
+    The configuration settings for the application.
+    */
+  public let configuration = ConfigurationSetting()
+    
+  /**
     This method initializes the application.
   
     This implementation parses command-line arguments, loads date formatters,
@@ -59,6 +57,15 @@ public class Application {
     self.loadDateFormatters()
     self.registerSubclasses(Task.self, Alteration.self)
     self.parseArguments()
+    self.loadConfigFromFile("sessions.plist")
+    self.loadConfigFromFile("database.plist")
+    self.loadConfigFromFile("localization.plist")
+    self.configuration.setDefaultValue("localization.class", value: "Tailor.PropertyListLocalization")
+    self.configuration.setDefaultValue("localization.content.en.model.errors.blank", value: "cannot be blank")
+    self.configuration.setDefaultValue("localization.content.en.model.errors.too_high", value: "cannot be more than \\(max)")
+    self.configuration.setDefaultValue("localization.content.en.model.errors.too_low", value: "cannot be less than \\(min)")
+    self.configuration.setDefaultValue("localization.content.en.model.errors.non_numeric", value: "must be a number")
+    self.configuration.setDefaultValue("localization.content.en.model.errors.taken", value: "is already taken")
   }
   
   /** The application that we are running. */
@@ -167,6 +174,38 @@ public class Application {
   }
   
   /**
+    This method prompts for a command from the standard input.
+
+    It will print out the available commands and read a line of input from the
+    prompt.
+
+    :returns:   The input from the user.
+    */
+  internal func promptForCommand() -> String {
+    print("Please provide a task by name, or from the following list:\n")
+    
+    let tasks = self.registeredSubclassList(Task.self).sorted {
+      task1, task2 in
+      task1.command().compare(task2.command()) == NSComparisonResult.OrderedAscending
+    }
+    
+    for (index,task) in enumerate(tasks) {
+      print("\(index + 1). \(task.command())\n")
+    }
+    let keyboard = NSFileHandle.fileHandleWithStandardInput()
+    let inputData = keyboard.availableData
+    let commandLine = NSString(data: inputData, encoding:NSUTF8StringEncoding)?.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()) ?? ""
+    
+    let int = Int((commandLine as NSString).intValue)
+    if int > 0 && int < tasks.count {
+      return tasks[int - 1].command()
+    }
+    else {
+      return commandLine
+    }
+  }
+  
+  /**
     This method gets the command and flags from the command-line arguments.
     
     If the command doesn't match a task, this will prompt the user to put in
@@ -175,32 +214,19 @@ public class Application {
     */
   private func parseArguments() {
     (self.command, self.flags) = self.dynamicType.parseArguments(self.arguments)
-    let tasks = self.registeredSubclassList(Task.self).sorted {
-      task1, task2 in
-      task1.command().compare(task2.command()) == NSComparisonResult.OrderedAscending
-    }
     
+    let tasks = self.registeredSubclassList(Task.self)
     while (tasks.filter { $0.command() == self.command }).isEmpty {
-      print("Please provide a task by name, or from the following list:\n")
-      
-      for (index,task) in enumerate(tasks) {
-        print("\(index + 1). \(task.command())\n")
-      }
-      let keyboard = NSFileHandle.fileHandleWithStandardInput()
-      let inputData = keyboard.availableData
-      let invocation = NSString(data: inputData, encoding:NSUTF8StringEncoding)?.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
-      if invocation == nil {
-        continue
-      }
-      let int = Int((invocation! as NSString).intValue)
-      if int > 0 && int < tasks.count {
-        self.command = tasks[int - 1].command()
-        self.flags = [:]
-      }
-      else {
-        self.arguments = invocation?.componentsSeparatedByString(" ") ?? []
-        (self.command, self.flags) = self.dynamicType.parseArguments(self.arguments)
-      }
+      let commandLine = self.promptForCommand()
+      var inQuotes = false
+      self.arguments = split(commandLine) {
+        (character: Character) -> Bool in
+        if character == "\"" {
+          inQuotes = !inQuotes
+        }
+        return character == " " && !inQuotes
+        }.map { $0.stringByReplacingOccurrencesOfString("\"", withString: "") }
+      (self.command, self.flags) = self.dynamicType.parseArguments(self.arguments)
     }
 
   }
@@ -283,18 +309,41 @@ public class Application {
     return classes.map { $0 as! ParentType.Type }
   }
   
-  /**
-    This method gets the config from our config file based on the filename.
+  //MARK: - Configuration
   
-    :param: file    The name of the file, with no extension.
-    :returns:       The config from the file, or an empty dictionary if we could
-                    not load the config.
+  /**
+    The path to the root of the application.
+  
+    This defaults to the path of the executable
     */
-  public func configFromFile(file: String) -> NSDictionary {
-    let filename = "\(self.rootPath)/\(file).plist"
-    let data = NSData(contentsOfFile: filename) ?? NSData()
-    let propertyList = NSPropertyListSerialization.propertyListWithData(data, options: Int(NSPropertyListMutabilityOptions.Immutable.rawValue), format: nil, error: nil) as? NSDictionary
-    return propertyList ?? NSDictionary()
+  public func rootPath() -> String {
+    return "."
+  }
+  
+  /**
+    This method loads configuration from a file into the application's settings.
+  
+    The settings will be put into the configuration with a prefix taken from the
+    filename of the path.
+  
+    :param: path    The path to the file, relative to the application's root
+                    path.
+    */
+  public func loadConfigFromFile(path: String) {
+    let name = path.lastPathComponent.stringByDeletingPathExtension
+    let fullPath = self.rootPath() + "/" + path
+    self.configuration.child(name).addDictionary(ConfigurationSetting(contentsOfFile: fullPath).toDictionary())
+  }
+  
+  /**
+    This method constructs a localization based on the configuration settings.
+  
+    :param: locale    The locale for the localization
+    :returns:         The localization
+    */
+  public func localization(locale: String) -> Localization {
+    var klass = NSClassFromString(self.configuration["localization.class"] ?? "") as? Localization.Type ?? Localization.self
+    return klass(locale: locale)
   }
 }
 

@@ -29,7 +29,7 @@ class ApplicationTests : XCTestCase {
       , "initalizes IP address to dummy address")
     XCTAssertEqual(application.port, 8080, "initializes port to HTTP Alt")
     XCTAssertEqual(application.routeSet.routes.count, 0, "initializes route set to an empty one")
-    XCTAssertEqual(application.rootPath, ".", "initalizes root path to the current path")
+    XCTAssertEqual(application.rootPath(), ".", "initalizes root path to the current path")
   }
   
   func testInitializationSetsArguments() {
@@ -62,6 +62,44 @@ class ApplicationTests : XCTestCase {
     XCTAssertEqual(application.dateFormatters["db"]!.dateFormat!, "yyyy-MM-dd HH:mm:ss", "sets a db date format properly")
   }
   
+  func testParseArgumentsWithNoArgumentsReadsFromPrompt() {
+    class TestApplication: Application {
+      var commands = ["tailor.exit a=5"]
+      override func promptForCommand() -> String {
+        return commands.removeLast()
+      }
+    }
+    
+    let application = TestApplication(arguments: [""])
+    XCTAssertEqual(application.command, "tailor.exit", "sets the command from the prompt")
+    XCTAssertEqual(application.flags, ["a": "5"], "sets the flags from the prompt")
+  }
+  
+  func testParseArgumentsRepeatedlyPromptsUntilValidTaskAppears() {
+    class TestApplication: Application {
+      var commands = ["tailor.exit a=7", "tailor.wait"]
+      override func promptForCommand() -> String {
+        return commands.removeLast()
+      }
+    }
+    
+    let application = TestApplication(arguments: [""])
+    XCTAssertEqual(application.command, "tailor.exit", "sets the command from the prompt")
+    XCTAssertEqual(application.flags, ["a": "7"], "sets the flags from the prompt")
+  }
+  
+  func testParseArgumentsWithSpacesInQuotesKeepsQuotedSectionTogether() {
+    class TestApplication: Application {
+      var commands = ["tailor.exit a=\"b + c\" d=23"]
+      override func promptForCommand() -> String {
+        return commands.removeLast()
+      }
+    }
+    
+    let application = TestApplication(arguments: [""])
+    XCTAssertEqual(application.flags, ["a": "b + c", "d": "23"], "keeps the quoted flags together")
+  }
+  
   //MARK: Getting Subclasses
   
   func testCanRegisterCustomSubclasses() {
@@ -81,5 +119,24 @@ class ApplicationTests : XCTestCase {
     let types = application.registeredSubclassList(TestClassWithSubclasses)
     var ids = types.map { $0.id() }
     XCTAssertEqual(sorted(ids), [1, 2, 3], "registers all subclasses of the type given, including the type itself")
+  }
+  
+  //MARK: - Configuration
+  
+  func testLoadConfigPutsContentsInConfiguration() {
+    application.loadConfigFromFile("Info.plist")
+    let value = application.configuration["Info.CFBundlePackageType"]
+    XCTAssertNotNil(value, "has a setting")
+    if value != nil {
+      XCTAssertEqual(value!, "BNDL", "has the setting from the file")
+    }
+  }
+  
+  func testLocalizationBuildsLocalizationFromClassName() {
+    application.configuration["localization.class"] = "TailorTests.DatabaseLocalization"
+    let localization = application.localization("en")
+    XCTAssertEqual(localization.locale, "en", "sets the localization")
+    XCTAssertNotNil(localization as? DatabaseLocalization, "uses the class from the configuration")
+    application.configuration["localization.class"] = "TailorTests.PropertyListLocalization"
   }
 }

@@ -67,7 +67,7 @@ public class Controller {
     self.action = action
     self.callback = callback
     self.session = Session(request: request)
-    self.localization = Localization(locale: "en")
+    self.localization = Application.sharedApplication().localization("en")
     
     if let userId = self.session["userId"]?.toInt() {
       self.currentUser = Query<User>().find(userId)
@@ -369,6 +369,16 @@ public class Controller {
   //MARK: - Localization
   
   /**
+    This method gets the prefix that is automatically prepended to keys sent for
+    localization in this controller.
+
+    This will only be added to keys that start with a dot.
+    */
+  public var localizationPrefix: String {
+    return self.dynamicType.name().underscored() + "." + self.action
+  }
+  
+  /**
     This method localizes text.
 
     :param: key     The key for the localized text
@@ -378,11 +388,15 @@ public class Controller {
     :returns:       The localized text
     */
   public func localize(key: String, locale: String? = nil) -> String? {
+    var fullKey = key
+    if fullKey.hasPrefix(".") {
+      fullKey = self.localizationPrefix + fullKey
+    }
     if locale != nil {
-      return self.localization.dynamicType.init(locale: locale!).fetch(key)
+      return Application.sharedApplication().localization(locale!).fetch(fullKey)
     }
     else {
-      return self.localization.fetch(key)
+      return self.localization.fetch(fullKey)
     }
   }
   

@@ -1,78 +1,96 @@
 import XCTest
 
 class LocalizationTests: XCTestCase {
+  class TestLocalization: Localization {
+    override func fetch(key: String, inLocale locale: String) -> String? {
+      if key == "description" {
+        switch(locale) {
+        case "en-gb":
+          return "British"
+        case "en":
+          return "English"
+        case "es":
+          return "Spanish"
+        default:
+          return nil
+        }
+      }
+      else if key == "interpolation_test" {
+        return "My name is \\(name)"
+      }
+      else {
+        return nil
+      }
+    }
+  }
   override func setUp() {
     TestApplication.start()
   }
   
-  func testInitializeSetsStringsFromLocale() {
-    let localization1 = Localization(locale: "en")
-    let string1 = localization1.strings["localization_test"]
-    XCTAssertNotNil(string1, "gets English string")
-    if string1 != nil { XCTAssertEqual(string1!, "Yes", "gets English string") }
-    
-    let localization2 = Localization(locale: "es")
-    let string2 = localization2.strings["localization_test"]
-    XCTAssertNotNil(string2, "gets Spanish string")
-    if string2 != nil { XCTAssertEqual(string2!, "Si", "gets Spanish string") }
-  }
-  
-  func testInitializationCollapsesNestedStrings() {
+  func testInitializationSetsLocale() {
     let localization = Localization(locale: "en")
-    let string = localization.strings["controller.test.message"]
-    XCTAssertNotNil(string, "gets string")
-    if string != nil { XCTAssertEqual(string!, "Hello", "gets string") }
+    XCTAssertEqual(localization.locale, "en", "sets the locale")
   }
   
-  func testFetchGetsValueFromStrings() {
-    let localization = Localization(locale: "en")
-    let string = localization.fetch("localization_test")
-    XCTAssertNotNil(string, "gets a string")
-    if string != nil { XCTAssertEqual(string!, "Yes", "gets a string") }
+  func testFallbackLocalesWithGlobalEnglishIsEmpty() {
+    let locales = Localization.fallbackLocales("en")
+    XCTAssertTrue(locales.isEmpty)
   }
   
-  func testFetchGetsNilValueForMissingKey() {
-    let localization = Localization(locale: "en")
-    let string = localization.fetch("invalid_key")
-    XCTAssertNil(string)
+  func testFallbackLocalesWithLocalEnglishHasGlobalEnglish() {
+    let locales = Localization.fallbackLocales("en-gb")
+    XCTAssertEqual(locales, ["en"])
   }
   
-  func testFlattenDictionaryCombinesKeys() {
-    let dictionary = Localization.flattenDictionary([
-      "hats": [
-        "index": [
-          "title": "Hats",
-          "add": "Add a Hat"
-        ],
-        "show": [
-          "index": "Hat Details"
-        ]
-      ]
-    ])
-    let keys = sorted(dictionary.keys.array)
-    let expectedKeys = ["hats.index.add", "hats.index.title", "hats.show.index"]
-    XCTAssertEqual(keys, expectedKeys, "flattens the keys")
-    if keys == expectedKeys {
-      XCTAssertEqual(dictionary["hats.index.add"]!, "Add a Hat", "gets the right value for the keys")
-      XCTAssertEqual(dictionary["hats.index.title"]!, "Hats", "gets the right value for the keys")
-      XCTAssertEqual(dictionary["hats.show.index"]!, "Hat Details", "gets the right value for the keys")
+  func testFallbackLocalesWithLocalSpanishHasSpanishAndEnglish() {
+    let locales = Localization.fallbackLocales("es-mx")
+    XCTAssertEqual(locales, ["es", "en"])
+  }
+  
+  func testFallbackLocalesWIthMultiplePartsHasAllAncestors() {
+    let locales = Localization.fallbackLocales("en-gb-123")
+    XCTAssertEqual(locales, ["en-gb", "en"])
+  }
+  
+  func testFetchWithSpecificTranslationUsesTranslation() {
+    let localization = TestLocalization(locale: "en-gb")
+    let result = localization.fetch("description")
+    XCTAssertNotNil(result, "gets a result")
+    if result != nil {
+      XCTAssertEqual(result!, "British", "uses the specific translation")
     }
   }
   
-  func testFlattenDictionaryIgnoresKeysWithNonStringValues() {
-    let dictionary = Localization.flattenDictionary([
-      "hats": [
-        "index": [
-          "title": "Hats",
-          "add": "Add a Hat"
-        ],
-        "show": [
-          "index": NSDate()
-        ]
-      ]
-      ])
-    let keys = sorted(dictionary.keys.array)
-    let expectedKeys = ["hats.index.add", "hats.index.title"]
-    XCTAssertEqual(keys, expectedKeys, "only has keys that map to strings")
+  func testFetchWithMissingTranslationUsesFirstFallback() {
+    let localization = TestLocalization(locale: "es-mx")
+    let result = localization.fetch("description")
+    XCTAssertNotNil(result, "gets a result")
+    if result != nil {
+      XCTAssertEqual(result!, "Spanish", "uses the first fallback")
+    }
+  }
+  
+  func testFetchWithMissingTranslationsContinuesTryingFallbacks() {
+    let localization = TestLocalization(locale: "fr-fr")
+    let result = localization.fetch("description")
+    XCTAssertNotNil(result, "gets a result")
+    if result != nil {
+      XCTAssertEqual(result!, "English", "uses the second fallback")
+    }
+  }
+  
+  func testFetchInLocaleGetsNil() {
+    let localization = Localization(locale: "en")
+    let string = localization.fetch("localization_test", inLocale: "en")
+    XCTAssertNil(string, "gets a nil result from fetchInLocale")
+  }
+  
+  func testFetchWithInterpolationPutsValueInTranslation() {
+    let localization = TestLocalization(locale: "en")
+    let result = localization.fetch("interpolation_test", interpolations: ["name": "John"])
+    XCTAssertNotNil(result, "gets a result")
+    if result != nil {
+      XCTAssertEqual(result!, "My name is John", "puts the interpolated value in the content")
+    }
   }
 }

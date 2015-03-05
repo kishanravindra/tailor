@@ -30,7 +30,7 @@ public class PresenceValidator : Validator {
     }
     
     if !present {
-      model.errors.add(key, "cannot be blank")
+      model.errors.add(key, "blank")
     }
   }
 }

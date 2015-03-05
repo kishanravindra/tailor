@@ -1,12 +1,3 @@
-//
-//  CookieTests.swift
-//  Tailor
-//
-//  Created by John Brownlee on 15/12/14.
-//  Copyright (c) 2014 John Brownlee. All rights reserved.
-//
-
-import Cocoa
 import XCTest
 
 class CookieTests: XCTestCase {

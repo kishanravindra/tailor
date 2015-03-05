@@ -50,6 +50,35 @@ public class Template {
   //MARK: - Helpers
   
   /**
+    This method gets the prefix that is appended to the the keys for
+    localization.
+
+    This is only added to keys that start with a dot.
+    */
+  public var localizationPrefix: String {
+    return reflect(self).summary.underscored()
+  }
+
+  /**
+    This method localizes a key.
+
+    This will use the localization from the template's controller.
+
+    If the key begins with a dot, this will prepend the template's localization
+    prefix.
+
+    :param: key   The key to localize.
+    :returns:     The localized text.
+    */
+  public func localize(key: String) -> String? {
+    var fullKey = key
+    if fullKey.hasPrefix(".") {
+      fullKey = self.localizationPrefix + fullKey
+    }
+    return self.controller.localize(fullKey)
+  }
+  
+  /**
     This method appends text to our buffer.
   
     It will HTML-sanitize the text automatically.
@@ -58,7 +87,7 @@ public class Template {
     :param: localize  Whether we should attempt to localize the text.
     */
   public func text(text: String, localize: Bool = true) {
-    let localizedText = localize ? self.controller.localize(text) ?? text : text
+    let localizedText = localize ? self.localize(text) ?? text : text
     let sanitizedText = HtmlSanitizer().sanitize(SanitizedText(stringLiteral: localizedText))
     self.addSanitizedText(sanitizedText)
   }

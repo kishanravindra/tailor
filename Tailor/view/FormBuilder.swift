@@ -5,7 +5,7 @@ import Foundation
   */
 public class FormBuilder {
   /** A block that can build an input for a model property. */
-  public typealias InputBuilder = (form: FormBuilder, key: String, value: String, attributes: [String:String], errors: [String])->()
+  public typealias InputBuilder = (form: FormBuilder, key: String, value: String, attributes: [String:String], errors: [ValidationError])->()
   
   /** The template that we are putting the form in. */
   public let template: Template
@@ -84,6 +84,6 @@ public class FormBuilder {
     default:
       break
     }
-    self.inputBuilder(form: self, key: key, value: stringValue, attributes: attributes, errors: self.model.errors.errors[key] ?? [])
+    self.inputBuilder(form: self, key: key, value: stringValue, attributes: attributes, errors: self.model.errors[key] ?? [])
   }
 }
