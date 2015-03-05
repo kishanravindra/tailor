@@ -24,7 +24,7 @@ public class MysqlConnection : DatabaseConnection {
           continue
         }
 
-        if let value = MysqlRow.extractBindResult(bindResult, type: fieldType.type) {
+        if let value = MysqlRow.extractBindResult(bindResult, field: fieldType) {
           data[name!] = value
         }
       }
@@ -93,14 +93,14 @@ public class MysqlConnection : DatabaseConnection {
       This method gets the data from a bind container for a result.
 
       :param: bindResult  The result container.
-      :param: type        The type of the data that we are fetching.
+      :param: field       The description of the field that we are fetching.
       :returns:           The data in a native Swift format.
       */
-    class func extractBindResult(bindResult: MYSQL_BIND, type: enum_field_types) -> Any? {
+    class func extractBindResult(bindResult: MYSQL_BIND, field: MYSQL_FIELD) -> Any? {
       if bindResult.is_null.memory != 0 {
         return nil
       }
-      switch type.value {
+      switch field.type.value {
       case MYSQL_TYPE_TINY.value:
         let buffer = UnsafeMutablePointer<CChar>(bindResult.buffer)
         return Int(buffer.memory)
@@ -129,7 +129,13 @@ public class MysqlConnection : DatabaseConnection {
         return date
       case MYSQL_TYPE_TINY_BLOB.value, MYSQL_TYPE_BLOB.value,
       MYSQL_TYPE_MEDIUM_BLOB.value, MYSQL_TYPE_LONG_BLOB.value:
-        return NSData(bytes: bindResult.buffer, length: Int(bindResult.length.memory))
+        let data = NSData(bytes: bindResult.buffer, length: Int(bindResult.length.memory))
+        if field.charsetnr == 63 {
+          return data
+        }
+        else {
+          return NSString(data: data, encoding: NSUTF8StringEncoding)
+        }
       default:
         return NSString(bytes: bindResult.buffer, length: Int(bindResult.length.memory), encoding: NSUTF8StringEncoding)
       }
