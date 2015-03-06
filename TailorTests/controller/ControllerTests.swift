@@ -414,6 +414,15 @@ class ControllerTests: XCTestCase {
     }
   }
   
+  func testPathForCanGetUrlWithDomain() {
+    let path = self.controller.pathFor(controllerName: TestController.name(), action: "index", parameters: ["id": "5"], domain: "test.com")
+    
+    XCTAssertNotNil(path, "has a URL")
+    if path != nil {
+      XCTAssertEqual(path!, "https://test.com/route1?id=5", "gets the url for the controller and action")
+    }
+  }
+  
   func testPathForGetsNilForInvalidCombination() {
     let path = self.controller.pathFor()
     XCTAssertNil(path, "gives a nil path")

@@ -168,19 +168,6 @@ public class Template {
   }
   
   /**
-    This method gets the URL for a route.
-
-    :param: controllerName  The controller to link to. This will default to the
-                            current controller.
-    :param: action          The action to link to.
-    :param: parameters      Additional parameters for the path.
-    :returns:               The path
-    */
-  public func pathFor(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:]) -> String? {
-    return self.controller.pathFor(controllerName: controllerName, action: action, parameters: parameters)
-  }
-  
-  /**
     This method adds a tag for linking to a path.
   
     :param: controllerName  The controller to link to. This will default to the
@@ -192,7 +179,7 @@ public class Template {
     */
   public func link(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:], attributes: [String:String] = [:], with contents: ()->()={}) {
     var mergedAttributes = attributes
-    mergedAttributes["href"] = self.pathFor(controllerName: controllerName,
+    mergedAttributes["href"] = self.controller.pathFor(controllerName: controllerName,
       action: action, parameters: parameters) ?? ""
     self.tag("a", mergedAttributes, with: contents)
   }

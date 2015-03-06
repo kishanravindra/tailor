@@ -231,17 +231,25 @@ public class Controller {
                             current controller.
     :param: action          The action to link to.
     :param: parameters      Additional parameters for the path.
+    :param: domain          The domain to use for the URL. If this is omitted,
+                            the result will just be the path part of the URL.
+    :param: https           Whether the URL should be https or http. If the
+                            domain is omitted, this is ignored.
     :returns:               The path
   */
-  public func pathFor(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:]) -> String? {
+  public func pathFor(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
     var path = SHARED_APPLICATION.routeSet.pathFor(
       controllerName ?? self.dynamicType.name(),
       action: action ?? self.action,
-      parameters: parameters
+      parameters: parameters,
+      domain: domain,
+      https: https
     )
     if path != nil {
       for (key,value) in self.request.requestParameters {
-        path = path?.stringByReplacingOccurrencesOfString(":\(key)", withString: value)
+        if !key.isEmpty {
+          path = path?.stringByReplacingOccurrencesOfString(":\(key)", withString: value)
+        }
       }
     }
     return path

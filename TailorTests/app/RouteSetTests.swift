@@ -298,8 +298,8 @@ class RouteSetTests: XCTestCase {
   
   func testPathForGetsPathWithInterpolatedParameter() {
     routeSet.addRoute("hats/:id", method: "GET", controller: TestController.self, action: "show")
-    if let url = routeSet.pathFor("TestController", action: "show", parameters: ["id": "17"]) {
-      XCTAssertEqual(url, "/hats/17", "generates correct route")
+    if let path = routeSet.pathFor("TestController", action: "show", parameters: ["id": "17"]) {
+      XCTAssertEqual(path, "/hats/17", "generates correct route")
     }
     else {
       XCTFail("generates correct route")
@@ -316,9 +316,35 @@ class RouteSetTests: XCTestCase {
     }
   }
   
+  func testPathForWithDomainGetsUrl() {
+    routeSet.addRoute("hats", method: "GET", controller: TestController.self, action: "index")
+    if let url = routeSet.pathFor("TestController", action: "index", domain: "haberdashery.com") {
+      XCTAssertEqual(url, "https://haberdashery.com/hats", "generates correct URL")
+    }
+    else {
+      XCTFail("generates correct route")
+    }
+  }
+  
+  func testPathForWithDomainAndHttpFlagGetsUrl() {
+    routeSet.addRoute("hats", method: "GET", controller: TestController.self, action: "index")
+    if let url = routeSet.pathFor("TestController", action: "index", domain: "haberdashery.com", https: false) {
+      XCTAssertEqual(url, "http://haberdashery.com/hats", "generates correct URL")
+    }
+    else {
+      XCTFail("generates correct route")
+    }
+  }
+  
   func testPathForReturnsNilForNonMatchingPath() {
     routeSet.addRoute("hats", method: "GET", controller: TestController.self, action: "index")
     let path = routeSet.pathFor("TestController", action: "show")
+    XCTAssertNil(path, "gives nil path")
+  }
+  
+  func testPathForReturnsNilForNonMatchingPathWithDomain() {
+    routeSet.addRoute("hats", method: "GET", controller: TestController.self, action: "index")
+    let path = routeSet.pathFor("TestController", action: "show", domain: "haberdashery.com")
     XCTAssertNil(path, "gives nil path")
   }
 }

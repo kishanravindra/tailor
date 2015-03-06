@@ -378,9 +378,14 @@ public class RouteSet {
     :param: controller    The name of the controller that the link is to.
     :param: action        The name of the action.
     :param: parameters    The parameters to interpolate into the route.
+    :param: domain        The domain to use for a full URL. If this is omitted,
+                          this will just give the path rather than a URL.
+    :param: https         Whether the URL should use the https protocol. If the
+                          domain is omitted, this value will be ignored.
     :returns:             The path, if we could match it up.
     */
-  public func pathFor(controllerName: String, action: String, parameters: [String:String] = [:]) -> String? {
+  public func pathFor(controllerName: String, action: String, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
+    var matchingPath: String? = nil
     for route in self.routes {
       if route.controller != nil && route.controller!.name() == controllerName &&
       route.action != nil && route.action! == action {
@@ -403,9 +408,14 @@ public class RouteSet {
             path += value.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding) ?? ""
           }
         }
-        return path
+        matchingPath = path
+        break
       }
     }
-    return nil
+    if matchingPath != nil && domain != nil {
+      let httpProtocol = https ? "https" : "http"
+      matchingPath = "\(httpProtocol)://\(domain!)\(matchingPath!)"
+    }
+    return matchingPath
   }
 }
