@@ -176,8 +176,8 @@ public class Template {
     :param: parameters      Additional parameters for the path.
     :returns:               The path
     */
-  public func urlFor(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:]) -> String? {
-    return self.controller.urlFor(controllerName: controllerName, action: action, parameters: parameters)
+  public func pathFor(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:]) -> String? {
+    return self.controller.pathFor(controllerName: controllerName, action: action, parameters: parameters)
   }
   
   /**
@@ -192,7 +192,7 @@ public class Template {
     */
   public func link(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:], attributes: [String:String] = [:], with contents: ()->()={}) {
     var mergedAttributes = attributes
-    mergedAttributes["href"] = self.urlFor(controllerName: controllerName,
+    mergedAttributes["href"] = self.pathFor(controllerName: controllerName,
       action: action, parameters: parameters) ?? ""
     self.tag("a", mergedAttributes, with: contents)
   }

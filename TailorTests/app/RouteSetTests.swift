@@ -286,9 +286,9 @@ class RouteSetTests: XCTestCase {
   
   //MARK: - Generating URLs
   
-  func testUrlForGetsSimplePath() {
+  func testPathForGetsSimplePath() {
     routeSet.addRoute("hats", method: "GET", controller: TestController.self, action: "index")
-    if let url = routeSet.urlFor("TestController", action: "index") {
+    if let url = routeSet.pathFor("TestController", action: "index") {
       XCTAssertEqual(url, "/hats", "generates correct route")
     }
     else {
@@ -296,9 +296,9 @@ class RouteSetTests: XCTestCase {
     }
   }
   
-  func testUrlForGetsPathWithInterpolatedParameter() {
+  func testPathForGetsPathWithInterpolatedParameter() {
     routeSet.addRoute("hats/:id", method: "GET", controller: TestController.self, action: "show")
-    if let url = routeSet.urlFor("TestController", action: "show", parameters: ["id": "17"]) {
+    if let url = routeSet.pathFor("TestController", action: "show", parameters: ["id": "17"]) {
       XCTAssertEqual(url, "/hats/17", "generates correct route")
     }
     else {
@@ -306,19 +306,19 @@ class RouteSetTests: XCTestCase {
     }
   }
   
-  func testUrlForGetsPathWithQueryString() {
+  func testPathForGetsPathWithQueryString() {
     routeSet.addRoute("hats", method: "GET", controller: TestController.self, action: "index")
-    if let url = routeSet.urlFor("TestController", action: "index", parameters: ["color": "black", "brimSize": "15"]) {
-      XCTAssertEqual(url, "/hats?brimSize=15&color=black", "generates correct route")
+    if let path = routeSet.pathFor("TestController", action: "index", parameters: ["color": "black", "brimSize": "15"]) {
+      XCTAssertEqual(path, "/hats?brimSize=15&color=black", "generates correct route")
     }
     else {
       XCTFail("generates correct route")
     }
   }
   
-  func testUrlForReturnsNilForNonMatchingPath() {
+  func testPathForReturnsNilForNonMatchingPath() {
     routeSet.addRoute("hats", method: "GET", controller: TestController.self, action: "index")
-    let url = routeSet.urlFor("TestController", action: "show")
-    XCTAssertNil(url, "gives nil URL")
+    let path = routeSet.pathFor("TestController", action: "show")
+    XCTAssertNil(path, "gives nil path")
   }
 }

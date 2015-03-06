@@ -392,31 +392,31 @@ class ControllerTests: XCTestCase {
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
-  func testUrlForCanGetFullyQualifiedRoute() {
-    let url = self.controller.urlFor(controllerName: TestController.name(), action: "index", parameters: ["id": "5"])
+  func testPathForCanGetFullyQualifiedRoute() {
+    let path = self.controller.pathFor(controllerName: TestController.name(), action: "index", parameters: ["id": "5"])
     
-    XCTAssertNotNil(url, "has a URL")
-    if url != nil {
-      XCTAssertEqual(url!, "/route1?id=5", "gets the url for the controller and action")
+    XCTAssertNotNil(path, "has a URL")
+    if path != nil {
+      XCTAssertEqual(path!, "/route1?id=5", "gets the url for the controller and action")
     }
   }
   
-  func testUrlForCanGetUrlForSameAction() {
+  func testPathForCanGetPathForSameAction() {
     self.controller = SecondTestController(
       request: Request(),
       action: "index",
       callback: { self.callback($0) }
     )
-    let url = self.controller.urlFor(parameters: ["confirmed": "1"])
-    XCTAssertNotNil(url, "has a URL")
-    if url != nil {
-      XCTAssertEqual(url!, "/route2?confirmed=1", "uses the same controller and action, but adds the parameters")
+    let path = self.controller.pathFor(parameters: ["confirmed": "1"])
+    XCTAssertNotNil(path, "has a URL")
+    if path != nil {
+      XCTAssertEqual(path!, "/route2?confirmed=1", "uses the same controller and action, but adds the parameters")
     }
   }
   
-  func testUrlForGetsNilForInvalidCombination() {
-    let url = self.controller.urlFor()
-    XCTAssertNil(url, "gives a nil URL")
+  func testPathForGetsNilForInvalidCombination() {
+    let path = self.controller.pathFor()
+    XCTAssertNil(path, "gives a nil path")
   }
   
   func testRedirectToWithControllerNameGeneratesRedirectResponse() {

@@ -373,14 +373,14 @@ public class RouteSet {
   //MARK: - Generating URLs
   
   /**
-    This method generates a URL using our route set.
+    This method generates a path using our route set.
 
     :param: controller    The name of the controller that the link is to.
     :param: action        The name of the action.
     :param: parameters    The parameters to interpolate into the route.
     :returns:             The path, if we could match it up.
     */
-  public func urlFor(controllerName: String, action: String, parameters: [String:String] = [:]) -> String? {
+  public func pathFor(controllerName: String, action: String, parameters: [String:String] = [:]) -> String? {
     for route in self.routes {
       if route.controller != nil && route.controller!.name() == controllerName &&
       route.action != nil && route.action! == action {

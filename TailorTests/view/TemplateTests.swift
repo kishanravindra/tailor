@@ -155,9 +155,9 @@ class TemplateTests: XCTestCase {
     XCTAssertEqual(template.buffer, "<p class=\"greeting\" data-hover=\"Hi\">Hello</p>")
   }
   
-  func testUrlForGetsUrlFromController() {
+  func testPathForGetsUrlFromController() {
     class TestController: Controller {
-      override func urlFor(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:]) -> String? {
+      override func pathFor(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:]) -> String? {
         XCTAssertEqual(controllerName!, "TestController", "has the controller name")
         XCTAssertEqual(action!, "index", "has the action")
         XCTAssertEqual(parameters, ["id": "5"], "has the parameters")
@@ -170,7 +170,7 @@ class TemplateTests: XCTestCase {
       action: controller.action,
       callback: controller.callback
     ))
-    let result = template.urlFor(controllerName: "TestController", action: "index", parameters: ["id": "5"])
+    let result = template.pathFor(controllerName: "TestController", action: "index", parameters: ["id": "5"])
     XCTAssertNotNil(result, "has a result")
     if result != nil {
       XCTAssertEqual(result!, "/test/path", "returns the path from the controller")
@@ -179,7 +179,7 @@ class TemplateTests: XCTestCase {
   
   func testLinkPutsLinkTagInBuffer() {
     class TestController: Controller {
-      override func urlFor(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:]) -> String? {
+      override func pathFor(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:]) -> String? {
         XCTAssertEqual(controllerName!, "TestController", "has the controller name")
         XCTAssertEqual(action!, "index", "has the action")
         XCTAssertEqual(parameters, ["id": "5"], "has the parameters")
