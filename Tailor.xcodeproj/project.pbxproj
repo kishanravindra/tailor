@@ -31,6 +31,12 @@
 		523F293E1A584F7A00C1BBC0 /* ControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523F293D1A584F7A00C1BBC0 /* ControllerTests.swift */; };
 		5258989F1A4F289800DD853D /* DatabaseConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5258989E1A4F289800DD853D /* DatabaseConnectionTests.swift */; };
 		525C80851A1C1B4900E7035F /* Query.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525C80841A1C1B4900E7035F /* Query.swift */; };
+		526254301AABC37900D63024 /* CacheStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5262542F1AABC37900D63024 /* CacheStore.swift */; };
+		526254321AABC46300D63024 /* CacheStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526254311AABC46300D63024 /* CacheStoreTests.swift */; };
+		526254331AABC4C000D63024 /* CacheStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5262542F1AABC37900D63024 /* CacheStore.swift */; };
+		526254351AABC9A600D63024 /* MemoryCacheStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526254341AABC9A600D63024 /* MemoryCacheStoreTests.swift */; };
+		526254371AABC9C800D63024 /* MemoryCacheStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526254361AABC9C800D63024 /* MemoryCacheStore.swift */; };
+		526254381AABCB2F00D63024 /* MemoryCacheStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526254361AABC9C800D63024 /* MemoryCacheStore.swift */; };
 		528D183F1A8FDD4A00A6E116 /* TailorTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D183E1A8FDD4A00A6E116 /* TailorTestHelpers.swift */; };
 		528D18411A8FE15D00A6E116 /* Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D18401A8FE15D00A6E116 /* Layout.swift */; };
 		528D18421A8FE3C200A6E116 /* Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D18401A8FE15D00A6E116 /* Layout.swift */; };
@@ -191,6 +197,10 @@
 		5247FF9F19F462C200C08156 /* ___PACKAGENAME___Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "___PACKAGENAME___Application.swift"; sourceTree = "<group>"; };
 		5258989E1A4F289800DD853D /* DatabaseConnectionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseConnectionTests.swift; sourceTree = "<group>"; };
 		525C80841A1C1B4900E7035F /* Query.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Query.swift; sourceTree = "<group>"; };
+		5262542F1AABC37900D63024 /* CacheStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheStore.swift; sourceTree = "<group>"; };
+		526254311AABC46300D63024 /* CacheStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheStoreTests.swift; sourceTree = "<group>"; };
+		526254341AABC9A600D63024 /* MemoryCacheStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemoryCacheStoreTests.swift; sourceTree = "<group>"; };
+		526254361AABC9C800D63024 /* MemoryCacheStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemoryCacheStore.swift; sourceTree = "<group>"; };
 		528D183E1A8FDD4A00A6E116 /* TailorTestHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TailorTestHelpers.swift; sourceTree = "<group>"; };
 		528D18401A8FE15D00A6E116 /* Layout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Layout.swift; sourceTree = "<group>"; };
 		528D6FA11A56224900783BE5 /* RangeValidatorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RangeValidatorTests.swift; path = TailorTests/model/validators/RangeValidatorTests.swift; sourceTree = SOURCE_ROOT; };
@@ -362,6 +372,8 @@
 				52EC6D471A475B8000A4D822 /* ResponseTests.swift */,
 				52EC6D491A47B3F100A4D822 /* RouteSetTests.swift */,
 				523D65631A98D7A4000C686B /* ConfigurationSettingTests.swift */,
+				526254311AABC46300D63024 /* CacheStoreTests.swift */,
+				526254341AABC9A600D63024 /* MemoryCacheStoreTests.swift */,
 			);
 			path = app;
 			sourceTree = "<group>";
@@ -496,6 +508,8 @@
 				52BD140619E9DA1D006D72B0 /* Response.swift */,
 				52BD140719E9DA1D006D72B0 /* RouteSet.swift */,
 				52BD140819E9DA1D006D72B0 /* Server.swift */,
+				5262542F1AABC37900D63024 /* CacheStore.swift */,
+				526254361AABC9C800D63024 /* MemoryCacheStore.swift */,
 			);
 			path = app;
 			sourceTree = "<group>";
@@ -773,6 +787,7 @@
 				523D65621A98D36D000C686B /* ConfigurationSetting.swift in Sources */,
 				52BD144219E9DA1D006D72B0 /* Validator.swift in Sources */,
 				52BD144419E9DA1D006D72B0 /* Template.swift in Sources */,
+				526254371AABC9C800D63024 /* MemoryCacheStore.swift in Sources */,
 				52BD142619E9DA1D006D72B0 /* Application.swift in Sources */,
 				52BD142919E9DA1D006D72B0 /* CookieJar.swift in Sources */,
 				52B2B6F019F3F7E20086261B /* HtmlSanitizer.swift in Sources */,
@@ -786,6 +801,7 @@
 				52BD143E19E9DA1D006D72B0 /* BlockValidator.swift in Sources */,
 				52BD143219E9DA1D006D72B0 /* DatabaseConnection.swift in Sources */,
 				52B2B6B019F2D24F0086261B /* AlterationsTask.swift in Sources */,
+				526254301AABC37900D63024 /* CacheStore.swift in Sources */,
 				52BD143119E9DA1D006D72B0 /* Session.swift in Sources */,
 				52B2B6AB19F2B2590086261B /* ServerTask.swift in Sources */,
 				52BD142B19E9DA1D006D72B0 /* Response.swift in Sources */,
@@ -817,6 +833,7 @@
 				52EC6D4A1A47B3F100A4D822 /* RouteSetTests.swift in Sources */,
 				529230321A3CF6A4006DD6EB /* String.swift in Sources */,
 				52F41F341A561D0500EE7178 /* ErrorCollectionTests.swift in Sources */,
+				526254351AABC9A600D63024 /* MemoryCacheStoreTests.swift in Sources */,
 				529230291A3CF69C006DD6EB /* Task.swift in Sources */,
 				528D183F1A8FDD4A00A6E116 /* TailorTestHelpers.swift in Sources */,
 				523D65601A98CE04000C686B /* PropertyListLocalization.swift in Sources */,
@@ -846,6 +863,7 @@
 				5292301D1A3CF68D006DD6EB /* UniquenessValidator.swift in Sources */,
 				523F29371A5844BF00C1BBC0 /* HtmlSanitizerTests.swift in Sources */,
 				529230351A3CF6AB006DD6EB /* AesEncryptor.swift in Sources */,
+				526254381AABCB2F00D63024 /* MemoryCacheStore.swift in Sources */,
 				529230211A3CF68D006DD6EB /* RangeValidator.swift in Sources */,
 				52E784CA1A5CC1A40065C10D /* PropertyListLocalizationTests.swift in Sources */,
 				523F29351A583EEB00C1BBC0 /* SanitizerTests.swift in Sources */,
@@ -867,6 +885,7 @@
 				5214B5D31AA38D0D00624E9D /* ValidationError.swift in Sources */,
 				5292301C1A3CF687006DD6EB /* User.swift in Sources */,
 				5292301A1A3CF687006DD6EB /* Record.swift in Sources */,
+				526254331AABC4C000D63024 /* CacheStore.swift in Sources */,
 				52E784BF1A5B5A950065C10D /* NSDateTests.swift in Sources */,
 				529230121A3CF671006DD6EB /* CookieJar.swift in Sources */,
 				523D655F1A98CD3C000C686B /* LocalizationTests.swift in Sources */,
@@ -896,6 +915,7 @@
 				52E784C11A5B64030065C10D /* NSDataTests.swift in Sources */,
 				529230311A3CF6A4006DD6EB /* NSString.swift in Sources */,
 				529230131A3CF671006DD6EB /* Request.swift in Sources */,
+				526254321AABC46300D63024 /* CacheStoreTests.swift in Sources */,
 				52E784B51A59C12D0065C10D /* SessionTests.swift in Sources */,
 				5292303F1A3CFC36006DD6EB /* ExitTask.swift in Sources */,
 				5292301F1A3CF68D006DD6EB /* ErrorCollection.swift in Sources */,
