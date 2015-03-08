@@ -3,12 +3,17 @@ import XCTest
 class CacheStoreTests: XCTestCase {
   class TestCacheStore : CacheStore {
     var data = [String:String]()
+    var expiries = [String:NSTimeInterval]()
+    
     override func read(key: String)->String? {
       return data[key]
     }
     
-    override func write(key: String, value: String) {
+    override func write(key: String, value: String, expireIn expiryTime: NSTimeInterval? = nil) {
       data[key] = value
+      if expiryTime != nil {
+        expiries[key] = expiryTime!
+      }
     }
   }
   
@@ -46,6 +51,17 @@ class CacheStoreTests: XCTestCase {
     }
     
     XCTAssertEqual(result, "b", "uses the cached value instead of the generated one")
+  }
+  
+  func testFetchWithExpiryTimeGivesExpiryTimeToWriteMethod() {
+    var store = TestCacheStore()
+    let result = store.fetch("cache.test", expireIn: 20) { "a" }
+    
+    let expiry = store.expiries["cache.test"]
+    XCTAssertNotNil(expiry, "set an expiry time")
+    if expiry != nil {
+      XCTAssertEqual(expiry!, 20, "sets the expiry time from the call to fetch")
+    }
   }
   
   func testSharedCacheStoreReturnsWithNoConfigurationSettingReturnsMemoryCacheStore() {

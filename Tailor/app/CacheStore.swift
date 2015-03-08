@@ -15,7 +15,7 @@ public class CacheStore {
     
   }
   
-  //MARK: - Cache Access
+  //MARK: - Raw Cache Access
   
   /**
     This method reads a value from the cache.
@@ -30,10 +30,13 @@ public class CacheStore {
   /**
     This method stores a value in the cache.
 
-    :param: key     The identifier for the cache entry.
-    :param: value   The value to store.
+    :param: key         The identifier for the cache entry.
+    :param: value       The value to store.
+    :param: expiryTime  The time until the cache entry should expire. If this is
+                        nil, the entry will remain for as long as the specific
+                        cache store can keep it.
     */
-  public func write(key: String, value: String) {
+  public func write(key: String, value: String, expireIn expiryTime: NSTimeInterval? = nil) {
   }
   
   /**
@@ -52,6 +55,22 @@ public class CacheStore {
     
   }
   
+  //MARK: - Fetching
+  
+  /**
+    This method gets a value from the cache.
+    
+    If there is no value in the cache, the generator function will be run to
+    get it.
+    
+    :param: key         The identifier for the cache entry.
+    :param: generator   The function to generate a value on a cache miss.
+    :returns:           The value provided by the cache or the generator.
+    */
+  public func fetch(key: String, generator: ()->String)->String {
+    return self.fetch(key, expireIn: nil, generator: generator)
+  }
+  
   /**
     This method gets a value from the cache.
 
@@ -59,19 +78,22 @@ public class CacheStore {
     get it.
 
     :param: key         The identifier for the cache entry.
+    :param: expiryTime  The time interval until the cache entry should expire.
     :param: generator   The function to generate a value on a cache miss.
     :returns:           The value provided by the cache or the generator.
     */
-  public func fetch(key: String, generator: ()->String) -> String {
+  public func fetch(key: String, expireIn expiryTime: NSTimeInterval?, generator: ()->String) -> String {
     if let result = self.read(key) {
       return result
     }
     else {
       let result = generator()
-      self.write(key, value: result)
+      self.write(key, value: result, expireIn: expiryTime)
       return result
     }
   }
+  
+  //MARK: - Initialization
   
   /**
     This method gets the shared cache store.

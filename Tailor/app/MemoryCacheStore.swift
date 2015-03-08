@@ -1,25 +1,37 @@
-import Cocoa
+import Foundation
 
 /**
   This class provides an in-memory cache store backed by NSCache.
   */
-class MemoryCacheStore: CacheStore {
+public class MemoryCacheStore: CacheStore {
   /** The internal storage. */
   let cache = NSCache()
+  
+  /** The times when we should clear keys from the cache. */
+  var expiryTimes = [String:NSDate]()
 
-  override func read(key: String) -> String? {
+  public override func read(key: String) -> String? {
+    if let time = expiryTimes[key] {
+      if time.timeIntervalSinceNow < 0 {
+        expiryTimes.removeValueForKey(key)
+        cache.removeObjectForKey(key)
+      }
+    }
     return cache.objectForKey(key) as? String
   }
   
-  override func write(key: String, value: String) {
+  public override func write(key: String, value: String, expireIn expiryTime: NSTimeInterval?=nil) {
     cache.setObject(value, forKey: key)
+    if expiryTime != nil {
+      expiryTimes[key] = NSDate(timeIntervalSinceNow: expiryTime!)
+    }
   }
   
-  override func clear(key: String) {
+  public override func clear(key: String) {
     cache.removeObjectForKey(key)
   }
   
-  override func clear() {
+  public override func clear() {
     cache.removeAllObjects()
   }
 }

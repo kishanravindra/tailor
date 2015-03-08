@@ -8,7 +8,7 @@ class MemoryCacheStoreTests: XCTestCase {
     store.write("key2", value: "value2")
   }
   
-  func testMemoryCacheStoreCanStoreValues() {
+  func testCanWriteAndReadValues() {
     let value1 = store.read("key1")
     let value2 = store.read("key2")
     
@@ -23,13 +23,35 @@ class MemoryCacheStoreTests: XCTestCase {
     }
   }
   
-  func testMemoryCacheCanClearValue() {
+  func testReadWithFutureExpiryTimeReadsValue() {
+    store.expiryTimes["key1"] = NSDate(timeIntervalSinceNow: 60)
+    XCTAssertNotNil(store.read("key1"), "returns a value")
+  }
+  
+  func testReadWithPastExpiryTimeClearsValue() {
+    store.expiryTimes["key1"] = NSDate(timeIntervalSinceNow: -60)
+    let result = store.read("key1")
+    XCTAssertNil(result, "returns a nil value")
+    XCTAssertNil(store.cache.objectForKey("key1"), "removes the value from the internal storage")
+    XCTAssertNil(store.expiryTimes["key1"], "removes the expiry time")
+  }
+
+  func testWriteSetsExpiryTime() {
+    store.write("key3", value: "value3", expireIn: 3600)
+    let time = store.expiryTimes["key3"]
+    XCTAssertNotNil(time, "sets the expiry time")
+    if time != nil {
+      XCTAssertEqualWithAccuracy(time!.timeIntervalSinceNow, 3600, 5, "sets the expiry time to the specified interval in the future")
+    }
+  }
+  
+  func testCanClearValue() {
     store.clear("key1")
     XCTAssertNil(store.read("key1"), "clears the requested value")
     XCTAssertNotNil(store.read("key2"), "leaves other values intact")
   }
   
-  func testMemoryCacheCanClearAllValues() {
+  func testCanClearAllValues() {
     store.clear()
     XCTAssertNil(store.read("key1"), "clears all values")
     XCTAssertNil(store.read("key2"), "clears all values")
