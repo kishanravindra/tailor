@@ -26,6 +26,9 @@ public class Query<RecordType: Record> {
   /** The part of the query for joining to other tables. */
   public let joinClause: SqlFragment
   
+  /** Whether the query should cache its results. */
+  public let cacheResults: Bool
+  
   /**
     The model-level conditions that are attached to this query.
 
@@ -44,13 +47,14 @@ public class Query<RecordType: Record> {
     :param: limitClause     The portion of the query specifying how many results
                             should be returned.
     */
-  public required init(copyFrom: Query<RecordType>? = nil, selectClause: String? = nil, whereClause: SqlFragment? = nil, orderClause: SqlFragment? = nil, limitClause: SqlFragment? = nil, joinClause: SqlFragment? = nil, conditions: [String:AnyObject?]? = nil) {
+  public required init(copyFrom: Query<RecordType>? = nil, selectClause: String? = nil, whereClause: SqlFragment? = nil, orderClause: SqlFragment? = nil, limitClause: SqlFragment? = nil, joinClause: SqlFragment? = nil, conditions: [String:AnyObject?]? = nil, cacheResults: Bool? = nil) {
     self.selectClause = selectClause ?? copyFrom?.selectClause ?? "\(RecordType.tableName()).*"
     self.whereClause = whereClause ?? copyFrom?.whereClause ?? ("", [])
     self.orderClause = orderClause ?? copyFrom?.orderClause ?? ("", [])
     self.limitClause = limitClause ?? copyFrom?.limitClause ?? ("", [])
     self.joinClause = joinClause ?? copyFrom?.joinClause ?? ("", [])
     self.conditions = conditions ?? copyFrom?.conditions ?? [:]
+    self.cacheResults = cacheResults ?? copyFrom?.cacheResults ?? false
   }
 
   //MARK: - Query Building
@@ -268,6 +272,20 @@ public class Query<RecordType: Record> {
     return self.dynamicType.init(copyFrom: self, orderClause: orderClause)
   }
   
+  /**
+    This method gets a version of this query with caching turned on.
+
+    When caching is turned on, the ids of the results of this query will be
+    stored in the cache. The cache key will contain the query string and the
+    parameters. Subsequent attempts to fetch records will get the ids out of
+    the cache and fetch the records by id rather than running the query.
+
+    :returns:   The query with caching turned on.
+    */
+  public func cached() -> Query<RecordType> {
+    return self.dynamicType.init(copyFrom: self, cacheResults: true)
+  }
+  
   //MARK: - Running Query
   
   /**
@@ -302,6 +320,22 @@ public class Query<RecordType: Record> {
     */
   public func all() -> [RecordType] {
     let (query, parameters) = self.toSql()
+    if self.cacheResults {
+      let parameterString = ",".join(parameters)
+      let cacheKey = query + "(" + parameterString + ")"
+      var idString = CacheStore.shared().read(cacheKey)
+      if idString != nil && !idString!.matches("[0-9,]*") {
+        idString = nil
+      }
+      let expression = NSRegularExpression(pattern: "^[0-9,]+$", options: nil, error: nil)
+      
+      if idString != nil {
+        return self.dynamicType.init().filter("id IN (\(idString!))").all()
+      }
+      let results = self.dynamicType.init(copyFrom: self, cacheResults: false).all()
+      let ids = results.map { $0.id.stringValue }
+      CacheStore.shared().write(cacheKey, value: ",".join(ids))
+    }
     let results = DatabaseConnection.sharedConnection().executeQuery(query, stringParameters: parameters)
     let type = RecordType.self
     return results.map { type.init(data: $0.data, fromDatabase: true) }

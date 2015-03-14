@@ -7,7 +7,8 @@ class QueryTests: XCTestCase {
     orderClause: ("hats.created_at ASC", []),
     limitClause: ("5", []),
     joinClause: ("INNER JOIN shelfs ON shelfs.id = hats.shelf_id", []),
-    conditions: ["storeId": NSNumber(int: 5)]
+    conditions: ["storeId": NSNumber(int: 5)],
+    cacheResults: true
   )
   
   override func setUp() {
@@ -32,6 +33,7 @@ class QueryTests: XCTestCase {
     XCTAssertEqual(query.joinClause.query, "", "has an empty join clause")
     XCTAssertEqual(query.joinClause.parameters, [], "has an empty join clause")
     XCTAssertTrue(query.conditions.isEmpty, "has no conditions")
+    XCTAssertFalse(query.cacheResults, "has cacheResults set to false")
   }
   
   func testInitializationWithCopyFromCopiesAllFields() {
@@ -45,6 +47,7 @@ class QueryTests: XCTestCase {
     XCTAssertEqual(query.limitClause.parameters, baseQuery.limitClause.parameters, "copies limit clause")
     XCTAssertEqual(query.joinClause.query, baseQuery.joinClause.query, "copies join clause")
     XCTAssertEqual(query.joinClause.parameters, baseQuery.joinClause.parameters, "copies join clause")
+    XCTAssertEqual(query.cacheResults, true, "copies cacheResults field")
     
     if let storeId = query.conditions["storeId"] as? NSNumber {
       XCTAssertEqual(storeId, NSNumber(int: 5), "copies conditions")
@@ -279,6 +282,11 @@ class QueryTests: XCTestCase {
     XCTAssertEqual(query.orderClause.parameters, [], "has no parameters for the order clause")
     
   }
+  
+  func testCachedSetsCachedFlagToTrue() {
+    let query = Query<Hat>().cached()
+    XCTAssertTrue(query.cacheResults, "sets the cacheResults flag to true")
+  }
 
   //MARK: - Running Query
   
@@ -366,6 +374,53 @@ class QueryTests: XCTestCase {
     XCTAssertFalse(query.isEmpty(), "is false when there are matches")
     query = Query<Hat>().filter(["color": "green"])
     XCTAssertTrue(query.isEmpty(), "is true when there are no matches")
+  }
+  
+  func testFetchAllWithCachingOnCachesResults() {
+    let hat1 = Hat.create(["color": "red"])
+    let hat2 = Hat.create(["color": "black"])
+    let hat3 = Hat.create(["color": "black"])
+    
+    CacheStore.shared().clear()
+    let query = Query<Hat>().filter(["color": "black"]).cached()
+    let firstResults = query.all()
+    XCTAssertEqual(firstResults.count, 2, "gets two results")
+    let hat4 = Hat.create(["color": "black"])
+    let secondResults = query.all()
+    XCTAssertEqual(secondResults.count, 2, "still gets two results after one is created")
+  }
+  
+  func testFetchAllWithInjectionInCacheDoesNotCacheResults() {
+    let hat1 = Hat.create(["color": "red"])
+    let hat2 = Hat.create(["color": "black"])
+    let hat3 = Hat.create(["color": "black"])
+    
+    CacheStore.shared().clear()
+    let query = Query<Hat>().filter(["color": "black"]).cached()
+    let firstResults = query.all()
+    XCTAssertEqual(firstResults.count, 2, "gets two results")
+    
+    let cacheKey = "SELECT hats.* FROM hats WHERE hats.color=?(black)"
+    XCTAssertNotNil(CacheStore.shared().read(cacheKey))
+    CacheStore.shared().write(cacheKey, value: "0); DROP TABLE `hats`; SELECT (0")
+    let hat4 = Hat.create(["color": "black"])
+    let secondResults = query.all()
+    XCTAssertEqual(secondResults.count, 3, "gets three results after one is created")
+    XCTAssertEqual(Query<Hat>().count(), 4, "finds four total results")
+  }
+  
+  func testFetchAllWithCachingOffDoesNotCacheResults() {
+    let hat1 = Hat.create(["color": "red"])
+    let hat2 = Hat.create(["color": "black"])
+    let hat3 = Hat.create(["color": "black"])
+    
+    CacheStore.shared().clear()
+    let query = Query<Hat>().filter(["color": "black"])
+    let firstResults = query.all()
+    XCTAssertEqual(firstResults.count, 2, "gets two results")
+    let hat4 = Hat.create(["color": "black"])
+    let secondResults = query.all()
+    XCTAssertEqual(secondResults.count, 3, "gets three results after one is created")
   }
   
   //MARK: - Building Records

@@ -23,6 +23,11 @@ class CacheStoreTests: XCTestCase {
     SHARED_CACHE_STORE = nil
   }
   
+  override func tearDown() {
+    super.tearDown()
+    SHARED_CACHE_STORE = nil
+  }
+  
   func testFetchWithEmptyCacheReturnsResultFromGenerator() {
     var store = TestCacheStore()
     let result = store.fetch("cache.test") { "a" }

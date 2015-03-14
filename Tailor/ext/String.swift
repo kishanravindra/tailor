@@ -38,4 +38,24 @@ public extension String {
   public func contains(other: String) -> Bool {
     return self.rangeOfString(other) != nil
   }
+  
+  /**
+    Whether this string matches a regular expression.
+  
+    :param: pattern         The pattern to compare against
+    :param: allowPartial    Whether we should allow partial matches. If this is
+                            false, the pattern will have to match against the
+                            entire string.
+    :returns:               Whether this string matches the given pattern.
+    */
+  public func matches(pattern: String, allowPartial: Bool = false) -> Bool {
+    var fullPattern = allowPartial ? pattern : "^\(pattern)$"
+    let expression = NSRegularExpression(pattern: fullPattern, options: nil, error: nil)
+    if expression == nil {
+      return false
+    }
+    let range = NSRange(location: 0, length: countElements(self))
+    let results = expression!.numberOfMatchesInString(self, options: nil, range: range)
+    return results > 0
+  }
 }
