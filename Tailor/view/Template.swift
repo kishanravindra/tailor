@@ -195,6 +195,30 @@ public class Template {
     self.buffer.appendString(template.generate())
   }
   
+  /**
+    This method generates content for the template and stores it in the cache.
+
+    If the content is already in the cache, the cached version will be put into
+    the buffer without re-generating it.
+
+    :param: key     The key where the content will be stored in the cache.
+    :param: block   The block that will generate the content. This should
+                    generate the content as you would any other part of the
+                    template body, using the normal helper methods.
+    */
+  public func cache(key: String, block: ()->()) {
+    let cache = CacheStore.shared()
+    if let cachedContent = cache.read(key) {
+      self.buffer.appendString(cachedContent)
+    }
+    else {
+      let previousLength = self.buffer.length
+      block()
+      let addedContent = self.buffer.substringFromIndex(previousLength)
+      cache.write(key, value: addedContent)
+    }
+  }
+  
 
   //MARK: - Controller Information
 

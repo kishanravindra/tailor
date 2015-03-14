@@ -220,6 +220,82 @@ class TemplateTests: XCTestCase {
     }
   }
   
+  func testCacheWithMissPutsContentsInBody() {
+    class TestTemplate: Template {
+      override func body() {
+        self.tag("html") {
+          self.tag("body") {
+            self.cache("cache.test") {
+              self.tag("p") {
+                self.text("cached content", localize: false)
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    let store = CacheStore.shared()
+      
+    store.clear()
+    
+    let template = TestTemplate(controller: controller)
+    template.generate()
+    XCTAssertEqual(template.buffer, "<html><body><p>cached content</p></body></html>")
+  }
+  
+  func testCacheWithMissPutsContentsInCache() {
+    class TestTemplate: Template {
+      override func body() {
+        self.tag("html") {
+          self.tag("body") {
+            self.cache("cache.test") {
+              self.tag("p") {
+                self.text("cached content", localize: false)
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    let store = CacheStore.shared()
+    
+    store.clear()
+    
+    let template = TestTemplate(controller: controller)
+    template.generate()
+    let contents = store.read("cache.test")
+    XCTAssertNotNil(contents, "puts something in the cache")
+    if contents != nil {
+      XCTAssertEqual(contents!, "<p>cached content</p>", "puts just the added content from the cache block in the cache")
+    }
+  }
+  
+  func testCacheWithHitPutsContentInBody() {
+    class TestTemplate: Template {
+      override func body() {
+        self.tag("html") {
+          self.tag("body") {
+            self.cache("cache.test") {
+              self.tag("p") {
+                XCTFail("Does not call the block")
+                self.text("cached content", localize: false)
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    CacheStore.shared().clear()
+    CacheStore.shared().write("cache.test", value: "<p>the cached content</p>")
+    
+    let template = TestTemplate(controller: controller)
+    template.generate()
+    XCTAssertEqual(template.buffer, "<html><body><p>the cached content</p></body></html>")
+  }
+  
   //MARK: - Controller Information
   
   func testRequestParametersGetsKeysFromRequest() {
