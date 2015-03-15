@@ -390,6 +390,20 @@ class QueryTests: XCTestCase {
     XCTAssertEqual(secondResults.count, 2, "still gets two results after one is created")
   }
   
+  func testFetchAllWithCachingOnPreservesOriginalOrder() {
+    let hat1 = Hat.create(["color": "red"])
+    let hat2 = Hat.create(["color": "black", "brimSize": 10])
+    let hat3 = Hat.create(["color": "black", "brimSize": 11])
+    
+    CacheStore.shared().clear()
+    let query = Query<Hat>().order("brimSize", .OrderedDescending).filter(["color": "black"]).cached()
+    let firstResults = query.all()
+    XCTAssertEqual(firstResults, [hat3, hat2], "uses the specified ordering")
+    let secondResults = query.all()
+    XCTAssertEqual(secondResults, [hat3, hat2], "preserves the ordering")
+    
+  }
+  
   func testFetchAllWithInjectionInCacheDoesNotCacheResults() {
     let hat1 = Hat.create(["color": "red"])
     let hat2 = Hat.create(["color": "black"])

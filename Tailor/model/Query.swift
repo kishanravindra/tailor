@@ -323,18 +323,28 @@ public class Query<RecordType: Record> {
     if self.cacheResults {
       let parameterString = ",".join(parameters)
       let cacheKey = query + "(" + parameterString + ")"
+      
       var idString = CacheStore.shared().read(cacheKey)
       if idString != nil && !idString!.matches("[0-9,]*") {
         idString = nil
       }
-      let expression = NSRegularExpression(pattern: "^[0-9,]+$", options: nil, error: nil)
       
-      if idString != nil {
-        return self.dynamicType.init().filter("id IN (\(idString!))").all()
+      if idString == nil {
+        let results = self.dynamicType.init(copyFrom: self, cacheResults: false).all()
+        let ids = results.map { $0.id.stringValue }
+        CacheStore.shared().write(cacheKey, value: ",".join(ids))
+        return results
       }
-      let results = self.dynamicType.init(copyFrom: self, cacheResults: false).all()
-      let ids = results.map { $0.id.stringValue }
-      CacheStore.shared().write(cacheKey, value: ",".join(ids))
+      else {
+        let ids = split(idString!) { $0 == "," }.map { ($0 as NSString).integerValue ?? 0 }
+        let results = self.dynamicType.init().filter("id IN (\(idString!))").all()
+        return results.sorted {
+          (record1, record2) -> Bool in
+          let index1 = Swift.find(ids, record1.id.integerValue)
+          let index2 = Swift.find(ids, record2.id.integerValue)
+          return index1 != nil && index2 != nil && index1! < index2!
+        }
+      }
     }
     let results = DatabaseConnection.sharedConnection().executeQuery(query, stringParameters: parameters)
     let type = RecordType.self
