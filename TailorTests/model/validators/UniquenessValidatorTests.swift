@@ -1,4 +1,5 @@
 import XCTest
+import Tailor
 
 class UniquenessValidatorTests: XCTestCase {
   let validator = UniquenessValidator(key: "name")

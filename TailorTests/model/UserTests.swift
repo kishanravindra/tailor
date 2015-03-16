@@ -1,4 +1,5 @@
 import XCTest
+import Tailor
 
 class UserTests: XCTestCase {
   var user : User!

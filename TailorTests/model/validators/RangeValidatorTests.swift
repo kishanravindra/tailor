@@ -1,4 +1,5 @@
 import XCTest
+import Tailor
 
 class RangeValidatorTests: XCTestCase {
   let validator = RangeValidator(key: "brimSize", max: 20, min: 10)

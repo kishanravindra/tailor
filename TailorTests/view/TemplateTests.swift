@@ -1,4 +1,5 @@
 import XCTest
+import Tailor
 
 class TemplateTests: XCTestCase {
   var controller: Controller!
@@ -61,7 +62,7 @@ class TemplateTests: XCTestCase {
   func testLocalizationPrefixHasClassName() {
     let prefix = template.localizationPrefix
     
-    XCTAssertEqual(prefix, "tailor_tests.template", "has the underscored class name")
+    XCTAssertEqual(prefix, "tailor.template", "has the underscored class name")
   }
   
   func testLocalizeMethodGetsLocalizationFromController() {
@@ -73,7 +74,7 @@ class TemplateTests: XCTestCase {
   }
   
   func testLocalizeMethodPrependsPrefixForKeyWithDot() {
-    Application.sharedApplication().configuration["localization.content.en.tailor_tests.template.prefix_test"] = "Localized Text with Prefix"
+    Application.sharedApplication().configuration["localization.content.en.tailor.template.prefix_test"] = "Localized Text with Prefix"
     let result = template.localize(".prefix_test")
     XCTAssertNotNil(result)
     if result != nil {

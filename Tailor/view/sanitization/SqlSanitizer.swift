@@ -9,10 +9,11 @@ import Foundation
 public class SqlSanitizer : Sanitizer {
   public required init() {
     super.init()
-    self.mapping = [
+  }
+  
+  public override class func mapping() -> [Character:String] { return [
       "\\": "\\\\",
       "\"": "\\\"",
       "'": "\\'"
-    ]
-  }
+    ] }
 }

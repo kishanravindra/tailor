@@ -1,4 +1,5 @@
 import XCTest
+import Tailor
 
 class ResponseTests: XCTestCase {
   var response = Response()

@@ -1,4 +1,5 @@
 import XCTest
+import Tailor
 
 class ModelTests: XCTestCase {
   @objc(HatForModel) class Hat : TailorTests.Hat {

@@ -1,4 +1,5 @@
 import XCTest
+import Tailor
 
 class RequestTests: XCTestCase {
   var requestString = "GET /test/path HTTP/1.1\r\nX-Custom-Field: header value\r\nReferer: searchtheweb.com\r\nCookie: key1=value1; key2=value2\r\nCookie: key3=value3\r\n\r\nRequest Body"

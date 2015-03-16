@@ -1,4 +1,5 @@
 import XCTest
+import Tailor
 
 class QueryTests: XCTestCase {
   let baseQuery = Query<Hat>(

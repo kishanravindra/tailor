@@ -1,4 +1,5 @@
 import XCTest
+import Tailor
 
 class CacheStoreTests: XCTestCase {
   class TestCacheStore : CacheStore {
@@ -72,14 +73,14 @@ class CacheStoreTests: XCTestCase {
   func testSharedCacheStoreReturnsWithNoConfigurationSettingReturnsMemoryCacheStore() {
     let store = CacheStore.shared()
     let name = reflect(store).summary
-    XCTAssertEqual(name, "TailorTests.MemoryCacheStore", "returns a memory cache store")
+    XCTAssertEqual(name, "Tailor.MemoryCacheStore", "returns a memory cache store")
   }
   
   func testSharedCacheStoreWithConfigurationSettingReturnsThatType() {
-    Application.sharedApplication().configuration["cache.class"] = "TailorTests.CacheStore"
+    Application.sharedApplication().configuration["cache.class"] = "Tailor.CacheStore"
     let store = CacheStore.shared()
     let name = reflect(store).summary
-    XCTAssertEqual(name, "TailorTests.CacheStore", "returns a cache store with the specified type")
+    XCTAssertEqual(name, "Tailor.CacheStore", "returns a cache store with the specified type")
   }
   
   func testSharedCacheStoreOnlyCreatesOneStore() {

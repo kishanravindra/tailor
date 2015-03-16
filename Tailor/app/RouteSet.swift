@@ -16,35 +16,35 @@ public class RouteSet {
     format `:parameter_name`, which will capture a variable portion of the route
     in a request parameter called `parameter_name`.
     */
-  class Route {
+  public class Route {
     /** The pattern for the path. */
-    let pathPattern: String
+    public let pathPattern: String
     
     /** The method for the HTTP request. */
-    let method: String
+    public let method: String
     
     /** The implementation of the response handler. */
-    let handler: Server.RequestHandler
+    public let handler: Server.RequestHandler
     
     /** A description of the route for logging purposes. */
-    let description: String
+    public let description: String
     
     /**
       The regex that we apply to determine if the route can handle the path.
       */
-    let regex: NSRegularExpression
+    public let regex: NSRegularExpression
     
     /**
       The names of the request parameters that this route extracts from the
       path.
       */
-    let pathParameters: [String]
+    public let pathParameters: [String]
     
     /** The controller that will handle the request. */
-    var controller: Controller.Type?
+    public private(set) var controller: Controller.Type?
     
     /** The name of the action in the controller. */
-    var action: String?
+    public private(set) var action: String?
     
     /**
       This method initializes a route.
@@ -53,7 +53,7 @@ public class RouteSet {
       :param: handler       The response handler.
       :param: description   The description for the route.
       */
-    init(pathPattern: String, method: String, handler: Server.RequestHandler, description: String) {
+    public init(pathPattern: String, method: String, handler: Server.RequestHandler, description: String) {
       self.pathPattern = pathPattern
       self.handler = handler
       self.description = description
@@ -83,7 +83,7 @@ public class RouteSet {
       This method gets a full description of the route for debugging.
       :returns: The description
       */
-    func fullDescription() -> String {
+    public func fullDescription() -> String {
       return NSString(format: "%@ %@ %@", self.method, self.pathPattern, self.description)
     }
     
@@ -95,7 +95,7 @@ public class RouteSet {
       :param: request   The request to check.
       :returns:         Whether the route can handle the request.
       */
-    func canHandleRequest(request: Request) -> Bool {
+    public func canHandleRequest(request: Request) -> Bool {
       let path = request.path
       let range = NSRange(location: 0, length: countElements(path))
       let match = self.regex.firstMatchInString(path, options: nil, range: range)
@@ -108,7 +108,7 @@ public class RouteSet {
       :param: request   The request to handle.
       :param: callback  The callback that the route should give the response to.
       */
-    func handleRequest(request: Request, callback: Server.ResponseCallback) {
+    public func handleRequest(request: Request, callback: Server.ResponseCallback) {
       NSLog("Processing with %@", self.description)
       var requestCopy = request
       let path = request.path
@@ -127,7 +127,7 @@ public class RouteSet {
   //MARK: -
   
   /** The routes in the set. */
-  private(set) var routes : [Route] = []
+  public private(set) var routes : [Route] = []
 
   /** The prefix for the path that we are adding. */
   private var currentPathPrefix = ""

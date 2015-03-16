@@ -1,7 +1,8 @@
 import XCTest
+import Tailor
 
 class ErrorCollectionTests: XCTestCase {
-  var errors = ErrorCollection(modelType: Hat.self, errors: [])
+  var errors = ErrorCollection(modelType: Hat.self)
   
   func testAddKeyPutsEntryInErrors() {
     errors.add("name", "blank")

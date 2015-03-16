@@ -1,4 +1,5 @@
 import XCTest
+import Tailor
 
 class MysqlConnectionTests: XCTestCase {
   var connection: MysqlConnection { get { return DatabaseConnection.sharedConnection() as MysqlConnection } }

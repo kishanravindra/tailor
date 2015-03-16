@@ -1,4 +1,5 @@
 import XCTest
+import Tailor
 
 class DatabaseConnectionTests: XCTestCase {  
   class TestApplication : TailorTests.TestApplication {

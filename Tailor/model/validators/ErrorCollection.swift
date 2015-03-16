@@ -13,6 +13,15 @@ public struct ErrorCollection {
   public var errors: [ValidationError] = []
   
   /**
+    This method creates an error collection.
+
+    :param: modelType   The type of model the errors are for.
+    */
+  public init(modelType: Model.Type) {
+    self.modelType = modelType
+  }
+  
+  /**
     This method adds an error to the collection.
 
     :param: key           The name of the property with the error.

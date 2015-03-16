@@ -1,4 +1,6 @@
 import XCTest
+import Tailor
+
 class SessionTests: XCTestCase {
   let session: Session!
   

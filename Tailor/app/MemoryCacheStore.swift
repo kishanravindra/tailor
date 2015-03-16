@@ -8,7 +8,7 @@ public class MemoryCacheStore: CacheStore {
   let cache = NSCache()
   
   /** The times when we should clear keys from the cache. */
-  var expiryTimes = [String:NSDate]()
+  public var expiryTimes = [String:NSDate]()
 
   public override func read(key: String) -> String? {
     if let time = expiryTimes[key] {

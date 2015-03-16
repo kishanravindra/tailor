@@ -1,13 +1,6 @@
-//
-//  ApplicationTests.swift
-//  Tailor
-//
-//  Created by John Brownlee on 13/12/14.
-//  Copyright (c) 2014 John Brownlee. All rights reserved.
-//
-
 import Foundation
 import XCTest
+import Tailor
 
 class ApplicationTests : XCTestCase {
   //MARK: Initialization
@@ -133,10 +126,10 @@ class ApplicationTests : XCTestCase {
   }
   
   func testLocalizationBuildsLocalizationFromClassName() {
-    application.configuration["localization.class"] = "TailorTests.DatabaseLocalization"
+    application.configuration["localization.class"] = "Tailor.DatabaseLocalization"
     let localization = application.localization("en")
     XCTAssertEqual(localization.locale, "en", "sets the localization")
     XCTAssertNotNil(localization as? DatabaseLocalization, "uses the class from the configuration")
-    application.configuration["localization.class"] = "TailorTests.PropertyListLocalization"
+    application.configuration["localization.class"] = "Tailor.PropertyListLocalization"
   }
 }

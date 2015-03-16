@@ -136,6 +136,10 @@ public class Application {
       The arguments.
     */
   public class func extractArguments() -> [String] {
+    if C_ARGC < 2 {
+      return []
+    }
+    
     var arguments = [String]()
     for indexOfArgument in 1..<C_ARGC {
       if let argument = String.fromCString(C_ARGV[Int(indexOfArgument)]) {
@@ -181,7 +185,7 @@ public class Application {
 
     :returns:   The input from the user.
     */
-  internal func promptForCommand() -> String {
+  public func promptForCommand() -> String {
     print("Please provide a task by name, or from the following list:\n")
     
     let tasks = self.registeredSubclassList(Task.self).sorted {
@@ -348,4 +352,4 @@ public class Application {
 }
 
 /** The application that we are running. */
-var SHARED_APPLICATION : Application!
+public var SHARED_APPLICATION : Application!

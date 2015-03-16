@@ -1,9 +1,9 @@
 import XCTest
+import Tailor
 
 class ConnectionTests: XCTestCase {
   class TestConnection : Connection {
     override func listenToSocket() {
-      
     }
   }
   var handler: Server.RequestHandler = {

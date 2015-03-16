@@ -1,4 +1,5 @@
 import XCTest
+import Tailor
 
 class ArrayTests: XCTestCase {
   func testRemoveNilsProducesArrayWithoutNils() {

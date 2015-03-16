@@ -1,4 +1,5 @@
 import XCTest
+import Tailor
 
 class ConfigurationSettingTests: XCTestCase {
   var setting: ConfigurationSetting!

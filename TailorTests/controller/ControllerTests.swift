@@ -1,4 +1,5 @@
 import XCTest
+import Tailor
 
 class ControllerTests: XCTestCase {
   class TestController : Controller {

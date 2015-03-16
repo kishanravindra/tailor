@@ -1,4 +1,5 @@
 import XCTest
+import Tailor
 
 class LocalizationTests: XCTestCase {
   class TestLocalization: Localization {

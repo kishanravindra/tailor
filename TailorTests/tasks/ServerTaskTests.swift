@@ -1,4 +1,5 @@
 import XCTest
+import Tailor
 
 class ServerTaskTests: XCTestCase {
   func testRunStartsServer() {

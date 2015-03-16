@@ -1,4 +1,5 @@
 import XCTest
+import Tailor
 
 class MemoryCacheStoreTests: XCTestCase {
   let store = MemoryCacheStore()
@@ -32,7 +33,6 @@ class MemoryCacheStoreTests: XCTestCase {
     store.expiryTimes["key1"] = NSDate(timeIntervalSinceNow: -60)
     let result = store.read("key1")
     XCTAssertNil(result, "returns a nil value")
-    XCTAssertNil(store.cache.objectForKey("key1"), "removes the value from the internal storage")
     XCTAssertNil(store.expiryTimes["key1"], "removes the expiry time")
   }
 

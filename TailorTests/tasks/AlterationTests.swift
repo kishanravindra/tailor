@@ -1,8 +1,7 @@
 import XCTest
+import Tailor
 
 class AlterationTests: XCTestCase {
-  
-  
   class FirstAlteration: Alteration {
     override class func id() -> String { return "1" }
     override func alter() {
@@ -25,11 +24,11 @@ class AlterationTests: XCTestCase {
   }
 
   func testDescriptionGetsClassName() {
-    XCTAssertEqual(Alteration.description(), "TailorTests.Alteration", "gets class name")
+    XCTAssertEqual(Alteration.description(), "Tailor.Alteration", "gets class name")
   }
   
   func testPendingAlterationsFindsAlterationsThatAreNotInTable() {
-    TestApplication.start()
+    TailorTests.TestApplication.start()
     DatabaseConnection.sharedConnection().executeQuery("DROP TABLE IF EXISTS tailor_alterations")
     DatabaseConnection.sharedConnection().executeQuery("CREATE TABLE tailor_alterations ( id varchar(255) PRIMARY KEY )")
     DatabaseConnection.sharedConnection().executeQuery("INSERT INTO tailor_alterations values (''), (?)", "1")

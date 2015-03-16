@@ -1,4 +1,5 @@
 import XCTest
+import Tailor
 
 class ValidationErrorTests: XCTestCase {
   let error = ValidationError(modelType: Hat.self, key: "height", message: "tooLow", data: ["value": "7"])

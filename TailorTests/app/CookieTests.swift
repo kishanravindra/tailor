@@ -1,4 +1,5 @@
 import XCTest
+import Tailor
 
 class CookieTests: XCTestCase {
   var cookie = Cookie(key: "testCookie", value: "27")  

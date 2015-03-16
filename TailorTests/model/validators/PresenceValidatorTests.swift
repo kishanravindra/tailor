@@ -1,4 +1,5 @@
 import XCTest
+import Tailor
 
 class PresenceValidatorTests: XCTestCase {
   let validator = PresenceValidator(key: "name")

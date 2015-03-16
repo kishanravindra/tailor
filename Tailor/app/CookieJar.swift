@@ -7,6 +7,12 @@ public class CookieJar {
   /** The cookies in the jar. */
   public private(set) var cookies: [Cookie] = []
   
+  /**
+    This method creates a cookie jar.
+    */
+  public init() {
+  }
+  
   //MARK: - Modifying Cookies
   
   /**

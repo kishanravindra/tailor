@@ -1,4 +1,5 @@
 import XCTest
+import Tailor
 
 class RouteSetTests: XCTestCase {
   var routeSet = RouteSet()
@@ -127,7 +128,7 @@ class RouteSetTests: XCTestCase {
     }
     routeSet.addRoute("test", method: "GET", action: "test")
     if let controller = self.getLatestRoute().controller {
-      XCTAssertEqual(controller.name(), "TailorTests.Controller", "uses default controller in route in block")
+      XCTAssertEqual(controller.name(), "Tailor.Controller", "uses default controller in route in block")
     }
     else {
       XCTFail("uses default controller in route in block")

@@ -1,4 +1,5 @@
 import XCTest
+import Tailor
 
 class HtmlSanitizerTests: XCTestCase {
   func testHtmlSanitizerHasMappingForEscapeCharacters() {

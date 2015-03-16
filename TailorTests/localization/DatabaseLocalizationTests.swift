@@ -1,4 +1,5 @@
 import XCTest
+import Tailor
 
 class DatabaseLocalizationTests: XCTestCase {
   var localization: Localization!

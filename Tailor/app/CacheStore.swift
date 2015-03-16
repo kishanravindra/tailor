@@ -117,4 +117,5 @@ public class CacheStore {
   }
 }
 
-internal var SHARED_CACHE_STORE: CacheStore!
+/** The global cache store. */
+public var SHARED_CACHE_STORE: CacheStore!

@@ -1,4 +1,5 @@
 import XCTest
+import Tailor
 
 class RecordTests: XCTestCase {
   override func setUp() {
@@ -122,7 +123,7 @@ class RecordTests: XCTestCase {
   }
   
   func testSerializeValueSerializesDateValue() {
-    DatabaseConnection.sharedConnection().timeZone = NSTimeZone(name: "UTC")!
+    //DatabaseConnection.sharedConnection().timeZone = NSTimeZone(name: "UTC")!
     let input = NSDate(timeIntervalSince1970: 1231234125)
     let formattedString = "2009-01-06 09:28:45"
     let (string,data) = Record.serializeValueForQuery(input, key: "key")

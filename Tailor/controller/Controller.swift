@@ -14,7 +14,7 @@ public class Controller {
                             If this is empty, it will be run for all actions.
     :param: excludedActions The actions that this filter should not be run for.
     */
-  typealias Filter = (
+  public typealias Filter = (
     filter: ()->Bool,
     includedActions: [String],
     excludedActions: [String]
@@ -39,7 +39,7 @@ public class Controller {
   public var localization: Localization
   
   /** The filters that this controller runs. */
-  var filters: [Filter] = []
+  public private(set) var filters: [Filter] = []
   
   /**
     The templates that this controller has rendered in the course of responding

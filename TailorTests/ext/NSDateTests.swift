@@ -1,4 +1,5 @@
 import XCTest
+import Tailor
 
 class NSDateTests: XCTestCase {
   override func setUp() {
