@@ -106,7 +106,14 @@ public class Application {
   /** Starts a version of this application as the shared application. */
   public class func start() {
     if(SHARED_APPLICATION == nil) {
-      SHARED_APPLICATION = self.init()
+      var applicationClass = self
+      for bundle in NSBundle.allBundles() {
+        if let bundleClass = bundle.principalClass as? Application.Type {
+          NSLog("Setting bundle class to %@", NSStringFromClass(bundleClass))
+          applicationClass = bundleClass
+        }
+      }
+      SHARED_APPLICATION = applicationClass()
       SHARED_APPLICATION.start()
     }
   }

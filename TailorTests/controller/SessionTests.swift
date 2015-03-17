@@ -26,7 +26,7 @@ class SessionTests: XCTestCase {
   }
   
   override func setUp() {
-    TestApplication.start()
+    Application.start()
   }
   
   //MARK: - Creation

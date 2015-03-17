@@ -259,7 +259,7 @@ class RequestTests: XCTestCase {
   }
   
   func testInitializerCanInitializeSessionInfo() {
-    TestApplication.start()
+    Application.start()
     let request = Request(sessionData: ["mobile": "1"])
     let session = Session(request: request)
     let value = session["mobile"]

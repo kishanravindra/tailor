@@ -12,7 +12,7 @@ class DatabaseConnectionTests: XCTestCase {
   }
   
   override func setUp() {
-    TailorTests.TestApplication.start()
+    Application.start()
   }
   
   //MARK: - Initialization
@@ -23,20 +23,20 @@ class DatabaseConnectionTests: XCTestCase {
   }
 
   func testSharedConnectionOpensWithApplication() {
-    SHARED_APPLICATION = nil
-    TestApplication.start()
+    let application = TestApplication.init()
+    SHARED_APPLICATION = application
+    application.start()
     DatabaseConnection.openSharedConnection()
-    let application = SHARED_APPLICATION as TestApplication
     XCTAssertEqual(NSStringFromClass(DatabaseConnection.sharedConnection().dynamicType), NSStringFromClass(MysqlConnection.self), "has a mysql connection as the shared connection")
     XCTAssertEqual(application.connectionCount, 1, "increments the connection count")
     SHARED_APPLICATION = nil
   }
   
   func testSharedConnectionOpensSeparateConnectionInNewThread() {
-    SHARED_APPLICATION = nil
-    TestApplication.start()
+    let application = TestApplication.init()
+    SHARED_APPLICATION = application
+    application.start()
     DatabaseConnection.openSharedConnection()
-    let application = SHARED_APPLICATION as TestApplication
     let expectation = expectationWithDescription("executes block in thread")
     DatabaseConnection.sharedConnection()
     NSOperationQueue().addOperationWithBlock {

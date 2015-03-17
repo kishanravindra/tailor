@@ -6,7 +6,7 @@ class TemplateTests: XCTestCase {
   var template: Template!
   
   override func setUp() {
-    TestApplication.start()
+    Application.start()
     let request = Request(clientAddress: "1.1.1.1", data: NSData())
     let callback = {
       (response: Response) -> () in

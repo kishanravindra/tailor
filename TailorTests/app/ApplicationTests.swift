@@ -7,7 +7,7 @@ class ApplicationTests : XCTestCase {
   
   var application: Application!
   override func setUp() {
-    TestApplication.start()
+    Application.start()
     application = TestApplication.sharedApplication()
   }
 

@@ -3,7 +3,7 @@ import Tailor
 
 class NSDateTests: XCTestCase {
   override func setUp() {
-    TestApplication.start()
+    Application.start()
     let application = TestApplication.sharedApplication()
     application.dateFormatters["long"]?.timeZone = NSTimeZone(name: "UTC")
   }

@@ -37,7 +37,7 @@ class ControllerTests: XCTestCase {
   var controller: Controller!
   
   override func setUp() {
-    TestApplication.start()
+    Application.start()
     DatabaseConnection.sharedConnection().executeQuery("TRUNCATE TABLE users")
     user = User(emailAddress: "test@test.com", password: "test")
     user.save()

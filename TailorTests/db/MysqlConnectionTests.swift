@@ -5,7 +5,7 @@ class MysqlConnectionTests: XCTestCase {
   var connection: MysqlConnection { get { return DatabaseConnection.sharedConnection() as MysqlConnection } }
   
   override func setUp() {
-    TestApplication.start()
+    Application.start()
     connection.executeQuery("TRUNCATE TABLE `hats`")
     connection.executeQuery("INSERT INTO `hats` (`color`, `brim_size`) VALUES ('red', 10)")
   }

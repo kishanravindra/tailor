@@ -25,7 +25,7 @@ class LocalizationTests: XCTestCase {
     }
   }
   override func setUp() {
-    TestApplication.start()
+    Application.start()
   }
   
   func testInitializationSetsLocale() {

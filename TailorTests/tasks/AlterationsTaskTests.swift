@@ -3,7 +3,7 @@ import Tailor
 
 class AlterationsTaskTests: XCTestCase {
   func testRunTaskRunsPendingAlterations() {
-    TestApplication.start()
+    Application.start()
     DatabaseConnection.sharedConnection().executeQuery("DROP TABLE IF EXISTS tailor_alterations")
     DatabaseConnection.sharedConnection().executeQuery("CREATE TABLE tailor_alterations ( id varchar(255) PRIMARY KEY )")
     

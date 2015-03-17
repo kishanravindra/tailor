@@ -3,7 +3,7 @@ import Tailor
 
 class RecordTests: XCTestCase {
   override func setUp() {
-    TestApplication.start()
+    Application.start()
     DatabaseConnection.sharedConnection().executeQuery("TRUNCATE TABLE `hats`")
     DatabaseConnection.sharedConnection().executeQuery("TRUNCATE TABLE `shelfs`")
     DatabaseConnection.sharedConnection().executeQuery("TRUNCATE TABLE `stores`")

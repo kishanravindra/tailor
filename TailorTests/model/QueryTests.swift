@@ -13,7 +13,7 @@ class QueryTests: XCTestCase {
   )
   
   override func setUp() {
-    TestApplication.start()
+    Application.start()
     let connection = DatabaseConnection.sharedConnection()
     connection.executeQuery("TRUNCATE TABLE hats")
     connection.executeQuery("TRUNCATE TABLE shelfs")

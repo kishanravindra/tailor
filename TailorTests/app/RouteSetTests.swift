@@ -16,7 +16,7 @@ class RouteSetTests: XCTestCase {
   
   override func setUp() {
     super.setUp()
-    TestApplication.start()
+    Application.start()
   }
   
   override func tearDown() {

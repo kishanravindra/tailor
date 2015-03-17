@@ -28,7 +28,7 @@ class AlterationTests: XCTestCase {
   }
   
   func testPendingAlterationsFindsAlterationsThatAreNotInTable() {
-    TailorTests.TestApplication.start()
+    Application.start()
     DatabaseConnection.sharedConnection().executeQuery("DROP TABLE IF EXISTS tailor_alterations")
     DatabaseConnection.sharedConnection().executeQuery("CREATE TABLE tailor_alterations ( id varchar(255) PRIMARY KEY )")
     DatabaseConnection.sharedConnection().executeQuery("INSERT INTO tailor_alterations values (''), (?)", "1")

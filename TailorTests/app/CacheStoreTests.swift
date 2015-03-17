@@ -20,7 +20,7 @@ class CacheStoreTests: XCTestCase {
   
   override func setUp() {
     super.setUp()
-    TestApplication.start()
+    Application.start()
     SHARED_CACHE_STORE = nil
   }
   

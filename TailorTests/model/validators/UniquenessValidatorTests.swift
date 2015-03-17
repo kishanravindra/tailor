@@ -6,7 +6,7 @@ class UniquenessValidatorTests: XCTestCase {
   let store = Store(data: ["name": "Hatapalooza"])
   
   override func setUp() {
-    TestApplication.start()
+    Application.start()
     DatabaseConnection.sharedConnection().executeQuery("TRUNCATE TABLE stores")
     DatabaseConnection.sharedConnection().executeQuery("TRUNCATE TABLE hats")
     store.save()

@@ -21,7 +21,7 @@ class ModelTests: XCTestCase {
   }
   
   override func setUp() {
-    TestApplication.start()
+    Application.start()
   }
   
   //MARK: - Structure

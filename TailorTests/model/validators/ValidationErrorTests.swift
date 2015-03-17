@@ -7,7 +7,7 @@ class ValidationErrorTests: XCTestCase {
   var content: ConfigurationSetting!
   
   override func setUp() {
-    TestApplication.start()
+    Application.start()
     content = TestApplication.sharedApplication().configuration.child("localization.content.en")
     content.addDictionary([
       "hat.errors.height.too_low": "is too short",

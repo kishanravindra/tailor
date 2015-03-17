@@ -5,7 +5,7 @@ class UserTests: XCTestCase {
   var user : User!
   
   override func setUp() {
-    TestApplication.start()
+    Application.start()
     DatabaseConnection.sharedConnection().executeQuery("TRUNCATE TABLE `users`")
     user = User(emailAddress: "test@test.com", password: "Monkey")
     user.save()

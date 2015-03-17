@@ -3,7 +3,7 @@ import Tailor
 
 class PropertyListLocalizationTests: XCTestCase {
   override func setUp() {
-    TestApplication.start()
+    Application.start()
     let key = "localization.content.en.localization_test"
     TestApplication.sharedApplication().configuration[key] = "Hello"
   }

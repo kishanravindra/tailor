@@ -5,7 +5,7 @@ class DatabaseLocalizationTests: XCTestCase {
   var localization: Localization!
   override func setUp() {
     super.setUp()
-    TestApplication.start()
+    Application.start()
     DatabaseConnection.sharedConnection().executeQuery("TRUNCATE TABLE `tailor_translations`")
     localization = DatabaseLocalization(locale: "en")
     DatabaseLocalization.Translation.create(["translationKey": "database.message", "locale": "en", "translatedText": "Hello"])
