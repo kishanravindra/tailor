@@ -16,6 +16,7 @@
 		5218B9B71AB65A110036ED34 /* Tailor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52BD139D19E9D7E4006D72B0 /* Tailor.framework */; };
 		5218B9B81AB65A150036ED34 /* TailorTesting.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5218B96F1AB64EAF0036ED34 /* TailorTesting.framework */; };
 		5218B9C21AB6711E0036ED34 /* RecordFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5218B9C11AB6711E0036ED34 /* RecordFactory.swift */; };
+		5218B9C41AB8DBC80036ED34 /* TailorTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5218B9C31AB8DBC80036ED34 /* TailorTestCase.swift */; };
 		521E87481A0FCEDA00D84B7B /* NSData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 521E87471A0FCEDA00D84B7B /* NSData.swift */; };
 		522B56CA1A18C849009BBE32 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522B56C91A18C849009BBE32 /* Array.swift */; };
 		522B56CC1A191475009BBE32 /* UniquenessValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522B56CB1A191475009BBE32 /* UniquenessValidator.swift */; };
@@ -152,6 +153,7 @@
 		5218B9731AB64EAF0036ED34 /* TailorTesting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TailorTesting.h; sourceTree = "<group>"; };
 		5218B9881AB64F5A0036ED34 /* Application.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
 		5218B9C11AB6711E0036ED34 /* RecordFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecordFactory.swift; sourceTree = "<group>"; };
+		5218B9C31AB8DBC80036ED34 /* TailorTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TailorTestCase.swift; sourceTree = "<group>"; };
 		521E87471A0FCEDA00D84B7B /* NSData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSData.swift; sourceTree = "<group>"; };
 		522B56C91A18C849009BBE32 /* Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
 		522B56CB1A191475009BBE32 /* UniquenessValidator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UniquenessValidator.swift; sourceTree = "<group>"; };
@@ -312,6 +314,7 @@
 				5218B9721AB64EAF0036ED34 /* Info.plist */,
 				5218B9881AB64F5A0036ED34 /* Application.swift */,
 				5218B9C11AB6711E0036ED34 /* RecordFactory.swift */,
+				5218B9C31AB8DBC80036ED34 /* TailorTestCase.swift */,
 			);
 			path = TailorTesting;
 			sourceTree = "<group>";
@@ -809,6 +812,7 @@
 			files = (
 				5218B9891AB64F5A0036ED34 /* Application.swift in Sources */,
 				5218B9C21AB6711E0036ED34 /* RecordFactory.swift in Sources */,
+				5218B9C41AB8DBC80036ED34 /* TailorTestCase.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -955,6 +959,10 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+				);
 				FRAMEWORK_VERSION = A;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -979,6 +987,10 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+				);
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = TailorTesting/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -1149,10 +1161,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"/Applications/Xcode-Beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include",
-				);
+				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = TailorTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks ./build";
 				LIBRARY_SEARCH_PATHS = /usr/local/Cellar/mysql/5.6.19/lib;
@@ -1170,10 +1179,7 @@
 					"$(inherited)",
 					./build,
 				);
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"/Applications/Xcode-Beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include",
-				);
+				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = TailorTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks ./build";
 				LIBRARY_SEARCH_PATHS = /usr/local/Cellar/mysql/5.6.19/lib;
