@@ -1,7 +1,8 @@
 import XCTest
 import Tailor
+import TailorTesting
 
-class CacheStoreTests: XCTestCase {
+class CacheStoreTests: TailorTestCase {
   class TestCacheStore : CacheStore {
     var data = [String:String]()
     var expiries = [String:NSTimeInterval]()
@@ -33,7 +34,7 @@ class CacheStoreTests: XCTestCase {
     var store = TestCacheStore()
     let result = store.fetch("cache.test") { "a" }
     
-    XCTAssertEqual(result, "a", "gets the result from the generator")
+    assert(result, equals: "a", message: "gets the result from the generator")
   }
   
   func testFetchOnlyCallsGeneratorOnce() {
@@ -44,8 +45,8 @@ class CacheStoreTests: XCTestCase {
       return "a"
     }
     
-    XCTAssertEqual(result1, "a", "gets the result from the generator")
-    XCTAssertEqual(result2, "a", "gets the result from the generator")
+    assert(result1, equals: "a", message: "gets the result from the generator")
+    assert(result2, equals: "a", message: "gets the result from the generator")
   }
   
   func testFetchWithCacheHitReturnsCachedValue() {
@@ -56,7 +57,7 @@ class CacheStoreTests: XCTestCase {
       return "a"
     }
     
-    XCTAssertEqual(result, "b", "uses the cached value instead of the generated one")
+    assert(result, equals: "b", message: "uses the cached value instead of the generated one")
   }
   
   func testFetchWithExpiryTimeGivesExpiryTimeToWriteMethod() {
@@ -66,21 +67,21 @@ class CacheStoreTests: XCTestCase {
     let expiry = store.expiries["cache.test"]
     XCTAssertNotNil(expiry, "set an expiry time")
     if expiry != nil {
-      XCTAssertEqual(expiry!, 20, "sets the expiry time from the call to fetch")
+      assert(expiry!, equals: 20, message: "sets the expiry time from the call to fetch")
     }
   }
   
   func testSharedCacheStoreReturnsWithNoConfigurationSettingReturnsMemoryCacheStore() {
     let store = CacheStore.shared()
     let name = reflect(store).summary
-    XCTAssertEqual(name, "Tailor.MemoryCacheStore", "returns a memory cache store")
+    assert(name, equals: "Tailor.MemoryCacheStore", message: "returns a memory cache store")
   }
   
   func testSharedCacheStoreWithConfigurationSettingReturnsThatType() {
     Application.sharedApplication().configuration["cache.class"] = "Tailor.CacheStore"
     let store = CacheStore.shared()
     let name = reflect(store).summary
-    XCTAssertEqual(name, "Tailor.CacheStore", "returns a cache store with the specified type")
+    assert(name, equals: "Tailor.CacheStore", message: "returns a cache store with the specified type")
   }
   
   func testSharedCacheStoreOnlyCreatesOneStore() {
@@ -90,7 +91,7 @@ class CacheStoreTests: XCTestCase {
     let value = store2.read("cache.test")
     XCTAssertNotNil(value)
     if value != nil {
-      XCTAssertEqual(value!, "test value")
+      assert(value!, equals: "test value")
     }
   }
 }

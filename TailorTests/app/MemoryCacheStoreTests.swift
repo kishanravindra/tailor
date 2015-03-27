@@ -1,7 +1,8 @@
 import XCTest
 import Tailor
+import TailorTesting
 
-class MemoryCacheStoreTests: XCTestCase {
+class MemoryCacheStoreTests: TailorTestCase {
   let store = MemoryCacheStore()
   
   override func setUp() {
@@ -15,12 +16,12 @@ class MemoryCacheStoreTests: XCTestCase {
     
     XCTAssertNotNil(value1)
     if value1 != nil {
-      XCTAssertEqual(value1!, "value1")
+      assert(value1!, equals: "value1")
     }
     
     XCTAssertNotNil(value2)
     if value2 != nil {
-      XCTAssertEqual(value2!, "value2")
+      assert(value2!, equals: "value2")
     }
   }
   

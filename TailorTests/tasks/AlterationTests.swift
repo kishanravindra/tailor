@@ -1,7 +1,8 @@
 import XCTest
 import Tailor
+import TailorTesting
 
-class AlterationTests: XCTestCase {
+class AlterationTests: TailorTestCase {
   class FirstAlteration: Alteration {
     override class func id() -> String { return "1" }
     override func alter() {
@@ -24,7 +25,7 @@ class AlterationTests: XCTestCase {
   }
 
   func testDescriptionGetsClassName() {
-    XCTAssertEqual(Alteration.description(), "Tailor.Alteration", "gets class name")
+    assert(Alteration.description(), equals: "Tailor.Alteration", message: "gets class name")
   }
   
   func testPendingAlterationsFindsAlterationsThatAreNotInTable() {
@@ -35,7 +36,7 @@ class AlterationTests: XCTestCase {
     
     let alterations = Alteration.pendingAlterations()
     let ids = alterations.map { $0.id() }
-    XCTAssertEqual(ids, ["2", "3"], "gets the ids for the alterations that have not been run")
+    assert(ids, equals: ["2", "3"], message: "gets the ids for the alterations that have not been run")
     SHARED_APPLICATION = nil
   }
 }

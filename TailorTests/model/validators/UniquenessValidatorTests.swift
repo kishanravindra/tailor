@@ -1,7 +1,8 @@
 import XCTest
 import Tailor
+import TailorTesting
 
-class UniquenessValidatorTests: XCTestCase {
+class UniquenessValidatorTests: TailorTestCase {
   let validator = UniquenessValidator(key: "name")
   let store = Store(data: ["name": "Hatapalooza"])
   
@@ -29,7 +30,7 @@ class UniquenessValidatorTests: XCTestCase {
     store2.name = store.name
     validator.validate(store2)
     let error = ValidationError(modelType: Store.self, key: "name", message: "taken", data: [:])
-    XCTAssertEqual(store2.errors.errors, [error], "puts the error on the record")
+    assert(store2.errors.errors, equals: [error], message: "puts the error on the record")
   }
   
   func testUniquenessValidatorPutsNoErrorOnRecordWithoutRequestedColumn() {

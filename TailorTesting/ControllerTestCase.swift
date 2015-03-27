@@ -57,12 +57,12 @@ public class ControllerTestCase : TailorTestCase {
                         automatically.
     */
   public func assertResponse(response: Response, redirectsTo path: String?, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
-    XCTAssertEqual(response.code, 302, "gives a redirect response")
+    assert(response.code, equals: 302, message: "gives a redirect response")
     if path == nil {
       self.recordFailureWithDescription("Target path is nil - \(message)", inFile: file, atLine: line, expected: true)
     }
     else {
-      self.assert(response.headers["Location"], equals: path!, message: message, file:file, line:line)
+      assert(response.headers["Location"], equals: path!, message: message, file:file, line:line)
     }
   }
   

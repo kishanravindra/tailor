@@ -87,11 +87,11 @@ public class TailorTestCase: XCTestCase {
     :param: line        The line of the file where the assertion is coming from.
                         You should generally omit this, since it will be
                         provided automatically.
-  */
+
   public func assert(string: String, contains substring: String, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
     let range = string.rangeOfString(substring)
     if range == nil {
       self.recordFailureWithDescription("\(string) does not contain \(substring) - \(message)", inFile: file, atLine: line, expected: true)
     }
-  }
+  }*/
 }

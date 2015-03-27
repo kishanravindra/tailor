@@ -1,7 +1,8 @@
 import XCTest
 import Tailor
+import TailorTesting
 
-class SanitizerTests: XCTestCase {
+class SanitizerTests: TailorTestCase {
   class TestSanitizer : Sanitizer {
     
     override class func mapping() -> [Character:String] {
@@ -28,14 +29,14 @@ class SanitizerTests: XCTestCase {
   func testSanitizeStringMethodReplacesCharactersWithSubstitutions() {
     let sanitizer = TestSanitizer()
     let result = sanitizer.sanitizeString("æronautic léøn")
-    XCTAssertEqual(result, "aeronautic leon", "replaces the input characters with their replacements")
+    assert(result, equals: "aeronautic leon", message: "replaces the input characters with their replacements")
   }
   
   func testSanitizeMethodReplacesCharacters() {
     let sanitizer = TestSanitizer()
     sanitizer.setMapping(["é": "e"])
     let result = sanitizer.sanitize(SanitizedText(text: "olé", sanitizers: []))
-    XCTAssertEqual(result.text, "ole", "replaces characters in text")
+    assert(result.text, equals: "ole", message: "replaces characters in text")
   }
   
   func testSanitizeMethodFlagsTextAsSanitized() {

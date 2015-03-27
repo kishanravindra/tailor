@@ -1,7 +1,8 @@
 import XCTest
 import Tailor
+import TailorTesting
 
-class SessionTests: XCTestCase {
+class SessionTests: TailorTestCase {
   let session: Session!
   
   func createCookieString(data: [String:String] = [:], flashData: [String:String] = [:], clientAddress: String = "0.0.0.0", expirationDate: NSDate = NSDate(timeIntervalSinceNow: 3600)) -> String {
@@ -42,13 +43,13 @@ class SessionTests: XCTestCase {
     let name = session["name"]
     XCTAssertNotNil(name, "has the name in the data")
     if name != nil {
-      XCTAssertEqual(name!, "John", "has the name in the data")
+      assert(name!, equals: "John", message: "has the name in the data")
     }
     
     let userId = session["userId"]
     XCTAssertNotNil(userId, "has the user id in the data")
     if userId != nil {
-      XCTAssertEqual(userId!, "5", "has the user id in the data")
+      assert(userId!, equals: "5", message: "has the user id in the data")
     }
     
     XCTAssertNil(session["_flash_notice"], "does not have a flash notice in the main data")
@@ -56,7 +57,7 @@ class SessionTests: XCTestCase {
     let notice = session.flash("notice")
     XCTAssertNotNil(notice, "has the flash notice")
     if notice != nil {
-      XCTAssertEqual(notice!, "Success", "has the flash notice")
+      assert(notice!, equals: "Success", message: "has the flash notice")
     }
   }
   
@@ -93,7 +94,7 @@ class SessionTests: XCTestCase {
     let request = Request(cookies: ["_session": string])
     let session = Session(request: request)
     let outputString = session.cookieString()
-    XCTAssertEqual(string, outputString, "cookie string has not changed")
+    assert(string, equals: outputString, message: "cookie string has not changed")
   }
   
   func testCookieStringWithDataChangesConveysChanges() {
@@ -104,11 +105,11 @@ class SessionTests: XCTestCase {
     
     let name = session2["name"]
     XCTAssertNotNil(name, "carries a changed session param")
-    if name != nil { XCTAssertEqual(name!, "Jane", "carries a changed session param") }
+    if name != nil { assert(name!, equals: "Jane", message: "carries a changed session param") }
     
     let userId = session2["userId"]
     XCTAssertNotNil(userId, "carries a new session param")
-    if userId != nil { XCTAssertEqual(userId!, "1", "carries a new session param") }
+    if userId != nil { assert(userId!, equals: "1", message: "carries a new session param") }
   }
   
   func testCookieStringWithFlashParamsConveysOnlyNewParams() {
@@ -120,7 +121,7 @@ class SessionTests: XCTestCase {
     XCTAssertNil(session2.flash("notice"), "does not carry an old session param")
     let error = session2.flash("error")
     XCTAssertNotNil(error, "carries a new flash message")
-    if error != nil { XCTAssertEqual(error!, "Error", "carries a new flash message") }
+    if error != nil { assert(error!, equals: "Error", message: "carries a new flash message") }
   }
   
   func testCookieStringIsAesEncoded() {
@@ -137,7 +138,7 @@ class SessionTests: XCTestCase {
     XCTAssertNotNil(jsonObject, "can get JSON object back")
     if jsonObject != nil {
       let keys = sorted(jsonObject!.keys)
-      XCTAssertEqual(keys, ["_flash_notice", "clientAddress", "expirationDate", "name"], "has the expected keys in the flash")
+      assert(keys, equals: ["_flash_notice", "clientAddress", "expirationDate", "name"], message: "has the expected keys in the flash")
     }
   }
   
@@ -147,7 +148,7 @@ class SessionTests: XCTestCase {
     session.storeInCookies(cookieJar)
     let string = cookieJar["_session"]
     XCTAssertNotNil(string, "sets cookie string")
-    if string != nil { XCTAssertEqual(string!, session.cookieString(), "sets cookie string") }
+    if string != nil { assert(string!, equals: session.cookieString(), message: "sets cookie string") }
   }
   
   //MARK: - Flash
@@ -163,6 +164,6 @@ class SessionTests: XCTestCase {
     session.setFlash("notice", "Success", currentPage: true)
     let notice = session.flash("notice")
     XCTAssertNotNil(notice, "makes flash message available")
-    if notice != nil { XCTAssertEqual(notice!, "Success", "makes flash message available") }
+    if notice != nil { assert(notice!, equals: "Success", message: "makes flash message available") }
   }
 }

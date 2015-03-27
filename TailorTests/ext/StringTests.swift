@@ -1,28 +1,29 @@
 import XCTest
+import TailorTesting
 
-class StringTests: XCTestCase {
+class StringTests: TailorTestCase {
   func testLowercaseInitialLowercasesFirstLetter() {
     let input = "Test_Astring"
     let output = input.lowercaseInitial
-    XCTAssertEqual(output, "test_Astring", "capitalizes the first character")
+    assert(output, equals: "test_Astring", message: "capitalizes the first character")
   }
 
   func testCapitalizeInitialCapitalizesFirstLetter() {
     let input = "test_aString"
     let output = input.capitalizeInitial
-    XCTAssertEqual(output, "Test_aString", "lowercases the first character")
+    assert(output, equals: "Test_aString", message: "lowercases the first character")
   }
   
   func testPluralizedGetsPluralValueForSimpleString() {
-    XCTAssertEqual("hat".pluralized, "hats", "gets plural string")
+    assert("hat".pluralized, equals: "hats", message: "gets plural string")
   }
   
   func testPluralizedStringWithOEndsInOes() {
-    XCTAssertEqual("potato".pluralized, "potatoes", "gets plural string")
+    assert("potato".pluralized, equals: "potatoes", message: "gets plural string")
   }
   
   func testPluralizedStringWithSEndsInSes() {
-    XCTAssertEqual("diss".pluralized, "disses", "gets plural string")
+    assert("diss".pluralized, equals: "disses", message: "gets plural string")
   }
   
   func testContainsDeterminesIfStringContainsOtherString() {

@@ -1,12 +1,13 @@
 import XCTest
 import Tailor
+import TailorTesting
 
-class TemplateTests: XCTestCase {
+class TemplateTests: TailorTestCase {
   var controller: Controller!
   var template: Template!
   
   override func setUp() {
-    Application.start()
+    super.setUp()
     let request = Request(clientAddress: "1.1.1.1", data: NSData())
     let callback = {
       (response: Response) -> () in
@@ -24,6 +25,7 @@ class TemplateTests: XCTestCase {
     ])
     template = Template(controller: controller)
   }
+  
   //MARK: - Body
   
   func testGenerateCallsBodyAndReturnsBuffer() {
@@ -41,7 +43,7 @@ class TemplateTests: XCTestCase {
     }
     
     let result = TestTemplate(controller: controller, hatColor: "red").generate()
-    XCTAssertEqual(result, "Test value red", "returns template body")
+    assert(result, equals: "Test value red", message: "returns template body")
   }
   
   func testGenerateErasesExistingContents() {
@@ -52,9 +54,9 @@ class TemplateTests: XCTestCase {
     }
     var template2 = TestTemplate(controller: controller)
     template2.text("Test 1")
-    XCTAssertEqual(template2.buffer, "Test 1", "starts out with hardcoded text")
+    assert(template2.buffer, equals: "Test 1", message: "starts out with hardcoded text")
     template2.generate()
-    XCTAssertEqual(template2.buffer, "Test 2", "replaces with new contents")
+    assert(template2.buffer, equals: "Test 2", message: "replaces with new contents")
   }
   
   //MARK: - Helpers
@@ -62,79 +64,72 @@ class TemplateTests: XCTestCase {
   func testLocalizationPrefixHasClassName() {
     let prefix = template.localizationPrefix
     
-    XCTAssertEqual(prefix, "tailor.template", "has the underscored class name")
+    assert(prefix, equals: "tailor.template", message: "has the underscored class name")
   }
   
   func testLocalizeMethodGetsLocalizationFromController() {
     let result = template.localize("template.test")
-    XCTAssertNotNil(result)
-    if result != nil {
-      XCTAssertEqual(result!, "Localized Text", "gets the text from the controller's localization")
-    }
+    assert(result, equals: "Localized Text", message: "gets the text from the controller's localization")
   }
   
   func testLocalizeMethodPrependsPrefixForKeyWithDot() {
     Application.sharedApplication().configuration["localization.content.en.tailor.template.prefix_test"] = "Localized Text with Prefix"
     let result = template.localize(".prefix_test")
-    XCTAssertNotNil(result)
-    if result != nil {
-      XCTAssertEqual(result!, "Localized Text with Prefix", "gets the text that ")
-    }
-    
+    assert(result, equals: "Localized Text with Prefix", message: "gets the text that ")
   }
   
   func testTextMethodAddsTextToTemplate() {
     template.text("Test Text")
-    XCTAssertEqual(template.buffer, "Test Text", "adds text to buffer")
+    assert(template.buffer, equals: "Test Text", message: "adds text to buffer")
   }
   
   func testTextMethodSanitizesText() {
     template.text("<blink>Hello</blink>")
-    XCTAssertEqual(template.buffer, "&lt;blink&gt;Hello&lt;/blink&gt;", "adds sanitized text to buffer")
+   assert(template.buffer, equals: "&lt;blink&gt;Hello&lt;/blink&gt;", message: "adds sanitized text to buffer")
   }
   
   func testTextMethodLocalizesText() {
     template.text("template.test")
-    XCTAssertEqual(template.buffer, "Localized Text", "adds localized text to buffer")
+   assert(template.buffer, equals: "Localized Text", message: "adds localized text to buffer")
   }
   
   func testTextMethodDoesNotLocalizeTextWhenFlagIsSetToFalse() {
     template.text("template.test", localize: false)
-    XCTAssertEqual(template.buffer, "template.test", "adds text to buffer")
+   assert(template.buffer, equals: "template.test", message: "adds text to buffer")
   }
   
   func testRawMethodAddsTextWithoutSanitization() {
     template.raw("<p>Hello</p>")
-    XCTAssertEqual(template.buffer, "<p>Hello</p>", "adds text to buffer without sanitization")
+    assert(template.buffer, equals: "<p>Hello</p>", message: "adds text to buffer without sanitization")
   }
   
   func testRawMethodLocalizesText() {
     template.raw("template.test_raw")
-    XCTAssertEqual(template.buffer, "<b>Hello</b>", "adds localized text to buffer without sanitization")
+    assert(template.buffer, equals: "<b>Hello</b>", message: "adds localized text to buffer without sanitization")
   }
   
   func testRawMethodDoesNotLocalizeTextWhenFlagIsFalse() {
     template.raw("template.test_raw", localize: false)
-    XCTAssertEqual(template.buffer, "template.test_raw", "adds unlocalized text")
+    assert(template.buffer, equals: "template.test_raw", message: "adds unlocalized text")
   }
   
   func testAddSanitizedTextAddsHtmlSanitizedText() {
     let text = HtmlSanitizer().sanitize("4 < 5")
     template.addSanitizedText(text)
-    XCTAssertEqual(template.buffer, "4 &lt; 5", "adds text to buffer")
+    assert(template.buffer, equals: "4 &lt; 5", message: "adds text to buffer")
   }
   
   func testAddSanitizedTextSanitizesTextThatHasNotBeenSanitized() {
     let text = SqlSanitizer().sanitize("4 > 3")
     template.addSanitizedText(text)
-    XCTAssertEqual(template.buffer, "4 &gt; 3", "adds text to buffer")
+    assert(template.buffer, equals: "4 &gt; 3", message: "adds text to buffer")
   }
   
   func testTagMethodPutsTagInBuffer() {
     template.tag("p", ["class": "warning", "style": "font-weight: bold"], with: {
       self.template.text("Stop")
     })
-    XCTAssertEqual(template.buffer, "<p class=\"warning\" style=\"font-weight: bold\">Stop</p>", "puts tag in the buffer")
+    assert(template.buffer, equals: "<p class=\"warning\" style=\"font-weight: bold\">Stop</p>", message: "puts tag in the buffer")
   }
   
   func testTagMethodWithoutAttributesPutsTagInBuffer() {
@@ -143,21 +138,21 @@ class TemplateTests: XCTestCase {
         self.template.text("Inside")
       })
     })
-    XCTAssertEqual(template.buffer, "<div><p>Inside</p></div>", "puts tags in the buffer")
+    assert(template.buffer, equals: "<div><p>Inside</p></div>", message: "puts tags in the buffer")
   }
   
   func testTagWithTextPutsTagInBuffer() {
     template.tag("p", text: "Hello")
-    XCTAssertEqual(template.buffer, "<p>Hello</p>")
+    assert(template.buffer, equals: "<p>Hello</p>")
   }
   
   func testTagWithTextAndAttributesPutsTagInBuffer() {
     template.tag("p", text: "Hello", attributes: ["class": "greeting", "data-hover": "Hi"])
-    XCTAssertEqual(template.buffer, "<p class=\"greeting\" data-hover=\"Hi\">Hello</p>")
+    assert(template.buffer, equals: "<p class=\"greeting\" data-hover=\"Hi\">Hello</p>")
   }
   
   func testLinkPutsLinkTagInBuffer() {
-    class TestController: Controller {
+    class InnerTestController: Controller {
       override func pathFor(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
         XCTAssertEqual(controllerName!, "TestController", "has the controller name")
         XCTAssertEqual(action!, "index", "has the action")
@@ -165,7 +160,7 @@ class TemplateTests: XCTestCase {
         return "/test/path"
       }
     }
-    let template2 = Template(controller: TestController(
+    let template2 = Template(controller: InnerTestController(
       request: controller.request,
       action: controller.action,
       callback: controller.callback
@@ -173,7 +168,7 @@ class TemplateTests: XCTestCase {
     template2.link(controllerName: "TestController", action: "index", parameters: ["id": "5"], attributes: ["class": "btn"]) {
       template2.text("Click here")
     }
-    XCTAssertEqual(template2.buffer, "<a class=\"btn\" href=\"/test/path\">Click here</a>", "puts the tag in the buffer")
+    assert(template2.buffer, equals: "<a class=\"btn\" href=\"/test/path\">Click here</a>", message: "puts the tag in the buffer")
   }
   
   func testRenderTemplatePutsTemplateContentsInBuffer() {
@@ -192,7 +187,7 @@ class TemplateTests: XCTestCase {
       }
     }
     template.renderTemplate(TestTemplate(controller: controller, name: "John"))
-    XCTAssertEqual(template.buffer, "<p>Hello</p><p>Localized Text</p><p>John</p>", "buffer has text from original template and sub-template")
+    assert(template.buffer, equals: "<p>Hello</p><p>Localized Text</p><p>John</p>", message: "buffer has text from original template and sub-template")
   }
   
   func testRenderTemplatePutsTemplateInList() {
@@ -210,10 +205,10 @@ class TemplateTests: XCTestCase {
       }
     }
     template.renderTemplate(TestTemplate(controller: controller, name: "John"))
-    XCTAssertEqual(template.renderedTemplates.count, 1, "puts a template in the list")
+    assert(template.renderedTemplates.count, equals: 1, message: "puts a template in the list")
     if !template.renderedTemplates.isEmpty {
       if let otherTemplate = template.renderedTemplates[0] as? TestTemplate {
-        XCTAssertEqual(otherTemplate.name, "John", "puts the right template in the list")
+        assert(otherTemplate.name, equals: "John", message: "puts the right template in the list")
       }
       else {
         XCTFail("puts the right template in the list")
@@ -242,7 +237,7 @@ class TemplateTests: XCTestCase {
     
     let template = TestTemplate(controller: controller)
     template.generate()
-    XCTAssertEqual(template.buffer, "<html><body><p>cached content</p></body></html>")
+    assert(template.buffer, equals: "<html><body><p>cached content</p></body></html>")
   }
   
   func testCacheWithMissPutsContentsInCache() {
@@ -269,7 +264,7 @@ class TemplateTests: XCTestCase {
     let contents = store.read("cache.test")
     XCTAssertNotNil(contents, "puts something in the cache")
     if contents != nil {
-      XCTAssertEqual(contents!, "<p>cached content</p>", "puts just the added content from the cache block in the cache")
+      assert(contents!, equals: "<p>cached content</p>", message: "puts just the added content from the cache block in the cache")
     }
   }
   
@@ -294,7 +289,7 @@ class TemplateTests: XCTestCase {
     
     let template = TestTemplate(controller: controller)
     template.generate()
-    XCTAssertEqual(template.buffer, "<html><body><p>the cached content</p></body></html>")
+    assert(template.buffer, equals: "<html><body><p>the cached content</p></body></html>")
   }
   
   //MARK: - Controller Information
@@ -308,7 +303,7 @@ class TemplateTests: XCTestCase {
       callback: controller.callback
     ))
     let parameters = template.requestParameters("id", "color", "shelf")
-    XCTAssertEqual(parameters, ["id": "5", "color": "red"], "gets a subset of the request parameters")
+    assert(parameters, equals: ["id": "5", "color": "red"], message: "gets a subset of the request parameters")
   }
   
   func testRequestParameterGetsKeyFromRequest() {
@@ -320,7 +315,7 @@ class TemplateTests: XCTestCase {
       callback: controller.callback
       ))
     if let param1 = template.requestParameter("id") {
-      XCTAssertEqual(param1, "5", "gets the parameter from the controller")
+      assert(param1, equals: "5", message: "gets the parameter from the controller")
     }
     else {
       XCTFail("gets the parameter from the controller")
@@ -332,8 +327,8 @@ class TemplateTests: XCTestCase {
   
   func testAttributeNameGetsNameFromModel() {
     let name1 = template.attributeName(Hat.self, "brimSize")
-    XCTAssertEqual(name1, "Brim Size", "gets a capitalized name from a model")
+    assert(name1, equals: "Brim Size", message: "gets a capitalized name from a model")
     let name2 = template.attributeName(Shelf.self, "store")
-    XCTAssertEqual(name2, "Hat Store", "gets a capitalized name from the localization")
+    assert(name2, equals: "Hat Store", message: "gets a capitalized name from the localization")
   }
 }

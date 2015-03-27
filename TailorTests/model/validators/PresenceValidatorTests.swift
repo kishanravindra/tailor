@@ -1,7 +1,8 @@
 import XCTest
 import Tailor
+import TailorTesting
 
-class PresenceValidatorTests: XCTestCase {
+class PresenceValidatorTests: TailorTestCase {
   let validator = PresenceValidator(key: "name")
   
   func testValidatorPutsNoErrorsOnRecordWithValue() {
@@ -14,20 +15,20 @@ class PresenceValidatorTests: XCTestCase {
     let record = Store()
     validator.validate(record)
     let error = ValidationError(modelType: Store.self, key: "name", message: "blank", data: [:])
-    XCTAssertEqual(record.errors.errors, [error], "puts the error on the record")
+    assert(record.errors.errors, equals: [error], message: "puts the error on the record")
   }
   
   func testValidatorPutsErrorOnRecordWithBlankValue() {
     let record = Store(data: ["name": ""])
     validator.validate(record)
     let error = ValidationError(modelType: Store.self, key: "name", message: "blank", data: [:])
-    XCTAssertEqual(record.errors.errors, [error], "puts the error on the record")
+    assert(record.errors.errors, equals: [error], message: "puts the error on the record")
   }
   
   func testValidatorPutsErrorOnRecordWithoutColumn() {
     let record = Hat()
     validator.validate(record)
     let error = ValidationError(modelType: Store.self, key: "name", message: "blank", data: [:])
-    XCTAssertEqual(record.errors.errors, [error], "puts the error on the record")
+    assert(record.errors.errors, equals: [error], message: "puts the error on the record")
   }
 }

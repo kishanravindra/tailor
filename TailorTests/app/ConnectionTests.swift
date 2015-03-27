@@ -1,7 +1,8 @@
 import XCTest
 import Tailor
+import TailorTesting
 
-class ConnectionTests: XCTestCase {
+class ConnectionTests: TailorTestCase {
   class TestConnection : Connection {
     override func listenToSocket() {
     }

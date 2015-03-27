@@ -1,9 +1,10 @@
 import XCTest
 import Tailor
+import TailorTesting
 
-class TaskTests: XCTestCase {
+class TaskTests: TailorTestCase {
   func testTaskGetsCommandFromClassNames() {
     @objc(CommandNameTestTask) class CommandNameTestTask : Task {}
-    XCTAssertEqual(CommandNameTestTask.command(), "command_name_test_task")
+    assert(CommandNameTestTask.command(), equals: "command_name_test_task")
   }
 }

@@ -1,7 +1,8 @@
 import XCTest
 import Tailor
+import TailorTesting
 
-class DatabaseLocalizationTests: XCTestCase {
+class DatabaseLocalizationTests: TailorTestCase {
   var localization: Localization!
   override func setUp() {
     super.setUp()
@@ -30,9 +31,7 @@ class DatabaseLocalizationTests: XCTestCase {
     DatabaseLocalization.Translation.create(["translationKey": "database.message", "locale": "es", "translatedText": "Hola"])
     let value = localization.fetch("database.message", inLocale: "es")
     XCTAssertNotNil(value, "gets a value")
-    if value != nil {
-      XCTAssertEqual(value!, "Hola", "gets the value for that locale")
-    }
+    assert(value, equals: "Hola", message: "gets the value for that locale")
   }
   
   func testFetchInLocaleGetsNilForMissingValue() {
