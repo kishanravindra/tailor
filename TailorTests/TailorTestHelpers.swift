@@ -3,8 +3,8 @@ import Tailor
 import TailorTesting
 
 class TestApplication: Tailor.Application {
-   required init(arguments: [String]? = nil) {
-    super.init(arguments: arguments)
+   required init() {
+    super.init()
     self.configuration.addDictionary([
     "database": [
       "host": "127.0.0.1",
@@ -16,8 +16,6 @@ class TestApplication: Tailor.Application {
       "encryptionKey": "0FC7ECA7AADAD635DCC13A494F9A2EA8D8DAE366382CDB3620190F6F20817124"
     ]])
   }
-  
-  override func promptForCommand() -> String { return "tailor.exit" }
   
   override func openDatabaseConnection() -> DatabaseConnection {
     let config = self.configuration.child("database").toDictionary() as [String: String]

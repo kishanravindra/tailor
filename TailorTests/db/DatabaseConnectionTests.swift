@@ -12,10 +12,6 @@ class DatabaseConnectionTests: TailorTestCase {
     }
   }
   
-  override func setUp() {
-    Application.start()
-  }
-  
   //MARK: - Initialization
   
   func testInitializationSetsTimeZone() {
@@ -25,17 +21,16 @@ class DatabaseConnectionTests: TailorTestCase {
 
   func testSharedConnectionOpensWithApplication() {
     let application = TestApplication.init()
-    SHARED_APPLICATION = application
     application.start()
+    NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] = application
     DatabaseConnection.openSharedConnection()
     assert(NSStringFromClass(DatabaseConnection.sharedConnection().dynamicType), equals: NSStringFromClass(MysqlConnection.self), message: "has a mysql connection as the shared connection")
     assert(application.connectionCount, equals: 1, message: "increments the connection count")
-    SHARED_APPLICATION = nil
+    NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
   }
   
   func testSharedConnectionOpensSeparateConnectionInNewThread() {
     let application = TestApplication.init()
-    SHARED_APPLICATION = application
     application.start()
     DatabaseConnection.openSharedConnection()
     let expectation = expectationWithDescription("executes block in thread")
@@ -46,7 +41,6 @@ class DatabaseConnectionTests: TailorTestCase {
       self.assert(application.connectionCount, equals: 2, message: "creates two connections")
     }
     waitForExpectationsWithTimeout(0.01, handler: nil)
-    SHARED_APPLICATION = nil
   }
   
   //MARK: - Queries

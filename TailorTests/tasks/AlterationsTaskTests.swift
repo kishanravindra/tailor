@@ -4,7 +4,6 @@ import TailorTesting
 
 class AlterationsTaskTests: TailorTestCase {
   func testRunTaskRunsPendingAlterations() {
-    Application.start()
     DatabaseConnection.sharedConnection().executeQuery("DROP TABLE IF EXISTS tailor_alterations")
     DatabaseConnection.sharedConnection().executeQuery("CREATE TABLE tailor_alterations ( id varchar(255) PRIMARY KEY )")
     
@@ -14,6 +13,5 @@ class AlterationsTaskTests: TailorTestCase {
     
     let result = DatabaseConnection.sharedConnection().executeQuery("SHOW FIELDS FROM `hats` LIKE 'materiel'")
     assert(result.count, equals: 1, message: "makes the new column")
-    SHARED_APPLICATION = nil
   }
 }

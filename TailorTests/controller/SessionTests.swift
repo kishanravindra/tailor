@@ -14,6 +14,8 @@ class SessionTests: TailorTestCase {
       mergedData["_flash_\(key)"] = value
     }
     
+    let application = Application.sharedApplication()
+    let type = reflect(application).summary
     let key = Application.sharedApplication().configuration["sessions.encryptionKey"] ?? ""
     let jsonData = NSJSONSerialization.dataWithJSONObject(mergedData, options: nil, error: nil) ?? NSData()
     let encryptor = AesEncryptor(key: key)
@@ -24,10 +26,6 @@ class SessionTests: TailorTestCase {
   
   func createSession(cookieString: String) -> Session {
     return Session(request: Request(cookies: ["_session": cookieString]))
-  }
-  
-  override func setUp() {
-    Application.start()
   }
   
   //MARK: - Creation

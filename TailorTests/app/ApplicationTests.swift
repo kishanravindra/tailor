@@ -13,7 +13,7 @@ class ApplicationTests : TailorTestCase {
   }
 
   func testInitializationSetsInstanceVariables() {
-    application = Application(arguments: ["tailor.exit"])
+    application = Application()
     let address = application.ipAddress
     XCTAssertTrue(
       address.0 == 0 &&
@@ -26,15 +26,6 @@ class ApplicationTests : TailorTestCase {
     self.assert(application.rootPath(), equals: ".", message: "initalizes root path to the current path")
   }
   
-  func testInitializationSetsArguments() {
-    application = Application(arguments: ["tailor.exit", "environment=production", "var=5", "verbose"])
-    self.assert(application.arguments, equals: ["tailor.exit", "environment=production", "var=5", "verbose"], message: "stores arguments array")
-    self.assert(application.command, equals: "tailor.exit", message: "parses command")
-    self.assert(application.flags["environment"], equals: "production", message: "parses the environment flag correctly")
-    self.assert(application.flags["var"], equals: "5", message: "parses the flag properly")
-    self.assert(application.flags["verbose"], equals: "1", message: "sets a flag with no argument to 1")
-  }
-  
   func testInitializationSetsDateFormatters() {
     self.assert(application.dateFormatters["short"]?.dateFormat, equals: "hh:mm Z", message: "sets the short time format properly")
     self.assert(application.dateFormatters["long"]?.dateFormat, equals: "dd MMMM, yyyy, hh:mm z", message: "sets a long time format properly")
@@ -43,7 +34,14 @@ class ApplicationTests : TailorTestCase {
     self.assert(application.dateFormatters["db"]?.dateFormat, equals: "yyyy-MM-dd HH:mm:ss", message: "sets a db date format properly")
   }
   
-  func testParseArgumentsWithNoArgumentsReadsFromPrompt() {
+  func testInitializationWithSharedArgumentsSetsArguments() {
+    APPLICATION_ARGUMENTS = ("tailor.exit", ["a": "25"])
+    let application = Application()
+    self.assert(application.command, equals: "tailor.exit")
+    self.assert(application.flags, equals: ["a": "25"])
+  }
+  
+  func testInitializationWithoutSharedArgumentsReadsFromPrompt() {
     class TestApplication: Application {
       var commands = ["tailor.exit a=5"]
       override func promptForCommand() -> String {
@@ -51,7 +49,8 @@ class ApplicationTests : TailorTestCase {
       }
     }
     
-    let application = TestApplication(arguments: [""])
+    APPLICATION_ARGUMENTS = nil
+    let application = TestApplication()
     self.assert(application.command, equals: "tailor.exit", message: "sets the command from the prompt")
     self.assert(application.flags, equals: ["a": "5"], message: "sets the flags from the prompt")
   }
@@ -64,7 +63,8 @@ class ApplicationTests : TailorTestCase {
       }
     }
     
-    let application = TestApplication(arguments: [""])
+    APPLICATION_ARGUMENTS = nil
+    let application = TestApplication()
     self.assert(application.command, equals: "tailor.exit", message: "sets the command from the prompt")
     self.assert(application.flags, equals: ["a": "7"], message: "sets the flags from the prompt")
   }
@@ -77,8 +77,16 @@ class ApplicationTests : TailorTestCase {
       }
     }
     
-    let application = TestApplication(arguments: [""])
+    APPLICATION_ARGUMENTS = nil
+    let application = TestApplication()
     self.assert(application.flags, equals: ["a": "b + c", "d": "23"], message: "keeps the quoted flags together")
+  }
+  
+  func testSharedApplicationReusesApplication() {
+    let application1 = Application.sharedApplication()
+    application1.configuration["test.identity"] = "success"
+    let application2 = Application.sharedApplication()
+    self.assert(application2.configuration["test.identity"], equals: "success")
   }
   
   //MARK: Getting Subclasses

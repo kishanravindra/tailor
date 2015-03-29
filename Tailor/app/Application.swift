@@ -20,11 +20,6 @@ public class Application {
   private var registeredSubclasses: [String:[AnyClass]] = [:]
   
   /**
-    The space-separated arguments given from the command-line.
-    */
-  public private(set) var arguments: [String]
-  
-  /**
     The command that the application is running, which is provided in the first
     command-line argument.
     */
@@ -49,14 +44,19 @@ public class Application {
     and registers all the subclasses of Task and Alteration for use in
     running scripts.
     */
-  public required init(arguments : [String]? = nil) {
-    self.arguments = arguments ?? []
-    if self.arguments.isEmpty {
-      self.arguments = self.dynamicType.extractArguments()
-    }
+  public required init() {
     self.loadDateFormatters()
     self.registerSubclasses(Task.self, Alteration.self)
-    self.parseArguments()
+    
+    if let arguments = APPLICATION_ARGUMENTS {
+      self.command = arguments.0
+      self.flags = arguments.1
+    }
+    else {
+      self.extractArguments()
+    }
+    APPLICATION_ARGUMENTS = (self.command, self.flags)
+    
     self.loadConfigFromFile("sessions.plist")
     self.loadConfigFromFile("database.plist")
     self.loadConfigFromFile("localization.plist")
@@ -70,7 +70,18 @@ public class Application {
   
   /** The application that we are running. */
   public class func sharedApplication() -> Application {
-    return SHARED_APPLICATION
+    var application = NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] as? Application
+    if application == nil {
+      var applicationClass = self
+      for bundle in NSBundle.allBundles() {
+        if let bundleClass = bundle.principalClass as? Application.Type {
+          applicationClass = bundleClass
+        }
+      }
+      application = applicationClass()
+      NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] = application
+    }
+    return application!
   }
   
   //MARK: - Running
@@ -105,17 +116,7 @@ public class Application {
   
   /** Starts a version of this application as the shared application. */
   public class func start() {
-    if(SHARED_APPLICATION == nil) {
-      var applicationClass = self
-      for bundle in NSBundle.allBundles() {
-        if let bundleClass = bundle.principalClass as? Application.Type {
-          NSLog("Setting bundle class to %@", NSStringFromClass(bundleClass))
-          applicationClass = bundleClass
-        }
-      }
-      SHARED_APPLICATION = applicationClass()
-      SHARED_APPLICATION.start()
-    }
+    self.sharedApplication().start()
   }
   
   /**
@@ -142,7 +143,7 @@ public class Application {
     :returns:
       The arguments.
     */
-  public class func extractArguments() -> [String] {
+  public class func commandLineArguments() -> [String] {
     if C_ARGC < 2 {
       return []
     }
@@ -153,6 +154,7 @@ public class Application {
         arguments.append(argument)
       }
     }
+    
     return arguments
   }
 
@@ -223,21 +225,22 @@ public class Application {
     a task on the command line, either by name or by number. It will keep
     prompting until it gets a valid task.
     */
-  private func parseArguments() {
-    (self.command, self.flags) = self.dynamicType.parseArguments(self.arguments)
+  private func extractArguments() {
+    var arguments = self.dynamicType.commandLineArguments()
+    (self.command, self.flags) = self.dynamicType.parseArguments(arguments)
     
     let tasks = self.registeredSubclassList(Task.self)
     while (tasks.filter { $0.command() == self.command }).isEmpty {
       let commandLine = self.promptForCommand()
       var inQuotes = false
-      self.arguments = split(commandLine) {
+      arguments = split(commandLine) {
         (character: Character) -> Bool in
         if character == "\"" {
           inQuotes = !inQuotes
         }
         return character == " " && !inQuotes
         }.map { $0.stringByReplacingOccurrencesOfString("\"", withString: "") }
-      (self.command, self.flags) = self.dynamicType.parseArguments(self.arguments)
+      (self.command, self.flags) = self.dynamicType.parseArguments(arguments)
     }
 
   }
@@ -359,4 +362,4 @@ public class Application {
 }
 
 /** The application that we are running. */
-public var SHARED_APPLICATION : Application!
+public var APPLICATION_ARGUMENTS : (String, [String:String])? = nil

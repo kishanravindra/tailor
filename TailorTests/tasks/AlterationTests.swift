@@ -29,7 +29,6 @@ class AlterationTests: TailorTestCase {
   }
   
   func testPendingAlterationsFindsAlterationsThatAreNotInTable() {
-    Application.start()
     DatabaseConnection.sharedConnection().executeQuery("DROP TABLE IF EXISTS tailor_alterations")
     DatabaseConnection.sharedConnection().executeQuery("CREATE TABLE tailor_alterations ( id varchar(255) PRIMARY KEY )")
     DatabaseConnection.sharedConnection().executeQuery("INSERT INTO tailor_alterations values (''), (?)", "1")
@@ -37,6 +36,5 @@ class AlterationTests: TailorTestCase {
     let alterations = Alteration.pendingAlterations()
     let ids = alterations.map { $0.id() }
     assert(ids, equals: ["2", "3"], message: "gets the ids for the alterations that have not been run")
-    SHARED_APPLICATION = nil
   }
 }

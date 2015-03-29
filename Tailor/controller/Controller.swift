@@ -238,7 +238,7 @@ public class Controller {
     :returns:               The path
   */
   public func pathFor(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
-    var path = SHARED_APPLICATION.routeSet.pathFor(
+    var path = Application.sharedApplication().routeSet.pathFor(
       controllerName ?? self.dynamicType.name(),
       action: action ?? self.action,
       parameters: parameters,
