@@ -1,10 +1,12 @@
 import XCTest
+import Tailor
+import TailorTesting
 
-class UserTests: XCTestCase {
+class UserTests: TailorTestCase {
   var user : User!
   
   override func setUp() {
-    TestApplication.start()
+    Application.start()
     DatabaseConnection.sharedConnection().executeQuery("TRUNCATE TABLE `users`")
     user = User(emailAddress: "test@test.com", password: "Monkey")
     user.save()
@@ -13,7 +15,7 @@ class UserTests: XCTestCase {
   //MARK: - Sign Up
   
   func testInitializationSetsEmailAddress() {
-    XCTAssertEqual(user.emailAddress, "test@test.com", "sets email address")
+    assert(user.emailAddress, equals: "test@test.com", message: "sets email address")
   }
   
   func testInitializationSetsEncryptedPassword() {
@@ -34,7 +36,7 @@ class UserTests: XCTestCase {
     let result = User.authenticate("test@test.com", password: "Monkey")
     XCTAssertNotNil(result, "returns a result")
     if result != nil {
-      XCTAssertEqual(user, result!, "returns the matching user")
+      assert(user, equals: result!, message: "returns the matching user")
     }
   }
   

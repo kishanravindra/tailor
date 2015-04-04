@@ -9,11 +9,11 @@ public class Sanitizer {
 
     The keys are the characters that should be removed, and the values are the
     strings that should replace them.
-
-    The best practices is for subclasses to set them in their initializer and
-    then never change them.
+  
+    This implementation returns an empty mapping, but subclasses can override
+    it.
     */
-  public internal(set) var mapping = [Character:String]()
+  public class func mapping() -> [Character:String] { return [:] }
   
   /**
     This method initializes a sanitizer.
@@ -47,7 +47,7 @@ public class Sanitizer {
   public func sanitizeString(string: String) -> String {
     var sanitized = ""
     for character in string {
-      var result = mapping[character] ?? String(character)
+      var result = self.dynamicType.mapping()[character] ?? String(character)
       sanitized += result
     }
     return sanitized

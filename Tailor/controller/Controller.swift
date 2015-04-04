@@ -14,7 +14,7 @@ public class Controller {
                             If this is empty, it will be run for all actions.
     :param: excludedActions The actions that this filter should not be run for.
     */
-  typealias Filter = (
+  public typealias Filter = (
     filter: ()->Bool,
     includedActions: [String],
     excludedActions: [String]
@@ -39,7 +39,7 @@ public class Controller {
   public var localization: Localization
   
   /** The filters that this controller runs. */
-  var filters: [Filter] = []
+  public private(set) var filters: [Filter] = []
   
   /**
     The templates that this controller has rendered in the course of responding
@@ -221,30 +221,38 @@ public class Controller {
   }
 
   /**
-    This method gets the URL for a route.
+    This method gets the path for a route.
   
     It defaults to the current controller and action. It will also substitute
-    any of the current request's parameters into the new URL, if they are part
-    of that URL's path.
+    any of the current request's parameters into the new path, if they are part
+    of that path.
   
     :param: controllerName  The controller to link to. This will default to the
                             current controller.
     :param: action          The action to link to.
     :param: parameters      Additional parameters for the path.
+    :param: domain          The domain to use for the URL. If this is omitted,
+                            the result will just be the path part of the URL.
+    :param: https           Whether the URL should be https or http. If the
+                            domain is omitted, this is ignored.
     :returns:               The path
   */
-  public func urlFor(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:]) -> String? {
-    var url = SHARED_APPLICATION.routeSet.urlFor(
+  public func pathFor(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
+    var path = Application.sharedApplication().routeSet.pathFor(
       controllerName ?? self.dynamicType.name(),
       action: action ?? self.action,
-      parameters: parameters
+      parameters: parameters,
+      domain: domain,
+      https: https
     )
-    if url != nil {
+    if path != nil {
       for (key,value) in self.request.requestParameters {
-        url = url?.stringByReplacingOccurrencesOfString(":\(key)", withString: value)
+        if !key.isEmpty {
+          path = path?.stringByReplacingOccurrencesOfString(":\(key)", withString: value)
+        }
       }
     }
-    return url
+    return path
   }
 
   /**
@@ -256,8 +264,8 @@ public class Controller {
     :param: parameters      Additional parameters for the path.
     */
   public func redirectTo(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:]) {
-    let url = self.urlFor(controllerName: controllerName, action: action, parameters: parameters) ?? "/"
-    self.redirectTo(url)
+    let path = self.pathFor(controllerName: controllerName, action: action, parameters: parameters) ?? "/"
+    self.redirectTo(path)
   }
   
   /**

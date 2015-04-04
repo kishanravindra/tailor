@@ -43,7 +43,7 @@ public class Connection : NSObject {
     queue for reading from the socket, and put an operation on the main queue
     for listening for a new connection.
     */
-  func listenToSocket() {
+  public func listenToSocket() {
     NSOperationQueue.mainQueue().addOperationWithBlock {
       let connectionDescriptor = accept(self.socketDescriptor, nil, nil)
       
@@ -70,7 +70,7 @@ public class Connection : NSObject {
   
     :param: connectionDescriptor    The file descriptor for the connection.
     */
-  func readFromSocket(connectionDescriptor: Int32) {
+  public func readFromSocket(connectionDescriptor: Int32) {
     var data = NSMutableData()
     var buffer = [UInt8]()
     let bufferLength: UInt = 1024

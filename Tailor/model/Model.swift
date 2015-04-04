@@ -13,8 +13,7 @@ public class Model {
   public var errors: ErrorCollection!
   
   public init() {
-    self.errors = nil
-    self.errors = ErrorCollection(modelType: self.dynamicType, errors: [])
+    self.errors = ErrorCollection(modelType: self.dynamicType)
   }
   
   /** 

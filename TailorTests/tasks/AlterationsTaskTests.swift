@@ -1,8 +1,9 @@
 import XCTest
+import Tailor
+import TailorTesting
 
-class AlterationsTaskTests: XCTestCase {
+class AlterationsTaskTests: TailorTestCase {
   func testRunTaskRunsPendingAlterations() {
-    TestApplication.start()
     DatabaseConnection.sharedConnection().executeQuery("DROP TABLE IF EXISTS tailor_alterations")
     DatabaseConnection.sharedConnection().executeQuery("CREATE TABLE tailor_alterations ( id varchar(255) PRIMARY KEY )")
     
@@ -11,7 +12,6 @@ class AlterationsTaskTests: XCTestCase {
     AlterationsTask().run()
     
     let result = DatabaseConnection.sharedConnection().executeQuery("SHOW FIELDS FROM `hats` LIKE 'materiel'")
-    XCTAssertEqual(result.count, 1, "makes the new column")
-    SHARED_APPLICATION = nil
+    assert(result.count, equals: 1, message: "makes the new column")
   }
 }

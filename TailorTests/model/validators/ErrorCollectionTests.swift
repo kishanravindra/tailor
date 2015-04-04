@@ -1,14 +1,16 @@
 import XCTest
+import Tailor
+import TailorTesting
 
-class ErrorCollectionTests: XCTestCase {
-  var errors = ErrorCollection(modelType: Hat.self, errors: [])
+class ErrorCollectionTests: TailorTestCase {
+  var errors = ErrorCollection(modelType: Hat.self)
   
   func testAddKeyPutsEntryInErrors() {
     errors.add("name", "blank")
     errors.add("name", "too_short", data: ["min": "5"])
     errors.add("color", "blank")
     
-    XCTAssertEqual(errors.errors, [
+    assert(errors.errors, equals: [
       ValidationError(modelType: Hat.self, key: "name", message: "blank", data: [:]),
       ValidationError(modelType: Hat.self, key: "name", message: "too_short", data: ["min": "5"]),
       ValidationError(modelType: Hat.self, key: "color", message: "blank", data: [:])
@@ -35,8 +37,8 @@ class ErrorCollectionTests: XCTestCase {
     errors.add("name", "too_short", data: ["min": "5"])
     errors.add("color", "blank")
     
-    XCTAssertEqual(errors["name"], list1, "gets multiple keys for the name")
-    XCTAssertEqual(errors["color"], list2, "gets a single key for the color")
-    XCTAssertEqual(errors["brimSize"], [], "gets an empty list for a key with no errors")
+    assert(errors["name"], equals: list1, message: "gets multiple keys for the name")
+    assert(errors["color"], equals: list2, message: "gets a single key for the color")
+    assert(errors["brimSize"], equals: [], message: "gets an empty list for a key with no errors")
   }
 }

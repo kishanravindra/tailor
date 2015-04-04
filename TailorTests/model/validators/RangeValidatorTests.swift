@@ -1,6 +1,8 @@
 import XCTest
+import Tailor
+import TailorTesting
 
-class RangeValidatorTests: XCTestCase {
+class RangeValidatorTests: TailorTestCase {
   let validator = RangeValidator(key: "brimSize", max: 20, min: 10)
   let record = Hat()
   
@@ -8,14 +10,14 @@ class RangeValidatorTests: XCTestCase {
     record.brimSize = 8
     validator.validate(record)
     let error = ValidationError(modelType: Hat.self, key: "brimSize", message: "tooLow", data: ["min": "10"])
-    XCTAssertEqual(record.errors.errors, [error], "puts the error on the record")
+    assert(record.errors.errors, equals: [error], message: "puts the error on the record")
   }
   
   func testValidatorPutsErrorWhenValueIsAboveMax() {
     record.brimSize = 25
     validator.validate(record)
     let error = ValidationError(modelType: Hat.self, key: "brimSize", message: "tooHigh", data: ["max": "20"])
-    XCTAssertEqual(record.errors.errors, [error], "puts the error on the record")
+    assert(record.errors.errors, equals: [error], message: "puts the error on the record")
   }
   
   func testValidatorPutsNoErrorWhenValueIsInRange() {
@@ -39,7 +41,7 @@ class RangeValidatorTests: XCTestCase {
   func testValidatorPutsErrorWhenValueIsNil() {
     validator.validate(record)
     let error = ValidationError(modelType: Hat.self, key: "brimSize", message: "blank", data: [:])
-    XCTAssertEqual(record.errors.errors, [error], "puts the error on the record")
+    assert(record.errors.errors, equals: [error], message: "puts the error on the record")
   }
   
   func testValidatorPutsErrorWhenValueIsAString() {
@@ -47,7 +49,7 @@ class RangeValidatorTests: XCTestCase {
     let validator2 = RangeValidator(key: "color", min: 10, max: 20)
     validator2.validate(record)
     let error = ValidationError(modelType: Hat.self, key: "color", message: "nonNumeric", data: [:])
-    XCTAssertEqual(record.errors.errors, [error], "puts the error on the record")
+    assert(record.errors.errors, equals: [error], message: "puts the error on the record")
   }
   
   func testValidatorDoesNotHaveErrorWithNoMinOrMax() {

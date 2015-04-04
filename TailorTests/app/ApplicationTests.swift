@@ -1,25 +1,19 @@
-//
-//  ApplicationTests.swift
-//  Tailor
-//
-//  Created by John Brownlee on 13/12/14.
-//  Copyright (c) 2014 John Brownlee. All rights reserved.
-//
-
 import Foundation
 import XCTest
+import Tailor
+import TailorTesting
 
-class ApplicationTests : XCTestCase {
+class ApplicationTests : TailorTestCase {
   //MARK: Initialization
   
   var application: Application!
   override func setUp() {
-    TestApplication.start()
-    application = TestApplication.sharedApplication()
+    super.setUp()
+    application = Application.sharedApplication()
   }
 
   func testInitializationSetsInstanceVariables() {
-    application = Application(arguments: ["tailor.exit"])
+    application = Application()
     let address = application.ipAddress
     XCTAssertTrue(
       address.0 == 0 &&
@@ -27,42 +21,27 @@ class ApplicationTests : XCTestCase {
       address.2 == 0 &&
       address.3 == 0
       , "initalizes IP address to dummy address")
-    XCTAssertEqual(application.port, 8080, "initializes port to HTTP Alt")
-    XCTAssertEqual(application.routeSet.routes.count, 0, "initializes route set to an empty one")
-    XCTAssertEqual(application.rootPath(), ".", "initalizes root path to the current path")
-  }
-  
-  func testInitializationSetsArguments() {
-    application = Application(arguments: ["tailor.exit", "environment=production", "var=5", "verbose"])
-    XCTAssertEqual(application.arguments, ["tailor.exit", "environment=production", "var=5", "verbose"], "stores arguments array")
-    XCTAssertEqual(application.command, "tailor.exit", "parses command")
-    XCTAssertNotNil(application.flags["environment"], "parses the environment flag")
-    XCTAssertEqual(application.flags["environment"]!, "production", "parses the environment flag correctly")
-    XCTAssertNotNil(application.flags["var"], "parses the var flag")
-    XCTAssertEqual(application.flags["var"]!, "5", "parses the flag properly")
-    XCTAssertNotNil(application.flags["verbose"], "parses a flag with no argument")
-    XCTAssertEqual(application.flags["verbose"]!, "1", "sets a flag with no argument to 1")
+    self.assert(application.port, equals: 8080, message: "initializes port to HTTP Alt")
+    self.assert(application.routeSet.routes.count, equals: 0, message: "initializes route set to an empty one")
+    self.assert(application.rootPath(), equals: ".", message: "initalizes root path to the current path")
   }
   
   func testInitializationSetsDateFormatters() {
-    XCTAssertNotNil(application.dateFormatters["short"]?.dateFormat, "sets a short time format")
-    XCTAssertEqual(application.dateFormatters["short"]!.dateFormat!, "hh:mm Z", "sets the short time format properly")
-    
-    XCTAssertNotNil(application.dateFormatters["long"]?.dateFormat, "sets a long time format")
-    XCTAssertEqual(application.dateFormatters["long"]!.dateFormat!, "dd MMMM, yyyy, hh:mm z", "sets a long time format properly")
-    
-    XCTAssertNotNil(application.dateFormatters["shortDate"]?.dateFormat, "sets a short date format")
-    XCTAssertEqual(application.dateFormatters["shortDate"]!.dateFormat!, "dd MMMM", "sets a short date format properly")
-    
-    
-    XCTAssertNotNil(application.dateFormatters["longDate"]?.dateFormat, "sets a long date format")
-    XCTAssertEqual(application.dateFormatters["longDate"]!.dateFormat!, "dd MMMM, yyyy", "sets a long date format properly")
-    
-    XCTAssertNotNil(application.dateFormatters["db"]?.dateFormat, "sets a db date format")
-    XCTAssertEqual(application.dateFormatters["db"]!.dateFormat!, "yyyy-MM-dd HH:mm:ss", "sets a db date format properly")
+    self.assert(application.dateFormatters["short"]?.dateFormat, equals: "hh:mm Z", message: "sets the short time format properly")
+    self.assert(application.dateFormatters["long"]?.dateFormat, equals: "dd MMMM, yyyy, hh:mm z", message: "sets a long time format properly")
+    self.assert(application.dateFormatters["shortDate"]?.dateFormat, equals: "dd MMMM", message: "sets a short date format properly")
+    self.assert(application.dateFormatters["longDate"]?.dateFormat, equals: "dd MMMM, yyyy", message: "sets a long date format properly")
+    self.assert(application.dateFormatters["db"]?.dateFormat, equals: "yyyy-MM-dd HH:mm:ss", message: "sets a db date format properly")
   }
   
-  func testParseArgumentsWithNoArgumentsReadsFromPrompt() {
+  func testInitializationWithSharedArgumentsSetsArguments() {
+    APPLICATION_ARGUMENTS = ("tailor.exit", ["a": "25"])
+    let application = Application()
+    self.assert(application.command, equals: "tailor.exit")
+    self.assert(application.flags, equals: ["a": "25"])
+  }
+  
+  func testInitializationWithoutSharedArgumentsReadsFromPrompt() {
     class TestApplication: Application {
       var commands = ["tailor.exit a=5"]
       override func promptForCommand() -> String {
@@ -70,9 +49,10 @@ class ApplicationTests : XCTestCase {
       }
     }
     
-    let application = TestApplication(arguments: [""])
-    XCTAssertEqual(application.command, "tailor.exit", "sets the command from the prompt")
-    XCTAssertEqual(application.flags, ["a": "5"], "sets the flags from the prompt")
+    APPLICATION_ARGUMENTS = nil
+    let application = TestApplication()
+    self.assert(application.command, equals: "tailor.exit", message: "sets the command from the prompt")
+    self.assert(application.flags, equals: ["a": "5"], message: "sets the flags from the prompt")
   }
   
   func testParseArgumentsRepeatedlyPromptsUntilValidTaskAppears() {
@@ -83,9 +63,10 @@ class ApplicationTests : XCTestCase {
       }
     }
     
-    let application = TestApplication(arguments: [""])
-    XCTAssertEqual(application.command, "tailor.exit", "sets the command from the prompt")
-    XCTAssertEqual(application.flags, ["a": "7"], "sets the flags from the prompt")
+    APPLICATION_ARGUMENTS = nil
+    let application = TestApplication()
+    self.assert(application.command, equals: "tailor.exit", message: "sets the command from the prompt")
+    self.assert(application.flags, equals: ["a": "7"], message: "sets the flags from the prompt")
   }
   
   func testParseArgumentsWithSpacesInQuotesKeepsQuotedSectionTogether() {
@@ -96,8 +77,16 @@ class ApplicationTests : XCTestCase {
       }
     }
     
-    let application = TestApplication(arguments: [""])
-    XCTAssertEqual(application.flags, ["a": "b + c", "d": "23"], "keeps the quoted flags together")
+    APPLICATION_ARGUMENTS = nil
+    let application = TestApplication()
+    self.assert(application.flags, equals: ["a": "b + c", "d": "23"], message: "keeps the quoted flags together")
+  }
+  
+  func testSharedApplicationReusesApplication() {
+    let application1 = Application.sharedApplication()
+    application1.configuration["test.identity"] = "success"
+    let application2 = Application.sharedApplication()
+    self.assert(application2.configuration["test.identity"], equals: "success")
   }
   
   //MARK: Getting Subclasses
@@ -118,7 +107,7 @@ class ApplicationTests : XCTestCase {
     application.registerSubclasses(TestClassWithSubclasses)
     let types = application.registeredSubclassList(TestClassWithSubclasses)
     var ids = types.map { $0.id() }
-    XCTAssertEqual(sorted(ids), [1, 2, 3], "registers all subclasses of the type given, including the type itself")
+    self.assert(sorted(ids), equals: [1, 2, 3], message: "registers all subclasses of the type given, including the type itself")
   }
   
   //MARK: - Configuration
@@ -126,17 +115,14 @@ class ApplicationTests : XCTestCase {
   func testLoadConfigPutsContentsInConfiguration() {
     application.loadConfigFromFile("Info.plist")
     let value = application.configuration["Info.CFBundlePackageType"]
-    XCTAssertNotNil(value, "has a setting")
-    if value != nil {
-      XCTAssertEqual(value!, "BNDL", "has the setting from the file")
-    }
+    self.assert(value, equals: "BNDL", message: "has the setting from the file")
   }
   
   func testLocalizationBuildsLocalizationFromClassName() {
-    application.configuration["localization.class"] = "TailorTests.DatabaseLocalization"
+    application.configuration["localization.class"] = "Tailor.DatabaseLocalization"
     let localization = application.localization("en")
-    XCTAssertEqual(localization.locale, "en", "sets the localization")
+    self.assert(localization.locale, equals: "en", message: "sets the localization")
     XCTAssertNotNil(localization as? DatabaseLocalization, "uses the class from the configuration")
-    application.configuration["localization.class"] = "TailorTests.PropertyListLocalization"
+    application.configuration["localization.class"] = "Tailor.PropertyListLocalization"
   }
 }

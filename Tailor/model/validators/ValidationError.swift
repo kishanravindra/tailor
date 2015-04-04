@@ -25,6 +25,20 @@ public struct ValidationError: Equatable {
     into the full error message.
     */
   public let data: [String:String]
+
+  /**
+    This method creates a validation error.
+
+    :param: modelType   The type of model the error is on.
+    :param: key         The field on the model with the error.
+    :param: data        Additional data giving details on the error.
+    */
+  public init(modelType: Model.Type, key: String, message: String, data: [String:String]) {
+    self.modelType = modelType
+    self.key = key
+    self.message = message
+    self.data = data
+  }
   
   /**
     This method gets the localized description for an error message.

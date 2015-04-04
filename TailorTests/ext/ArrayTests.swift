@@ -1,9 +1,11 @@
 import XCTest
+import Tailor
+import TailorTesting
 
-class ArrayTests: XCTestCase {
+class ArrayTests: TailorTestCase {
   func testRemoveNilsProducesArrayWithoutNils() {
     let input : [String?] = ["a", "b", nil, "c", nil]
     let output = removeNils(input)
-    XCTAssertEqual(output, ["a", "b", "c"], "returns the original array with nils removed")
+    assert(output, equals: ["a", "b", "c"], message: "returns the original array with nils removed")
   }
 }

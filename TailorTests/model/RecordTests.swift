@@ -1,8 +1,10 @@
 import XCTest
+import Tailor
+import TailorTesting
 
-class RecordTests: XCTestCase {
+class RecordTests: TailorTestCase {
   override func setUp() {
-    TestApplication.start()
+    Application.start()
     DatabaseConnection.sharedConnection().executeQuery("TRUNCATE TABLE `hats`")
     DatabaseConnection.sharedConnection().executeQuery("TRUNCATE TABLE `shelfs`")
     DatabaseConnection.sharedConnection().executeQuery("TRUNCATE TABLE `stores`")
@@ -16,16 +18,16 @@ class RecordTests: XCTestCase {
   
   func testInitializerSetsAttributesFromData() {
     let hat = Hat(data: ["id": 5, "brimSize": 10, "color": "black"])
-    XCTAssertEqual(hat.id, NSNumber(integer: 5), "sets the id")
-    XCTAssertEqual(hat.brimSize, NSNumber(integer: 10), "sets the brim size")
-    XCTAssertEqual(hat.color, "black", "sets the color")
+    assert(hat.id, equals: NSNumber(integer: 5), message: "sets the id")
+    assert(hat.brimSize, equals: NSNumber(integer: 10), message: "sets the brim size")
+    assert(hat.color, equals: "black", message: "sets the color")
   }
   
   func testInitializerCanTakeAttributesFromDatabaseNames() {
     let hat = Hat(data: ["id": 3, "brim_size": 12, "color": "red"], fromDatabase: true)
-    XCTAssertEqual(hat.id, NSNumber(integer: 3), "sets the id")
-    XCTAssertEqual(hat.brimSize, NSNumber(integer: 12), "sets the brim size")
-    XCTAssertEqual(hat.color, "red", "sets the color")
+    assert(hat.id, equals: NSNumber(integer: 3), message: "sets the id")
+    assert(hat.brimSize, equals: NSNumber(integer: 12), message: "sets the brim size")
+    assert(hat.color, equals: "red", message: "sets the color")
   }
   
   func testInitializerDoesNotSetUnpersistedProperty() {
@@ -36,16 +38,16 @@ class RecordTests: XCTestCase {
   //MARK: - Structure
   
   func testTableNameIsPluralizedModelName() {
-    XCTAssertEqual(Hat.tableName(), "hats", "gets table name")
+    assert(Hat.tableName(), equals: "hats", message: "gets table name")
   }
   
   func testForeignKeyNameIsModelNamePlusId() {
-    XCTAssertEqual(Hat.foreignKeyName(), "hatId", "gets foreign key")
+    assert(Hat.foreignKeyName(), equals: "hatId", message: "gets foreign key")
   }
   
   func testColumnNameIsUnderscoredName() {
     if let columnName = Hat.columnNameForField("brimSize") {
-      XCTAssertEqual(columnName, "brim_size", "gets underscored name")
+      assert(columnName, equals: "brim_size", message: "gets underscored name")
     }
     else {
       XCTFail("gets underscored name")
@@ -61,7 +63,7 @@ class RecordTests: XCTestCase {
     let shelf2 = Shelf.create(["name": "Second Shelf"])
     let hat = Hat.create(["shelfId": shelf2.id])
     if let result : Shelf = hat.toOne() {
-      XCTAssertEqual(shelf2.name, result.name, "fetches the second shelf")
+      assert(shelf2.name, equals: result.name, message: "fetches the second shelf")
     }
     else {
       XCTFail("fetches the second shelf")
@@ -72,8 +74,8 @@ class RecordTests: XCTestCase {
     let shelf = Shelf.create([:])
     let query : Query<Hat> = shelf.toMany()
     let clause = query.whereClause
-    XCTAssertEqual(clause.query, "hats.shelf_id=?", "has the shelfId in the query")
-    XCTAssertEqual(clause.parameters, [shelf.id.stringValue], "has the id as the parameter")
+    assert(clause.query, equals: "hats.shelf_id=?", message: "has the shelfId in the query")
+    assert(clause.parameters, equals: [shelf.id.stringValue], message: "has the id as the parameter")
   }
   
   func testToManyThroughFetchesManyRecordsByForeignKey() {
@@ -82,12 +84,12 @@ class RecordTests: XCTestCase {
     let query : Query<Hat> = store.toMany(through: shelfQuery, joinToMany: true)
 
     let whereClause = query.whereClause
-    XCTAssertEqual(whereClause.query, "shelfs.store_id=?")
-    XCTAssertEqual(whereClause.parameters, [store.id.stringValue], "has the id as the parameter")
+    assert(whereClause.query, equals: "shelfs.store_id=?")
+    assert(whereClause.parameters, equals: [store.id.stringValue], message: "has the id as the parameter")
     
     let joinClause = query.joinClause
-    XCTAssertEqual(joinClause.query, "INNER JOIN shelfs ON shelfs.id = hats.shelf_id", "joins between shelves and hats in the join clause")
-    XCTAssertEqual(joinClause.parameters.count, 0, "has no parameters in the join clause")
+    assert(joinClause.query, equals: "INNER JOIN shelfs ON shelfs.id = hats.shelf_id", message: "joins between shelves and hats in the join clause")
+    assert(joinClause.parameters.count, equals: 0, message: "has no parameters in the join clause")
   }
   
   func testToManyThroughFetchesOneRecordsByForeignKey() {
@@ -96,12 +98,12 @@ class RecordTests: XCTestCase {
     let query : Query<Store> = hat.toMany(through: shelfQuery, joinToMany: false)
     
     let whereClause = query.whereClause
-    XCTAssertEqual(whereClause.query, "shelfs.id=?")
-    XCTAssertEqual(whereClause.parameters, [hat.shelfId.stringValue], "has the id as the parameter")
+    assert(whereClause.query, equals: "shelfs.id=?")
+    assert(whereClause.parameters, equals: [hat.shelfId.stringValue], message: "has the id as the parameter")
     
     let joinClause = query.joinClause
-    XCTAssertEqual(joinClause.query, "INNER JOIN shelfs ON shelfs.store_id = stores.id", "joins between shelves and stores in the join clause")
-    XCTAssertEqual(joinClause.parameters.count, 0, "has no parameters in the join clause")
+    assert(joinClause.query, equals: "INNER JOIN shelfs ON shelfs.store_id = stores.id", message: "joins between shelves and stores in the join clause")
+    assert(joinClause.parameters.count, equals: 0, message: "has no parameters in the join clause")
   }
   
   //MARK: - Creating
@@ -112,29 +114,29 @@ class RecordTests: XCTestCase {
     
     XCTAssertNotNil(string, "has a string version")
     if(string != nil) {
-      XCTAssertEqual(string!, input, "has the input string as the string version")
+      assert(string!, equals: input, message: "has the input string as the string version")
     }
     
     XCTAssertNotNil(data, "has a data version")
     if(data != nil) {
-      XCTAssertEqual(data!, input.dataUsingEncoding(NSUTF8StringEncoding)!, "has the input string encoded as the data version")
+      assert(data!, equals: input.dataUsingEncoding(NSUTF8StringEncoding)!, message: "has the input string encoded as the data version")
     }
   }
   
   func testSerializeValueSerializesDateValue() {
-    DatabaseConnection.sharedConnection().timeZone = NSTimeZone(name: "UTC")!
+    //DatabaseConnection.sharedConnection().timeZone = NSTimeZone(name: "UTC")!
     let input = NSDate(timeIntervalSince1970: 1231234125)
     let formattedString = "2009-01-06 09:28:45"
     let (string,data) = Record.serializeValueForQuery(input, key: "key")
     
     XCTAssertNotNil(string, "has a string version")
     if(string != nil) {
-      XCTAssertEqual(string!, formattedString, "has the formatted date as the string version")
+      assert(string!, equals: formattedString, message: "has the formatted date as the string version")
     }
     
     XCTAssertNotNil(data, "has a data version")
     if(data != nil) {
-      XCTAssertEqual(data!, formattedString.dataUsingEncoding(NSUTF8StringEncoding)!, "has the formatted date encoded as the data version")
+      assert(data!, equals: formattedString.dataUsingEncoding(NSUTF8StringEncoding)!, message: "has the formatted date encoded as the data version")
     }
   }
   
@@ -144,13 +146,13 @@ class RecordTests: XCTestCase {
     
     XCTAssertNotNil(string, "has a string version")
     if(string != nil) {
-      XCTAssertEqual(string!, "15", "has the number as the string version")
+      assert(string!, equals: "15", message: "has the number as the string version")
     }
     
     XCTAssertNotNil(data, "has a data version")
     if(data != nil) {
       let expectedData = "15".dataUsingEncoding(NSUTF8StringEncoding)!
-      XCTAssertEqual(data!, expectedData, "has the number string encoded as the data version")
+      assert(data!, equals: expectedData, message: "has the number string encoded as the data version")
     }
   }
 
@@ -162,14 +164,14 @@ class RecordTests: XCTestCase {
     XCTAssertNil(string, "has no string version")
     XCTAssertNotNil(data, "has a data version")
     if(data != nil) {
-      XCTAssertEqual(data!, input, "has the number string encoded as the data version")
+      assert(data!, equals: input, message: "has the number string encoded as the data version")
     }
   }
   
   func testCreateMethodSetsValuesOnRecord() {
     let hat = Hat.create(["brimSize": 12, "color": "black"])
-    XCTAssertEqual(hat.brimSize, NSNumber(int: 12), "sets number on hat")
-    XCTAssertEqual(hat.color, "black", "sets color on hat")
+    assert(hat.brimSize, equals: NSNumber(int: 12), message: "sets number on hat")
+    assert(hat.color, equals: "black", message: "sets color on hat")
   }
   
   func testCreateMethodSavesRecord() {
@@ -189,7 +191,7 @@ class RecordTests: XCTestCase {
     
     if let property = properties["color"] {
       let data = "tan".dataUsingEncoding(NSUTF8StringEncoding)!
-      XCTAssertEqual(property, data, "has the color")
+      assert(property, equals: data, message: "has the color")
     }
     else {
       XCTFail("has the color")
@@ -197,7 +199,7 @@ class RecordTests: XCTestCase {
     
     if let property = properties["brimSize"] {
       let data = "10".dataUsingEncoding(NSUTF8StringEncoding)!
-      XCTAssertEqual(property, data, "has the brim size")
+      assert(property, equals: data, message: "has the brim size")
     }
     else {
       XCTFail("has the brim size")
@@ -248,22 +250,22 @@ class RecordTests: XCTestCase {
   func testSaveInsertsNewRecord() {
     let connection = DatabaseConnection.sharedConnection()
     
-    XCTAssertEqual(Query<Hat>().count(), 0, "starts out with 0 records")
+    assert(Query<Hat>().count(), equals: 0, message: "starts out with 0 records")
     var hat = Hat()
     hat.save()
-    XCTAssertEqual(Query<Hat>().count(), 1, "ends with 1 record")
+    assert(Query<Hat>().count(), equals: 1, message: "ends with 1 record")
   }
   
   func testSaveUpdatesExistingRecord() {
     let connection = DatabaseConnection.sharedConnection()
     var hat = Hat.create(["color": "black"])
-    XCTAssertEqual(Query<Hat>().count(), 1, "starts out with 1 record")
-    XCTAssertEqual(Query<Hat>().first()!.color, "black", "starts out with a black hat")
+    assert(Query<Hat>().count(), equals: 1, message: "starts out with 1 record")
+    assert(Query<Hat>().first()!.color, equals: "black", message: "starts out with a black hat")
     hat.color = "tan"
     hat.save()
     
-    XCTAssertEqual(Query<Hat>().count(), 1, "ends with 1 record")
-    XCTAssertEqual(Query<Hat>().first()!.color, "tan", "ends with a tan hat")
+    assert(Query<Hat>().count(), equals: 1, message: "ends with 1 record")
+    assert(Query<Hat>().first()!.color, equals: "tan", message: "ends with a tan hat")
   }
   
   func testSaveInsertConstructsInsertQuery() {
@@ -272,12 +274,12 @@ class RecordTests: XCTestCase {
       var store = Store(data: ["name": "Little Shop"])
       connection.response = [DatabaseConnection.Row(data: ["id": 2])]
       store.save()
-      XCTAssertEqual(connection.queries.count, 1, "executes 1 query")
+      self.assert(connection.queries.count, equals: 1, message: "executes 1 query")
       if connection.queries.count > 0 {
         let (query, parameters) = connection.queries[0]
-        XCTAssertEqual(query, "INSERT INTO stores (name) VALUES (?)", "has the query to insert the record")
+        self.assert(query, equals: "INSERT INTO stores (name) VALUES (?)", message: "has the query to insert the record")
         
-        XCTAssertEqual(parameters, ["Little Shop".dataUsingEncoding(NSUTF8StringEncoding)!], "has the name as the parameter")
+        self.assert(parameters, equals: ["Little Shop".dataUsingEncoding(NSUTF8StringEncoding)!], message: "has the name as the parameter")
       }
     }
   }
@@ -288,7 +290,7 @@ class RecordTests: XCTestCase {
       var store = Store(data: ["name": "Little Shop"])
       connection.response = [DatabaseConnection.Row(data: ["id": 2])]
       store.save()
-      XCTAssertEqual(store.id, NSNumber(int: 2), "sets the id based on the database response")
+      self.assert(store.id, equals: NSNumber(int: 2), message: "sets the id based on the database response")
     }
   }
   
@@ -312,7 +314,7 @@ class RecordTests: XCTestCase {
       
       if !store.errors.isEmpty {
         let error = store.errors.errors[0]
-        XCTAssertEqual(error.message, "Lost Connection", "sets an error on the record")
+        self.assert(error.message, equals: "Lost Connection", message: "sets an error on the record")
       }
       else {
         XCTFail("Sets an error on the record")
@@ -323,14 +325,14 @@ class RecordTests: XCTestCase {
   func testSaveInsertCreatesSparseInsertQuery() {
     TestConnection.withTestConnection {
       connection in
-      XCTAssertEqual(connection.queries.count, 0)
+      self.assert(connection.queries.count, equals: 0)
       connection.response = [DatabaseConnection.Row(data: ["id": 2])]
       var hat = Hat(data: ["brimSize": 10, "color": "red"])
       hat.save()
-      XCTAssertEqual(connection.queries.count, 1, "executes one query")
+      self.assert(connection.queries.count, equals: 1, message: "executes one query")
       if connection.queries.count > 0 {
         let (query, parameters) = connection.queries[0]
-        XCTAssertEqual(query, "INSERT INTO hats (brim_size, color, created_at, updated_at) VALUES (?, ?, ?, ?)", "has the query to insert the record")
+        self.assert(query, equals: "INSERT INTO hats (brim_size, color, created_at, updated_at) VALUES (?, ?, ?, ?)", message: "has the query to insert the record")
         
         let expectedParameters = [
           "10".dataUsingEncoding(NSUTF8StringEncoding)!,
@@ -338,7 +340,7 @@ class RecordTests: XCTestCase {
           hat.createdAt.format("db", timeZone: connection.timeZone)!.dataUsingEncoding(NSUTF8StringEncoding)!,
           hat.updatedAt.format("db", timeZone: connection.timeZone)!.dataUsingEncoding(NSUTF8StringEncoding)!
         ]
-        XCTAssertEqual(parameters, expectedParameters, "has the brim size, color, creation date, and update date as parameters")
+        self.assert(parameters, equals: expectedParameters, message: "has the brim size, color, creation date, and update date as parameters")
       }
     }
   }
@@ -350,17 +352,17 @@ class RecordTests: XCTestCase {
       shelf.name = "Bottom Shelf"
       shelf.storeId = NSNumber(int: 2)
       shelf.save()
-      XCTAssertEqual(connection.queries.count, 1, "executes one query")
+      self.assert(connection.queries.count, equals: 1, message: "executes one query")
       if connection.queries.count > 0 {
         let (query, parameters) = connection.queries[0]
-        XCTAssertEqual(query, "UPDATE shelfs SET name = ?, store_id = ? WHERE id = ?", "has the update query")
+        self.assert(query, equals: "UPDATE shelfs SET name = ?, store_id = ? WHERE id = ?", message: "has the update query")
         
         let expectedParameters = [
           "Bottom Shelf".dataUsingEncoding(NSUTF8StringEncoding)!,
           "2".dataUsingEncoding(NSUTF8StringEncoding)!,
           shelf.id.stringValue.dataUsingEncoding(NSUTF8StringEncoding)!
         ]
-        XCTAssertEqual(parameters, expectedParameters, "has the name, store ID, and id as parameters")
+        self.assert(parameters, equals: expectedParameters, message: "has the name, store ID, and id as parameters")
       }
     }
   }
@@ -371,16 +373,16 @@ class RecordTests: XCTestCase {
       connection in
       shelf.name = nil
       shelf.save()
-      XCTAssertEqual(connection.queries.count, 1, "executes one query")
+      self.assert(connection.queries.count, equals: 1, message: "executes one query")
       if connection.queries.count > 0 {
         let (query, parameters) = connection.queries[0]
-        XCTAssertEqual(query, "UPDATE shelfs SET name = NULL, store_id = ? WHERE id = ?", "has the update query")
+        self.assert(query, equals: "UPDATE shelfs SET name = NULL, store_id = ? WHERE id = ?", message: "has the update query")
         
         let expectedParameters = [
           "1".dataUsingEncoding(NSUTF8StringEncoding)!,
           shelf.id.stringValue.dataUsingEncoding(NSUTF8StringEncoding)!
         ]
-        XCTAssertEqual(parameters, expectedParameters, "has the storeId and id as parameters")
+        self.assert(parameters, equals: expectedParameters, message: "has the storeId and id as parameters")
       }
     }
   }
@@ -394,7 +396,7 @@ class RecordTests: XCTestCase {
       shelf.save()
       if !shelf.errors.isEmpty {
         let error = shelf.errors.errors[0]
-        XCTAssertEqual(error.message, "Connection Error", "puts an error on the record")
+        self.assert(error.message, equals: "Connection Error", message: "puts an error on the record")
       }
       else {
         XCTFail("puts an error on the record")
@@ -407,12 +409,12 @@ class RecordTests: XCTestCase {
     TestConnection.withTestConnection {
       connection in
       shelf.destroy()
-      XCTAssertEqual(connection.queries.count, 1, "executes one query")
+      self.assert(connection.queries.count, equals: 1, message: "executes one query")
       if connection.queries.count == 1 {
         let (query, parameters) = connection.queries[0]
-        XCTAssertEqual(query, "DELETE FROM shelfs WHERE id = ?", "executes a destroy query")
+        self.assert(query, equals: "DELETE FROM shelfs WHERE id = ?", message: "executes a destroy query")
         let data = shelf.id.stringValue.dataUsingEncoding(NSUTF8StringEncoding)!
-        XCTAssertEqual(parameters, [data], "has the id as the parameter for the query")
+        self.assert(parameters, equals: [data], message: "has the id as the parameter for the query")
       }
     }
   }
@@ -424,17 +426,17 @@ class RecordTests: XCTestCase {
     hat.id = 5
     hat.color = "red"
     let properties = hat.toPropertyList()
-    XCTAssertEqual(properties.keys.array, ["id", "color"], "has keys for id and color")
+    assert(properties.keys.array, equals: ["id", "color"], message: "has keys for id and color")
     
     if let id = properties["id"] as? NSNumber {
-      XCTAssertEqual(id, 5, "has the id")
+      assert(id, equals: 5, message: "has the id")
     }
     else {
       XCTFail("has the id")
     }
     
     if let color = properties["color"] as? String {
-      XCTAssertEqual(color, "red", "has the color")
+      assert(color, equals: "red", message: "has the color")
     }
     else {
       XCTFail("has the color")
@@ -446,7 +448,7 @@ class RecordTests: XCTestCase {
   func testRecordsWithSameIdAreEqual() {
     let lhs = Hat(data: ["id": 5])
     let rhs = Hat(data: ["id": 5])
-    XCTAssertEqual(lhs, rhs, "records are equal")
+    assert(lhs, equals: rhs, message: "records are equal")
   }
   
   func testRecordsWithNilIdsAreUnequal() {

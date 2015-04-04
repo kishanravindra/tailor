@@ -1,12 +1,14 @@
 import XCTest
+import Tailor
+import TailorTesting
 
-class ValidationErrorTests: XCTestCase {
+class ValidationErrorTests: TailorTestCase {
   let error = ValidationError(modelType: Hat.self, key: "height", message: "tooLow", data: ["value": "7"])
   let localization = PropertyListLocalization(locale: "en")
   var content: ConfigurationSetting!
   
   override func setUp() {
-    TestApplication.start()
+    Application.start()
     content = TestApplication.sharedApplication().configuration.child("localization.content.en")
     content.addDictionary([
       "hat.errors.height.too_low": "is too short",
@@ -17,7 +19,7 @@ class ValidationErrorTests: XCTestCase {
   }
   func testEqualityAcceptsErrorsWithSameInformation() {
     let error2 = ValidationError(modelType: Hat.self, key: "height", message: "tooLow", data: ["value": "7"])
-    XCTAssertEqual(error, error2)
+    assert(error, equals: error2)
   }
   
   func testEqualityRejectsErrorsWithDifferentMessage() {
@@ -43,29 +45,29 @@ class ValidationErrorTests: XCTestCase {
   
   func testEqualityAcceptsErrorsWithDifferentModels() {
     let error2 = ValidationError(modelType: Record.self, key: "height", message: "tooLow", data: ["value": "7"])
-    XCTAssertEqual(error, error2)
+    assert(error, equals: error2)
   }
   
   func testLocalizeCanFindContentForModelAndKey() {
-    XCTAssertEqual(error.localize(localization), "is too short")
+    assert(error.localize(localization), equals: "is too short")
   }
   
   func testLocalizeCanFindContentForModel() {
     content["hat.errors.height.too_low"] = nil
-    XCTAssertEqual(error.localize(localization), "is too low")
+    assert(error.localize(localization), equals: "is too low")
   }
   
   func testLocalizeCanFindContentForKey() {
     content["hat.errors.height.too_low"] = nil
     content["hat.errors.too_low"] = nil
-    XCTAssertEqual(error.localize(localization), "is way too short")
+    assert(error.localize(localization), equals: "is way too short")
   }
   
   func testLocalizeCanFindTopLevelContent() {
     content["hat.errors.height.too_low"] = nil
     content["hat.errors.too_low"] = nil
     content["model.errors.height.too_low"] = nil
-    XCTAssertEqual(error.localize(localization), "is way too low")
+    assert(error.localize(localization), equals: "is way too low")
   }
   
   func testLocalizeCanFallBackToRawMessage() {
@@ -73,13 +75,13 @@ class ValidationErrorTests: XCTestCase {
     content["hat.errors.too_low"] = nil
     content["model.errors.height.too_low"] = nil
     content["model.errors.too_low"] = nil
-    XCTAssertEqual(error.localize(localization), "tooLow")
+    assert(error.localize(localization), equals: "tooLow")
   }
   
   func testLocalizeCanUnderscoreKey() {
     content["hat.errors.brim_size.too_low"] = "test"
     let error = ValidationError(modelType: Hat.self, key: "brimSize", message: "tooLow", data: [:])
-    XCTAssertEqual(error.localize(localization), "test")
+    assert(error.localize(localization), equals: "test")
   }
   
   func testLocalizeCanUnderscoreModelName() {
@@ -88,12 +90,12 @@ class ValidationErrorTests: XCTestCase {
     }
     content["test_hat.errors.height.too_low"] = "test"
     let error = ValidationError(modelType: TestHat.self, key: "height", message: "tooLow", data: [:])
-    XCTAssertEqual(error.localize(localization), "test")
+    assert(error.localize(localization), equals: "test")
   }
   
   func testLocalizeCanInterpolateData() {
     content["hat.errors.height.too_low"] = "must be at least \\(height)"
     let error = ValidationError(modelType: Hat.self, key: "height", message: "tooLow", data: ["height": "10"])
-    XCTAssertEqual(error.localize(localization), "must be at least 10")
+    assert(error.localize(localization), equals: "must be at least 10")
   }
 }

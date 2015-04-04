@@ -9,12 +9,13 @@ import Foundation
 public class HtmlSanitizer : Sanitizer {
   public required init() {
     super.init()
-    self.mapping = [
+  }
+  
+  public override class func mapping() -> [Character:String] { return [
       "<": "&lt;",
       ">": "&gt;",
       "&": "&amp;",
       "\"": "&quot;",
       "'": "&#39;"
-    ]
-  }
+    ]  }
 }

@@ -1,6 +1,8 @@
 import XCTest
+import Tailor
+import TailorTesting
 
-class LocalizationTests: XCTestCase {
+class LocalizationTests: TailorTestCase {
   class TestLocalization: Localization {
     override func fetch(key: String, inLocale locale: String) -> String? {
       if key == "description" {
@@ -24,12 +26,12 @@ class LocalizationTests: XCTestCase {
     }
   }
   override func setUp() {
-    TestApplication.start()
+    Application.start()
   }
   
   func testInitializationSetsLocale() {
     let localization = Localization(locale: "en")
-    XCTAssertEqual(localization.locale, "en", "sets the locale")
+    assert(localization.locale, equals: "en", message: "sets the locale")
   }
   
   func testFallbackLocalesWithGlobalEnglishIsEmpty() {
@@ -39,17 +41,17 @@ class LocalizationTests: XCTestCase {
   
   func testFallbackLocalesWithLocalEnglishHasGlobalEnglish() {
     let locales = Localization.fallbackLocales("en-gb")
-    XCTAssertEqual(locales, ["en"])
+    assert(locales, equals: ["en"])
   }
   
   func testFallbackLocalesWithLocalSpanishHasSpanishAndEnglish() {
     let locales = Localization.fallbackLocales("es-mx")
-    XCTAssertEqual(locales, ["es", "en"])
+    assert(locales, equals: ["es", "en"])
   }
   
   func testFallbackLocalesWIthMultiplePartsHasAllAncestors() {
     let locales = Localization.fallbackLocales("en-gb-123")
-    XCTAssertEqual(locales, ["en-gb", "en"])
+    assert(locales, equals: ["en-gb", "en"])
   }
   
   func testFetchWithSpecificTranslationUsesTranslation() {
@@ -57,7 +59,7 @@ class LocalizationTests: XCTestCase {
     let result = localization.fetch("description")
     XCTAssertNotNil(result, "gets a result")
     if result != nil {
-      XCTAssertEqual(result!, "British", "uses the specific translation")
+      assert(result!, equals: "British", message: "uses the specific translation")
     }
   }
   
@@ -66,7 +68,7 @@ class LocalizationTests: XCTestCase {
     let result = localization.fetch("description")
     XCTAssertNotNil(result, "gets a result")
     if result != nil {
-      XCTAssertEqual(result!, "Spanish", "uses the first fallback")
+      assert(result!, equals: "Spanish", message: "uses the first fallback")
     }
   }
   
@@ -75,7 +77,7 @@ class LocalizationTests: XCTestCase {
     let result = localization.fetch("description")
     XCTAssertNotNil(result, "gets a result")
     if result != nil {
-      XCTAssertEqual(result!, "English", "uses the second fallback")
+      assert(result!, equals: "English", message: "uses the second fallback")
     }
   }
   
@@ -90,7 +92,7 @@ class LocalizationTests: XCTestCase {
     let result = localization.fetch("interpolation_test", interpolations: ["name": "John"])
     XCTAssertNotNil(result, "gets a result")
     if result != nil {
-      XCTAssertEqual(result!, "My name is John", "puts the interpolated value in the content")
+      assert(result!, equals: "My name is John", message: "puts the interpolated value in the content")
     }
   }
 }

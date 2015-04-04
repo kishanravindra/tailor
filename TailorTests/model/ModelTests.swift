@@ -1,7 +1,9 @@
 import XCTest
+import Tailor
+import TailorTesting
 
-class ModelTests: XCTestCase {
-  @objc(HatForModel) class HatForModel : Hat {
+class ModelTests: TailorTestCase {
+  @objc(HatForModel) class Hat : TailorTests.Hat {
     var keysToFail = [String]()
     override class func validators() -> [Validator] {
       return [
@@ -20,14 +22,14 @@ class ModelTests: XCTestCase {
   }
   
   override func setUp() {
-    TestApplication.start()
+    Application.start()
   }
   
   //MARK: - Structure
   
   func testModelNameIsTakenFromClassName() {
-    XCTAssertEqual(Hat.modelName(), "hat", "gets lowercased class name for model")
-    XCTAssertEqual(HatForModel.modelName(), "hat_for_model", "gets lowercased class name with underscores for for HatForModel")
+    assert(TailorTests.Hat.modelName(), equals: "hat", message: "gets lowercased class name for model")
+    assert(Hat.modelName(), equals: "hat_for_model", message: "gets lowercased class name with underscores for for HatForModel")
   }
   
   //MARK: - Validations
@@ -49,10 +51,10 @@ class ModelTests: XCTestCase {
     hat.keysToFail.append("brimSize")
     hat.validate()
     let errors = hat.errors.errors
-    XCTAssertEqual(errors.count, 1, "has one error")
+    assert(errors.count, equals: 1, message: "has one error")
     if errors.count > 0 {
       let error = errors[0]
-      XCTAssertEqual(error.message, "failed validation", "has the error provided by the validator")
+      assert(error.message, equals: "failed validation", message: "has the error provided by the validator")
     }
   }
   
@@ -69,20 +71,20 @@ class ModelTests: XCTestCase {
     hat.keysToFail.append("color")
     hat.validate()
     
-    XCTAssertEqual(hat.errors["brimSize"].count, 1, "has one error for brim size")
-    XCTAssertEqual(hat.errors["color"].count, 1, "has one error for color")
+    assert(hat.errors["brimSize"].count, equals: 1, message: "has one error for brim size")
+    assert(hat.errors["color"].count, equals: 1, message: "has one error for color")
   }
   
   //MARK: - Dynamic Properties
 
   func testHumanAttributeNameSeparatesWords() {
     let name = Hat.humanAttributeName("brimSize")
-    XCTAssertEqual(name, "brim size", "gets words from attribute name")
+    assert(name, equals: "brim size", message: "gets words from attribute name")
   }
   
   func testHumanAttributeNameCanCapitalizeName() {
     let name = Hat.humanAttributeName("brimSize", capitalize: true)
-    XCTAssertEqual(name, "Brim Size", "gets capitalized words from attribute name")
+    assert(name, equals: "Brim Size", message: "gets capitalized words from attribute name")
   }
   
   func testHumanAttributeNameCanGetNameFromLocalization() {
@@ -92,15 +94,15 @@ class ModelTests: XCTestCase {
       }
     }
     
-    let name = HatForModel.humanAttributeName("brimSize", localization: TestLocalization(locale: "en"))
-    XCTAssertEqual(name, "record.hat_for_model.attributes.brim_size translated", "gets string from localization")
+    let name = Hat.humanAttributeName("brimSize", localization: TestLocalization(locale: "en"))
+    assert(name, equals: "record.hat_for_model.attributes.brim_size translated", message: "gets string from localization")
   }
   
   func testValueForKeyGetsValueFromInstanceVariable() {
     let hat = Hat()
     hat.color = "black"
     let result = hat.valueForKey("color") as! String
-    XCTAssertEqual(result, "black", "gets the value stored on the object")
+    assert(result, equals: "black", message: "gets the value stored on the object")
   }
   
   func testValueForKeyReturnsNilForInvalidName() {
@@ -111,12 +113,12 @@ class ModelTests: XCTestCase {
   func testSetValueCanSetStringValue() {
     let hat = Hat()
     hat.setValue("red", forKey: "color")
-    XCTAssertEqual(hat.color, "red", "sets the value on the object")
+    assert(hat.color, equals: "red", message: "sets the value on the object")
   }
   
   func testSetValueCanSetIntValue() {
     let hat = Hat()
     hat.setValue(5, forKey: "brimSize")
-    XCTAssertEqual(hat.brimSize, 5, "sets the value on the object")
+    assert(hat.brimSize, equals: 5, message: "sets the value on the object")
   }
 }

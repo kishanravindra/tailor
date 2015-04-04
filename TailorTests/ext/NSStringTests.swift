@@ -1,18 +1,19 @@
 import XCTest
+import TailorTesting
 
-class NSStringTests: XCTestCase {
+class NSStringTests: TailorTestCase {
   func testCamelCaseCanConvertString() {
     let result = "test_string".camelCase()
-    XCTAssertEqual(result, "testString", "converts to camel case")
+    assert(result, equals: "testString", message: "converts to camel case")
   }
   
   func testCamelCaseCanCapitalizeString() {
     let result = "test_string".camelCase(capitalize: true)
-    XCTAssertEqual(result, "TestString", "converts to capitalized camel case")
+    assert(result, equals: "TestString", message: "converts to capitalized camel case")
   }
   
   func testUnderscoredConvertsToSnakeCase() {
     let result = "TestString".underscored()
-    XCTAssertEqual(result, "test_string", "converts to snake case")
+    assert(result, equals: "test_string", message: "converts to snake case")
   }
 }

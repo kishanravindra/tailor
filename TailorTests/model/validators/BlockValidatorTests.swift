@@ -1,4 +1,5 @@
 import XCTest
+import Tailor
 
 class BlockValidatorTests: XCTestCase {
   let model = Model()

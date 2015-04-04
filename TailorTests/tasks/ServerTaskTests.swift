@@ -1,4 +1,5 @@
 import XCTest
+import Tailor
 
 class ServerTaskTests: XCTestCase {
   func testRunStartsServer() {
@@ -10,11 +11,11 @@ class ServerTaskTests: XCTestCase {
         expectation?.fulfill()
       }
     }
-    let application = ServerTestApplication(arguments: ["tailor.exit"])
+    let application = ServerTestApplication()
     application.expectation = expectation
-    SHARED_APPLICATION = application
+    NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] = application
     ServerTask().run()
     waitForExpectationsWithTimeout(0.01, handler: nil)
-    SHARED_APPLICATION = nil
+    NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
   }
 }

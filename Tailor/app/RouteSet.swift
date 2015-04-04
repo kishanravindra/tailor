@@ -16,35 +16,35 @@ public class RouteSet {
     format `:parameter_name`, which will capture a variable portion of the route
     in a request parameter called `parameter_name`.
     */
-  class Route {
+  public class Route {
     /** The pattern for the path. */
-    let pathPattern: String
+    public let pathPattern: String
     
     /** The method for the HTTP request. */
-    let method: String
+    public let method: String
     
     /** The implementation of the response handler. */
-    let handler: Server.RequestHandler
+    public let handler: Server.RequestHandler
     
     /** A description of the route for logging purposes. */
-    let description: String
+    public let description: String
     
     /**
       The regex that we apply to determine if the route can handle the path.
       */
-    let regex: NSRegularExpression
+    public let regex: NSRegularExpression
     
     /**
       The names of the request parameters that this route extracts from the
       path.
       */
-    let pathParameters: [String]
+    public let pathParameters: [String]
     
     /** The controller that will handle the request. */
-    var controller: Controller.Type?
+    public private(set) var controller: Controller.Type?
     
     /** The name of the action in the controller. */
-    var action: String?
+    public private(set) var action: String?
     
     /**
       This method initializes a route.
@@ -53,7 +53,7 @@ public class RouteSet {
       :param: handler       The response handler.
       :param: description   The description for the route.
       */
-    init(pathPattern: String, method: String, handler: Server.RequestHandler, description: String) {
+    public init(pathPattern: String, method: String, handler: Server.RequestHandler, description: String) {
       self.pathPattern = pathPattern
       self.handler = handler
       self.description = description
@@ -83,8 +83,8 @@ public class RouteSet {
       This method gets a full description of the route for debugging.
       :returns: The description
       */
-    func fullDescription() -> String {
-      return NSString(format: "%@ %@ %@", self.method, self.pathPattern, self.description) as! String
+    public func fullDescription() -> String {
+      return NSString(format: "%@ %@ %@", self.method, self.pathPattern, self.description) as String
     }
     
     //MARK: - Request Handling
@@ -95,7 +95,7 @@ public class RouteSet {
       :param: request   The request to check.
       :returns:         Whether the route can handle the request.
       */
-    func canHandleRequest(request: Request) -> Bool {
+    public func canHandleRequest(request: Request) -> Bool {
       let path = request.path
       let range = NSRange(location: 0, length: count(path))
       let match = self.regex.firstMatchInString(path, options: nil, range: range)
@@ -108,7 +108,7 @@ public class RouteSet {
       :param: request   The request to handle.
       :param: callback  The callback that the route should give the response to.
       */
-    func handleRequest(request: Request, callback: Server.ResponseCallback) {
+    public func handleRequest(request: Request, callback: Server.ResponseCallback) {
       NSLog("Processing with %@", self.description)
       var requestCopy = request
       let path = request.path
@@ -127,7 +127,7 @@ public class RouteSet {
   //MARK: -
   
   /** The routes in the set. */
-  private(set) var routes : [Route] = []
+  public private(set) var routes : [Route] = []
 
   /** The prefix for the path that we are adding. */
   private var currentPathPrefix = ""
@@ -373,14 +373,19 @@ public class RouteSet {
   //MARK: - Generating URLs
   
   /**
-    This method generates a URL using our route set.
+    This method generates a path using our route set.
 
     :param: controller    The name of the controller that the link is to.
     :param: action        The name of the action.
     :param: parameters    The parameters to interpolate into the route.
+    :param: domain        The domain to use for a full URL. If this is omitted,
+                          this will just give the path rather than a URL.
+    :param: https         Whether the URL should use the https protocol. If the
+                          domain is omitted, this value will be ignored.
     :returns:             The path, if we could match it up.
     */
-  public func urlFor(controllerName: String, action: String, parameters: [String:String] = [:]) -> String? {
+  public func pathFor(controllerName: String, action: String, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
+    var matchingPath: String? = nil
     for route in self.routes {
       if route.controller != nil && route.controller!.name() == controllerName &&
       route.action != nil && route.action! == action {
@@ -403,9 +408,14 @@ public class RouteSet {
             path += value.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding) ?? ""
           }
         }
-        return path
+        matchingPath = path
+        break
       }
     }
-    return nil
+    if matchingPath != nil && domain != nil {
+      let httpProtocol = https ? "https" : "http"
+      matchingPath = "\(httpProtocol)://\(domain!)\(matchingPath!)"
+    }
+    return matchingPath
   }
 }

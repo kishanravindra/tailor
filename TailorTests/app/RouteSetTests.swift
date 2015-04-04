@@ -1,6 +1,8 @@
 import XCTest
+import Tailor
+import TailorTesting
 
-class RouteSetTests: XCTestCase {
+class RouteSetTests: TailorTestCase {
   var routeSet = RouteSet()
   
   
@@ -15,7 +17,7 @@ class RouteSetTests: XCTestCase {
   
   override func setUp() {
     super.setUp()
-    TestApplication.start()
+    Application.start()
   }
   
   override func tearDown() {
@@ -39,32 +41,32 @@ class RouteSetTests: XCTestCase {
   
   func testInitializationSetsFieldsFromParameters() {
     let route = createTestRoute("/test/route")
-    XCTAssertEqual(route.pathPattern, "/test/route", "sets path pattern")
-    XCTAssertEqual(route.method, "GET", "sets method")
-    XCTAssertEqual(route.description, "test route")
+    assert(route.pathPattern, equals: "/test/route", message: "sets path pattern")
+    assert(route.method, equals: "GET", message: "sets method")
+    assert(route.description, equals: "test route")
     
     let regex = NSRegularExpression(pattern: "^/test/route/?$", options: nil, error: nil)!
-    XCTAssertEqual(route.regex, regex, "sets path regex")
+    assert(route.regex, equals: regex, message: "sets path regex")
   }
   
   //MARK: - Route Class
   
   func testInitializationReplacesParameterSections() {
     let route = createTestRoute("/test/user/:id")
-    XCTAssertEqual(route.pathPattern, "/test/user/:id", "sets path pattern to unmodified pattern")
+    assert(route.pathPattern, equals: "/test/user/:id", message: "sets path pattern to unmodified pattern")
     
     let regex = NSRegularExpression(pattern: "^/test/user/([^/]*)/?$", options: nil, error: nil)!
-    XCTAssertEqual(route.regex, regex, "sets path regex to pattern with parameter replaces by wildcard")
+    assert(route.regex, equals: regex, message: "sets path regex to pattern with parameter replaces by wildcard")
   }
   
   func testInitializationAddsParameterToPathParameters() {
     let route = createTestRoute("/test/user/:id")
-    XCTAssertEqual(route.pathParameters, ["id"], "puts id in the path parameters")
+    assert(route.pathParameters, equals: ["id"], message: "puts id in the path parameters")
   }
   
   func testFullDescriptionContainsMethodPatternAndDescription() {
     let route = createTestRoute("/test/route")
-    XCTAssertEqual(route.fullDescription(), "GET /test/route test route", "give full description")
+    assert(route.fullDescription(), equals: "GET /test/route test route", message: "give full description")
   }
 
   func testCanHandleRequestThatMatchesRegex() {
@@ -90,7 +92,7 @@ class RouteSetTests: XCTestCase {
     let expectation = expectationWithDescription("handler called")
     let route = RouteSet.Route(pathPattern: "/test/route/:id", method: "GET", handler: {
       request, responseHandler in
-      XCTAssertEqual(request.requestParameters["id"]!, "5")
+      self.assert(request.requestParameters["id"], equals: "5")
       expectation.fulfill()
       }, description: "test route")
     route.handleRequest(createTestRequest(path: "/test/route/5")) {
@@ -106,10 +108,10 @@ class RouteSetTests: XCTestCase {
     routeSet.withPrefix("path") {
       expectation.fulfill()
       self.routeSet.addRoute("test", method: "GET", action: "test")
-      XCTAssertEqual(self.getLatestRoute().pathPattern, "/path/test", "includes prefix in route in block")
+      self.assert(self.getLatestRoute().pathPattern, equals: "/path/test", message: "includes prefix in route in block")
     }
     routeSet.addRoute("test", method: "GET", action: "test")
-    XCTAssertEqual(getLatestRoute().pathPattern, "/test", "does not include prefix in route outside of block")
+    assert(getLatestRoute().pathPattern, equals: "/test", message: "does not include prefix in route outside of block")
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
@@ -118,40 +120,28 @@ class RouteSetTests: XCTestCase {
     routeSet.withPrefix("path", controller: TestController.self) {
       expectation.fulfill()
       self.routeSet.addRoute("test", method: "GET", action: "test")
-      if let controller = self.getLatestRoute().controller {
-        XCTAssertEqual(controller.name(), "TestController", "includes controller in route in block")
-      }
-      else {
-        XCTFail("includes controller in route in block")
-      }
+      let controller = self.getLatestRoute().controller
+      self.assert(controller?.name(), equals: "TestController", message: "includes controller in route in block")
     }
     routeSet.addRoute("test", method: "GET", action: "test")
-    if let controller = self.getLatestRoute().controller {
-      XCTAssertEqual(controller.name(), "TailorTests.Controller", "uses default controller in route in block")
-    }
-    else {
-      XCTFail("uses default controller in route in block")
-    }
+    let controller = self.getLatestRoute().controller
+    assert(controller?.name(), equals: "Tailor.Controller", message: "uses default controller in route in block")
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
   func testAddRedirectCreatesRedirectResponse() {
     routeSet.addRedirect("route1", toPath: "/route2")
     let route = getLatestRoute()
-    XCTAssertEqual(route.pathPattern, "/route1", "sets route path to the first path")
+    assert(route.pathPattern, equals: "/route1", message: "sets route path to the first path")
     route.handler(createTestRequest()) {
       response in
-      XCTAssertEqual(response.code, 302, "sets response code to 302")
+      self.assert(response.code, equals: 302, message: "sets response code to 302")
       
-      if let location = response.headers["location"] {
-        XCTAssertEqual(location, "/route2", "sets location header to the second path")
-      }
-      else {
-        XCTFail("sets location header to the second path")
-      }
+      let location = response.headers["location"]
+      self.assert(location, equals: "/route2", message: "sets location header to the second path")
       
       let bodyString = NSString(data: response.bodyData, encoding: NSUTF8StringEncoding)!
-      XCTAssertEqual(bodyString, "You are being redirected", "sets request body to a redirect message")
+      self.assert(bodyString, equals: "You are being redirected", message: "sets request body to a redirect message")
     }
   }
   
@@ -162,9 +152,9 @@ class RouteSetTests: XCTestCase {
       expectation.fulfill()
     }, description: "test route")
     let route = self.getLatestRoute()
-    XCTAssertEqual(route.pathPattern, "/path", "sets path pattern")
-    XCTAssertEqual(route.description, "test route", "sets description")
-    XCTAssertEqual(route.method, "GET", "sets method")
+    assert(route.pathPattern, equals: "/path", message: "sets path pattern")
+    assert(route.description, equals: "test route", message: "sets description")
+    assert(route.method, equals: "GET", message: "sets method")
     route.handler(createTestRequest()) {
       response in
     }
@@ -179,7 +169,7 @@ class RouteSetTests: XCTestCase {
       response in
       expectation.fulfill()
       let body = NSString(data: response.bodyData, encoding: NSUTF8StringEncoding)!
-      XCTAssertEqual(body, "Test Controller: index", "calls controller's respond method")
+      self.assert(body, equals: "Test Controller: index", message: "calls controller's respond method")
     }
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
@@ -188,54 +178,54 @@ class RouteSetTests: XCTestCase {
     routeSet.withPrefix("hats") {
       self.routeSet.addRestfulRoutes()
     }
-    XCTAssertEqual(routeSet.routes.count, 7, "creates 7 routes")
+    assert(routeSet.routes.count, equals: 7, message: "creates 7 routes")
     
-    XCTAssertEqual(routeSet.routes[0].pathPattern, "/hats", "creates index route")
-    XCTAssertEqual(routeSet.routes[0].method, "GET", "creates index route")
-    XCTAssertEqual(routeSet.routes[0].action!, "index", "creates index route")
+    assert(routeSet.routes[0].pathPattern, equals: "/hats", message: "creates index route")
+    assert(routeSet.routes[0].method,equals:  "GET", message: "creates index route")
+    assert(routeSet.routes[0].action!,equals:  "index", message: "creates index route")
     
-    XCTAssertEqual(routeSet.routes[1].pathPattern, "/hats/new", "creates new route")
-    XCTAssertEqual(routeSet.routes[1].method, "GET", "creates new route")
-    XCTAssertEqual(routeSet.routes[1].action!, "new", "creates new route")
+    assert(routeSet.routes[1].pathPattern, equals: "/hats/new", message: "creates new route")
+    assert(routeSet.routes[1].method, equals: "GET", message: "creates new route")
+    assert(routeSet.routes[1].action!, equals: "new", message: "creates new route")
     
-    XCTAssertEqual(routeSet.routes[2].pathPattern, "/hats", "creates create route")
-    XCTAssertEqual(routeSet.routes[2].method, "POST", "creates create route")
-    XCTAssertEqual(routeSet.routes[2].action!, "create", "creates create route")
+    assert(routeSet.routes[2].pathPattern, equals: "/hats", message: "creates create route")
+    assert(routeSet.routes[2].method, equals: "POST", message: "creates create route")
+    assert(routeSet.routes[2].action!, equals: "create", message: "creates create route")
     
-    XCTAssertEqual(routeSet.routes[3].pathPattern, "/hats/:id", "creates show route")
-    XCTAssertEqual(routeSet.routes[3].method, "GET", "creates show route")
-    XCTAssertEqual(routeSet.routes[3].action!, "show", "creates show route")
+    assert(routeSet.routes[3].pathPattern, equals: "/hats/:id", message: "creates show route")
+    assert(routeSet.routes[3].method, equals: "GET", message: "creates show route")
+    assert(routeSet.routes[3].action!, equals: "show", message: "creates show route")
     
-    XCTAssertEqual(routeSet.routes[4].pathPattern, "/hats/:id/edit", "creates edit route")
-    XCTAssertEqual(routeSet.routes[4].method, "GET", "creates edit route")
-    XCTAssertEqual(routeSet.routes[4].action!, "edit", "creates edit route")
+    assert(routeSet.routes[4].pathPattern, equals: "/hats/:id/edit", message: "creates edit route")
+    assert(routeSet.routes[4].method, equals: "GET", message: "creates edit route")
+    assert(routeSet.routes[4].action!, equals: "edit", message: "creates edit route")
     
-    XCTAssertEqual(routeSet.routes[5].pathPattern, "/hats/:id", "creates update route")
-    XCTAssertEqual(routeSet.routes[5].method, "POST", "creates update route")
-    XCTAssertEqual(routeSet.routes[5].action!, "update", "creates update route")
+    assert(routeSet.routes[5].pathPattern, equals: "/hats/:id", message: "creates update route")
+    assert(routeSet.routes[5].method, equals: "POST", message: "creates update route")
+    assert(routeSet.routes[5].action!, equals: "update", message: "creates update route")
     
-    XCTAssertEqual(routeSet.routes[6].pathPattern, "/hats/:id/destroy", "creates destroy route")
-    XCTAssertEqual(routeSet.routes[6].method, "POST", "creates destroy route")
-    XCTAssertEqual(routeSet.routes[6].action!, "destroy", "creates destroy route")
+    assert(routeSet.routes[6].pathPattern, equals: "/hats/:id/destroy", message: "creates destroy route")
+    assert(routeSet.routes[6].method, equals: "POST", message: "creates destroy route")
+    assert(routeSet.routes[6].action!, equals: "destroy", message: "creates destroy route")
   }
   
   func testAddRestfulRoutesCreatesLimitedSetWithOnly() {
     routeSet.addRestfulRoutes(only: ["index", "show"])
     
-    XCTAssertEqual(routeSet.routes.count, 2, "creates two routes")
-    XCTAssertEqual(routeSet.routes[0].action!, "index", "creates index route")
-    XCTAssertEqual(routeSet.routes[1].action!, "show", "creates show route")
+    assert(routeSet.routes.count, equals: 2, message: "creates two routes")
+    assert(routeSet.routes[0].action!, equals: "index", message: "creates index route")
+    assert(routeSet.routes[1].action!, equals: "show", message: "creates show route")
   }
   
   func testAddRestfulRoutesCreatesLimitedSetWithExcept() {
     routeSet.addRestfulRoutes(except: ["edit", "update"])
     
-    XCTAssertEqual(routeSet.routes.count, 5, "creates five routes")
-    XCTAssertEqual(routeSet.routes[0].action!, "index", "creates index route")
-    XCTAssertEqual(routeSet.routes[1].action!, "new", "creates new route")
-    XCTAssertEqual(routeSet.routes[2].action!, "create", "creates create route")
-    XCTAssertEqual(routeSet.routes[3].action!, "show", "creates show route")
-    XCTAssertEqual(routeSet.routes[4].action!, "destroy", "creates destroy route")
+    assert(routeSet.routes.count, equals: 5, message: "creates five routes")
+    assert(routeSet.routes[0].action, equals: "index", message: "creates index route")
+    assert(routeSet.routes[1].action, equals: "new", message: "creates new route")
+    assert(routeSet.routes[2].action, equals: "create", message: "creates create route")
+    assert(routeSet.routes[3].action, equals: "show", message: "creates show route")
+    assert(routeSet.routes[4].action, equals: "destroy", message: "creates destroy route")
   }
   
   func testHandleRequestCallsHandlerForMatchingRequests() {
@@ -262,22 +252,22 @@ class RouteSetTests: XCTestCase {
       response in
       expectation1.fulfill()
       let body = NSString(data: response.bodyData, encoding: NSUTF8StringEncoding)!
-      XCTAssertEqual(body, "Request 1", "calls appropriate request")
+      self.assert(body, equals: "Request 1", message: "calls appropriate request")
     }
     
     routeSet.handleRequest(createTestRequest(path: "/hats/3")) {
       response in
       expectation2.fulfill()
       let body = NSString(data: response.bodyData, encoding: NSUTF8StringEncoding)!
-      XCTAssertEqual(body, "Request 2: 3", "calls appropriate request")
+      self.assert(body, equals: "Request 2: 3", message: "calls appropriate request")
     }
     
     routeSet.handleRequest(createTestRequest(path: "/bad/path")) {
       response in
       expectation3.fulfill()
       let body = NSString(data: response.bodyData, encoding: NSUTF8StringEncoding)!
-      XCTAssertEqual(response.code, 404, "gives 404 response")
-      XCTAssertEqual(body, "File Not Found", "gives error response")
+      self.assert(response.code, equals: 404, message: "gives 404 response")
+      self.assert(body, equals: "File Not Found", message: "gives error response")
 
     }
     
@@ -286,39 +276,45 @@ class RouteSetTests: XCTestCase {
   
   //MARK: - Generating URLs
   
-  func testUrlForGetsSimplePath() {
+  func testPathForGetsSimplePath() {
     routeSet.addRoute("hats", method: "GET", controller: TestController.self, action: "index")
-    if let url = routeSet.urlFor("TestController", action: "index") {
-      XCTAssertEqual(url, "/hats", "generates correct route")
-    }
-    else {
-      XCTFail("generates correct route")
-    }
+    let url = routeSet.pathFor("TestController", action: "index")
+    self.assert(url, equals: "/hats", message: "generates correct route")
   }
   
-  func testUrlForGetsPathWithInterpolatedParameter() {
+  func testPathForGetsPathWithInterpolatedParameter() {
     routeSet.addRoute("hats/:id", method: "GET", controller: TestController.self, action: "show")
-    if let url = routeSet.urlFor("TestController", action: "show", parameters: ["id": "17"]) {
-      XCTAssertEqual(url, "/hats/17", "generates correct route")
-    }
-    else {
-      XCTFail("generates correct route")
-    }
+    let path = routeSet.pathFor("TestController", action: "show", parameters: ["id": "17"])
+    self.assert(path, equals: "/hats/17", message: "generates correct route")
   }
   
-  func testUrlForGetsPathWithQueryString() {
+  func testPathForGetsPathWithQueryString() {
     routeSet.addRoute("hats", method: "GET", controller: TestController.self, action: "index")
-    if let url = routeSet.urlFor("TestController", action: "index", parameters: ["color": "black", "brimSize": "15"]) {
-      XCTAssertEqual(url, "/hats?brimSize=15&color=black", "generates correct route")
-    }
-    else {
-      XCTFail("generates correct route")
-    }
+    let path = routeSet.pathFor("TestController", action: "index", parameters: ["color": "black", "brimSize": "15"])
+    assert(path, equals: "/hats?brimSize=15&color=black", message: "generates correct route")
   }
   
-  func testUrlForReturnsNilForNonMatchingPath() {
+  func testPathForWithDomainGetsUrl() {
     routeSet.addRoute("hats", method: "GET", controller: TestController.self, action: "index")
-    let url = routeSet.urlFor("TestController", action: "show")
-    XCTAssertNil(url, "gives nil URL")
+    let url = routeSet.pathFor("TestController", action: "index", domain: "haberdashery.com")
+    assert(url, equals: "https://haberdashery.com/hats", message: "generates correct URL")
+  }
+  
+  func testPathForWithDomainAndHttpFlagGetsUrl() {
+    routeSet.addRoute("hats", method: "GET", controller: TestController.self, action: "index")
+    let url = routeSet.pathFor("TestController", action: "index", domain: "haberdashery.com", https: false)
+    assert(url, equals: "http://haberdashery.com/hats", message: "generates correct URL")
+  }
+  
+  func testPathForReturnsNilForNonMatchingPath() {
+    routeSet.addRoute("hats", method: "GET", controller: TestController.self, action: "index")
+    let path = routeSet.pathFor("TestController", action: "show")
+    XCTAssertNil(path, "gives nil path")
+  }
+  
+  func testPathForReturnsNilForNonMatchingPathWithDomain() {
+    routeSet.addRoute("hats", method: "GET", controller: TestController.self, action: "index")
+    let path = routeSet.pathFor("TestController", action: "show", domain: "haberdashery.com")
+    XCTAssertNil(path, "gives nil path")
   }
 }

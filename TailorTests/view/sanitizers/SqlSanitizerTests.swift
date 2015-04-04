@@ -1,8 +1,10 @@
 import XCTest
+import Tailor
+import TailorTesting
 
-class SqlSanitizerTests: XCTestCase {
+class SqlSanitizerTests: TailorTestCase {
   func testSqlSanitizerReplacesSqlEscapeCharacters() {
     let result = SqlSanitizer().sanitizeString("BOBBY '; DROP TABLE \\ students\"")
-    XCTAssertEqual(result, "BOBBY \\'; DROP TABLE \\\\ students\\\"", "sanitizes all escape characters")
+    assert(result, equals: "BOBBY \\'; DROP TABLE \\\\ students\\\"", message: "sanitizes all escape characters")
   }
 }

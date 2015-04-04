@@ -1,9 +1,11 @@
 import XCTest
+import Tailor
+import TailorTesting
 
-class SanitizedTextTests: XCTestCase {
+class SanitizedTextTests: TailorTestCase {
   func testCanInitializeWithStringLiteral() {
     let text : SanitizedText = "abc"
-    XCTAssertEqual(text.text, "abc", "uses the string literal as the text")
+    assert(text.text, equals: "abc", message: "uses the string literal as the text")
     XCTAssertTrue(text.sanitizers.isEmpty, "has no sanitizers applied")
   }
 }

@@ -1,8 +1,8 @@
 import XCTest
+import Tailor
+import TailorTesting
 
-class AlterationTests: XCTestCase {
-  
-  
+class AlterationTests: TailorTestCase {
   class FirstAlteration: Alteration {
     override class func id() -> String { return "1" }
     override func alter() {
@@ -25,18 +25,16 @@ class AlterationTests: XCTestCase {
   }
 
   func testDescriptionGetsClassName() {
-    XCTAssertEqual(Alteration.description(), "TailorTests.Alteration", "gets class name")
+    assert(Alteration.description(), equals: "Tailor.Alteration", message: "gets class name")
   }
   
   func testPendingAlterationsFindsAlterationsThatAreNotInTable() {
-    TestApplication.start()
     DatabaseConnection.sharedConnection().executeQuery("DROP TABLE IF EXISTS tailor_alterations")
     DatabaseConnection.sharedConnection().executeQuery("CREATE TABLE tailor_alterations ( id varchar(255) PRIMARY KEY )")
     DatabaseConnection.sharedConnection().executeQuery("INSERT INTO tailor_alterations values (''), (?)", "1")
     
     let alterations = Alteration.pendingAlterations()
     let ids = alterations.map { $0.id() }
-    XCTAssertEqual(ids, ["2", "3"], "gets the ids for the alterations that have not been run")
-    SHARED_APPLICATION = nil
+    assert(ids, equals: ["2", "3"], message: "gets the ids for the alterations that have not been run")
   }
 }

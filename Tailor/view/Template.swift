@@ -168,19 +168,6 @@ public class Template {
   }
   
   /**
-    This method gets the URL for a route.
-
-    :param: controllerName  The controller to link to. This will default to the
-                            current controller.
-    :param: action          The action to link to.
-    :param: parameters      Additional parameters for the path.
-    :returns:               The path
-    */
-  public func urlFor(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:]) -> String? {
-    return self.controller.urlFor(controllerName: controllerName, action: action, parameters: parameters)
-  }
-  
-  /**
     This method adds a tag for linking to a path.
   
     :param: controllerName  The controller to link to. This will default to the
@@ -192,7 +179,7 @@ public class Template {
     */
   public func link(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:], attributes: [String:String] = [:], with contents: ()->()={}) {
     var mergedAttributes = attributes
-    mergedAttributes["href"] = self.urlFor(controllerName: controllerName,
+    mergedAttributes["href"] = self.controller.pathFor(controllerName: controllerName,
       action: action, parameters: parameters) ?? ""
     self.tag("a", mergedAttributes, with: contents)
   }
@@ -206,6 +193,30 @@ public class Template {
   public func renderTemplate(template: Template) {
     self.renderedTemplates.append(template)
     self.buffer.appendString(template.generate())
+  }
+  
+  /**
+    This method generates content for the template and stores it in the cache.
+
+    If the content is already in the cache, the cached version will be put into
+    the buffer without re-generating it.
+
+    :param: key     The key where the content will be stored in the cache.
+    :param: block   The block that will generate the content. This should
+                    generate the content as you would any other part of the
+                    template body, using the normal helper methods.
+    */
+  public func cache(key: String, block: ()->()) {
+    let cache = CacheStore.shared()
+    if let cachedContent = cache.read(key) {
+      self.buffer.appendString(cachedContent)
+    }
+    else {
+      let previousLength = self.buffer.length
+      block()
+      let addedContent = self.buffer.substringFromIndex(previousLength)
+      cache.write(key, value: addedContent)
+    }
   }
   
 

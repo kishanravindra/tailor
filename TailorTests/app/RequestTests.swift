@@ -1,6 +1,8 @@
 import XCTest
+import Tailor
+import TailorTesting
 
-class RequestTests: XCTestCase {
+class RequestTests: TailorTestCase {
   var requestString = "GET /test/path HTTP/1.1\r\nX-Custom-Field: header value\r\nReferer: searchtheweb.com\r\nCookie: key1=value1; key2=value2\r\nCookie: key3=value3\r\n\r\nRequest Body"
   let clientAddress = "1.2.3.4"
   
@@ -10,35 +12,35 @@ class RequestTests: XCTestCase {
   //MARK: - Initialization
   
   func testInitializationSetsClientAddressOnRequest() {
-    XCTAssertEqual(request.clientAddress, "1.2.3.4", "sets client address based on initialization")
+    assert(request.clientAddress, equals: "1.2.3.4", message: "sets client address based on initialization")
   }
   
   func testInitializationSetsMethod() {
-    XCTAssertEqual(request.method, "GET", "sets method to GET for GET request")
+    assert(request.method, equals: "GET", message: "sets method to GET for GET request")
     requestString = requestString.stringByReplacingOccurrencesOfString("GET", withString: "POST")
-    XCTAssertEqual(request.method, "POST", "sets method to POST for POST request")
+    assert(request.method, equals: "POST", message: "sets method to POST for POST request")
     requestString = ""
-    XCTAssertEqual(request.method, "GET", "sets method to GET for empty request")
+    assert(request.method, equals: "GET", message: "sets method to GET for empty request")
   }
   
   func testInitializationSetsPath() {
-    XCTAssertEqual(request.path, "/test/path", "sets path based on header")
+    assert(request.path, equals: "/test/path", message: "sets path based on header")
     requestString = ""
-    XCTAssertEqual(request.path, "/", "sets path to root for empty request")
+    assert(request.path, equals: "/", message: "sets path to root for empty request")
   }
   
   func testInitializationSetsHttpVersion() {
-    XCTAssertEqual(request.version, "1.1", "sets method to 1.1 for 1.1 request")
+    assert(request.version, equals: "1.1", message: "sets method to 1.1 for 1.1 request")
     requestString = requestString.stringByReplacingOccurrencesOfString("1.1", withString: "1.0")
-    XCTAssertEqual(request.version, "1.0", "sets method to 1.0 for 1.0 request")
+    assert(request.version, equals: "1.0", message: "sets method to 1.0 for 1.0 request")
     requestString = ""
-    XCTAssertEqual(request.version, "1.1", "sets method to 1.1 for empty request")
+    assert(request.version, equals: "1.1", message: "sets method to 1.1 for empty request")
   }
   
   func testInitializationRemovesQueryStringFromPath() {
     requestString = requestString.stringByReplacingOccurrencesOfString("/test/path", withString: "/test/path?count=5")
-    XCTAssertEqual(request.path, "/test/path", "removes query string from path")
-    XCTAssertEqual(request.fullPath, "/test/path?count=5", "leaves query string in full path")
+    assert(request.path, equals: "/test/path", message: "removes query string from path")
+    assert(request.fullPath, equals: "/test/path?count=5", message: "leaves query string in full path")
   }
   
   func testInitializationSetsHeaders() {
@@ -48,13 +50,13 @@ class RequestTests: XCTestCase {
     
     XCTAssertNotNil(header1, "sets X-Custom-Field header")
     if header1 != nil {
-      XCTAssertEqual(header1!, "header value", "sets X-Custom-Field header to correct value")
+      assert(header1!, equals: "header value", message: "sets X-Custom-Field header to correct value")
     }
     
     
     XCTAssertNotNil(header2, "sets Referer header")
     if header2 != nil {
-      XCTAssertEqual(headers["Referer"]!, "searchtheweb.com", "sets Referer header to correct value")
+      assert(headers["Referer"]!, equals: "searchtheweb.com", message: "sets Referer header to correct value")
     }
   }
   
@@ -62,21 +64,21 @@ class RequestTests: XCTestCase {
     let cookies = request.cookies
     
     if let value = cookies["key1"] {
-      XCTAssertEqual(value, "value1", "sets cookie for key1")
+      assert(value, equals: "value1", message: "sets cookie for key1")
     }
     else {
       XCTFail("sets cookie for key1")
     }
     
     if let value = cookies["key2"] {
-      XCTAssertEqual(value, "value2", "sets cookie for key2")
+      assert(value, equals: "value2", message: "sets cookie for key2")
     }
     else {
       XCTFail("sets cookie for key2")
     }
     
     if let value = cookies["key3"] {
-      XCTAssertEqual(value, "value3", "sets cookie for key3")
+      assert(value, equals: "value3", message: "sets cookie for key3")
     }
     else {
       XCTFail("sets cookie for key3")
@@ -89,14 +91,14 @@ class RequestTests: XCTestCase {
 
     XCTAssertNotNil(param, "sets request parameter")
     if param != nil {
-      XCTAssertEqual(param!, "5", "sets request parameter to correct value")
+      assert(param!, equals: "5", message: "sets request parameter to correct value")
     }
   }
   
   //MARK: - Body Parsing
   
   func testBodyTextGetsStringFromBodyData() {
-    XCTAssertEqual(request.bodyText, "Request Body", "gets body text from the request")
+    assert(request.bodyText, equals: "Request Body", message: "gets body text from the request")
   }
   
   func testParseRequestParametersGetsParametersFromQueryString() {
@@ -104,14 +106,14 @@ class RequestTests: XCTestCase {
     let params = request.requestParameters
     
     if let value = params["count"] {
-      XCTAssertEqual(value, "5", "sets count parameter")
+      assert(value, equals: "5", message: "sets count parameter")
     }
     else {
       XCTFail("sets count parameter")
     }
     
     if let value = params["id"] {
-      XCTAssertEqual(value, "6", "sets id parameter")
+      assert(value, equals: "6", message: "sets id parameter")
     }
     else {
       XCTFail("sets count parameter")
@@ -125,14 +127,14 @@ class RequestTests: XCTestCase {
     let params = request.requestParameters
     
     if let value = params["count"] {
-      XCTAssertEqual(value, "5", "sets count parameter")
+      assert(value, equals: "5", message: "sets count parameter")
     }
     else {
       XCTFail("sets count parameter")
     }
     
     if let value = params["id"] {
-      XCTAssertEqual(value, "6", "sets id parameter")
+      assert(value, equals: "6", message: "sets id parameter")
     }
     else {
       XCTFail("sets id parameter")
@@ -147,14 +149,14 @@ class RequestTests: XCTestCase {
     let params = request.requestParameters
 
     if let value = params["param1"] {
-      XCTAssertEqual(value, "value1", "sets param1")
+      assert(value, equals: "value1", message: "sets param1")
     }
     else {
       XCTFail("sets param1")
     }
     
     if let value = params["param2"] {
-      XCTAssertEqual(value, "value2", "sets param2")
+      assert(value, equals: "value2", message: "sets param2")
     }
     else {
       XCTFail("sets param2")
@@ -169,7 +171,7 @@ class RequestTests: XCTestCase {
     let params = request.requestParameters
     
     if let value = params["param1"] {
-      XCTAssertEqual(value, "value1", "sets param1")
+      assert(value, equals: "value1", message: "sets param1")
     }
     else {
       XCTFail("sets param1")
@@ -177,14 +179,14 @@ class RequestTests: XCTestCase {
     
     if let file = request.uploadedFiles["param2"] {
       if let value = file["contentType"] as? String {
-        XCTAssertEqual(value, "text/plain", "sets content type")
+        assert(value, equals: "text/plain", message: "sets content type")
       }
       else {
         XCTFail("sets content type")
       }
       if let value = file["data"] as? NSData {
         let data = "this is a log".dataUsingEncoding(NSUTF8StringEncoding)!
-        XCTAssertEqual(value, data, "sets data")
+        assert(value, equals: data, message: "sets data")
       }
       else {
         XCTFail("sets data")
@@ -199,14 +201,14 @@ class RequestTests: XCTestCase {
   
   func testExtractWithPatternGetsPiecesOfLine() {
     let matches = Request.extractWithPattern("Content-Type: text/plain", pattern: "^([\\w-]*): (.*)$")
-    XCTAssertEqual(matches.count, 2, "gets two matches")
-    XCTAssertEqual(matches[0], "Content-Type", "gets the first match")
-    XCTAssertEqual(matches[1], "text/plain", "gets the second match")
+    assert(matches.count, equals: 2, message: "gets two matches")
+    assert(matches[0], equals: "Content-Type", message: "gets the first match")
+    assert(matches[1], equals: "text/plain", message: "gets the second match")
   }
   
   func testExtractWithPatternGetsEmptyListForNoMatch() {
     let matches = Request.extractWithPattern(" Content-Type: text/plain", pattern: "^([\\w-]*): (.*)$")
-    XCTAssertEqual(matches.count, 0, "gets no matches")
+    assert(matches.count, equals: 0, message: "gets no matches")
   }
   
   func testDecodeQueryStringGetsParameters() {
@@ -214,14 +216,14 @@ class RequestTests: XCTestCase {
     let decoded = Request.decodeQueryString(queryString)
     
     if let value = decoded["key1"] {
-      XCTAssertEqual(value, "value1", "gets simple param")
+      assert(value, equals: "value1", message: "gets simple param")
     }
     else {
       XCTFail("gets simple param")
     }
     
     if let value = decoded["key2"] {
-      XCTAssertEqual(value, "value=a b", "decodes param with escapes")
+      assert(value, equals: "value=a b", message: "decodes param with escapes")
     }
     else {
       XCTFail("decodes param with escapes")
@@ -233,14 +235,14 @@ class RequestTests: XCTestCase {
     let decoded = Request.decodeQueryString(queryString)
     
     if let value = decoded["key1"] {
-      XCTAssertEqual(value, "", "gets key1")
+      assert(value, equals: "", message: "gets key1")
     }
     else {
       XCTFail("gets simple param")
     }
     
     if let value = decoded["key2"] {
-      XCTAssertEqual(value, "", "gets key2")
+      assert(value, equals: "", message: "gets key2")
     }
     else {
       XCTFail("gets key2")
@@ -252,24 +254,24 @@ class RequestTests: XCTestCase {
   func testInitializerCanInitializeRequestInfo() {
     let params = ["key1": "value1", "key2": "value2"]
     let request = Request(clientAddress: "127.0.0.1", method: "POST", parameters: params)
-    XCTAssertEqual(request.requestParameters, params, "sets request parameters")
-    XCTAssertEqual(request.method, "POST", "sets method")
-    XCTAssertEqual(request.clientAddress, "127.0.0.1", "sets client address")
+    assert(request.requestParameters, equals: params, message: "sets request parameters")
+    assert(request.method, equals: "POST", message: "sets method")
+    assert(request.clientAddress, equals: "127.0.0.1", message: "sets client address")
   }
   
   func testInitializerCanInitializeSessionInfo() {
-    TestApplication.start()
+    Application.start()
     let request = Request(sessionData: ["mobile": "1"])
     let session = Session(request: request)
     let value = session["mobile"]
     XCTAssertNotNil(value, "sets session value")
-    if value != nil { XCTAssertEqual(value!, "1", "sets session value") }
+    if value != nil { assert(value!, equals: "1", message: "sets session value") }
   }
   
   func testInitializerCanInitializeCookieInfo() {
     let request = Request(cookies: ["tracker": "test.com"])
     let cookieValue = request.cookies["tracker"]
     XCTAssertNotNil(cookieValue)
-    if cookieValue != nil { XCTAssertEqual(cookieValue!, "test.com", "sets cookie value") }
+    if cookieValue != nil { assert(cookieValue!, equals: "test.com", message: "sets cookie value") }
   }
 }
