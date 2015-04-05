@@ -58,12 +58,12 @@ import Foundation
     :param: connection    The connection that will execute the statement.
     :param: query         The query that we will execute.
     */
-  init(connection: MysqlConnection, query: String) {
+  public init(connection: MysqlConnection, query: String) {
     self.statement = mysql_stmt_init(connection.connection)
 
     let encodedQuery = query.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!
     
-    let hasError = mysql_stmt_prepare(statement, UnsafePointer<Int8>(encodedQuery.bytes), UInt(encodedQuery.length))
+    mysql_stmt_prepare(statement, UnsafePointer<Int8>(encodedQuery.bytes), UInt(encodedQuery.length))
     
     self.resultSet = MysqlResultSet(statement: self.statement)
   }

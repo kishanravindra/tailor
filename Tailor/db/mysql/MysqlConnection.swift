@@ -5,7 +5,7 @@ import Foundation
   */
 public class MysqlConnection : DatabaseConnection {  
   /** The underlying MySQL connection. */
-  var connection : UnsafeMutablePointer<MYSQL>
+  public var connection : UnsafeMutablePointer<MYSQL>
   
   /**
     This method initializes a connection to a MySQL database.

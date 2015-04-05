@@ -6,7 +6,7 @@ class MysqlConnectionTests: TailorTestCase {
   var connection: MysqlConnection { get { return DatabaseConnection.sharedConnection() as! MysqlConnection } }
   
   override func setUp() {
-    Application.start()
+    super.setUp()
     connection.executeQuery("TRUNCATE TABLE `hats`")
     connection.executeQuery("INSERT INTO `hats` (`color`, `brim_size`) VALUES ('red', 10)")
   }
