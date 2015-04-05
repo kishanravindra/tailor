@@ -1,11 +1,6 @@
 #import "BindParameterSet.h"
 #import "BindParameter.h"
-
-#ifdef TEST_SUITE
-#import "TailorTests-Swift.h"
-#else
 #import <Tailor/Tailor-Swift.h>
-#endif
 
 @implementation BindParameterSet {
   MYSQL_BIND* mysqlParameters;

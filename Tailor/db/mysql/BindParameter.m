@@ -1,9 +1,5 @@
 #import "BindParameter.h"
-#ifdef TEST_SUITE
-#import "TailorTests-Swift.h"
-#else
 #import <Tailor/Tailor-Swift.h>
-#endif
 
 @implementation BindParameter {
   MYSQL_BIND parameter;
@@ -29,7 +25,7 @@
   return self;
 }
 
-- (id) initWithField:(MysqlField*)field {
+- (nonnull id) initWithField:(nonnull MysqlField*)field {
   self = [self init];
   
   void* buffer = calloc(field.bufferLength, field.bufferSize);
@@ -38,8 +34,13 @@
   parameter.buffer_length = (UInt)field.bufferLength;
   
   parameter.length = malloc(sizeof(NSInteger));
+  *parameter.length = 0;
+  
   parameter.is_null = malloc(sizeof(my_bool));
+  *parameter.is_null = 0;
+  
   parameter.error = malloc(sizeof(my_bool));
+  *parameter.error = 0;
   
   binary = field.isBinary;
   
@@ -75,6 +76,7 @@
 }
 
 - (id) data {
+  NSString* stringValue;
   
   if(self.isNull) {
     return nil;
@@ -82,6 +84,7 @@
   
   switch(self.parameter.buffer_type) {
     case MYSQL_TYPE_TINY:
+    case MYSQL_TYPE_BIT:
       return [NSNumber numberWithInt: *((char*)self.buffer)];
     case MYSQL_TYPE_SHORT:
       return [NSNumber numberWithInt:*((short*)self.buffer)];
@@ -94,6 +97,9 @@
       return [NSNumber numberWithFloat:*((float*)self.buffer)];
     case MYSQL_TYPE_DOUBLE:
       return [NSNumber numberWithDouble:*((double*)self.buffer)];
+    case MYSQL_TYPE_NEWDECIMAL:
+      stringValue = [[NSString alloc] initWithBytes: self.buffer length:self.length encoding: NSUTF8StringEncoding];
+      return [NSNumber numberWithDouble: stringValue.doubleValue];
     case MYSQL_TYPE_TIME:
     case MYSQL_TYPE_DATE:
     case MYSQL_TYPE_DATETIME:

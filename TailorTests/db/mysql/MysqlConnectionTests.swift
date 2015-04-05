@@ -101,7 +101,7 @@ class MysqlConnectionTests: TailorTestCase {
         XCTFail("gets a data value")
       }
     }
-    connection.executeQuery("ALTER TABLE `hats` REMOVE COLUMN `image`")
+    connection.executeQuery("ALTER TABLE `hats` DROP COLUMN `image`")
   }
   
   func testQueryCanGetNullValue() {

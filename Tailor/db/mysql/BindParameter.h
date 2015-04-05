@@ -44,10 +44,12 @@
  
   This will allocate the buffer, which must be freed elsewhere.
  
-  @param field   The field
-  @returns      The newly initialized parameter.
+  @param field    The field. This must be a MysqlField, but a bug in the Swift/
+                  Objective-C bridge won't let us state that in the type
+                  signature.
+  @returns        The newly initialized parameter.
   */
-- (nonnull id) initWithField:(nonnull MysqlField*)field;
+- (nonnull id) initWithField:(nonnull id)field;
 
 //MARK: - Field Information
 

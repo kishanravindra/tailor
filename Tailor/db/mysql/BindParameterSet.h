@@ -18,9 +18,11 @@
  result set.
 
  @param resultSet   The result set describing the fields.
+                    This must be a MysqlResultSet, but a bug in the Swift-Objc
+                    bridge keeps us from putting that in the type signature.
  @returns           The newly initialized parameter set.
  */
-- (nonnull id) initWithResultSet:(nonnull MysqlResultSet*)resultSet;
+- (nonnull id) initWithResultSet:(nonnull id)resultSet;
 
 /**
  This method initializes a parameter set with data for the buffer.

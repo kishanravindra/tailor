@@ -48,6 +48,7 @@
 		5262EEBB1AD15DD0006F864D /* MysqlStatementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5262EEBA1AD15DD0006F864D /* MysqlStatementTests.swift */; };
 		5262EEBD1AD167A2006F864D /* MysqlResultSetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5262EEBC1AD167A2006F864D /* MysqlResultSetTests.swift */; };
 		5262EEBF1AD16B5F006F864D /* MysqlFieldTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5262EEBE1AD16B5F006F864D /* MysqlFieldTests.swift */; };
+		5262EEC11AD1713E006F864D /* MysqlBindParameterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5262EEC01AD1713E006F864D /* MysqlBindParameterTests.swift */; };
 		528D183F1A8FDD4A00A6E116 /* TailorTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D183E1A8FDD4A00A6E116 /* TailorTestHelpers.swift */; };
 		528D18411A8FE15D00A6E116 /* Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D18401A8FE15D00A6E116 /* Layout.swift */; };
 		528D6FA21A56224900783BE5 /* RangeValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D6FA11A56224900783BE5 /* RangeValidatorTests.swift */; };
@@ -199,6 +200,7 @@
 		5262EEBA1AD15DD0006F864D /* MysqlStatementTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MysqlStatementTests.swift; sourceTree = "<group>"; };
 		5262EEBC1AD167A2006F864D /* MysqlResultSetTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MysqlResultSetTests.swift; sourceTree = "<group>"; };
 		5262EEBE1AD16B5F006F864D /* MysqlFieldTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MysqlFieldTests.swift; sourceTree = "<group>"; };
+		5262EEC01AD1713E006F864D /* MysqlBindParameterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MysqlBindParameterTests.swift; sourceTree = "<group>"; };
 		528D183E1A8FDD4A00A6E116 /* TailorTestHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TailorTestHelpers.swift; sourceTree = "<group>"; };
 		528D18401A8FE15D00A6E116 /* Layout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Layout.swift; sourceTree = "<group>"; };
 		528D6FA11A56224900783BE5 /* RangeValidatorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RangeValidatorTests.swift; path = TailorTests/model/validators/RangeValidatorTests.swift; sourceTree = SOURCE_ROOT; };
@@ -387,6 +389,7 @@
 				5262EEBA1AD15DD0006F864D /* MysqlStatementTests.swift */,
 				5262EEBC1AD167A2006F864D /* MysqlResultSetTests.swift */,
 				5262EEBE1AD16B5F006F864D /* MysqlFieldTests.swift */,
+				5262EEC01AD1713E006F864D /* MysqlBindParameterTests.swift */,
 			);
 			path = mysql;
 			sourceTree = "<group>";
@@ -951,6 +954,7 @@
 				52EC6D4A1A47B3F100A4D822 /* RouteSetTests.swift in Sources */,
 				5262EEBB1AD15DD0006F864D /* MysqlStatementTests.swift in Sources */,
 				52F41F341A561D0500EE7178 /* ErrorCollectionTests.swift in Sources */,
+				5262EEC11AD1713E006F864D /* MysqlBindParameterTests.swift in Sources */,
 				526254351AABC9A600D63024 /* MemoryCacheStoreTests.swift in Sources */,
 				528D183F1A8FDD4A00A6E116 /* TailorTestHelpers.swift in Sources */,
 				5214B5D51AA3903800624E9D /* ValidationErrorTests.swift in Sources */,

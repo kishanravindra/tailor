@@ -56,7 +56,7 @@
     var size = UInt(sizeof(UInt8))
     var length = UInt(1)
     switch type.value {
-    case MYSQL_TYPE_TINY.value:
+    case MYSQL_TYPE_TINY.value, MYSQL_TYPE_BIT.value:
       size = UInt(sizeof(CChar))
     case MYSQL_TYPE_SHORT.value:
       size = UInt(sizeof(CShort))
