@@ -3,7 +3,7 @@ import Tailor
 import TailorTesting
 
 class MysqlConnectionTests: TailorTestCase {
-  var connection: MysqlConnection { get { return DatabaseConnection.sharedConnection() as MysqlConnection } }
+  var connection: MysqlConnection { get { return DatabaseConnection.sharedConnection() as! MysqlConnection } }
   
   override func setUp() {
     Application.start()
@@ -60,7 +60,7 @@ class MysqlConnectionTests: TailorTestCase {
         let calendar = NSCalendar.currentCalendar()
         let oldTimeZone = calendar.timeZone
         calendar.timeZone = NSTimeZone(name: "UTC")!
-        let components = calendar.components(.YearCalendarUnit | .MonthCalendarUnit | .DayCalendarUnit | .HourCalendarUnit | .MinuteCalendarUnit | .SecondCalendarUnit,
+        let components = calendar.components(.CalendarUnitYear | .CalendarUnitMonth | .CalendarUnitDay | .CalendarUnitHour | .CalendarUnitMinute | .CalendarUnitSecond,
           fromDate: date)
         assert(components.year, equals: 2014, message: "gets the year from the date")
         assert(components.month, equals: 10, message: "gets the month from the date")

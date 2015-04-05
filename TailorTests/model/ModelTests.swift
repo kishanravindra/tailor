@@ -14,7 +14,7 @@ class ModelTests: TailorTestCase {
   }
   class TestValidator : Validator {
     override func validate(model: Model) {
-      let hat = model as! HatForModel
+      let hat = model as! Hat
       if(contains(hat.keysToFail, key)) {
         hat.errors.add(key, "failed validation")
       }
@@ -47,7 +47,7 @@ class ModelTests: TailorTestCase {
   }
   
   func testValidatePutsErrorMessageInErrorListWhenValidationFails() {
-    let hat = HatForModel()
+    let hat = Hat()
     hat.keysToFail.append("brimSize")
     hat.validate()
     let errors = hat.errors.errors
@@ -59,14 +59,14 @@ class ModelTests: TailorTestCase {
   }
   
   func testValidateReturnsFalseWhenValidationFails() {
-    let hat = HatForModel()
+    let hat = Hat()
     hat.keysToFail.append("brimSize")
     let result = hat.validate()
     XCTAssertFalse(result, "returns false")
   }
   
   func testValidateCanCollectMultipleErrors() {
-    let hat = HatForModel()
+    let hat = Hat()
     hat.keysToFail.append("brimSize")
     hat.keysToFail.append("color")
     hat.validate()

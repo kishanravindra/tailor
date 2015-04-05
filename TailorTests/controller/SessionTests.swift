@@ -3,7 +3,7 @@ import Tailor
 import TailorTesting
 
 class SessionTests: TailorTestCase {
-  let session: Session!
+  let session: Session! = nil
   
   func createCookieString(data: [String:String] = [:], flashData: [String:String] = [:], clientAddress: String = "0.0.0.0", expirationDate: NSDate = NSDate(timeIntervalSinceNow: 3600)) -> String {
     var mergedData = data
