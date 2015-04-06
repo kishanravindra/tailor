@@ -49,6 +49,8 @@
 		5262EEBD1AD167A2006F864D /* MysqlResultSetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5262EEBC1AD167A2006F864D /* MysqlResultSetTests.swift */; };
 		5262EEBF1AD16B5F006F864D /* MysqlFieldTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5262EEBE1AD16B5F006F864D /* MysqlFieldTests.swift */; };
 		5262EEC11AD1713E006F864D /* MysqlBindParameterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5262EEC01AD1713E006F864D /* MysqlBindParameterTests.swift */; };
+		5262EEF61AD19897006F864D /* MysqlBindParameterSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5262EEF51AD19897006F864D /* MysqlBindParameterSet.swift */; };
+		5262EEF81AD19B18006F864D /* MysqlBindParameter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5262EEF71AD19B18006F864D /* MysqlBindParameter.swift */; };
 		528D183F1A8FDD4A00A6E116 /* TailorTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D183E1A8FDD4A00A6E116 /* TailorTestHelpers.swift */; };
 		528D18411A8FE15D00A6E116 /* Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D18401A8FE15D00A6E116 /* Layout.swift */; };
 		528D6FA21A56224900783BE5 /* RangeValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D6FA11A56224900783BE5 /* RangeValidatorTests.swift */; };
@@ -58,14 +60,9 @@
 		529230061A3CF4E4006DD6EB /* ApplicationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529230051A3CF4E4006DD6EB /* ApplicationTests.swift */; };
 		5292303C1A3CF9AA006DD6EB /* libmysqlclient.18.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D61A7319FDB27800FFA2EF /* libmysqlclient.18.dylib */; };
 		5292303E1A3CFB93006DD6EB /* ExitTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5292303D1A3CFB93006DD6EB /* ExitTask.swift */; };
-		52A5006F1AA2624400F3F031 /* BindParameter.h in Headers */ = {isa = PBXBuildFile; fileRef = 52A5006D1AA2624400F3F031 /* BindParameter.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		52A500701AA2624400F3F031 /* BindParameter.m in Sources */ = {isa = PBXBuildFile; fileRef = 52A5006E1AA2624400F3F031 /* BindParameter.m */; };
-		52A500731AA271AF00F3F031 /* BindParameterSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 52A500711AA271AF00F3F031 /* BindParameterSet.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		52A500741AA271AF00F3F031 /* BindParameterSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 52A500721AA271AF00F3F031 /* BindParameterSet.m */; };
 		52A500871AA2993C00F3F031 /* MysqlStatement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A500861AA2993C00F3F031 /* MysqlStatement.swift */; };
 		52A5008C1AA34DF800F3F031 /* MysqlResultSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A5008B1AA34DF800F3F031 /* MysqlResultSet.swift */; };
 		52A5008E1AA34F6A00F3F031 /* MysqlField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A5008D1AA34F6A00F3F031 /* MysqlField.swift */; };
-		52A5008F1AA356BA00F3F031 /* MysqlResultSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A5008B1AA34DF800F3F031 /* MysqlResultSet.swift */; };
 		52A500901AA356BE00F3F031 /* MysqlField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A5008D1AA34F6A00F3F031 /* MysqlField.swift */; };
 		52A684521A3D0C5B00F4AA47 /* ConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A684511A3D0C5B00F4AA47 /* ConnectionTests.swift */; };
 		52A684541A3EFB1000F4AA47 /* CookieTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A684531A3EFB1000F4AA47 /* CookieTests.swift */; };
@@ -201,6 +198,8 @@
 		5262EEBC1AD167A2006F864D /* MysqlResultSetTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MysqlResultSetTests.swift; sourceTree = "<group>"; };
 		5262EEBE1AD16B5F006F864D /* MysqlFieldTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MysqlFieldTests.swift; sourceTree = "<group>"; };
 		5262EEC01AD1713E006F864D /* MysqlBindParameterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MysqlBindParameterTests.swift; sourceTree = "<group>"; };
+		5262EEF51AD19897006F864D /* MysqlBindParameterSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MysqlBindParameterSet.swift; sourceTree = "<group>"; };
+		5262EEF71AD19B18006F864D /* MysqlBindParameter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MysqlBindParameter.swift; sourceTree = "<group>"; };
 		528D183E1A8FDD4A00A6E116 /* TailorTestHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TailorTestHelpers.swift; sourceTree = "<group>"; };
 		528D18401A8FE15D00A6E116 /* Layout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Layout.swift; sourceTree = "<group>"; };
 		528D6FA11A56224900783BE5 /* RangeValidatorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RangeValidatorTests.swift; path = TailorTests/model/validators/RangeValidatorTests.swift; sourceTree = SOURCE_ROOT; };
@@ -210,10 +209,6 @@
 		529230051A3CF4E4006DD6EB /* ApplicationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApplicationTests.swift; sourceTree = "<group>"; };
 		5292303B1A3CF74A006DD6EB /* TailorTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TailorTests.h; sourceTree = "<group>"; };
 		5292303D1A3CFB93006DD6EB /* ExitTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ExitTask.swift; path = tasks/ExitTask.swift; sourceTree = "<group>"; };
-		52A5006D1AA2624400F3F031 /* BindParameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BindParameter.h; sourceTree = "<group>"; };
-		52A5006E1AA2624400F3F031 /* BindParameter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BindParameter.m; sourceTree = "<group>"; };
-		52A500711AA271AF00F3F031 /* BindParameterSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BindParameterSet.h; sourceTree = "<group>"; };
-		52A500721AA271AF00F3F031 /* BindParameterSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BindParameterSet.m; sourceTree = "<group>"; };
 		52A500861AA2993C00F3F031 /* MysqlStatement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MysqlStatement.swift; sourceTree = "<group>"; };
 		52A5008B1AA34DF800F3F031 /* MysqlResultSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MysqlResultSet.swift; sourceTree = "<group>"; };
 		52A5008D1AA34F6A00F3F031 /* MysqlField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MysqlField.swift; sourceTree = "<group>"; };
@@ -428,10 +423,8 @@
 				52A500861AA2993C00F3F031 /* MysqlStatement.swift */,
 				52A5008B1AA34DF800F3F031 /* MysqlResultSet.swift */,
 				52A5008D1AA34F6A00F3F031 /* MysqlField.swift */,
-				52A5006D1AA2624400F3F031 /* BindParameter.h */,
-				52A5006E1AA2624400F3F031 /* BindParameter.m */,
-				52A500711AA271AF00F3F031 /* BindParameterSet.h */,
-				52A500721AA271AF00F3F031 /* BindParameterSet.m */,
+				5262EEF51AD19897006F864D /* MysqlBindParameterSet.swift */,
+				5262EEF71AD19B18006F864D /* MysqlBindParameter.swift */,
 			);
 			path = mysql;
 			sourceTree = "<group>";
@@ -740,10 +733,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				52BD13A319E9D7E4006D72B0 /* Tailor.h in Headers */,
-				52A500731AA271AF00F3F031 /* BindParameterSet.h in Headers */,
 				52BD143619E9DA1D006D72B0 /* TailorC.h in Headers */,
 				52C6252819EE12AE0024453F /* crypt_blowfish.h in Headers */,
-				52A5006F1AA2624400F3F031 /* BindParameter.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -897,7 +888,6 @@
 				52B2B6EE19F3F75C0086261B /* Sanitizer.swift in Sources */,
 				52B2B6F419F405620086261B /* SqlSanitizer.swift in Sources */,
 				52EF127419F0A58400B61DF4 /* Localization.swift in Sources */,
-				52A500701AA2624400F3F031 /* BindParameter.m in Sources */,
 				522B56CC1A191475009BBE32 /* UniquenessValidator.swift in Sources */,
 				52B2B6B219F2DAD30086261B /* Alteration.swift in Sources */,
 				522B56CA1A18C849009BBE32 /* Array.swift in Sources */,
@@ -907,7 +897,6 @@
 				526254371AABC9C800D63024 /* MemoryCacheStore.swift in Sources */,
 				52BD142619E9DA1D006D72B0 /* Application.swift in Sources */,
 				52BD142919E9DA1D006D72B0 /* CookieJar.swift in Sources */,
-				52A500741AA271AF00F3F031 /* BindParameterSet.m in Sources */,
 				52B2B6F019F3F7E20086261B /* HtmlSanitizer.swift in Sources */,
 				52EF126419EF545000B61DF4 /* User.swift in Sources */,
 				52BD142A19E9DA1D006D72B0 /* Request.swift in Sources */,
@@ -939,6 +928,8 @@
 				52C6252719EE12AE0024453F /* crypt_blowfish.c in Sources */,
 				52A500871AA2993C00F3F031 /* MysqlStatement.swift in Sources */,
 				523D655D1A98CC1B000C686B /* PropertyListLocalization.swift in Sources */,
+				5262EEF61AD19897006F864D /* MysqlBindParameterSet.swift in Sources */,
+				5262EEF81AD19B18006F864D /* MysqlBindParameter.swift in Sources */,
 				52BD142D19E9DA1D006D72B0 /* Server.swift in Sources */,
 				52B2B6A919F2B1D00086261B /* Task.swift in Sources */,
 				52BD142719E9DA1D006D72B0 /* Connection.swift in Sources */,
@@ -971,7 +962,6 @@
 				5262EEBD1AD167A2006F864D /* MysqlResultSetTests.swift in Sources */,
 				5262EEBF1AD16B5F006F864D /* MysqlFieldTests.swift in Sources */,
 				523F293E1A584F7A00C1BBC0 /* ControllerTests.swift in Sources */,
-				52A5008F1AA356BA00F3F031 /* MysqlResultSet.swift in Sources */,
 				5262EE7B1AD0AC9B006F864D /* DictionaryTests.swift in Sources */,
 				5262EE7D1AD0AC9B006F864D /* HtmlSanitizerTests.swift in Sources */,
 				520BD5021AA90E2600CBC3DC /* PropertyListLocalizationTests.swift in Sources */,

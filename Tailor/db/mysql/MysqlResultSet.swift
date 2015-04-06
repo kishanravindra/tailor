@@ -3,7 +3,7 @@ import Foundation
 /**
   This class provides a wrapper around a MySQL result set.
   */
-@objc public class MysqlResultSet {
+public class MysqlResultSet {
   /** The raw result set. */
   private let result: UnsafeMutablePointer<MYSQL_RES>
   
@@ -18,7 +18,7 @@ import Foundation
 
     :param: statement   The statement whose result set this represents.
     */
-  init(statement: UnsafeMutablePointer<MYSQL_STMT>) {
+  public init(statement: UnsafeMutablePointer<MYSQL_STMT>) {
     let result = mysql_stmt_result_metadata(statement)
     
     var fields = [MysqlField]()

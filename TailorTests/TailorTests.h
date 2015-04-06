@@ -3,7 +3,5 @@
 
 #include "../Tailor/db/TailorC.h"
 #include "../Tailor/crypt/crypt_blowfish.h"
-#import "../Tailor/db/mysql/BindParameter.h"
-#import "../Tailor/db/mysql/BindParameterSet.h"
 
 #endif

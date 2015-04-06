@@ -1,7 +1,7 @@
 /**
   This class provides a wrapper around the MySQL field data structure.
   */
-@objc public class MysqlField {
+public class MysqlField {
   /** The raw field data. */
   private let field: MYSQL_FIELD
   

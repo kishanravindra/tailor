@@ -4,7 +4,7 @@ import Foundation
   This class wraps around a MySQL statement and provides a simpler syntax for
   executing it.
   */
-@objc public class MysqlStatement {
+public class MysqlStatement {
   /**
     A connection to the database.
 
@@ -84,12 +84,12 @@ import Foundation
     :returns:             The results of executing the statement.
     */
   public func execute(parameters: [NSData]) -> [[String:Any]] {
-    let inputParameters = BindParameterSet(data: parameters)
+    let inputParameters = MysqlBindParameterSet(data: parameters)
     inputParameters.bindToInputOfStatement(self.statement)
     
-    let outputParameterSet = BindParameterSet(resultSet: self.resultSet)
+    let outputParameterSet = MysqlBindParameterSet(resultSet: self.resultSet)
     outputParameterSet.bindToOutputOfStatement(self.statement)
-    let outputParameters = outputParameterSet.parameters() as! [BindParameter]
+    let outputParameters = outputParameterSet.parameters
     
     let hasError = mysql_stmt_execute(self.statement)
     

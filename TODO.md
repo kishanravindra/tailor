@@ -7,8 +7,8 @@
 * Allowing arrays as query parameters
 * Ditching prepared statements
 * Clean up implementation of fetching cached results from a query.
+* Specifying real data types for bind parameters.
 
 # Workarounds to Revisit
 
-* Moving BindParameter class to Swift
 * Getting rid of connection parameter for MysqlStatement class

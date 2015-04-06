@@ -2,34 +2,32 @@ import Tailor
 import TailorTesting
 import XCTest
 
-class BindParameterTests: TailorTestCase {
+class MysqlBindParameterTests: TailorTestCase {
   var connection: MysqlConnection { return DatabaseConnection.sharedConnection() as! MysqlConnection }
-  var statement: UnsafeMutablePointer<MYSQL_STMT>!
-  var parameterSet: BindParameterSet!
-  var parameter: BindParameter! {
-    if let parameters = parameterSet?.parameters() {
+  var parameterSet: MysqlBindParameterSet!
+  var parameter: MysqlBindParameter! {
+    if let parameters = parameterSet?.parameters {
       if parameters.count > 0 {
-        return parameters[0] as? BindParameter
+        return parameters[0]
       }
     }
     return nil
   }
   
   func runQuery(query: String) {
-    self.statement = mysql_stmt_init(connection.connection)
+    let statement = mysql_stmt_init(connection.connection)
     
     let encodedQuery = query.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!
     
     mysql_stmt_prepare(statement, UnsafePointer<Int8>(encodedQuery.bytes), UInt(encodedQuery.length))
     
     let resultSet = MysqlResultSet(statement: statement)
-    
-    parameterSet = BindParameterSet(resultSet: resultSet)
+    parameterSet = MysqlBindParameterSet(resultSet: resultSet)
+    NSLog("Query is %@", query)
     parameterSet.bindToOutputOfStatement(statement)
     mysql_stmt_execute(statement)
     mysql_stmt_fetch(statement)
     mysql_stmt_close(statement)
-    statement = nil
   }
   
   func dateComponents(date: NSDate) -> NSDateComponents {
@@ -40,15 +38,12 @@ class BindParameterTests: TailorTestCase {
   
   override func tearDown() {
     super.tearDown()
-    if statement != nil {
-      mysql_stmt_close(statement)
-    }
   }
   
   //MARK: - Creation
   
   func testDefaultInitializerCreatesEmptyParameter() {
-    let bindParameter = BindParameter()
+    let bindParameter = MysqlBindParameter()
     self.assert(bindParameter.parameter.buffer_length, equals: 0)
   }
   
@@ -60,7 +55,7 @@ class BindParameterTests: TailorTestCase {
   
   func testInitializeWithDataCreatesStringBuffer() {
     let string = "hello"
-    let bindParameter = BindParameter(data: string.dataUsingEncoding(NSUTF8StringEncoding)!)
+    let bindParameter = MysqlBindParameter(data: string.dataUsingEncoding(NSUTF8StringEncoding)!)
     self.assert(bindParameter.parameter.buffer_length, equals: 5)
     self.assert(bindParameter.parameter.buffer_type.value, equals: MYSQL_TYPE_STRING.value)
     
