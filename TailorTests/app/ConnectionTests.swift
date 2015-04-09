@@ -12,7 +12,7 @@ class ConnectionTests: TailorTestCase {
   }
   var connection : TestConnection!
   var path = "./build/connection_test.txt"
-  var fileContents = "GET / HTTP/1.1\r\nHeader: Value\r\n\r\nRequest Body"
+  var fileContents = "GET / HTTP/1.1\r\nHeader: Value\r\nContent-Length: 12\r\n\r\nRequest Body"
   var connectionHandle = NSFileHandle()
   
   func setUpConnection() {

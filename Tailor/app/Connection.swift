@@ -72,13 +72,22 @@ public class Connection : NSObject {
     */
   public func readFromSocket(connectionDescriptor: Int32) {
     var data = NSMutableData()
-    var buffer = [UInt8]()
     let bufferLength: UInt = 1024
+    var buffer = [UInt8](count: Int(bufferLength), repeatedValue: 0)
+    var request: Request!
     
     self.activeConnections += 1
     
-    for _ in 0..<bufferLength { buffer.append(0) }
+    var clientAddress = sockaddr(
+      sa_len: 0,
+      sa_family: 0,
+      sa_data: (0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+    )
     
+    let clientAddressString = "\(clientAddress.sa_data.2).\(clientAddress.sa_data.3).\(clientAddress.sa_data.4).\(clientAddress.sa_data.5)"
+    
+    var size = UInt32(sizeof(sockaddr))
+    getpeername(connectionDescriptor, &clientAddress, &size)
     while true {
       let length = read(connectionDescriptor, &buffer, Int(bufferLength))
       if length < 0 || length > Int(bufferLength) {
@@ -86,21 +95,15 @@ public class Connection : NSObject {
         return
       }
       data.appendBytes(buffer, length: length)
-      if length < Int(bufferLength) {
-        break
+      if UInt(length) < bufferLength {
+        request = Request(clientAddress: clientAddressString, data: data)
+        let headerLength = request.headers["Content-Length"]?.toInt() ?? 0
+        if request.body.length == headerLength {
+          break
+        }
       }
     }
-    var clientAddress = sockaddr(
-      sa_len: 0,
-      sa_family: 0,
-      sa_data: (0,0,0,0,0,0,0,0,0,0,0,0,0,0)
-    )
-    var size = UInt32(sizeof(sockaddr))
-    getpeername(connectionDescriptor, &clientAddress, &size)
     
-    let clientAddressString = "\(clientAddress.sa_data.2).\(clientAddress.sa_data.3).\(clientAddress.sa_data.4).\(clientAddress.sa_data.5)"
-
-    let request = Request(clientAddress: clientAddressString, data: data)
     self.handler(request) {
       let responseData = $0.data
       write(connectionDescriptor, responseData.bytes, responseData.length)
