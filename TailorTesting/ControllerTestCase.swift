@@ -139,7 +139,7 @@ public class ControllerTestCase : TailorTestCase {
     let actionParams = params[action] ?? [:]
     var sessionData = [String:String]()
     if user != nil {
-      sessionData["userId"] = user.id.stringValue
+      sessionData["userId"] = String(user.id ?? 0)
     }
     var request = Request(parameters: actionParams, sessionData: sessionData)
     if let actionFiles = files[action] {

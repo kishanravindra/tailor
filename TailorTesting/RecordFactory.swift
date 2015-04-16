@@ -46,7 +46,7 @@ public class RecordFactory {
         mergedAttributes[key] = value!
       }
     }
-    return recordType.create(mergedAttributes)
+    return recordType.init()
   }
   
   /**

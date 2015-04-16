@@ -8,16 +8,10 @@ import Foundation
 public class UniquenessValidator : Validator {
   public override func validate(model: Model) {
     if let record = model as? Record {
-      let databaseKey : String! = record.dynamicType.columnNameForField(self.key)
-      
-      if databaseKey == nil {
-        return
-      }
-      
-      let value : NSData? = record.valuesToPersist()[self.key]
+      let value = record.valuesToPersist()[self.key]
       var stringValue : String? = nil
-      if value != nil {
-        stringValue = NSString(data: value!, encoding: NSUTF8StringEncoding) as? String
+      if value != nil && value! != nil {
+        stringValue = NSString(data: value!!, encoding: NSUTF8StringEncoding) as? String
       }
       
       if stringValue == nil {
@@ -25,11 +19,11 @@ public class UniquenessValidator : Validator {
       }
       
       let tableName = record.dynamicType.tableName()
-      var query = "SELECT * FROM \(tableName) WHERE \(databaseKey!) = ?"
+      var query = "SELECT * FROM \(tableName) WHERE \(key) = ?"
       var parameters = [stringValue!]
       if record.id != nil {
         query += " AND id != ?"
-        parameters.append(record.id.stringValue)
+        parameters.append(String(record.id!))
       }
       
       let duplicates = DatabaseConnection.sharedConnection().executeQuery(query, stringParameters: parameters)

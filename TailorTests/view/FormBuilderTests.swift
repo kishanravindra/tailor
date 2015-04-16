@@ -8,6 +8,7 @@ class FormBuilderTests: TailorTestCase {
   var builder : FormBuilder!
   
   override func setUp() {
+    super.setUp()
     template = Template(controller: Controller())
     builder = FormBuilder(template: template, model: model)
   }
@@ -51,18 +52,6 @@ class FormBuilderTests: TailorTestCase {
       self.assert(messages, equals: ["too bright"], message: "passes the model object's errors to the builder")
     })
     builder.input("color", attributes: ["length": "10"])
-    waitForExpectationsWithTimeout(0.01, handler: nil)
-  }
-  
-  func testInputWithNumericValueConvertsToString() {
-    let expectation = expectationWithDescription("block called")
-    model.brimSize = 10
-    builder = FormBuilder(template: template, model: model, inputBuilder: {
-      _, _, value, _, _ in
-      expectation.fulfill()
-      self.assert(value, equals: "10", message: "passes the string value to the input builder")
-    })
-    builder.input("brimSize")
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   

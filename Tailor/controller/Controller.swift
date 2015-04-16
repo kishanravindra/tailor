@@ -311,7 +311,7 @@ public class Controller {
     */
   public func signIn(user: User) {
     self.currentUser = user
-    self.session["userId"] = user.id.stringValue
+    self.session["userId"] = String(user.id ?? 0)
   }
   
   /**
@@ -453,8 +453,11 @@ public class Controller {
   */
   public class func callAction(action: String, user: User?, parameters: [String:String], callback: (Response,Controller)->()) {
     var sessionData = [String:String]()
-    if user != nil {
-      sessionData["userId"] = user?.id?.stringValue ?? ""
+    if let id = user?.id {
+      sessionData["userId"] = String(id)
+    }
+    else {
+      sessionData["userId"] = ""
     }
     self.callAction(action, Request(parameters: parameters, sessionData: sessionData), callback: callback)
   }

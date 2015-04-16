@@ -10,15 +10,12 @@ public class User : Record {
   //MARK: - Structure
   
   /** The user's email address. */
-  public dynamic var emailAddress: String!
+  public dynamic var emailAddress: String
   
   /** The user's password, encrypted with bcrypt. */
-  public dynamic var encryptedPassword: String!
-  
-  public override class func persistedProperties() -> [String] { return ["emailAddress", "encryptedPassword"] }
+  public dynamic var encryptedPassword: String
   
   //MARK: Sign-Up
-  
   /**
     This method creates a record for a new user account.
 
@@ -28,10 +25,39 @@ public class User : Record {
                           the record; it will be encrypted immediately and
                           stored in the encryptedPassword.
     */
-  public convenience init(emailAddress: String, password: String) {
-    self.init()
+  public init(emailAddress: String, password: String) {
     self.emailAddress = emailAddress
-    self.encryptedPassword = BcryptHasher().encrypt(password)
+    self.encryptedPassword = BcryptHasher().encrypt(password) ?? ""
+    super.init()
+  }
+  
+  public init(emailAddress: String, encryptedPassword: String, id: Int) {
+    self.emailAddress = emailAddress
+    self.encryptedPassword = encryptedPassword
+    super.init(id: id)
+  }
+  
+  //MARK: Persistence
+  
+  
+  
+  
+  public override class func decode(databaseRow: [String:Any]) -> Self? {
+    if let emailAddress = databaseRow["email_address"] as? String,
+      let encryptedPassword = databaseRow["encrypted_password"] as? String,
+      let id = databaseRow["id"] as? Int {
+        return self.init(emailAddress: emailAddress, encryptedPassword: encryptedPassword, id: id)
+    }
+    else {
+      return nil
+    }
+  }
+  
+  public override func valuesToPersist() -> [String : NSData?] {
+    return [
+      "email_address": self.emailAddress.dataUsingEncoding(NSUTF8StringEncoding),
+      "encrypted_password": self.encryptedPassword.dataUsingEncoding(NSUTF8StringEncoding)
+    ]
   }
   
   //MARK: Authentication
@@ -55,7 +81,7 @@ public class User : Record {
     :returns: The user
     */
   public class func authenticate(emailAddress: String, password: String) -> User? {
-    let users = Query<User>().filter(["emailAddress": emailAddress]).all()
+    let users = Query<User>().filter(["email_address": emailAddress]).all()
     
     if users.isEmpty {
       return nil

@@ -3,38 +3,6 @@ import Tailor
 import TailorTesting
 
 class RecordTests: TailorTestCase {
-  override func setUp() {
-    Application.start()
-    DatabaseConnection.sharedConnection().executeQuery("TRUNCATE TABLE `hats`")
-    DatabaseConnection.sharedConnection().executeQuery("TRUNCATE TABLE `shelfs`")
-    DatabaseConnection.sharedConnection().executeQuery("TRUNCATE TABLE `stores`")
-  }
-  
-  override func tearDown() {
-    
-  }
-  
-  //MARK: - Initialization
-  
-  func testInitializerSetsAttributesFromData() {
-    let hat = Hat(data: ["id": 5, "brimSize": 10, "color": "black"])
-    assert(hat.id, equals: NSNumber(integer: 5), message: "sets the id")
-    assert(hat.brimSize, equals: NSNumber(integer: 10), message: "sets the brim size")
-    assert(hat.color, equals: "black", message: "sets the color")
-  }
-  
-  func testInitializerCanTakeAttributesFromDatabaseNames() {
-    let hat = Hat(data: ["id": 3, "brim_size": 12, "color": "red"], fromDatabase: true)
-    assert(hat.id, equals: NSNumber(integer: 3), message: "sets the id")
-    assert(hat.brimSize, equals: NSNumber(integer: 12), message: "sets the brim size")
-    assert(hat.color, equals: "red", message: "sets the color")
-  }
-  
-  func testInitializerDoesNotSetUnpersistedProperty() {
-    let hat = Hat(data: ["id": 4, "owner": "Jim"])
-    XCTAssertNil(hat.owner, "does not set owner")
-  }
-  
   //MARK: - Structure
   
   func testTableNameIsPluralizedModelName() {
@@ -42,26 +10,16 @@ class RecordTests: TailorTestCase {
   }
   
   func testForeignKeyNameIsModelNamePlusId() {
-    assert(Hat.foreignKeyName(), equals: "hatId", message: "gets foreign key")
-  }
-  
-  func testColumnNameIsUnderscoredName() {
-    if let columnName = Hat.columnNameForField("brimSize") {
-      assert(columnName, equals: "brim_size", message: "gets underscored name")
-    }
-    else {
-      XCTFail("gets underscored name")
-    }
-  }
-  
-  func testColumnNameIsNilForUnpersistedProperty() {
-    XCTAssertNil(Hat.columnNameForField("owner"), "column name is nil")
+    assert(Hat.foreignKeyName(), equals: "hat_id", message: "gets foreign key")
   }
   
   func testToOneFetchesRecordsById() {
-    let shelf1 = Shelf.create(["name": "First Shelf"])
-    let shelf2 = Shelf.create(["name": "Second Shelf"])
-    let hat = Hat.create(["shelfId": shelf2.id])
+    let shelf1 = Shelf(name: "First Shelf")
+    let shelf2 = Shelf(name: "Second Shelf")
+    shelf1.save()
+    shelf2.save()
+    let hat = Hat(shelfId: shelf2.id)
+    hat.save()
     if let result : Shelf = hat.toOne() {
       assert(shelf2.name, equals: result.name, message: "fetches the second shelf")
     }
@@ -71,21 +29,23 @@ class RecordTests: TailorTestCase {
   }
   
   func testToManyFetchesRecordsByForeignKey() {
-    let shelf = Shelf.create([:])
+    let shelf = Shelf()
+    shelf.save()
     let query : Query<Hat> = shelf.toMany()
     let clause = query.whereClause
     assert(clause.query, equals: "hats.shelf_id=?", message: "has the shelfId in the query")
-    assert(clause.parameters, equals: [shelf.id.stringValue], message: "has the id as the parameter")
+    assert(clause.parameters, equals: [String(shelf.id!)], message: "has the id as the parameter")
   }
   
   func testToManyThroughFetchesManyRecordsByForeignKey() {
-    let store = Store.create([:])
+    let store = Store(name: "New Store")
+    store.save()
     let shelfQuery : Query<Shelf> = store.toMany()
     let query : Query<Hat> = store.toMany(through: shelfQuery, joinToMany: true)
 
     let whereClause = query.whereClause
     assert(whereClause.query, equals: "shelfs.store_id=?")
-    assert(whereClause.parameters, equals: [store.id.stringValue], message: "has the id as the parameter")
+    assert(whereClause.parameters, equals: [String(store.id!)], message: "has the id as the parameter")
     
     let joinClause = query.joinClause
     assert(joinClause.query, equals: "INNER JOIN shelfs ON shelfs.id = hats.shelf_id", message: "joins between shelves and hats in the join clause")
@@ -93,13 +53,14 @@ class RecordTests: TailorTestCase {
   }
   
   func testToManyThroughFetchesOneRecordsByForeignKey() {
-    let hat = Hat.create(["shelfId": 1])
+    let hat = Hat(shelfId: 1)
+    hat.save()
     let shelfQuery = Query<Shelf>().filter(["id": hat.shelfId])
     let query : Query<Store> = hat.toMany(through: shelfQuery, joinToMany: false)
     
     let whereClause = query.whereClause
     assert(whereClause.query, equals: "shelfs.id=?")
-    assert(whereClause.parameters, equals: [hat.shelfId.stringValue], message: "has the id as the parameter")
+    assert(whereClause.parameters, equals: [String(hat.shelfId)], message: "has the id as the parameter")
     
     let joinClause = query.joinClause
     assert(joinClause.query, equals: "INNER JOIN shelfs ON shelfs.store_id = stores.id", message: "joins between shelves and stores in the join clause")
@@ -168,45 +129,7 @@ class RecordTests: TailorTestCase {
     }
   }
   
-  func testCreateMethodSetsValuesOnRecord() {
-    let hat = Hat.create(["brimSize": 12, "color": "black"])
-    assert(hat.brimSize, equals: NSNumber(int: 12), message: "sets number on hat")
-    assert(hat.color, equals: "black", message: "sets color on hat")
-  }
-  
-  func testCreateMethodSavesRecord() {
-    let hat = Hat.create(["brimSize": 12, "color": "black"])
-    XCTAssertNotNil(hat.id, "sets an id")
-  }
-  
   //MARK: - Persisting
-  
-  func testValuesToPersistGetsDataForPeroprties() {
-    let hat = Hat()
-    hat.color = "tan"
-    hat.brimSize = NSNumber(int: 10)
-    hat.owner = "me"
-    
-    let properties = hat.valuesToPersist()
-    
-    if let property = properties["color"] {
-      let data = "tan".dataUsingEncoding(NSUTF8StringEncoding)!
-      assert(property, equals: data, message: "has the color")
-    }
-    else {
-      XCTFail("has the color")
-    }
-    
-    if let property = properties["brimSize"] {
-      let data = "10".dataUsingEncoding(NSUTF8StringEncoding)!
-      assert(property, equals: data, message: "has the brim size")
-    }
-    else {
-      XCTFail("has the brim size")
-    }
-    
-    XCTAssertNil(properties["owner"], "does not have an entry for an unpersisted property")
-  }
   
   func testSaveRunsValidations() {
     class TestHat : Hat {
@@ -225,10 +148,13 @@ class RecordTests: TailorTestCase {
   }
   
   func testSaveSetsTimestampsForNewRecord() {
-    let hat = Hat()
+    var hat = Hat()
     hat.save()
+    
+    hat = Query<Hat>().find(hat.id!)!
     XCTAssertNotNil(hat.createdAt, "sets createdAt")
     if(hat.createdAt != nil) {
+      NSLog("Hat has created at %@", hat.createdAt.format("db")!)
       XCTAssertEqualWithAccuracy(hat.createdAt.timeIntervalSinceNow, 0, 2, "sets createdAt to current time")
     }
     
@@ -239,9 +165,12 @@ class RecordTests: TailorTestCase {
   }
   
   func testSaveSetsTimestampsForUpdatedRecord() {
-    let hat = Hat.create(["createdAt": NSDate(timeIntervalSinceNow: -100), "updatedAt": NSDate(timeIntervalSinceNow: -100)])
+    var hat = Hat()
+    hat.createdAt = NSDate(timeIntervalSinceNow: -100)
+    hat.updatedAt = NSDate(timeIntervalSinceNow: -100)
     hat.save()
     
+    hat = Query<Hat>().find(hat.id!)!
     XCTAssertEqualWithAccuracy(hat.createdAt.timeIntervalSinceNow, -100, 2, "leaves createdAt unchanged")
     
     XCTAssertEqualWithAccuracy(hat.updatedAt.timeIntervalSinceNow, 0, 2, "sets updatedAt to current time")
@@ -258,7 +187,8 @@ class RecordTests: TailorTestCase {
   
   func testSaveUpdatesExistingRecord() {
     let connection = DatabaseConnection.sharedConnection()
-    var hat = Hat.create(["color": "black"])
+    var hat = Hat(color: "black")
+    hat.save()
     assert(Query<Hat>().count(), equals: 1, message: "starts out with 1 record")
     assert(Query<Hat>().first()!.color, equals: "black", message: "starts out with a black hat")
     hat.color = "tan"
@@ -271,7 +201,7 @@ class RecordTests: TailorTestCase {
   func testSaveInsertConstructsInsertQuery() {
     TestConnection.withTestConnection {
       connection in
-      var store = Store(data: ["name": "Little Shop"])
+      var store = Store(name: "Little Shop")
       connection.response = [DatabaseConnection.Row(data: ["id": 2])]
       store.save()
       self.assert(connection.queries.count, equals: 1, message: "executes 1 query")
@@ -287,7 +217,7 @@ class RecordTests: TailorTestCase {
   func testSaveInsertSetsId() {
     TestConnection.withTestConnection {
       connection in
-      var store = Store(data: ["name": "Little Shop"])
+      var store = Store(name: "Little Shop")
       connection.response = [DatabaseConnection.Row(data: ["id": 2])]
       store.save()
       self.assert(store.id, equals: NSNumber(int: 2), message: "sets the id based on the database response")
@@ -297,7 +227,7 @@ class RecordTests: TailorTestCase {
   func testSaveInsertReturnsTrueWithNoError() {
     TestConnection.withTestConnection {
       connection in
-      var store = Store(data: ["name": "Little Shop"])
+      var store = Store(name: "Little Shop")
       connection.response = [DatabaseConnection.Row(data: ["id": 2])]
       let result = store.save()
       XCTAssertTrue(result, "returns true")
@@ -307,7 +237,7 @@ class RecordTests: TailorTestCase {
   func testSaveInsertReturnsFalseWithError() {
     TestConnection.withTestConnection {
       connection in
-      var store = Store(data: ["name": "Little Shop"])
+      var store = Store(name: "Little Shop")
       connection.response = [DatabaseConnection.Row(error: "Lost Connection")]
       let result = store.save()
       XCTAssertFalse(result, "returns false")
@@ -327,7 +257,7 @@ class RecordTests: TailorTestCase {
       connection in
       self.assert(connection.queries.count, equals: 0)
       connection.response = [DatabaseConnection.Row(data: ["id": 2])]
-      var hat = Hat(data: ["brimSize": 10, "color": "red"])
+      var hat = Hat(brimSize: 10, color: "red")
       hat.save()
       self.assert(connection.queries.count, equals: 1, message: "executes one query")
       if connection.queries.count > 0 {
@@ -337,8 +267,8 @@ class RecordTests: TailorTestCase {
         let expectedParameters = [
           "10".dataUsingEncoding(NSUTF8StringEncoding)!,
           "red".dataUsingEncoding(NSUTF8StringEncoding)!,
-          hat.createdAt.format("db", timeZone: connection.timeZone)!.dataUsingEncoding(NSUTF8StringEncoding)!,
-          hat.updatedAt.format("db", timeZone: connection.timeZone)!.dataUsingEncoding(NSUTF8StringEncoding)!
+          NSDate().format("db", timeZone: connection.timeZone)!.dataUsingEncoding(NSUTF8StringEncoding)!,
+          NSDate().format("db", timeZone: connection.timeZone)!.dataUsingEncoding(NSUTF8StringEncoding)!
         ]
         self.assert(parameters, equals: expectedParameters, message: "has the brim size, color, creation date, and update date as parameters")
       }
@@ -346,11 +276,12 @@ class RecordTests: TailorTestCase {
   }
   
   func testSaveUpdateCreatesUpdateQuery() {
-    let shelf = Shelf.create(["name": "Top Shelf", "storeId": 1])
+    let shelf = Shelf(name: "Top Shelf", storeId: 1)
+    shelf.save()
     TestConnection.withTestConnection {
       connection in
       shelf.name = "Bottom Shelf"
-      shelf.storeId = NSNumber(int: 2)
+      shelf.storeId = 2
       shelf.save()
       self.assert(connection.queries.count, equals: 1, message: "executes one query")
       if connection.queries.count > 0 {
@@ -360,7 +291,7 @@ class RecordTests: TailorTestCase {
         let expectedParameters = [
           "Bottom Shelf".dataUsingEncoding(NSUTF8StringEncoding)!,
           "2".dataUsingEncoding(NSUTF8StringEncoding)!,
-          shelf.id.stringValue.dataUsingEncoding(NSUTF8StringEncoding)!
+          String(shelf.id!).dataUsingEncoding(NSUTF8StringEncoding)!
         ]
         self.assert(parameters, equals: expectedParameters, message: "has the name, store ID, and id as parameters")
       }
@@ -368,7 +299,8 @@ class RecordTests: TailorTestCase {
   }
   
   func testSaveUpdateCanCreateUpdateQueryWithNull() {
-    let shelf = Shelf.create(["name": "Top Shelf", "storeId": 1])
+    let shelf = Shelf(name: "Top Shelf", storeId: 1)
+    shelf.save()
     TestConnection.withTestConnection {
       connection in
       shelf.name = nil
@@ -380,7 +312,7 @@ class RecordTests: TailorTestCase {
         
         let expectedParameters = [
           "1".dataUsingEncoding(NSUTF8StringEncoding)!,
-          shelf.id.stringValue.dataUsingEncoding(NSUTF8StringEncoding)!
+          String(shelf.id!).dataUsingEncoding(NSUTF8StringEncoding)!
         ]
         self.assert(parameters, equals: expectedParameters, message: "has the storeId and id as parameters")
       }
@@ -388,7 +320,8 @@ class RecordTests: TailorTestCase {
   }
   
   func testSaveUpdatePutsErrorOnRecord() {
-    let shelf = Shelf.create(["name": "Top Shelf", "storeId": 1])
+    let shelf = Shelf(name: "Top Shelf", storeId: 1)
+    shelf.save()
     TestConnection.withTestConnection {
       connection in
       shelf.name = nil
@@ -405,7 +338,8 @@ class RecordTests: TailorTestCase {
   }
   
   func testDestroyExecutesDeleteQuery() {
-    let shelf = Shelf.create([:])
+    let shelf = Shelf()
+    shelf.save()
     TestConnection.withTestConnection {
       connection in
       shelf.destroy()
@@ -413,7 +347,7 @@ class RecordTests: TailorTestCase {
       if connection.queries.count == 1 {
         let (query, parameters) = connection.queries[0]
         self.assert(query, equals: "DELETE FROM shelfs WHERE id = ?", message: "executes a destroy query")
-        let data = shelf.id.stringValue.dataUsingEncoding(NSUTF8StringEncoding)!
+        let data = String(shelf.id!).dataUsingEncoding(NSUTF8StringEncoding)!
         self.assert(parameters, equals: [data], message: "has the id as the parameter for the query")
       }
     }
@@ -422,13 +356,12 @@ class RecordTests: TailorTestCase {
   //MARK: - Serialization
   
   func testToPropertyListHasPropertiesForKeys() {
-    let hat = Hat()
-    hat.id = 5
+    let hat = Hat(id: 5)
     hat.color = "red"
     let properties = hat.toPropertyList()
-    assert(properties.keys.array, equals: ["id", "color"], message: "has keys for id and color")
+    assert(sorted(properties.keys), equals: ["brim_size", "color", "created_at", "id", "shelf_id", "updated_at"], message: "has keys for id and color")
     
-    if let id = properties["id"] as? NSNumber {
+    if let id = properties["id"] as? Int {
       assert(id, equals: 5, message: "has the id")
     }
     else {
@@ -446,8 +379,8 @@ class RecordTests: TailorTestCase {
   //MARK: - Comparison
   
   func testRecordsWithSameIdAreEqual() {
-    let lhs = Hat(data: ["id": 5])
-    let rhs = Hat(data: ["id": 5])
+    let lhs = Hat(id: 5)
+    let rhs = Hat(id: 5)
     assert(lhs, equals: rhs, message: "records are equal")
   }
   
@@ -458,8 +391,8 @@ class RecordTests: TailorTestCase {
   }
   
   func testRecordsWithDifferentTypesAreUnequal() {
-    let lhs = Hat(data: ["id": 5])
-    let rhs = Store(data: ["id": 5])
+    let lhs = Hat(id: 5)
+    let rhs = Store(name: "My Store", id: 5)
     XCTAssertNotEqual(lhs, rhs, "records are not equal")
   }
 }

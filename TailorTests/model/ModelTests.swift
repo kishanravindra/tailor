@@ -115,10 +115,4 @@ class ModelTests: TailorTestCase {
     hat.setValue("red", forKey: "color")
     assert(hat.color, equals: "red", message: "sets the value on the object")
   }
-  
-  func testSetValueCanSetIntValue() {
-    let hat = Hat()
-    hat.setValue(5, forKey: "brimSize")
-    assert(hat.brimSize, equals: 5, message: "sets the value on the object")
-  }
 }

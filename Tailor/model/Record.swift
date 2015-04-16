@@ -5,43 +5,12 @@ import Foundation
   */
 public class Record : Model, Equatable {
   /** The unique identifier for the record. */
-  public var id : NSNumber!
+  public private(set) var id : Int?
   
-  /**
-    This method initializes a record with no data.
-    */
-  public convenience override init() {
-    self.init(data: [:])
+  public init(id: Int? = nil) {
+    self.id = id
   }
-
-  /**
-    This method initializes a record with map of the attributes.
   
-    It will set the id, and set any other dynamic properties it can.
-
-    :param: data          The fields to set.
-    :param: fromDatabase  Whether the keys in the hash use the database
-                          column names rather than the attribute names on the
-                          record.
-    */
-  public required init(data: [String:Any], fromDatabase: Bool = false) {
-    if let id = data["id"] as? Int {
-      self.id = NSNumber(integer: id)
-    }
-    super.init()
-    
-    let klass : AnyClass = object_getClass(self)
-    for propertyName in self.dynamicType.persistedProperties() {
-      var key = propertyName
-      if fromDatabase {
-        key = self.dynamicType.columnNameForField(key) ?? key
-      }
-      if let value = data[key] {
-        self.setValue(value, forKey: propertyName)
-      }
-    }
-  }
-
   //MARK: - Structure
   
   /**
@@ -67,41 +36,7 @@ public class Record : Model, Equatable {
     :returns: The foreign key name.
   */
   public class func foreignKeyName() -> String {
-    return self.modelName().camelCase() + "Id"
-  }
-  
-  /**
-    This method provides the names of the properties in this class that are
-    persisted to its table.
-    
-    The properties should be the Swift properties. They will be automatically
-    camel-cased to get the database names.
-  
-    This implementation returns an empty list, but subclasses can override it
-    to opt in to automatic extraction and persistence of properties.
-  
-    :see: persistedPropertyMapping
-  
-    :returns: The property names
-    */
-  public class func persistedProperties() -> [String] { return [] }
-  
-  /**
-    This method gets the name of the column used to store a field on this
-    record.
-  
-    The default implementation underscores the column name.
-
-    :param: fieldName     The name of the field.
-    :returns:             The name of the column.
-    */
-  public class func columnNameForField(fieldName: String) -> String? {
-    if fieldName == "id" || contains(self.persistedProperties(), fieldName) {
-      return fieldName.underscored()
-    }
-    else {
-      return nil
-    }
+    return self.modelName() + "_id"
   }
   
   /**
@@ -159,12 +94,12 @@ public class Record : Model, Equatable {
     
     if joinToMany {
       let foreignKey = inputForeignKey ?? (IntermediaryRecordType.foreignKeyName())
-      query = query.join(IntermediaryRecordType.self, fromField: "id", toField: foreignKey)
+      query = query.join(IntermediaryRecordType.self, fromColumn: "id", toColumn: foreignKey)
       
     }
     else {
       let foreignKey = inputForeignKey ?? (OtherRecordType.foreignKeyName())
-      query = query.join(IntermediaryRecordType.self, fromField: foreignKey, toField: "id")
+      query = query.join(IntermediaryRecordType.self, fromColumn: foreignKey, toColumn: "id")
     }
     return query.filter(through.whereClause.query, through.whereClause.parameters)
   }
@@ -206,48 +141,25 @@ public class Record : Model, Equatable {
     return (stringValue, dataValue)
   }
   
-  
-  /**
-    This method creates a record with given attributes and tries to save it.
-  
-    After the block runs, the record will be saved and returned. The caller can
-    check whether the save was successful by checking whether the returned
-    record's id is non-null.
-  
-    :param: data    The fields to set on the record.
-    :returns:       The record
-    */
-  public class func create(_ data: [String: Any] = [:]) -> Self {
-    let record = self.init(data: data)
-    record.save()
-    return record
-  }
-  
   //MARK: - Persisting
+  
+  public class func decode(databaseRow: [String:Any]) -> Self? {
+    return nil
+  }
   
   /**
     This method gets the values to save to the database when this record is
     saved.
-
-    This implementation takes the persisted property mapping, looks up the
-    current values for those properties, and converts them into the appropriate
-    data structure.
+  
+    This is one of the two key methods that subclasses should override to
+    provide their data mapping. The keys in the returned dictionary should be
+    the names of the columns in the database. The values should be an encoded
+    string or raw data blob that will go in that column.
   
     :returns:   The values to save.
     */
-  public func valuesToPersist() -> [String:NSData] {
-    var values = [String:NSData]()
-    
-    let klass: AnyClass! = object_getClass(self)
-    for propertyName in self.dynamicType.persistedProperties() {
-      let value : AnyObject? = self.valueForKey(propertyName)
-      let (stringValue, dataValue) = self.dynamicType.serializeValueForQuery(value, key: propertyName)
-      
-      if dataValue != nil {
-        values[propertyName] = dataValue!
-      }
-    }
-    return values
+  public func valuesToPersist() -> [String:NSData?] {
+    return [:]
   }
   
   /**
@@ -263,22 +175,23 @@ public class Record : Model, Equatable {
       return false
     }
     
-    let properties = self.dynamicType.persistedProperties()
+    var values = self.valuesToPersist()
+    let properties = values.keys
     
-    if contains(properties, "createdAt") {
-      if self.valueForKey("createdAt") == nil {
-        self.setValue(NSDate(), forKey: "createdAt")
+    if contains(properties, "created_at") {
+      if values["created_at"]! == nil {
+        values["created_at"] = NSDate().format("db", timeZone: DatabaseConnection.sharedConnection().timeZone)?.dataUsingEncoding(NSUTF8StringEncoding)
       }
     }
-    if contains(properties, "updatedAt") {
-      self.setValue(NSDate(), forKey: "updatedAt")
+    if contains(properties, "updated_at") {
+      values["updated_at"] = NSDate().format("db", timeZone: DatabaseConnection.sharedConnection().timeZone)?.dataUsingEncoding(NSUTF8StringEncoding)
     }
     
     if self.id != nil {
-      return self.saveUpdate()
+      return self.saveUpdate(values)
     }
     else {
-      return self.saveInsert()
+      return self.saveInsert(values)
     }
   }
   
@@ -287,20 +200,15 @@ public class Record : Model, Equatable {
   
     :returns:   Whether we were able to save the record.
     */
-  private func saveInsert() -> Bool {
+  private func saveInsert(values: [String:NSData?]) -> Bool {
     var query = "INSERT INTO \(self.dynamicType.tableName()) ("
     var parameters = [NSData]()
     
     var firstParameter = true
     var parameterString = ""
-    let values = self.valuesToPersist()
-    for propertyName in self.dynamicType.persistedProperties() {
-      let value = values[propertyName]
+    for key in sorted(values.keys) {
+      let value = values[key]!
       if value == nil {
-        continue
-      }
-      let columnName = self.dynamicType.columnNameForField(propertyName)
-      if columnName == nil {
         continue
       }
       if firstParameter {
@@ -310,7 +218,7 @@ public class Record : Model, Equatable {
         query += ", "
         parameterString += ", "
       }
-      query += "\(columnName!)"
+      query += "\(DatabaseConnection.sanitizeColumnName(key))"
       parameterString += "?"
       parameters.append(value!)
     }
@@ -329,7 +237,7 @@ public class Record : Model, Equatable {
       return false
     }
     else {
-      self.id = result!.data["id"] as! Int
+      self.id = result!.data["id"] as? Int
       return true
     }
   }
@@ -339,18 +247,17 @@ public class Record : Model, Equatable {
   
     :returns:   Whether we were able to save the record.
     */
-  private func saveUpdate() -> Bool {
+  private func saveUpdate(values: [String:NSData?]) -> Bool {
     var query = "UPDATE \(self.dynamicType.tableName())"
     var parameters = [NSData]()
     
+    if self.id == nil {
+      self.errors.add("_database", "cannot update record without id")
+      return false
+    }
     var firstParameter = true
-    let values = self.valuesToPersist()
-    for propertyName in self.dynamicType.persistedProperties() {
-      let columnName = self.dynamicType.columnNameForField(propertyName)
-      if columnName == nil {
-        continue
-      }
-      let value = values[propertyName]
+    for key in sorted(values.keys) {
+      let value = values[key]!
       if firstParameter {
         query += " SET "
         firstParameter = false
@@ -358,7 +265,7 @@ public class Record : Model, Equatable {
       else {
         query += ", "
       }
-      query += "\(DatabaseConnection.sanitizeColumnName(columnName!)) = "
+      query += "\(DatabaseConnection.sanitizeColumnName(key)) = "
       if value == nil {
         query += "NULL"
       }
@@ -368,7 +275,7 @@ public class Record : Model, Equatable {
       }
     }
     query += " WHERE id = ?"
-    parameters.append(self.id.stringValue.dataUsingEncoding(NSUTF8StringEncoding)!)
+    parameters.append(String(self.id!).dataUsingEncoding(NSUTF8StringEncoding)!)
     let result = DatabaseConnection.sharedConnection().executeQuery(query, parameters: parameters)
     
     if result.count > 0 {
@@ -384,8 +291,10 @@ public class Record : Model, Equatable {
     This method deletes the record from the database.
     */
   public func destroy() {
-    let query = "DELETE FROM \(self.dynamicType.tableName()) WHERE id = ?"
-    DatabaseConnection.sharedConnection().executeQuery(query, self.id.stringValue)
+    if self.id != nil {
+      let query = "DELETE FROM \(self.dynamicType.tableName()) WHERE id = ?"
+      DatabaseConnection.sharedConnection().executeQuery(query, String(self.id!))
+    }
   }
   
   //MARK: - Serialization
@@ -400,8 +309,12 @@ public class Record : Model, Equatable {
   public func toPropertyList() -> [String:AnyObject] {
     var propertyList = [String:AnyObject]()
     propertyList["id"] = self.id
-    for key in self.dynamicType.persistedProperties() {
-      propertyList[key] = self.valueForKey(key)
+    let values = self.valuesToPersist()
+    for key in sorted(values.keys) {
+      let value = values[key]!
+      if let string = NSString(data: value ?? NSData(), encoding: NSUTF8StringEncoding) {
+        propertyList[key] = string
+      }
     }
     return propertyList
   }

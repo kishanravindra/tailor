@@ -69,32 +69,91 @@ class TestConnection : DatabaseConnection {
 }
 
 class Hat : Record {
-  dynamic var brimSize: NSNumber!
+  var brimSize: Int!
   dynamic var color: String!
-  dynamic var shelfId: NSNumber!
+  var shelfId: Int!
   dynamic var owner: String!
   dynamic var createdAt: NSDate!
   dynamic var updatedAt: NSDate!
   
-  override class func persistedProperties() -> [String] {
-    return ["brimSize", "color", "shelfId", "createdAt", "updatedAt"]
+  
+  init(brimSize: Int! = nil, color: String! = nil, shelfId: Int! = nil, owner: String! = nil, id: Int! = nil) {
+    self.brimSize = brimSize
+    self.color = color
+    self.shelfId = shelfId
+    self.owner = owner
+    super.init(id: id)
+  }
+  
+  override func valuesToPersist() -> [String : NSData?] {
+    return [
+      "brim_size": brimSize == nil ? nil : String(brimSize).dataUsingEncoding(NSUTF8StringEncoding),
+      "color": color?.dataUsingEncoding(NSUTF8StringEncoding),
+      "shelf_id": shelfId == nil ? nil : String(shelfId).dataUsingEncoding(NSUTF8StringEncoding),
+      "created_at": createdAt?.format("db", timeZone: DatabaseConnection.sharedConnection().timeZone)?.dataUsingEncoding(NSUTF8StringEncoding),
+      "updated_at": updatedAt?.format("db", timeZone: DatabaseConnection.sharedConnection().timeZone)?.dataUsingEncoding(NSUTF8StringEncoding),
+    ]
+  }
+  
+  override class func decode(databaseRow: [String:Any]) -> Self? {
+    var result = self.init(
+      brimSize: databaseRow["brim_size"] as? Int,
+      color: databaseRow["color"] as? String,
+      shelfId: databaseRow["brim_size"] as? Int,
+      id: databaseRow["id"] as? Int
+    )
+    result.createdAt = databaseRow["created_at"] as? NSDate
+    result.updatedAt = databaseRow["updated_at"] as? NSDate
+    return result
   }
 }
 
 class Shelf : Record {
   dynamic var name: String!
-  dynamic var storeId: NSNumber!
+  var storeId: Int!
   
-  override class func persistedProperties() -> [String] {
-    return ["name", "storeId"]
+  init(name: String! = nil, storeId: Int! = nil, id: Int? = nil) {
+    self.name = name
+    self.storeId = storeId
+    super.init(id: id)
+  }
+  override func valuesToPersist() -> [String: NSData?] {
+    return [
+      "name": self.name?.dataUsingEncoding(NSUTF8StringEncoding),
+      "store_id": self.storeId == nil ? nil : String(self.storeId).dataUsingEncoding(NSUTF8StringEncoding)
+    ]
+  }
+  
+  override class func decode(databaseRow: [String:Any]) -> Self? {
+    var result = self.init(id: databaseRow["id"] as? Int)
+    result.name = databaseRow["name"] as? String
+    result.storeId = databaseRow["store_id"] as? Int
+    return result
   }
 }
 
 class Store : Record {
-  dynamic var name: String!
+  dynamic var name: String
   
-  override class func persistedProperties() -> [String] {
-    return ["name"]
+  init(name: String, id: Int?=nil) {
+    self.name = name
+    super.init(id: id)
+  }
+  
+  override func valuesToPersist() -> [String : NSData?] {
+    return [
+      "name": name.dataUsingEncoding(NSUTF8StringEncoding)
+    ]
+  }
+  
+  override class func decode(databaseRow: [String:Any]) -> Self? {
+    if let name = databaseRow["name"] as? String,
+      let id = databaseRow["id"] as? Int {
+      return self.init(name: name, id: id)
+    }
+    else {
+      return nil
+    }
   }
 }
 

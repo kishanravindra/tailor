@@ -79,6 +79,8 @@ public class FormBuilder {
     switch(value) {
     case let number as NSNumber:
       stringValue = number.stringValue
+    case let integer as Int:
+      stringValue = String(integer)
     case let string as String:
       stringValue = string
     default:

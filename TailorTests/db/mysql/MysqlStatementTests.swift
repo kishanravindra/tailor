@@ -16,8 +16,8 @@ class MysqlStatementTests: TailorTestCase {
   }
   
   func testExecuteWithGoodQueryCanMapResultsToDictionary() {
-    Store.create(["name": "Store 1"])
-    Store.create(["name": "Store 2"])
+    Store(name: "Store 1").save()
+    Store(name: "Store 2").save()
     
     let statement = MysqlStatement(connection: connection, query: "SELECT * FROM stores")
     let results = statement.execute([])
@@ -62,7 +62,7 @@ class MysqlStatementTests: TailorTestCase {
   }
   
   func testExecuteWithBadQueryReturnsEmptyRows() {
-    Store.create(["name": "Store 1"])
+    Store(name: "Store 1").save()
     let statement = MysqlStatement(connection: connection, query: "INSERT INTO stores VALUES (?,?)")
     let param1 = "1".dataUsingEncoding(NSUTF8StringEncoding)!
     let param2 = "Store 1".dataUsingEncoding(NSUTF8StringEncoding)!
@@ -72,8 +72,8 @@ class MysqlStatementTests: TailorTestCase {
   
   func testExecuteWithParametersAppliesParametersInQuery() {
     
-    Store.create(["name": "Store 1"])
-    Store.create(["name": "Store 2"])
+    Store(name: "Store 1").save()
+    Store(name: "Store 2").save()
     
     let statement = MysqlStatement(connection: connection, query: "SELECT * FROM stores WHERE id = ?")
     let param = "2".dataUsingEncoding(NSUTF8StringEncoding)!
@@ -118,7 +118,7 @@ class MysqlStatementTests: TailorTestCase {
   }
   
   func testExecuteWithBadQueryPutsErrorOnStatement() {
-    Store.create(["name": "Store 1"])
+    Store(name: "Store 1").save()
     let statement = MysqlStatement(connection: connection, query: "INSERT INTO stores VALUES (?,?)")
     let param1 = "1".dataUsingEncoding(NSUTF8StringEncoding)!
     let param2 = "Store 1".dataUsingEncoding(NSUTF8StringEncoding)!

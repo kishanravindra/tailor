@@ -267,7 +267,7 @@
 		52C6252619EE12AE0024453F /* crypt_blowfish.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt_blowfish.h; sourceTree = "<group>"; };
 		52C76A511A56134300134DB9 /* UniquenessValidatorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UniquenessValidatorTests.swift; sourceTree = "<group>"; };
 		52D61A7319FDB27800FFA2EF /* libmysqlclient.18.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmysqlclient.18.dylib; path = ../../../../../usr/local/Cellar/mysql/5.6.19/lib/libmysqlclient.18.dylib; sourceTree = "<group>"; };
-		52DDCF001A538C5800D3A47E /* QueryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryTests.swift; sourceTree = "<group>"; };
+		52DDCF001A538C5800D3A47E /* QueryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = QueryTests.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		52E784B41A59C12D0065C10D /* SessionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionTests.swift; sourceTree = "<group>"; };
 		52E784B71A59F2030065C10D /* AesEncryptorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AesEncryptorTests.swift; sourceTree = "<group>"; };
 		52E784B91A5A04590065C10D /* BcryptHasherTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BcryptHasherTests.swift; sourceTree = "<group>"; };

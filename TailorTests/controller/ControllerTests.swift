@@ -38,8 +38,7 @@ class ControllerTests: TailorTestCase {
   var controller: Controller!
   
   override func setUp() {
-    Application.start()
-    DatabaseConnection.sharedConnection().executeQuery("TRUNCATE TABLE users")
+    super.setUp()
     user = User(emailAddress: "test@test.com", password: "test")
     user.save()
     
@@ -65,18 +64,18 @@ class ControllerTests: TailorTestCase {
   
   func testInitializeSetsUserFromIdInSession() {
     controller = Controller(
-      request: Request(sessionData: ["userId": user.id.stringValue]),
+      request: Request(sessionData: ["userId": String(user.id!)]),
       action: "index",
       callback: {
         (response) in
       }
     )
-    assert(controller.currentUser!, equals: user, message: "sets user to the one with the id given")
+    assert(controller.currentUser, equals: user, message: "sets user to the one with the id given")
   }
   
   func testInitializerSetsUserToNilWithBadId() {
     controller = Controller(
-      request: Request(sessionData: ["userId": String(user.id.integerValue + 1)]),
+      request: Request(sessionData: ["userId": String(user.id! + 1)]),
       action: "index",
       callback: {
         (response) in
@@ -296,18 +295,16 @@ class ControllerTests: TailorTestCase {
     assert(s, equals: "2009-02-13 03:05:45", message: "returns the formatted date")
   }
   
-  /*
-  
   func testFilterForJsonWithRecordReturnsProperties() {
-    let hat = Store(data: ["name": "Shop"])
-    let result = Controller.filterForJson(hat) as? [String:String] ?? [:]
+    let store = Store(name: "Shop")
+    let result = Controller.filterForJson(store) as? [String:String] ?? [:]
     assert(result, equals: ["name": "Shop"], message: "returns the formatted attributes")
   }
   
   func testFilterForJsonWithArrayReturnsFilteredList() {
     let list = [
-      Store(data: ["name": "Shop 1"]),
-      Store(data: ["name": "Shop 2"])
+      Store(name: "Shop 1"),
+      Store(name: "Shop 2")
     ]
     let result = Controller.filterForJson(list) as? [[String: String]] ?? []
     assert(result, equals: [["name": "Shop 1"], ["name": "Shop 2"]], message: "returns the formatted attributes")
@@ -315,8 +312,8 @@ class ControllerTests: TailorTestCase {
   
   func testFilterForJsonWithDictionaryReturnsFilteredDictionary() {
     let list = [
-      "1": Store(data: ["name": "Shop 1"]),
-      "2": Store(data: ["name": "Shop 2"])
+      "1": Store(name: "Shop 1"),
+      "2": Store(name: "Shop 2")
     ]
     let result = Controller.filterForJson(list) as? [String: [String: String]] ?? [:]
     assert(result, equals: ["1": ["name": "Shop 1"], "2": ["name": "Shop 2"]], message: "returns the formatted attributes")
@@ -433,7 +430,7 @@ class ControllerTests: TailorTestCase {
     self.controller.signIn(user2)
     
     assert(self.controller.currentUser, equals: user2, message: "sets user")
-    assert(self.controller.session["userId"], equals: user2.id.stringValue, message: "sets userId in session")
+    assert(self.controller.session["userId"], equals: String(user2.id!), message: "sets userId in session")
   }
   
   func testSignOutClearsCurrentUserAndIdInSession() {
@@ -546,8 +543,6 @@ class ControllerTests: TailorTestCase {
     let string = controller.localize("controller.test.message", locale: "es")
     assert(string, equals: "Hola", message: "returns the string from the localization")
   }
-  
-*/
   
   //MARK: - Test Helpers
   

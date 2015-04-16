@@ -9,28 +9,27 @@ class DatabaseLocalizationTests: TailorTestCase {
     Application.start()
     DatabaseConnection.sharedConnection().executeQuery("TRUNCATE TABLE `tailor_translations`")
     localization = DatabaseLocalization(locale: "en")
-    DatabaseLocalization.Translation.create(["translationKey": "database.message", "locale": "en", "translatedText": "Hello"])
+    DatabaseLocalization.Translation(translationKey: "database.message", locale: "en", translatedText: "Hello").save()
   }
   
   func testTranslationAcceptsRecordWithAllFields() {
-    let translation = DatabaseLocalization.Translation(data: ["translationKey": "testMessage", "locale": "en", "translatedText": "Hello"])
+    let translation = DatabaseLocalization.Translation(translationKey: "testMessage", locale: "en", translatedText: "Hello")
     XCTAssertTrue(translation.validate())
   }
   
   func testTranslationRejectsRecordWithNoKey() {
-    let translation = DatabaseLocalization.Translation(data: ["translationKey": "", "locale": "en", "translatedText": "Hello"])
+    let translation = DatabaseLocalization.Translation(translationKey: "", locale: "en", translatedText: "Hello")
     XCTAssertFalse(translation.validate())
   }
   
   func testTranslationRejectsRecordWithNoLocale() {
-    let translation = DatabaseLocalization.Translation(data: ["translationKey": "testMessage", "locale": "", "translatedText": "Hello"])
+    let translation = DatabaseLocalization.Translation(translationKey: "testMessage", locale: "", translatedText: "Hello")
     XCTAssertFalse(translation.validate())
   }
   
   func testFetchInLocaleGetsValueFromTranslation() {
-    DatabaseLocalization.Translation.create(["translationKey": "database.message", "locale": "es", "translatedText": "Hola"])
+    DatabaseLocalization.Translation(translationKey: "database.message", locale: "es", translatedText: "Hola").save()
     let value = localization.fetch("database.message", inLocale: "es")
-    XCTAssertNotNil(value, "gets a value")
     assert(value, equals: "Hola", message: "gets the value for that locale")
   }
   

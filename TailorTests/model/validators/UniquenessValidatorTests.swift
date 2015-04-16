@@ -4,18 +4,15 @@ import TailorTesting
 
 class UniquenessValidatorTests: TailorTestCase {
   let validator = UniquenessValidator(key: "name")
-  let store = Store(data: ["name": "Hatapalooza"])
+  let store = Store(name: "Hatapalooza")
   
   override func setUp() {
-    Application.start()
-    DatabaseConnection.sharedConnection().executeQuery("TRUNCATE TABLE stores")
-    DatabaseConnection.sharedConnection().executeQuery("TRUNCATE TABLE hats")
+    super.setUp()
     store.save()
   }
   
   func testUniquenessValidatorPutsNoErrorsOnNewRecordWithUniqueValue() {
-    let store2 = Store()
-    store.name = "Little Shop"
+    let store2 = Store(name: "Little Shop")
     validator.validate(store2)
     XCTAssertTrue(store2.errors.isEmpty, "puts no errors on record")
   }
@@ -26,8 +23,7 @@ class UniquenessValidatorTests: TailorTestCase {
   }
   
   func testUniquenessValidatorPutsErrorOnNewRecordWithUsedValue() {
-    let store2 = Store()
-    store2.name = store.name
+    let store2 = Store(name: store.name)
     validator.validate(store2)
     let error = ValidationError(modelType: Store.self, key: "name", message: "taken", data: [:])
     assert(store2.errors.errors, equals: [error], message: "puts the error on the record")
@@ -40,8 +36,8 @@ class UniquenessValidatorTests: TailorTestCase {
   }
   
   func testUniquenessValidatorPutsNoErrorOnRecordWithoutValue() {
-    store.name = nil
-    validator.validate(store)
+    let shelf = Shelf()
+    validator.validate(shelf)
     XCTAssertTrue(store.errors.isEmpty, "puts no error on record")
   }
   
@@ -57,9 +53,10 @@ class UniquenessValidatorTests: TailorTestCase {
   }
   
   func testUniquenessValidatorPutsErrorsWithMultiWordKey() {
-    let validator2 = UniquenessValidator(key: "shelfId")
-    let hat1 = Hat.create(["shelfId": NSNumber(int: 1)])
-    let hat2 = Hat(data: ["shelfId": NSNumber(int: 1)])
+    let validator2 = UniquenessValidator(key: "shelf_id")
+    let hat1 = Hat(shelfId: 1)
+    hat1.save()
+    let hat2 = Hat(shelfId: 1)
     validator2.validate(hat1)
     validator2.validate(hat2)
     XCTAssertTrue(hat1.errors.isEmpty, "puts no error on the first record")

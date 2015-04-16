@@ -36,7 +36,7 @@ public class TemplateTestCase: TailorTestCase {
     
     var request = Request()
     if user != nil {
-      request = Request(sessionData: ["userId": user.id.stringValue])
+      request = Request(sessionData: ["userId": String(user.id ?? 0)])
     }
     controller = type.init(request: request, action: action, callback: {_ in})
   }

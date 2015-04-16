@@ -99,29 +99,20 @@ public class Query<RecordType: Record> {
     var parameters : [String] = []
     let tableName = RecordType.tableName()
     if !conditions.isEmpty {
-      for (fieldName,value) in conditions {
-        var columnName = RecordType.columnNameForField(fieldName)
-        if fieldName == "id" {
-          columnName = fieldName
+      for (columnName,value) in conditions {
+        if !query.isEmpty {
+          query += " AND "
         }
-        if columnName != nil  {
-          if !query.isEmpty {
-            query += " AND "
-          }
-          
-          if value != nil {
-            let (stringValue, _) = RecordType.serializeValueForQuery(value, key: fieldName)
-            if stringValue != nil {
-              query += "\(tableName).\(columnName!)=?"
-              parameters.append(stringValue!)
-            }
-          }
-          else {
-            query += "\(tableName).\(columnName!) IS NULL"
+        
+        if value != nil {
+          let (stringValue, _) = RecordType.serializeValueForQuery(value, key: columnName)
+          if stringValue != nil {
+            query += "\(tableName).\(columnName)=?"
+            parameters.append(stringValue!)
           }
         }
         else {
-          NSLog("Error: Could not map %@.%@ to column", RecordType.modelName(), fieldName)
+          query += "\(tableName).\(columnName) IS NULL"
         }
       }
     }
@@ -138,19 +129,13 @@ public class Query<RecordType: Record> {
                         order.
     :returns:           The new query.
     */
-  public func order(fieldName: String, _ order: NSComparisonResult) -> Query<RecordType> {
-    var columnName = RecordType.columnNameForField(fieldName)
+  public func order(columnName: String, _ order: NSComparisonResult) -> Query<RecordType> {
     var clause = orderClause
-    if columnName != nil {
-      if !clause.query.isEmpty {
-        clause.query += ", "
-      }
-      let orderDescription = order == .OrderedAscending ? "ASC" : "DESC"
-      clause.query += "\(RecordType.tableName()).\(columnName!) \(orderDescription)"
+    if !clause.query.isEmpty {
+      clause.query += ", "
     }
-    else {
-      NSLog("Error: Could not map %@.%@ to column", RecordType.modelName(), fieldName)
-    }
+    let orderDescription = order == .OrderedAscending ? "ASC" : "DESC"
+    clause.query += "\(RecordType.tableName()).\(columnName) \(orderDescription)"
     return self.dynamicType.init(
       copyFrom: self,
       orderClause: clause
@@ -228,17 +213,10 @@ public class Query<RecordType: Record> {
     :param: toField       The field on this record to match for the join.
     :returns:             The new query.
   */
-  public func join(recordType: Record.Type, fromField: String, toField: String) -> Query<RecordType> {
+  public func join(recordType: Record.Type, fromColumn: String, toColumn: String) -> Query<RecordType> {
     let fromTable = recordType.tableName()
-    let fromColumn = recordType.columnNameForField(fromField)
     let toTable = RecordType.tableName()
-    let toColumn = RecordType.columnNameForField(toField)
-    if fromColumn != nil && toColumn != nil {
-      return self.join("INNER JOIN \(fromTable) ON \(fromTable).\(fromColumn!) = \(toTable).\(toColumn!)")
-    }
-    else {
-      return self
-    }
+    return self.join("INNER JOIN \(fromTable) ON \(fromTable).\(fromColumn) = \(toTable).\(toColumn)")
   }
 
   /**
@@ -331,7 +309,7 @@ public class Query<RecordType: Record> {
       
       if idString == nil {
         let results = self.dynamicType.init(copyFrom: self, cacheResults: false).all()
-        let ids = results.map { $0.id.stringValue }
+        let ids = results.map { String($0.id!) }
         CacheStore.shared().write(cacheKey, value: ",".join(ids))
         return results
       }
@@ -340,15 +318,15 @@ public class Query<RecordType: Record> {
         let results = self.dynamicType.init().filter("id IN (\(idString!))").all()
         return results.sorted {
           (record1, record2) -> Bool in
-          let index1 = Swift.find(ids, record1.id.integerValue)
-          let index2 = Swift.find(ids, record2.id.integerValue)
+          let index1 = Swift.find(ids, record1.id!)
+          let index2 = Swift.find(ids, record2.id!)
           return index1 != nil && index2 != nil && index1! < index2!
         }
       }
     }
     let results = DatabaseConnection.sharedConnection().executeQuery(query, stringParameters: parameters)
     let type = RecordType.self
-    return results.map { type.init(data: $0.data, fromDatabase: true) }
+    return removeNils(results.map { $0.error == nil ? type.decode($0.data) : nil })
   }
   
   /**
@@ -407,46 +385,5 @@ public class Query<RecordType: Record> {
     */
   public func isEmpty() -> Bool {
     return self.count() == 0
-  }
-  
-  //MARK: - Building Records
-  
-  /**
-    This method builds a new record based on the conditions on this query.
-  
-    :param: data    The fields to set on the new record. Any conditions from
-                    this query will be set automatically.
-    :returns:       The new record
-    */
-  public func build(_ data: [String:Any] = [:]) -> RecordType {
-    let type = RecordType.self
-    let record = type.init(data: data)
-    for (key,value) in conditions {
-      var anyValue: Any? = nil
-      switch(value) {
-      case let object as NSObject:
-        anyValue = object
-      default:
-        break
-      }
-      record.setValue(anyValue, forKey: key)
-    }
-    return record
-  }
-  
-  
-  /**
-    This method creates a new record based on the conditions on this query.
-  
-    It will build the record using the build method and then save it.
-  
-    :param: data    The fields to set on the new record. Any conditions from
-                    this query will be set automatically.
-    :returns:       The new record
-  */
-  public func create(_ data: [String:Any] = [:]) -> RecordType {
-    let record = self.build(data)
-    record.save()
-    return record
   }
 }
