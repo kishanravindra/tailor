@@ -202,7 +202,7 @@ class RecordTests: TailorTestCase {
     TestConnection.withTestConnection {
       connection in
       var store = Store(name: "Little Shop")
-      connection.response = [DatabaseConnection.Row(data: ["id": 2])]
+      connection.response = [DatabaseConnection.Row(rawData: ["id": 2])]
       store.save()
       self.assert(connection.queries.count, equals: 1, message: "executes 1 query")
       if connection.queries.count > 0 {
@@ -218,7 +218,7 @@ class RecordTests: TailorTestCase {
     TestConnection.withTestConnection {
       connection in
       var store = Store(name: "Little Shop")
-      connection.response = [DatabaseConnection.Row(data: ["id": 2])]
+      connection.response = [DatabaseConnection.Row(rawData: ["id": 2])]
       store.save()
       self.assert(store.id, equals: NSNumber(int: 2), message: "sets the id based on the database response")
     }
@@ -228,7 +228,7 @@ class RecordTests: TailorTestCase {
     TestConnection.withTestConnection {
       connection in
       var store = Store(name: "Little Shop")
-      connection.response = [DatabaseConnection.Row(data: ["id": 2])]
+      connection.response = [DatabaseConnection.Row(rawData: ["id": 2])]
       let result = store.save()
       XCTAssertTrue(result, "returns true")
     }
@@ -256,7 +256,7 @@ class RecordTests: TailorTestCase {
     TestConnection.withTestConnection {
       connection in
       self.assert(connection.queries.count, equals: 0)
-      connection.response = [DatabaseConnection.Row(data: ["id": 2])]
+      connection.response = [DatabaseConnection.Row(rawData: ["id": 2])]
       var hat = Hat(brimSize: 10, color: "red")
       hat.save()
       self.assert(connection.queries.count, equals: 1, message: "executes one query")

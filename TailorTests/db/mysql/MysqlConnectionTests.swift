@@ -13,7 +13,7 @@ class MysqlConnectionTests: TailorTestCase {
   
   func testInitializationGetsTimeZoneFromDatabaseSettings() {
     let results = connection.executeQuery("SELECT @@global.time_zone AS time_zone")
-    let initialZone = results.isEmpty ? "UTC" : results[0].data["time_zone"] as! String
+    let initialZone = results.isEmpty ? "UTC" : results[0].data["time_zone"]!.stringValue!
     
     connection.executeQuery("SET GLOBAL time_zone='UTC'")
     DatabaseConnection.openSharedConnection()
@@ -38,10 +38,10 @@ class MysqlConnectionTests: TailorTestCase {
       let result = results[0]
       XCTAssertNil(result.error, "does not have an error on the result")
       
-      let color = result.data["color"] as? String
+      let color = result.data["color"]?.stringValue
       assert(color, equals: "red", message: "gets a string field")
       
-      let brimSize = result.data["brim_size"] as? Int
+      let brimSize = result.data["brim_size"]?.intValue
       assert(brimSize, equals: 10, message: "gets a numeric field")
     }
     else {
@@ -56,7 +56,7 @@ class MysqlConnectionTests: TailorTestCase {
     if results.count == 1 {
       let result = results[0]
       
-      if let date = result.data["updated_at"] as? NSDate {
+      if let date = result.data["updated_at"]?.dateValue {
         let calendar = NSCalendar.currentCalendar()
         let oldTimeZone = calendar.timeZone
         calendar.timeZone = NSTimeZone(name: "UTC")!
@@ -94,12 +94,8 @@ class MysqlConnectionTests: TailorTestCase {
       var fetchedBytes = [Int](count: 4, repeatedValue: 0)
       assert(data.length, equals: byteCount, message: "has sixteen bytes from the blob")
       data.getBytes(&fetchedBytes, length: byteCount)
-      if let data = result.data["image"] as? NSData {
-        assert(fetchedBytes, equals: [1,2,3,4], message: "gets bytes from blob")
-      }
-      else {
-        XCTFail("gets a data value")
-      }
+      let resultData = result.data["image"]?.dataValue
+      assert(resultData, equals: data)
     }
     connection.executeQuery("ALTER TABLE `hats` DROP COLUMN `image`")
   }
@@ -112,7 +108,15 @@ class MysqlConnectionTests: TailorTestCase {
       let result = results[0]
       XCTAssertNil(result.error, "does not have an error on the result")
       let brimSize = result.data["brim_size"]
-      XCTAssertTrue(brimSize == nil, "has a nil brim size")
+      if brimSize != nil {
+        switch(brimSize!) {
+        case .Null: break
+        default: XCTFail()
+        }
+      }
+      else {
+        XCTFail("Still has a value for a null column")
+      }
     }
   }
   
@@ -122,7 +126,7 @@ class MysqlConnectionTests: TailorTestCase {
     assert(results.count, equals: 1, message: "gets one row")
     if results.count == 1 {
       let result = results[0]
-      if let brimSize = result.data["brim_size"] as? Int {
+      if let brimSize = result.data["brim_size"]?.intValue {
         assert(brimSize, equals: 12, message: "gets the correct record")
       }
       else {
@@ -139,11 +143,8 @@ class MysqlConnectionTests: TailorTestCase {
     let results = connection.executeQuery("SELECT `description` FROM `hats`")
     assert(results.count, equals: 1, message: "gets a result")
     if results.count > 0 {
-      let description = results[0].data["description"] as? String
-      XCTAssertNotNil(description, "gets a value")
-      if description != nil {
-        assert(description!, equals: longText, message: "gets the full text back")
-      }
+      let description = results[0].data["description"]?.stringValue
+      assert(description!, equals: longText, message: "gets the full text back")
     }
     connection.executeQuery("ALTER TABLE `hats` DROP COLUMN `description`")
   }
@@ -153,18 +154,10 @@ class MysqlConnectionTests: TailorTestCase {
     let results = connection.executeQuery("SELECT * FROM `hats` ORDER BY `id` ASC")
     assert(results.count, equals: 2, message: "gets two rows")
     if results.count == 2 {
-      if let color = results[0].data["color"] as? String {
-        assert(color, equals: "red", message: "gets the first row's color")
-      }
-      else {
-        XCTFail("Gets the first row's color")
-      }
-      if let color = results[1].data["color"] as? String {
-        assert(color, equals: "black", message: "gets the second row's color")
-      }
-      else {
-        XCTFail("Gets the second row's color")
-      }
+      let color = results[0].data["color"]?.stringValue
+      assert(color, equals: "red", message: "gets the first row's color")
+      let color2 = results[1].data["color"]?.stringValue
+      assert(color2, equals: "black", message: "gets the second row's color")
     }
   }
   
@@ -172,7 +165,7 @@ class MysqlConnectionTests: TailorTestCase {
     let results = connection.executeQuery("INSERT INTO `hats` (`color`, `brim_size`) VALUES ('black', 12)")
     assert(results.count, equals: 1, message: "gets one row")
     if results.count == 1 {
-      if let id = results[0].data["id"] as? Int {
+      if let id = results[0].data["id"]?.intValue {
         assert(id, equals: 2, message: "gets the id of the new row")
       }
       else {

@@ -143,7 +143,7 @@ public class Record : Model, Equatable {
   
   //MARK: - Persisting
   
-  public class func decode(databaseRow: [String:Any]) -> Self? {
+  public class func decode(databaseRow: [String:DatabaseValue]) -> Self? {
     return nil
   }
   
@@ -237,7 +237,7 @@ public class Record : Model, Equatable {
       return false
     }
     else {
-      self.id = result!.data["id"] as? Int
+      self.id = result?.data["id"]?.intValue
       return true
     }
   }

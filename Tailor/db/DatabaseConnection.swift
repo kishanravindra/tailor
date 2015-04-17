@@ -11,7 +11,7 @@ public class DatabaseConnection {
     */
   public class Row {
     /** The data returned for the row. */
-    public let data: [String:Any]
+    public let data: [String:DatabaseValue]
     
     /** The error message that the database gave for this query. */
     public private(set) var error: String?
@@ -19,10 +19,24 @@ public class DatabaseConnection {
     /**
       This method initializes a row with a hash of data.
     
-      :param: row   The data for the row.
+      :param: data   The data for the row.
       */
-    public required init(data: [String:Any]) {
+    public init(data: [String:DatabaseValue]) {
       self.data = data
+    }
+    
+    /**
+      This method initializes a row with a hash of values that can be mapped
+      to database values.
+
+      :param: rawData   The unwrapped data.
+      */
+    public convenience init(rawData: [String:DatabaseValueConvertible]) {
+      var wrappedData = [String:DatabaseValue]()
+      for (key,value) in rawData {
+        wrappedData[key] = value.databaseValue
+      }
+      self.init(data: wrappedData)
     }
     
     /**

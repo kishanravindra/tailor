@@ -41,11 +41,11 @@ public class DatabaseLocalization: Localization {
       super.init(id: id)
     }
     
-    public override class func decode(databaseRow: [String:Any]) -> Self? {
-      if let translationKey = databaseRow["translation_key"] as? String,
-        locale = databaseRow["locale"] as? String,
-        translatedText = databaseRow["translated_text"] as? String,
-        id = databaseRow["id"] as? Int {
+    public override class func decode(databaseRow: [String:DatabaseValue]) -> Self? {
+      if let translationKey = databaseRow["translation_key"]?.stringValue,
+        locale = databaseRow["locale"]?.stringValue,
+        translatedText = databaseRow["translated_text"]?.stringValue,
+        id = databaseRow["id"]?.intValue {
           return self.init(translationKey: translationKey, locale: locale, translatedText: translatedText, id: id)
       }
       else {

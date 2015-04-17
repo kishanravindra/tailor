@@ -83,7 +83,7 @@ public class MysqlStatement {
     :param: parameters    The data to pass to the statement.
     :returns:             The results of executing the statement.
     */
-  public func execute(parameters: [NSData]) -> [[String:Any]] {
+  public func execute(parameters: [NSData]) -> [[String:DatabaseValue]] {
     let inputParameters = MysqlBindParameterSet(data: parameters)
     inputParameters.bindToInputOfStatement(self.statement)
     
@@ -98,14 +98,14 @@ public class MysqlStatement {
     }
     
     let names = self.resultSet.fields.map { $0.name }
-    var results = [[String:Any]]()
+    var results = [[String:DatabaseValue]]()
     
     if names.isEmpty {
       return []
     }
     
     while mysql_stmt_fetch(self.statement) == 0 {
-      var result = [String:Any]()
+      var result = [String:DatabaseValue]()
       for (index,parameter) in enumerate(outputParameters) {
         result[names[index]] = parameter.data()
       }

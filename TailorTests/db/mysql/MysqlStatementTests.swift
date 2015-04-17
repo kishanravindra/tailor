@@ -31,13 +31,13 @@ class MysqlStatementTests: TailorTestCase {
       
       let keys1 = sorted(result1.keys.array)
       self.assert(keys1, equals: ["id", "name"])
-      if let id = result1["id"] as? NSNumber {
-        self.assert(id, equals: NSNumber(integer: 1))
+      if let id = result1["id"]?.intValue {
+        self.assert(id, equals: 1)
       }
       else {
         XCTFail()
       }
-      if let name = result1["name"] as? String {
+      if let name = result1["name"]?.stringValue {
         self.assert(name, equals: "Store 1")
       }
       else {
@@ -46,13 +46,13 @@ class MysqlStatementTests: TailorTestCase {
       
       let keys2 = sorted(result2.keys.array)
       self.assert(keys2, equals: ["id", "name"])
-      if let id = result2["id"] as? NSNumber {
-        self.assert(id, equals: NSNumber(integer: 2))
+      if let id = result2["id"]?.intValue {
+        self.assert(id, equals: 2)
       }
       else {
         XCTFail()
       }
-      if let name = result2["name"] as? String {
+      if let name = result2["name"]?.stringValue {
         self.assert(name, equals: "Store 2")
       }
       else {
@@ -87,13 +87,13 @@ class MysqlStatementTests: TailorTestCase {
       
       let keys = sorted(result.keys.array)
       self.assert(keys, equals: ["id", "name"])
-      if let id = result["id"] as? NSNumber {
-        self.assert(id, equals: NSNumber(integer: 2))
+      if let id = result["id"]?.intValue {
+        self.assert(id, equals: 2)
       }
       else {
         XCTFail()
       }
-      if let name = result["name"] as? String {
+      if let name = result["name"]?.stringValue {
         self.assert(name, equals: "Store 2")
       }
       else {

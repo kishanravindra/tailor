@@ -84,55 +84,54 @@ public class MysqlBindParameter {
   /**
     This method returns the data from the parameter.
 
-    The data will be marshalled into an appropriate Swift type based on the
-    metadata.
-
-    This will return an NSNumber, an NSString, an NSDate, or an NSData.
+    The data will be wrapped in our database value enum.
 
     :returns:   The converted data.
     */
-  public func data() -> Any? {
+  public func data() -> DatabaseValue {
     var stringValue: String? = nil;
     
     if(self.isNull) {
-      return nil;
+      return DatabaseValue.Null;
     }
                 
     switch(self.parameter.buffer_type.value) {
     case MYSQL_TYPE_TINY.value, MYSQL_TYPE_BIT.value:
       let buffer = UnsafePointer<CChar>(self.buffer)
-      return NSNumber(char: buffer.memory)
+      return Int(buffer.memory).databaseValue
     case MYSQL_TYPE_SHORT.value:
       let buffer = UnsafePointer<CShort>(self.buffer)
-      return NSNumber(short: buffer.memory)
+      return Int(buffer.memory).databaseValue
     case MYSQL_TYPE_LONG.value, MYSQL_TYPE_INT24.value:
       let buffer = UnsafePointer<CInt>(self.buffer)
-      return NSNumber(int: buffer.memory)
+      return Int(buffer.memory).databaseValue
     case MYSQL_TYPE_LONGLONG.value:
       let buffer = UnsafePointer<CLongLong>(self.buffer)
-      return NSNumber(longLong: buffer.memory)
+      return Int(buffer.memory).databaseValue
     case MYSQL_TYPE_FLOAT.value:
       let buffer = UnsafePointer<CFloat>(self.buffer)
-      return NSNumber(float: buffer.memory)
+      return Double(buffer.memory).databaseValue
     case MYSQL_TYPE_DOUBLE.value:
       let buffer = UnsafePointer<CDouble>(self.buffer)
-      return NSNumber(double: buffer.memory)
+      return Double(buffer.memory).databaseValue
     case MYSQL_TYPE_NEWDECIMAL.value:
       let buffer = UnsafePointer<CChar>(self.buffer)
       let string = NSString(bytes: buffer, length: Int(self.length), encoding: NSUTF8StringEncoding)
-      return string?.doubleValue
+      return string?.doubleValue.databaseValue ?? DatabaseValue.Null
     case MYSQL_TYPE_TIME.value, MYSQL_TYPE_DATE.value, MYSQL_TYPE_DATETIME.value, MYSQL_TYPE_TIMESTAMP.value:
       let buffer = UnsafePointer<MYSQL_TIME>(self.buffer)
-      return MysqlBindParameter.dateFromTime(buffer.memory)
+      return MysqlBindParameter.dateFromTime(buffer.memory)?.databaseValue ?? DatabaseValue.Null
     case MYSQL_TYPE_TINY_BLOB.value, MYSQL_TYPE_BLOB.value, MYSQL_TYPE_MEDIUM_BLOB.value, MYSQL_TYPE_LONG_BLOB.value:
       if binary {
-        return NSData(bytes: self.buffer, length: Int(self.length))
+        return NSData(bytes: self.buffer, length: Int(self.length)).databaseValue
       }
       else {
-        return NSString(bytes: self.buffer, length: Int(self.length), encoding: NSUTF8StringEncoding)
+        let string = NSString(bytes: self.buffer, length: Int(self.length), encoding: NSUTF8StringEncoding) as? String
+        return string?.databaseValue ?? DatabaseValue.Null
       }
     default:
-      return NSString(bytes: self.buffer, length: Int(self.length), encoding: NSUTF8StringEncoding)
+      let string =  NSString(bytes: self.buffer, length: Int(self.length), encoding: NSUTF8StringEncoding) as? String
+      return string?.databaseValue ?? DatabaseValue.Null
     }
   }
   

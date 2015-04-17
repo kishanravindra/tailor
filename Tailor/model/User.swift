@@ -39,13 +39,10 @@ public class User : Record {
   
   //MARK: Persistence
   
-  
-  
-  
-  public override class func decode(databaseRow: [String:Any]) -> Self? {
-    if let emailAddress = databaseRow["email_address"] as? String,
-      let encryptedPassword = databaseRow["encrypted_password"] as? String,
-      let id = databaseRow["id"] as? Int {
+  public override class func decode(databaseRow: [String:DatabaseValue]) -> Self? {
+    if let emailAddress = databaseRow["email_address"]?.stringValue,
+      let encryptedPassword = databaseRow["encrypted_password"]?.stringValue,
+      let id = databaseRow["id"]?.intValue {
         return self.init(emailAddress: emailAddress, encryptedPassword: encryptedPassword, id: id)
     }
     else {

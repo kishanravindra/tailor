@@ -21,7 +21,7 @@ public class MysqlConnection : DatabaseConnection {
     
     let timeZoneInfo = self.executeQuery("SELECT @@session.time_zone as timeZone")
     if timeZoneInfo.count > 0 {
-      let timeZoneDescription = timeZoneInfo[0].data["timeZone"] as! String
+      let timeZoneDescription = timeZoneInfo[0].data["timeZone"]!.stringValue!
       let components = Request.extractWithPattern(timeZoneDescription, pattern: "([-+])(\\d\\d):(\\d\\d)")
       if components.count == 3 {
         let hour = components[1].toInt()!
@@ -83,7 +83,7 @@ public class MysqlConnection : DatabaseConnection {
     }
     
     if let insertId = statement.insertId {
-      return [Row(data: ["id": insertId])]
+      return [Row(rawData: ["id": insertId])]
     }
     
     return results.map { Row(data: $0) }

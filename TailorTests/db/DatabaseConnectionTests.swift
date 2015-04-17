@@ -43,6 +43,14 @@ class DatabaseConnectionTests: TailorTestCase {
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
+  func testRowInitializationWithConvertibleValuesWrapsValues() {
+    let row = DatabaseConnection.Row(rawData: ["name": "John", "height": 200])
+    let name = row.data["name"]?.stringValue
+    assert(name, equals: "John")
+    let height = row.data["height"]?.intValue
+    assert(height, equals: 200)
+  }
+  
   //MARK: - Queries
   
   func testExecuteQueryWithVariadicArgumentsConvertsToData() {

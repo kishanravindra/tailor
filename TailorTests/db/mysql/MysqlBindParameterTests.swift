@@ -98,16 +98,16 @@ class MysqlBindParameterTests: TailorTestCase {
   func testDataWithStringReturnsString() {
     connection.executeQuery("INSERT INTO hats (color) VALUES ('green')")
     runQuery("SELECT color FROM hats")
-    let result = parameter.data() as? String
+    let result = parameter.data().stringValue
     assert(result, equals: "green")
   }
   
-  func testDataWithTinyIntReturnsNumber() {
+  func testDataWithTinyIntReturnsInteger() {
     connection.executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size tinyint")
     connection.executeQuery("INSERT INTO hats (brim_size) VALUES (25)")
     runQuery("SELECT brim_size FROM hats")
-    let result = parameter.data() as? NSNumber
-    assert(result, equals: NSNumber(int: 25))
+    let result = parameter.data().intValue
+    assert(result, equals: 25)
     DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size int(11)")
   }
   
@@ -115,8 +115,8 @@ class MysqlBindParameterTests: TailorTestCase {
     connection.executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size bit")
     connection.executeQuery("INSERT INTO hats (brim_size) VALUES (1)")
     runQuery("SELECT brim_size FROM hats")
-    let result = parameter.data() as? NSNumber
-    assert(result, equals: NSNumber(int: 1))
+    let result = parameter.data().intValue
+    assert(result, equals: 1)
     DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size int(11)")
   }
   
@@ -124,15 +124,15 @@ class MysqlBindParameterTests: TailorTestCase {
     DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size smallint")
     connection.executeQuery("INSERT INTO hats (brim_size) VALUES (500)")
     runQuery("SELECT brim_size FROM hats")
-    let result = parameter.data() as? NSNumber
-    assert(result, equals: NSNumber(int: 500))
+    let result = parameter.data().intValue
+    assert(result, equals: 500)
     DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size int(11)")
   }
   
   func testDataWithIntReturnsNumber() {
     connection.executeQuery("INSERT INTO hats (brim_size) VALUES (512345)")
     runQuery("SELECT brim_size FROM hats")
-    let result = parameter.data() as? NSNumber
+    let result = parameter.data().intValue
     assert(result, equals: NSNumber(int: 512345))
   }
   
@@ -143,8 +143,8 @@ class MysqlBindParameterTests: TailorTestCase {
     let a = sizeof(CInt)
     let b = sizeof(CShort)
     let c = sizeof(CLongLong)
-    let result = parameter.data() as? NSNumber
-    assert(result, equals: NSNumber(longLong: 123451234545))
+    let result = parameter.data().intValue
+    assert(result, equals: 123451234545)
     DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size int(11)")
   }
   
@@ -152,8 +152,8 @@ class MysqlBindParameterTests: TailorTestCase {
     DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size float")
     connection.executeQuery("INSERT INTO hats (brim_size) VALUES (10.5)")
     runQuery("SELECT brim_size FROM hats")
-    let result = parameter.data() as? NSNumber
-    assert(result, equals: NSNumber(float: 10.5))
+    let result = parameter.data().doubleValue
+    assert(result, equals: 10.5)
     DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size int(11)")
     
   }
@@ -162,8 +162,8 @@ class MysqlBindParameterTests: TailorTestCase {
     DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size double")
     connection.executeQuery("INSERT INTO hats (brim_size) VALUES (10.5)")
     runQuery("SELECT brim_size FROM hats")
-    let result = parameter.data() as? NSNumber
-    assert(result, equals: NSNumber(double: 10.5))
+    let result = parameter.data().doubleValue
+    assert(result, equals: 10.5)
     DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size int(11)")
     
   }
@@ -172,8 +172,8 @@ class MysqlBindParameterTests: TailorTestCase {
     DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size decimal(10,2)")
     connection.executeQuery("INSERT INTO hats (brim_size) VALUES (123.45)")
     runQuery("SELECT brim_size FROM hats")
-    let result = parameter.data() as? NSNumber
-    assert(result, equals: NSNumber(double: 123.45))
+    let result = parameter.data().doubleValue
+    assert(result, equals: 123.45)
     DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size int(11)")
     
   }
@@ -182,7 +182,7 @@ class MysqlBindParameterTests: TailorTestCase {
     DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at date")
     connection.executeQuery("INSERT INTO hats (updated_at) VALUES ('2015-03-14')")
     runQuery("SELECT updated_at FROM hats")
-    if let result = parameter.data() as? NSDate {
+    if let result = parameter.data().dateValue {
       let components = dateComponents(result)
       assert(components.year, equals: 2015)
       assert(components.month, equals: 3)
@@ -199,7 +199,7 @@ class MysqlBindParameterTests: TailorTestCase {
     DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at datetime")
     connection.executeQuery("INSERT INTO hats (updated_at) VALUES ('2015-04-01 09:30:00')")
     runQuery("SELECT updated_at FROM hats")
-    if let result = parameter.data() as? NSDate {
+    if let result = parameter.data().dateValue {
       let components = dateComponents(result)
       assert(components.year, equals: 2015)
       assert(components.month, equals: 4)
@@ -217,7 +217,7 @@ class MysqlBindParameterTests: TailorTestCase {
   func testDataWithTimestampReturnsDateWithThatTimestamp() {
     connection.executeQuery("INSERT INTO hats (updated_at) VALUES ('2015-04-01 09:30:00')")
     runQuery("SELECT updated_at FROM hats")
-    if let result = parameter.data() as? NSDate {
+    if let result = parameter.data().dateValue {
       let components = dateComponents(result)
       assert(components.year, equals: 2015)
       assert(components.month, equals: 4)
@@ -234,7 +234,7 @@ class MysqlBindParameterTests: TailorTestCase {
   func testDataWithTimestampReturnsDateWithThatTime() {
     connection.executeQuery("INSERT INTO hats (updated_at) VALUES ('2015-04-01 09:30:00')")
     runQuery("SELECT updated_at FROM hats")
-    if let result = parameter.data() as? NSDate {
+    if let result = parameter.data().dateValue {
       let components = dateComponents(result)
       assert(components.year, equals: 2015)
       assert(components.month, equals: 4)
@@ -254,7 +254,7 @@ class MysqlBindParameterTests: TailorTestCase {
     let data = NSData(bytes: &bytes, length: 5)
     connection.executeQuery("INSERT INTO hats (color) VALUES (?)", parameters: [data])
     runQuery("SELECT color FROM hats")
-    let result = parameter.data() as? NSData
+    let result = parameter.data().dataValue
     assert(result, equals: data)
     DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN color color varchar(255)")
     
@@ -266,7 +266,7 @@ class MysqlBindParameterTests: TailorTestCase {
     runQuery("SELECT color FROM hats")
     let data = NSData(bytes: parameter.buffer, length: Int(parameter.length))
     NSLog("Raw data: %@", data)
-    let result = parameter.data() as? NSString
+    let result = parameter.data().stringValue
     assert(result, equals: "red")
     DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN color color varchar(255)")
     
