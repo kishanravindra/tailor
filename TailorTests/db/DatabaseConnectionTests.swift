@@ -61,9 +61,9 @@ class DatabaseConnectionTests: TailorTestCase {
         let (query,parameters) = connection.queries[0]
         self.assert(query, equals: "SELECT * FROM hats WHERE color=? AND brimSize=?")
         if parameters.count == 2 {
-          var data = "red".dataUsingEncoding(NSUTF8StringEncoding)!
+          var data = "red".databaseValue
           self.assert(parameters[0], equals: data, message: "has data for the first parameters")
-          data = "10".dataUsingEncoding(NSUTF8StringEncoding)!
+          data = "10".databaseValue
           self.assert(parameters[1], equals: data, message: "has data for the second parameter")
         }
         else {
@@ -84,9 +84,9 @@ class DatabaseConnectionTests: TailorTestCase {
         let (query,parameters) = connection.queries[0]
         self.assert(query, equals: "SELECT * FROM hats WHERE color=? AND brim_size=?")
         if parameters.count == 2 {
-          var data = "red".dataUsingEncoding(NSUTF8StringEncoding)!
+          var data = "red".databaseValue
           self.assert(parameters[0], equals: data, message: "has data for the first parameters")
-          data = "10".dataUsingEncoding(NSUTF8StringEncoding)!
+          data = "10".databaseValue
           self.assert(parameters[1], equals: data, message: "has data for the second parameter")
         }
         else {

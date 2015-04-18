@@ -58,10 +58,31 @@ public class MysqlBindParameter {
   /**
     This method creates a bind parameter for holding an input value.
 
-    :param: data    The input data.
+    :param: value    The input value.
     */
-  public init(data: NSData) {
+  public init(value: DatabaseValue) {
     var parameter = MYSQL_BIND()
+    
+    let data: NSData
+    
+    switch(value) {
+    case let .String(string):
+      data = string.dataUsingEncoding(NSUTF8StringEncoding) ?? NSData()
+    case let .Integer(int):
+      data = String(int).dataUsingEncoding(NSUTF8StringEncoding) ?? NSData()
+    case let .Boolean(bool):
+      let int = bool ? 1 : 0
+      data = String(int).dataUsingEncoding(NSUTF8StringEncoding) ?? NSData()
+    case let .Double(double):
+      data = "\(double)".dataUsingEncoding(NSUTF8StringEncoding) ?? NSData()
+    case let .Data(wrappedData):
+      data = wrappedData
+    case let .Date(date):
+      let string = date.format("db", timeZone: DatabaseConnection.sharedConnection().timeZone) ?? ""
+      data = string.dataUsingEncoding(NSUTF8StringEncoding) ?? NSData()
+    default:
+      data = NSData()
+    }
     parameter.buffer = malloc(data.length)
     memcpy(parameter.buffer, data.bytes, data.length)
     parameter.buffer_length = UInt(data.length);

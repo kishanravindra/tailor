@@ -50,10 +50,10 @@ public class User : Record {
     }
   }
   
-  public override func valuesToPersist() -> [String : NSData?] {
+  public override func valuesToPersist() -> [String : DatabaseValueConvertible?] {
     return [
-      "email_address": self.emailAddress.dataUsingEncoding(NSUTF8StringEncoding),
-      "encrypted_password": self.encryptedPassword.dataUsingEncoding(NSUTF8StringEncoding)
+      "email_address": self.emailAddress,
+      "encrypted_password": self.encryptedPassword
     ]
   }
   

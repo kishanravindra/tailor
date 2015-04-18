@@ -6,7 +6,7 @@ import Foundation
   This allows us to pass a database value of an unknown type in a way that still
   puts type constraints on what it can be.
   */
-public enum DatabaseValue {
+public enum DatabaseValue: Equatable {
   /** A null value */
   case Null
   
@@ -101,7 +101,54 @@ public enum DatabaseValue {
       return nil
     }
   }
+  
+  /**
+    This method gets a description of the underlying value for debugging.
+    */
+  public var description: Swift.String {
+    switch(self) {
+    case let .String(string):
+      return string
+    case let .Boolean(bool):
+      return bool.description
+    case let .Data(data):
+      return data.description
+    case let .Integer(int):
+      return Swift.String(int)
+    case let .Double(double):
+      return double.description
+    case let .Date(date):
+      return date.format("db") ?? "NULL"
+    case .Null:
+      return "NULL"
+    }
+  }
 }
+
+//MARK: - Comparison
+
+public func ==(lhs: DatabaseValue, rhs: DatabaseValue) -> Bool {
+  switch(lhs,rhs) {
+  case (let .String(string1), let .String(string2)):
+    return string1 == string2
+  case (let .Integer(int1), let .Integer(int2)):
+    return int1 == int2
+  case (let .Boolean(bool1), let .Boolean(bool2)):
+    return bool1 == bool2
+  case (let .Double(double1), let .Double(double2)):
+    return double1 == double2
+  case (let .Data(data1), let .Data(data2)):
+    return data1 == data2
+  case (let .Date(date1), let .Date(date2)):
+    return date1 == date2
+  case (.Null, .Null):
+    return true
+  default:
+    return false
+  }
+}
+
+//MARK: - Conversion
 
 /**
   This protocol expresses that a type can be provided to a database value to

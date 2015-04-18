@@ -64,8 +64,8 @@ class MysqlStatementTests: TailorTestCase {
   func testExecuteWithBadQueryReturnsEmptyRows() {
     Store(name: "Store 1").save()
     let statement = MysqlStatement(connection: connection, query: "INSERT INTO stores VALUES (?,?)")
-    let param1 = "1".dataUsingEncoding(NSUTF8StringEncoding)!
-    let param2 = "Store 1".dataUsingEncoding(NSUTF8StringEncoding)!
+    let param1 = "1".databaseValue
+    let param2 = "Store 1".databaseValue
     let results = statement.execute([param1, param2])
     self.assert(results.count, equals: 0)
   }
@@ -76,7 +76,7 @@ class MysqlStatementTests: TailorTestCase {
     Store(name: "Store 2").save()
     
     let statement = MysqlStatement(connection: connection, query: "SELECT * FROM stores WHERE id = ?")
-    let param = "2".dataUsingEncoding(NSUTF8StringEncoding)!
+    let param = "2".databaseValue
     let results = statement.execute([param])
     self.assert(results.count, equals: 1)
     
@@ -104,7 +104,7 @@ class MysqlStatementTests: TailorTestCase {
   
   func testExecuteWithInsertStatementReturnsEmptyResults() {
     let statement = MysqlStatement(connection: connection, query: "INSERT INTO stores (name) VALUES (?)")
-    let param = "1".dataUsingEncoding(NSUTF8StringEncoding)!
+    let param = "1".databaseValue
     let results = statement.execute([param])
     XCTAssertNil(statement.error, "does not put an error on a valid query")
     assert(results.count, equals: 0)
@@ -112,7 +112,7 @@ class MysqlStatementTests: TailorTestCase {
   
   func testExecuteWithInsertStatementPutsInsertIdOnStatement() {
     let statement = MysqlStatement(connection: connection, query: "INSERT INTO stores (name) VALUES (?)")
-    let param = "1".dataUsingEncoding(NSUTF8StringEncoding)!
+    let param = "1".databaseValue
     let results = statement.execute([param])
     assert(statement.insertId, equals: 1, message: "has the ID for the new row as the insertId")
   }
@@ -120,8 +120,8 @@ class MysqlStatementTests: TailorTestCase {
   func testExecuteWithBadQueryPutsErrorOnStatement() {
     Store(name: "Store 1").save()
     let statement = MysqlStatement(connection: connection, query: "INSERT INTO stores VALUES (?,?)")
-    let param1 = "1".dataUsingEncoding(NSUTF8StringEncoding)!
-    let param2 = "Store 1".dataUsingEncoding(NSUTF8StringEncoding)!
+    let param1 = "1".databaseValue
+    let param2 = "Store 1".databaseValue
     statement.execute([param1, param2])
     self.assert(statement.error, equals: "Duplicate entry '1' for key 'PRIMARY'")
   }

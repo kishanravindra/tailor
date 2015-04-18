@@ -47,10 +47,10 @@ class TestApplication: Tailor.Application {
 
 
 class TestConnection : DatabaseConnection {
-  var queries = [(String,[NSData])]()
+  var queries = [(String,[DatabaseValue])]()
   var response : [DatabaseConnection.Row] = []
   
-  override func executeQuery(query: String, parameters bindParameters: [NSData]) -> [Row] {
+  override func executeQuery(query: String, parameters bindParameters: [DatabaseValue]) -> [Row] {
     NSLog("Executing %@", query)
     queries.append((query, bindParameters))
     let temporaryResponse = response
@@ -85,13 +85,13 @@ class Hat : Record {
     super.init(id: id)
   }
   
-  override func valuesToPersist() -> [String : NSData?] {
+  override func valuesToPersist() -> [String : DatabaseValueConvertible?] {
     return [
-      "brim_size": brimSize == nil ? nil : String(brimSize).dataUsingEncoding(NSUTF8StringEncoding),
-      "color": color?.dataUsingEncoding(NSUTF8StringEncoding),
-      "shelf_id": shelfId == nil ? nil : String(shelfId).dataUsingEncoding(NSUTF8StringEncoding),
-      "created_at": createdAt?.format("db", timeZone: DatabaseConnection.sharedConnection().timeZone)?.dataUsingEncoding(NSUTF8StringEncoding),
-      "updated_at": updatedAt?.format("db", timeZone: DatabaseConnection.sharedConnection().timeZone)?.dataUsingEncoding(NSUTF8StringEncoding),
+      "brim_size": brimSize,
+      "color": color,
+      "shelf_id": shelfId,
+      "created_at": createdAt,
+      "updated_at": updatedAt,
     ]
   }
   
@@ -117,10 +117,10 @@ class Shelf : Record {
     self.storeId = storeId
     super.init(id: id)
   }
-  override func valuesToPersist() -> [String: NSData?] {
+  override func valuesToPersist() -> [String: DatabaseValueConvertible?] {
     return [
-      "name": self.name?.dataUsingEncoding(NSUTF8StringEncoding),
-      "store_id": self.storeId == nil ? nil : String(self.storeId).dataUsingEncoding(NSUTF8StringEncoding)
+      "name": name,
+      "store_id": storeId
     ]
   }
   
@@ -140,9 +140,9 @@ class Store : Record {
     super.init(id: id)
   }
   
-  override func valuesToPersist() -> [String : NSData?] {
+  override func valuesToPersist() -> [String : DatabaseValueConvertible?] {
     return [
-      "name": name.dataUsingEncoding(NSUTF8StringEncoding)
+      "name": name
     ]
   }
   

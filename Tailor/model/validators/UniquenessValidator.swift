@@ -9,24 +9,21 @@ public class UniquenessValidator : Validator {
   public override func validate(model: Model) {
     if let record = model as? Record {
       let value = record.valuesToPersist()[self.key]
-      var stringValue : String? = nil
-      if value != nil && value! != nil {
-        stringValue = NSString(data: value!!, encoding: NSUTF8StringEncoding) as? String
-      }
       
-      if stringValue == nil {
+      if value == nil {
         return
       }
       
+      let databaseValue = value!?.databaseValue ?? DatabaseValue.Null
       let tableName = record.dynamicType.tableName()
       var query = "SELECT * FROM \(tableName) WHERE \(key) = ?"
-      var parameters = [stringValue!]
+      var parameters = [databaseValue]
       if record.id != nil {
         query += " AND id != ?"
-        parameters.append(String(record.id!))
+        parameters.append(record.id!.databaseValue)
       }
       
-      let duplicates = DatabaseConnection.sharedConnection().executeQuery(query, stringParameters: parameters)
+      let duplicates = DatabaseConnection.sharedConnection().executeQuery(query, parameters: parameters)
       
       if !duplicates.isEmpty {
         model.errors.add(key, "taken")

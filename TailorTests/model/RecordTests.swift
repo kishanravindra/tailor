@@ -154,7 +154,6 @@ class RecordTests: TailorTestCase {
     hat = Query<Hat>().find(hat.id!)!
     XCTAssertNotNil(hat.createdAt, "sets createdAt")
     if(hat.createdAt != nil) {
-      NSLog("Hat has created at %@", hat.createdAt.format("db")!)
       XCTAssertEqualWithAccuracy(hat.createdAt.timeIntervalSinceNow, 0, 2, "sets createdAt to current time")
     }
     
@@ -209,7 +208,7 @@ class RecordTests: TailorTestCase {
         let (query, parameters) = connection.queries[0]
         self.assert(query, equals: "INSERT INTO stores (name) VALUES (?)", message: "has the query to insert the record")
         
-        self.assert(parameters, equals: ["Little Shop".dataUsingEncoding(NSUTF8StringEncoding)!], message: "has the name as the parameter")
+        self.assert(parameters, equals: ["Little Shop".databaseValue], message: "has the name as the parameter")
       }
     }
   }
@@ -265,12 +264,20 @@ class RecordTests: TailorTestCase {
         self.assert(query, equals: "INSERT INTO hats (brim_size, color, created_at, updated_at) VALUES (?, ?, ?, ?)", message: "has the query to insert the record")
         
         let expectedParameters = [
-          "10".dataUsingEncoding(NSUTF8StringEncoding)!,
-          "red".dataUsingEncoding(NSUTF8StringEncoding)!,
-          NSDate().format("db", timeZone: connection.timeZone)!.dataUsingEncoding(NSUTF8StringEncoding)!,
-          NSDate().format("db", timeZone: connection.timeZone)!.dataUsingEncoding(NSUTF8StringEncoding)!
+          10.databaseValue,
+          "red".databaseValue,
+          NSDate().databaseValue,
+          NSDate().databaseValue
         ]
-        self.assert(parameters, equals: expectedParameters, message: "has the brim size, color, creation date, and update date as parameters")
+        
+        self.assert(parameters[0], equals: expectedParameters[0], message: "has the brim size parameter")
+        self.assert(parameters[1], equals: expectedParameters[1], message: "has the color parameter")
+        
+        let currentTimestamp = NSDate().timeIntervalSince1970
+        let date1 = parameters[3].dateValue?.timeIntervalSince1970 ?? 0
+        let date2 = parameters[3].dateValue?.timeIntervalSince1970 ?? 0
+        XCTAssertEqualWithAccuracy(date1, currentTimestamp, 1)
+        XCTAssertEqualWithAccuracy(date2, currentTimestamp, 1)
       }
     }
   }
@@ -289,9 +296,9 @@ class RecordTests: TailorTestCase {
         self.assert(query, equals: "UPDATE shelfs SET name = ?, store_id = ? WHERE id = ?", message: "has the update query")
         
         let expectedParameters = [
-          "Bottom Shelf".dataUsingEncoding(NSUTF8StringEncoding)!,
-          "2".dataUsingEncoding(NSUTF8StringEncoding)!,
-          String(shelf.id!).dataUsingEncoding(NSUTF8StringEncoding)!
+          "Bottom Shelf".databaseValue,
+          2.databaseValue,
+          shelf.id!.databaseValue
         ]
         self.assert(parameters, equals: expectedParameters, message: "has the name, store ID, and id as parameters")
       }
@@ -311,8 +318,8 @@ class RecordTests: TailorTestCase {
         self.assert(query, equals: "UPDATE shelfs SET name = NULL, store_id = ? WHERE id = ?", message: "has the update query")
         
         let expectedParameters = [
-          "1".dataUsingEncoding(NSUTF8StringEncoding)!,
-          String(shelf.id!).dataUsingEncoding(NSUTF8StringEncoding)!
+          1.databaseValue,
+          shelf.id!.databaseValue
         ]
         self.assert(parameters, equals: expectedParameters, message: "has the storeId and id as parameters")
       }
@@ -347,7 +354,7 @@ class RecordTests: TailorTestCase {
       if connection.queries.count == 1 {
         let (query, parameters) = connection.queries[0]
         self.assert(query, equals: "DELETE FROM shelfs WHERE id = ?", message: "executes a destroy query")
-        let data = String(shelf.id!).dataUsingEncoding(NSUTF8StringEncoding)!
+        let data = shelf.id!.databaseValue
         self.assert(parameters, equals: [data], message: "has the id as the parameter for the query")
       }
     }

@@ -26,14 +26,14 @@ public class MysqlBindParameterSet {
   /**
     This method initializes a parameter set with input parameters.
 
-    :param: data    The data for the input parameters.
+    :param: values    The values for the input parameters.
     */
-  public init(data: [NSData]) {
+  public init(values: [DatabaseValue]) {
     var parameters = [MysqlBindParameter]()
     var mysqlParameters = [MYSQL_BIND]()
     
-    for dataItem in data {
-      let parameter = MysqlBindParameter(data: dataItem)
+    for value in values {
+      let parameter = MysqlBindParameter(value: value)
       parameters.append(parameter)
       mysqlParameters.append(parameter.parameter)
     }

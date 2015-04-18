@@ -26,11 +26,11 @@ public class DatabaseLocalization: Localization {
       return "translation"
     }
     
-    public override func valuesToPersist() -> [String : NSData?] {
+    public override func valuesToPersist() -> [String : DatabaseValueConvertible?] {
       return [
-        "translation_key": self.translationKey.dataUsingEncoding(NSUTF8StringEncoding),
-        "locale": self.locale.dataUsingEncoding(NSUTF8StringEncoding),
-        "translated_text": self.translatedText.dataUsingEncoding(NSUTF8StringEncoding)
+        "translation_key": self.translationKey,
+        "locale": self.locale,
+        "translated_text": self.translatedText
         ]
     }
     

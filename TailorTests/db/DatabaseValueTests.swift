@@ -79,4 +79,125 @@ class DatabaseValueTests: TailorTestCase {
     let date = value.dateValue
     XCTAssertNil(date)
   }
+  
+  func testDescriptionWithStringGetsString() {
+    let value = DatabaseValue.String("Hello")
+    assert(value.description, equals: "Hello")
+  }
+  
+  func testDescriptionWithBooleanGetsTrueOrValue() {
+    let value1 = DatabaseValue.Boolean(true)
+    assert(value1.description, equals: "true")
+    let value2 = DatabaseValue.Boolean(false)
+    assert(value2.description, equals: "false")
+  }
+  
+  func testDescriptionWithDataGetsDataDescription() {
+    let data = NSData(bytes: [1,2,3,4])
+    let value = DatabaseValue.Data(data)
+    assert(value.description, equals: data.description)
+  }
+  
+  func testDescriptionWithIntegerGetsIntegerAsString() {
+    let value = DatabaseValue.Integer(42)
+    assert(value.description, equals: "42")
+  }
+  
+  func testDescriptionWithDoubleGetsDoubleAsString() {
+    let value = DatabaseValue.Double(35.5)
+    assert(value.description, equals: "35.5")
+  }
+  
+  func testDescriptionWithDateGetsFormattedDate() {
+    let date = NSDate()
+    let value = DatabaseValue.Date(date)
+    assert(value.description, equals: date.format("db")!)
+  }
+  
+  func testDescriptionWithNullGetsNull() {
+    let value = DatabaseValue.Null
+    assert(value.description, equals: "NULL")
+  }
+  
+  //MARK: - Comparision
+  
+  func testComparisonWithEqualStringsIsEqual() {
+    let value1 = DatabaseValue.String("hello")
+    let value2 = DatabaseValue.String("hello")
+    assert(value1, equals: value2)
+  }
+  
+  func testComparisonWithUnequalStringsIsNotEqual() {
+    let value1 = DatabaseValue.String("hello")
+    let value2 = DatabaseValue.String("goodbye")
+    XCTAssertNotEqual(value1, value2)
+  }
+  
+  func testComparisonWithStringAndIntIsNotEqual() {
+    let value1 = DatabaseValue.String("42")
+    let value2 = DatabaseValue.Integer(42)
+    XCTAssertNotEqual(value1, value2)
+  }
+  
+  func testComparisonWithEqualIntsIsEqual() {
+    let value1 = DatabaseValue.Integer(25)
+    let value2 = DatabaseValue.Integer(25)
+    assert(value1, equals: value2)
+  }
+  
+  func testComparisonWithUnequalIntsIsNotEqual() {
+    let value1 = DatabaseValue.Integer(25)
+    let value2 = DatabaseValue.Integer(26)
+    XCTAssertNotEqual(value1, value2)
+  }
+  
+  func testComparisonWithEqualBoolsIsEqual() {
+    let value1 = DatabaseValue.Boolean(true)
+    let value2 = DatabaseValue.Boolean(true)
+    let value3 = DatabaseValue.Boolean(false)
+    let value4 = DatabaseValue.Boolean(false)
+    assert(value1, equals: value2)
+    assert(value3, equals: value4)
+    XCTAssertNotEqual(value1, value3)
+  }
+  
+  func testComparisonWithEqualDoublesIsEqual() {
+    let value1 = DatabaseValue.Double(1.5)
+    let value2 = DatabaseValue.Double(1.5)
+    assert(value1, equals: value2)
+  }
+  
+  func testComparisonWithUnequalDoublesIsNotEqual() {
+    let value1 = DatabaseValue.Double(1.5)
+    let value2 = DatabaseValue.Double(1.6)
+    XCTAssertNotEqual(value1, value2)
+  }
+  
+  func testComparisonWithEqualDatasAreEqual() {
+    let value1 = DatabaseValue.Data(NSData(bytes: [4,3,2,1]))
+    let value2 = DatabaseValue.Data(NSData(bytes: [4,3,2,1]))
+    assert(value1, equals: value2)
+  }
+  
+  func testComparisonWithUnequalDatasAreNotEqual() {
+    let value1 = DatabaseValue.Data(NSData(bytes: [4,3,2,1]))
+    let value2 = DatabaseValue.Data(NSData(bytes: [1,2,3,4]))
+    XCTAssertNotEqual(value1, value2)
+  }
+  
+  func testComparisonWithEqualDatesAreEqual() {
+    let value1 = DatabaseValue.Date(NSDate(timeIntervalSince1970: 1234512345))
+    let value2 = DatabaseValue.Date(NSDate(timeIntervalSince1970: 1234512345))
+    assert(value1, equals: value2)
+  }
+  
+  func testComparisonWithUnequalDatesAreNotEqual() {
+    let value1 = DatabaseValue.Date(NSDate(timeIntervalSince1970: 1234512345))
+    let value2 = DatabaseValue.Date(NSDate(timeIntervalSince1970: 1234512346))
+    XCTAssertNotEqual(value1, value2)
+  }
+  
+  func testComparisonWithNullsIsEqual() {
+    assert(DatabaseValue.Null, equals: DatabaseValue.Null)
+  }
 }

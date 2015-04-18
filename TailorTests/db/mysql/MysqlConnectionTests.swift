@@ -84,7 +84,7 @@ class MysqlConnectionTests: TailorTestCase {
     let bytes = [1,2,3,4]
     let byteCount = bytes.count * sizeof(Int)
     let data = NSData(bytes: UnsafePointer<Int>(bytes), length: byteCount)
-    connection.executeQuery("UPDATE `hats` SET `image`=?", parameters: [data])
+    connection.executeQuery("UPDATE `hats` SET `image`=?", parameters: [data.databaseValue])
     let results = connection.executeQuery("SELECT * FROM hats")
     assert(results.count, equals: 1, message: "gets one row")
     if results.count == 1 {

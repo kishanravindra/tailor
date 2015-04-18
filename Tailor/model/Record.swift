@@ -158,7 +158,7 @@ public class Record : Model, Equatable {
   
     :returns:   The values to save.
     */
-  public func valuesToPersist() -> [String:NSData?] {
+  public func valuesToPersist() -> [String:DatabaseValueConvertible?] {
     return [:]
   }
   
@@ -180,11 +180,11 @@ public class Record : Model, Equatable {
     
     if contains(properties, "created_at") {
       if values["created_at"]! == nil {
-        values["created_at"] = NSDate().format("db", timeZone: DatabaseConnection.sharedConnection().timeZone)?.dataUsingEncoding(NSUTF8StringEncoding)
+        values["created_at"] = NSDate()
       }
     }
     if contains(properties, "updated_at") {
-      values["updated_at"] = NSDate().format("db", timeZone: DatabaseConnection.sharedConnection().timeZone)?.dataUsingEncoding(NSUTF8StringEncoding)
+      values["updated_at"] = NSDate()
     }
     
     if self.id != nil {
@@ -200,9 +200,9 @@ public class Record : Model, Equatable {
   
     :returns:   Whether we were able to save the record.
     */
-  private func saveInsert(values: [String:NSData?]) -> Bool {
+  private func saveInsert(values: [String:DatabaseValueConvertible?]) -> Bool {
     var query = "INSERT INTO \(self.dynamicType.tableName()) ("
-    var parameters = [NSData]()
+    var parameters = [DatabaseValue]()
     
     var firstParameter = true
     var parameterString = ""
@@ -220,7 +220,9 @@ public class Record : Model, Equatable {
       }
       query += "\(DatabaseConnection.sanitizeColumnName(key))"
       parameterString += "?"
-      parameters.append(value!)
+      
+      let databaseValue = value?.databaseValue ?? DatabaseValue.Null
+      parameters.append(databaseValue)
     }
     query += ") VALUES (\(parameterString))"
     
@@ -247,9 +249,9 @@ public class Record : Model, Equatable {
   
     :returns:   Whether we were able to save the record.
     */
-  private func saveUpdate(values: [String:NSData?]) -> Bool {
+  private func saveUpdate(values: [String:DatabaseValueConvertible?]) -> Bool {
     var query = "UPDATE \(self.dynamicType.tableName())"
-    var parameters = [NSData]()
+    var parameters = [DatabaseValue]()
     
     if self.id == nil {
       self.errors.add("_database", "cannot update record without id")
@@ -271,11 +273,11 @@ public class Record : Model, Equatable {
       }
       else {
         query += "?"
-        parameters.append(value!)
+        parameters.append(value!.databaseValue)
       }
     }
     query += " WHERE id = ?"
-    parameters.append(String(self.id!).dataUsingEncoding(NSUTF8StringEncoding)!)
+    parameters.append(self.id!.databaseValue)
     let result = DatabaseConnection.sharedConnection().executeQuery(query, parameters: parameters)
     
     if result.count > 0 {
@@ -293,7 +295,7 @@ public class Record : Model, Equatable {
   public func destroy() {
     if self.id != nil {
       let query = "DELETE FROM \(self.dynamicType.tableName()) WHERE id = ?"
-      DatabaseConnection.sharedConnection().executeQuery(query, String(self.id!))
+      DatabaseConnection.sharedConnection().executeQuery(query, parameters: [self.id!.databaseValue])
     }
   }
   
@@ -312,9 +314,8 @@ public class Record : Model, Equatable {
     let values = self.valuesToPersist()
     for key in sorted(values.keys) {
       let value = values[key]!
-      if let string = NSString(data: value ?? NSData(), encoding: NSUTF8StringEncoding) {
-        propertyList[key] = string
-      }
+      let databaseValue = value?.databaseValue ?? DatabaseValue.Null
+      propertyList[key] = databaseValue.description
     }
     return propertyList
   }

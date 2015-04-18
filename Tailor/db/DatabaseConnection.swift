@@ -106,8 +106,8 @@ public class DatabaseConnection {
     :returns                The interpreted result set.
   */
   public func executeQuery(query: String, stringParameters bindParameters: [String]) -> [Row] {
-    let rawParameters = bindParameters.map { ($0 as NSString).dataUsingEncoding(NSUTF8StringEncoding)! }
-    return executeQuery(query, parameters: rawParameters)
+    let wrappedParameters = bindParameters.map { $0.databaseValue }
+    return executeQuery(query, parameters: wrappedParameters)
   }
   
   /**
@@ -118,7 +118,7 @@ public class DatabaseConnection {
   database side.
   :returns                The interpreted result set.
   */
-  public func executeQuery(query: String, parameters bindParameters: [NSData]) -> [Row] {
+  public func executeQuery(query: String, parameters bindParameters: [DatabaseValue]) -> [Row] {
     return []
   }
   

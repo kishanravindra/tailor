@@ -61,11 +61,9 @@ public class MysqlConnection : DatabaseConnection {
                             database side.
     :returns                The interpreted result set.
     */
-  public override func executeQuery(query: String, parameters bindParameters: [NSData]) -> [DatabaseConnection.Row] {
+  public override func executeQuery(query: String, parameters bindParameters: [DatabaseValue]) -> [DatabaseConnection.Row] {
     
-    let stringParameters = bindParameters.map {
-      NSString(data: $0, encoding: NSUTF8StringEncoding) ?? "<data>"
-    }
+    let stringParameters = bindParameters.map { $0.description }
     NSLog("Executing %@ %@", query, stringParameters)
     
     let statement = MysqlStatement(connection: self, query: query)
