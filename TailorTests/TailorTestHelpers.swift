@@ -95,21 +95,21 @@ class Hat : Record {
     ]
   }
   
-  override class func decode(databaseRow: [String:DatabaseValue]) -> Self? {
+  required convenience init?(databaseRow: [String:DatabaseValue]){
     if let brimSize = databaseRow["brim_size"]?.intValue,
       let color = databaseRow["color"]?.stringValue,
       let shelfId = databaseRow["shelf_id"]?.intValue {
-        var result = self.init(
+        self.init(
           brimSize: brimSize,
           color: color,
           shelfId: shelfId,
           id: databaseRow["id"]?.intValue
         )
-        result.createdAt = databaseRow["created_at"]?.dateValue
-        result.updatedAt = databaseRow["updated_at"]?.dateValue
-        return result
+        createdAt = databaseRow["created_at"]?.dateValue
+        updatedAt = databaseRow["updated_at"]?.dateValue
     }
     else {
+      self.init()
       return nil
     }
   }
@@ -131,13 +131,13 @@ class Shelf : Record {
     ]
   }
   
-  override class func decode(databaseRow: [String:DatabaseValue]) -> Self? {
+  required convenience init?(databaseRow: [String:DatabaseValue]) {
     if let name = databaseRow["name"]?.stringValue {
-      var result = self.init(name: name, id: databaseRow["id"]?.intValue)
-      result.storeId = databaseRow["store_id"]?.intValue ?? 0
-      return result
+      self.init(name: name, id: databaseRow["id"]?.intValue)
+      storeId = databaseRow["store_id"]?.intValue ?? 0
     }
     else {
+      self.init(name: nil)
       return nil
     }
   }
@@ -157,12 +157,13 @@ class Store : Record {
     ]
   }
   
-  override class func decode(databaseRow: [String:DatabaseValue]) -> Self? {
+  required convenience init?(databaseRow: [String:DatabaseValue]) {
     if let name = databaseRow["name"]?.stringValue,
       let id = databaseRow["id"]?.intValue {
-      return self.init(name: name, id: id)
+      self.init(name: name, id: id)
     }
     else {
+      self.init(name: "")
       return nil
     }
   }

@@ -140,8 +140,18 @@ public class Record : Model, Equatable {
   
   //MARK: - Persisting
   
-  public class func decode(databaseRow: [String:DatabaseValue]) -> Self? {
-    return nil
+  /**
+    This method initializes a record with a row from the database.
+  
+    This implementation will just set the id. Subclasses must override this to
+    set the fields for the rest of their columns. If the row does not contain
+    enough data to initialize the record, this must return nil.
+    
+    :param: databaseRow   The row from the database. The keys will be column
+                          names, and the rows will be wrapped
+    */
+  public required init?(databaseRow: [String:DatabaseValue]) {
+    self.id = databaseRow["id"]?.intValue
   }
   
   /**

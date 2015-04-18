@@ -326,7 +326,7 @@ public class Query<RecordType: Record> {
     }
     let results = DatabaseConnection.sharedConnection().executeQuery(query, stringParameters: parameters)
     let type = RecordType.self
-    return removeNils(results.map { $0.error == nil ? type.decode($0.data) : nil })
+    return removeNils(results.map { $0.error == nil ? type(databaseRow: $0.data) : nil })
   }
   
   /**

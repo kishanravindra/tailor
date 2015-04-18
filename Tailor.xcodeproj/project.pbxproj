@@ -14,7 +14,6 @@
 		52178E671A4F359F001F6D57 /* MysqlConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52178E661A4F359F001F6D57 /* MysqlConnectionTests.swift */; };
 		5218B9741AB64EAF0036ED34 /* TailorTesting.h in Headers */ = {isa = PBXBuildFile; fileRef = 5218B9731AB64EAF0036ED34 /* TailorTesting.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5218B9891AB64F5A0036ED34 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5218B9881AB64F5A0036ED34 /* Application.swift */; };
-		5218B9C21AB6711E0036ED34 /* RecordFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5218B9C11AB6711E0036ED34 /* RecordFactory.swift */; };
 		5218B9C41AB8DBC80036ED34 /* TailorTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5218B9C31AB8DBC80036ED34 /* TailorTestCase.swift */; };
 		5218B9C61AB95B2C0036ED34 /* ControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5218B9C51AB95B2C0036ED34 /* ControllerTestCase.swift */; };
 		5218B9C81AB95F580036ED34 /* Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5218B9C71AB95F580036ED34 /* Controller.swift */; };
@@ -157,7 +156,6 @@
 		5218B9721AB64EAF0036ED34 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5218B9731AB64EAF0036ED34 /* TailorTesting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TailorTesting.h; sourceTree = "<group>"; };
 		5218B9881AB64F5A0036ED34 /* Application.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
-		5218B9C11AB6711E0036ED34 /* RecordFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecordFactory.swift; sourceTree = "<group>"; };
 		5218B9C31AB8DBC80036ED34 /* TailorTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TailorTestCase.swift; sourceTree = "<group>"; };
 		5218B9C51AB95B2C0036ED34 /* ControllerTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControllerTestCase.swift; sourceTree = "<group>"; };
 		5218B9C71AB95F580036ED34 /* Controller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Controller.swift; sourceTree = "<group>"; };
@@ -326,7 +324,6 @@
 				5218B9731AB64EAF0036ED34 /* TailorTesting.h */,
 				5218B9721AB64EAF0036ED34 /* Info.plist */,
 				5218B9881AB64F5A0036ED34 /* Application.swift */,
-				5218B9C11AB6711E0036ED34 /* RecordFactory.swift */,
 				5218B9C31AB8DBC80036ED34 /* TailorTestCase.swift */,
 				5218B9C51AB95B2C0036ED34 /* ControllerTestCase.swift */,
 				5218B9C91AB966ED0036ED34 /* TemplateTestCase.swift */,
@@ -831,7 +828,6 @@
 			files = (
 				5218B9C81AB95F580036ED34 /* Controller.swift in Sources */,
 				5218B9891AB64F5A0036ED34 /* Application.swift in Sources */,
-				5218B9C21AB6711E0036ED34 /* RecordFactory.swift in Sources */,
 				5218B9CA1AB966ED0036ED34 /* TemplateTestCase.swift in Sources */,
 				5218B9C41AB8DBC80036ED34 /* TailorTestCase.swift in Sources */,
 				5218B9C61AB95B2C0036ED34 /* ControllerTestCase.swift in Sources */,
