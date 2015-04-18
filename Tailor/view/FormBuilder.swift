@@ -86,6 +86,6 @@ public class FormBuilder {
     default:
       break
     }
-    self.inputBuilder(form: self, key: key, value: stringValue, attributes: attributes, errors: self.model.errors[key] ?? [])
+    self.inputBuilder(form: self, key: key, value: stringValue, attributes: attributes, errors: [])
   }
 }

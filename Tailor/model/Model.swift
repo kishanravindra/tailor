@@ -7,15 +7,6 @@ import Foundation
   properties, validations, and error storage.
   */
 public class Model {
-  //MARK: - Structure
-  
-  /** The errors that have been set on this object in the validation process. */
-  public var errors: ErrorCollection!
-  
-  public init() {
-    self.errors = ErrorCollection(modelType: self.dynamicType)
-  }
-  
   /** 
     The name of the model.
 
@@ -27,27 +18,6 @@ public class Model {
       fullName = fullName.substringFromIndex(advance(range.startIndex, 1))
     }
     return fullName.underscored()
-  }
-  
-  //MARK: - Validations
-
-  /** The validators that will be applied to model objects for this model. */
-  public class func validators() -> [Validator] {
-    return []
-  }
-  
-  /**
-    This method runs all of the validators for this model's type.
-  
-    :returns:   Whether the object passed all the validations.
-    */
-  public func validate() -> Bool {
-    self.errors.errors = []
-    var valid = true
-    for validator in self.dynamicType.validators() {
-      validator.validate(self)
-    }
-    return self.errors.isEmpty
   }
   
   //MARK: - Dynamic Properties

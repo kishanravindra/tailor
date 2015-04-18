@@ -20,7 +20,7 @@ class RecordTests: TailorTestCase {
     shelf2.save()
     let hat = Hat(shelfId: shelf2.id!)
     hat.save()
-    if let result : Shelf = hat.toOne() {
+    if let result : Shelf = hat.toOne(hat.shelfId) {
       assert(shelf2.name, equals: result.name!, message: "fetches the second shelf")
     }
     else {
@@ -131,22 +131,6 @@ class RecordTests: TailorTestCase {
   
   //MARK: - Persisting
   
-  func testSaveRunsValidations() {
-    class TestHat : Hat {
-      var validated = false
-
-      override func validate() -> Bool {
-        self.validated = true
-        return false
-      }
-    }
-    
-    let hat = TestHat()
-    let result = hat.save()
-    XCTAssertTrue(hat.validated, "runs validations")
-    XCTAssertFalse(result, "returns false when validations fails")
-  }
-  
   func testSaveSetsTimestampsForNewRecord() {
     var hat = Hat()
     hat.save()
@@ -233,21 +217,13 @@ class RecordTests: TailorTestCase {
     }
   }
   
-  func testSaveInsertReturnsFalseWithError() {
+  func testSaveInsertReturnsFalse() {
     TestConnection.withTestConnection {
       connection in
       var store = Store(name: "Little Shop")
       connection.response = [DatabaseConnection.Row(error: "Lost Connection")]
       let result = store.save()
       XCTAssertFalse(result, "returns false")
-      
-      if !store.errors.isEmpty {
-        let error = store.errors.errors[0]
-        self.assert(error.message, equals: "Lost Connection", message: "sets an error on the record")
-      }
-      else {
-        XCTFail("Sets an error on the record")
-      }
     }
   }
   
@@ -257,6 +233,7 @@ class RecordTests: TailorTestCase {
       self.assert(connection.queries.count, equals: 0)
       connection.response = [DatabaseConnection.Row(rawData: ["id": 2])]
       var hat = Hat(brimSize: 10, color: "red")
+      hat.shelfId = nil
       hat.save()
       self.assert(connection.queries.count, equals: 1, message: "executes one query")
       if connection.queries.count > 0 {
@@ -274,7 +251,7 @@ class RecordTests: TailorTestCase {
         self.assert(parameters[1], equals: expectedParameters[1], message: "has the color parameter")
         
         let currentTimestamp = NSDate().timeIntervalSince1970
-        let date1 = parameters[3].dateValue?.timeIntervalSince1970 ?? 0
+        let date1 = parameters[2].dateValue?.timeIntervalSince1970 ?? 0
         let date2 = parameters[3].dateValue?.timeIntervalSince1970 ?? 0
         XCTAssertEqualWithAccuracy(date1, currentTimestamp, 1)
         XCTAssertEqualWithAccuracy(date2, currentTimestamp, 1)
@@ -326,21 +303,15 @@ class RecordTests: TailorTestCase {
     }
   }
   
-  func testSaveUpdatePutsErrorOnRecord() {
+  func testSaveUpdateWithDatabaseErrorReturnsFalse() {
     let shelf = Shelf(name: "Top Shelf", storeId: 1)
     shelf.save()
     TestConnection.withTestConnection {
       connection in
       shelf.name = nil
       connection.response = [DatabaseConnection.Row(error: "Connection Error")]
-      shelf.save()
-      if !shelf.errors.isEmpty {
-        let error = shelf.errors.errors[0]
-        self.assert(error.message, equals: "Connection Error", message: "puts an error on the record")
-      }
-      else {
-        XCTFail("puts an error on the record")
-      }
+      let result = shelf.save()
+      XCTAssertFalse(result)
     }
   }
   

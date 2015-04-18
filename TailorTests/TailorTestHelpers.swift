@@ -71,7 +71,7 @@ class TestConnection : DatabaseConnection {
 class Hat : Record {
   var brimSize: Int
   var color: String
-  var shelfId: Int
+  var shelfId: Int!
   var owner: String?
   var createdAt: NSDate?
   var updatedAt: NSDate?
@@ -166,6 +166,7 @@ class Store : Record {
       return nil
     }
   }
+  
 }
 
 extension Controller {

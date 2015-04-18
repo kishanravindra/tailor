@@ -52,13 +52,6 @@ public class DatabaseLocalization: Localization {
         return nil
       }
     }
-    
-    public override class func validators() -> [Validator] {
-      return [
-        PresenceValidator(key: "translationKey"),
-        PresenceValidator(key: "locale")
-      ]
-    }
   }
   
   public override func fetch(key: String, inLocale locale: String) -> String? {

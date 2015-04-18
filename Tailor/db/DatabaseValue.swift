@@ -6,7 +6,7 @@ import Foundation
   This allows us to pass a database value of an unknown type in a way that still
   puts type constraints on what it can be.
   */
-public enum DatabaseValue: Equatable {
+public enum DatabaseValue: Equatable, Printable {
   /** A null value */
   case Null
   

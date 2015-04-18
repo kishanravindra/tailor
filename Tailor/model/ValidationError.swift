@@ -33,7 +33,7 @@ public struct ValidationError: Equatable {
     :param: key         The field on the model with the error.
     :param: data        Additional data giving details on the error.
     */
-  public init(modelType: Model.Type, key: String, message: String, data: [String:String]) {
+  public init(modelType: Model.Type, key: String, message: String, data: [String:String] = [:]) {
     self.modelType = modelType
     self.key = key
     self.message = message

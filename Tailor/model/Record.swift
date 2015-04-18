@@ -45,14 +45,11 @@ public class Record : Model, Equatable {
     This will look for a field on this record that contains the id of the other
     record.
 
-    :param: foreignKey    The attribute on this record that contains the id. If
-                          this is not provided, it will be the default foreign
-                          key name for the other model.
-    :returns:             The fetched record.
+    :param: value     The id of the record to fetch.
+    :returns:         The fetched record.
     */
-  public func toOne<OtherRecordType : Record>(foreignKey inputForeignKey: String? = nil) -> OtherRecordType? {
-    let foreignKey = inputForeignKey ?? (OtherRecordType.foreignKeyName())
-    return nil//Query<OtherRecordType>().filter(["id": self.valueForKey(foreignKey)]).first()
+  public func toOne<OtherRecordType : Record>(value: Int) -> OtherRecordType? {
+    return Query<OtherRecordType>().filter(["id": value]).first()
   }
   
   /**
@@ -171,10 +168,6 @@ public class Record : Model, Equatable {
     :returns: Whether we were able to save the record.
     */
   public func save() -> Bool {
-    if !self.validate() {
-      return false
-    }
-    
     var values = self.valuesToPersist()
     let properties = values.keys
     
@@ -235,7 +228,6 @@ public class Record : Model, Equatable {
       return false
     }
     else if let error = result?.error {
-      self.errors.add("_database", error)
       return false
     }
     else {
@@ -253,10 +245,6 @@ public class Record : Model, Equatable {
     var query = "UPDATE \(self.dynamicType.tableName())"
     var parameters = [DatabaseValue]()
     
-    if self.id == nil {
-      self.errors.add("_database", "cannot update record without id")
-      return false
-    }
     var firstParameter = true
     for key in sorted(values.keys) {
       let value = values[key]!
@@ -282,7 +270,6 @@ public class Record : Model, Equatable {
     
     if result.count > 0 {
       if let error = result[0].error {
-        self.errors.add("_database", error)
         return false
       }
     }
