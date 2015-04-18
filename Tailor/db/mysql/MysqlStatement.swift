@@ -1,4 +1,5 @@
 import Foundation
+import mysql
 
 /**
   This class wraps around a MySQL statement and provides a simpler syntax for

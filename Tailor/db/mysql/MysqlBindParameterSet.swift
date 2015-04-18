@@ -1,3 +1,5 @@
+import mysql
+
 /**
   This class represents a list of parameters for a query.
 

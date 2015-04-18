@@ -1,4 +1,5 @@
 import Foundation
+import mysql
 
 /**
   This class represents a connection to a MySQL database.

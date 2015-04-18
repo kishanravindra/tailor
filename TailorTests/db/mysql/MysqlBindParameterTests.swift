@@ -1,6 +1,7 @@
 import Tailor
 import TailorTesting
 import XCTest
+import mysql
 
 class MysqlBindParameterTests: TailorTestCase {
   var connection: MysqlConnection { return DatabaseConnection.sharedConnection() as! MysqlConnection }

@@ -359,8 +359,8 @@
 			isa = PBXGroup;
 			children = (
 				5258989E1A4F289800DD853D /* DatabaseConnectionTests.swift */,
-				5262EEB91AD15C6E006F864D /* mysql */,
 				52A95E321AE0A3E6001AED1F /* DatabaseValueTests.swift */,
+				5262EEB91AD15C6E006F864D /* mysql */,
 			);
 			path = db;
 			sourceTree = "<group>";
@@ -570,10 +570,10 @@
 			isa = PBXGroup;
 			children = (
 				52BD140F19E9DA1D006D72B0 /* DatabaseConnection.swift */,
-				52A5006C1AA2611400F3F031 /* mysql */,
+				52A95E301AE0A3B9001AED1F /* DatabaseValue.swift */,
 				52BD141319E9DA1D006D72B0 /* TailorC.h */,
 				52BD141419E9DA1D006D72B0 /* TailorC.m */,
-				52A95E301AE0A3B9001AED1F /* DatabaseValue.swift */,
+				52A5006C1AA2611400F3F031 /* mysql */,
 			);
 			path = db;
 			sourceTree = "<group>";
@@ -601,17 +601,8 @@
 				52EF126319EF545000B61DF4 /* User.swift */,
 				52BD142219E9DA1D006D72B0 /* Validation.swift */,
 				5214B5D11AA38B0800624E9D /* ValidationError.swift */,
-				52BD141D19E9DA1D006D72B0 /* validation */,
 			);
 			path = model;
-			sourceTree = "<group>";
-		};
-		52BD141D19E9DA1D006D72B0 /* validation */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = validation;
-			path = validators;
 			sourceTree = "<group>";
 		};
 		52BD142319E9DA1D006D72B0 /* view */ = {

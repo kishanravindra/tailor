@@ -1,6 +1,7 @@
 import TailorTesting
 import Tailor
 import XCTest
+import mysql
 
 class MysqlResultSetTests: TailorTestCase {
   

@@ -1,3 +1,6 @@
+import mysql
+import Foundation
+
 /**
   This class provides a wrapper around the MySQL field data structure.
   */

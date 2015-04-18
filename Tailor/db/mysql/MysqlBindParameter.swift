@@ -1,3 +1,5 @@
+import mysql
+
 /**
   This class wraps around a MySQL bind parameter to provide easier access to
   metadata and field values.

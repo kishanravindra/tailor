@@ -45,7 +45,10 @@ public class Server {
       NSLog("Error creating socket")
       return false
     }
-    var socketAddress = createSocketAddress(Int32(port))
+    
+    var socketAddress = sockaddr_in()
+    socketAddress.sin_family = UInt8(AF_INET)
+    socketAddress.sin_port = CFSwapInt16(UInt16(port))
     
     func socketAddressPointer(pointer: UnsafePointer<sockaddr_in>) -> UnsafePointer<sockaddr> {
       return UnsafePointer<sockaddr>(pointer)

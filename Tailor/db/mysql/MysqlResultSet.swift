@@ -1,4 +1,5 @@
 import Foundation
+import mysql
 
 /**
   This class provides a wrapper around a MySQL result set.

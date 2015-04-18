@@ -1,6 +1,7 @@
 import Tailor
 import TailorTesting
 import XCTest
+import mysql
 
 class MysqlFieldTests : TailorTestCase {
   func getField(query: String) -> MYSQL_FIELD {
