@@ -4,17 +4,12 @@ import TailorTesting
 
 class FormBuilderTests: TailorTestCase {
   var template : Template!
-  let model = Hat()
   var builder : FormBuilder!
   
   override func setUp() {
     super.setUp()
     template = Template(controller: Controller())
-    builder = FormBuilder(template: template, model: model)
-  }
-  
-  func testDefaultNameIsModelName() {
-    assert(builder.name, equals: "hat", message: "uses the model name as the name in the form")
+    builder = FormBuilder(template: template, name: "hat")
   }
   
   func testFormPutsFormTagInTemplate() {
@@ -39,34 +34,29 @@ class FormBuilderTests: TailorTestCase {
   
   func testInputCallsInputBuilder() {
     let expectation = expectationWithDescription("block called")
-    model.color = "red"
-    builder = FormBuilder(template: template, model: model, name: "test_model", inputBuilder: {
+    let errors = [
+      ValidationError(modelType: Hat.self, key: "color", message: "tooShort"),
+      ValidationError(modelType: Hat.self, key: "brimSize", message: "tooLow"),
+      ValidationError(modelType: Hat.self, key: "color", message: "blank")
+    ]
+    builder = FormBuilder(template: template, name: "test_model", validationErrors: errors, inputBuilder: {
       form, key, value, attributes, errors in
       expectation.fulfill()
-      let messages = errors.map { $0.message }
       self.assert(form.name, equals: self.builder.name, message: "passes the form builder to the input")
       self.assert(key, equals: "color", message: "passes the key to the input")
-      //self.assert(value, equals: "red", message: "passes the value to the builder")
+      self.assert(value, equals: "red", message: "passes the value to the builder")
       self.assert(attributes, equals: ["length": "10"], message: "passes the attributes to the builder")
+      self.assert(errors, equals: [
+        ValidationError(modelType: Hat.self, key: "color", message: "tooShort"),
+        ValidationError(modelType: Hat.self, key: "color", message: "blank")
+      ])
     })
-    builder.input("color", attributes: ["length": "10"])
-    waitForExpectationsWithTimeout(0.01, handler: nil)
-  }
-  
-  func testInputWithNilValuePassesBlankString() {
-    let expectation = expectationWithDescription("block called")
-    builder = FormBuilder(template: template, model: model, inputBuilder: {
-      _, _, value, _, _ in
-      expectation.fulfill()
-      self.assert(value, equals: "", message: "passes a blank value to the input builder")
-    })
-    builder.input("color")
+    builder.input("color", "red", attributes: ["length": "10"])
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
   func testDefaultInputBuilderAddsLabelAndTextField() {
-    model.color = "black"
-    builder.input("color", attributes: ["maxLength": "20"])
-    assert(template.buffer, equals: "<div><label>color</label><input maxLength=\"20\" name=\"hat[color]\" value=\"\"></input></div>", message: "puts label and input in template")
+    builder.input("color", "black", attributes: ["maxLength": "20"])
+    assert(template.buffer, equals: "<div><label>color</label><input maxLength=\"20\" name=\"hat[color]\" value=\"black\"></input></div>", message: "puts label and input in template")
   }
 }

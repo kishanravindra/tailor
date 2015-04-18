@@ -10,11 +10,11 @@ public class FormBuilder {
   /** The template that we are putting the form in. */
   public let template: Template
   
-  /** The model that we are representing with the form. */
-  public let model: Model
-  
-  /** The name of the model in the input names. */
+  /** The name of the model. */
   public let name: String
+  
+  /** The validation errors for the model object. */
+  public let validationErrors: [ValidationError]
   
   /** The block that we use to build inputs. */
   public let inputBuilder: InputBuilder
@@ -25,23 +25,22 @@ public class FormBuilder {
     :param: template      The template that we are putting the form in.
     :param: model         The model object that the form is for.
     :param: name          The name used for the model object in the input tags.
-                          If this is not provided, it will default to the model
-                          class's modelName, in lowercase camel case.
     :param: inputBuilder  A block we can use to build inputs. If this is not
                           provided, we will use a simple one with a div
                           containing a label and an input.
     */
-  public init(template: Template, model: Model, name: String? = nil, inputBuilder: InputBuilder? = nil) {
+  public init(template: Template, name: String, validationErrors: [ValidationError] = [], inputBuilder: InputBuilder? = nil) {
     self.template = template
-    self.model = model
-    self.name = model.dynamicType.modelName().lowercaseInitial
+    self.name = name
+    self.validationErrors = validationErrors
+    
     if inputBuilder == nil {
       self.inputBuilder = {
         (form, key: String, value, attributes, _) -> () in
         form.template.tag("div") {
           form.template.tag("label", text: key)
           var mergedAttributes = attributes
-          mergedAttributes["name"] = "\(form.name)[\(form.model.dynamicType.humanAttributeName(key))]"
+          mergedAttributes["name"] = "\(form.name)[\(key)]"
           mergedAttributes["value"] = value
           form.template.tag("input", mergedAttributes)
         }
@@ -71,21 +70,11 @@ public class FormBuilder {
     This method generates an input tag.
 
     :param: key           The name of the property.
+    :param: value         The value to put in the input tag.
     :param: attributes    Additional attributes to set on the input tag.
     */
-  public func input(key: String, attributes: [String: String] = [:]) {
-    var value : AnyObject? = nil
-    var stringValue = ""
-    switch(value) {
-    case let number as NSNumber:
-      stringValue = number.stringValue
-    case let integer as Int:
-      stringValue = String(integer)
-    case let string as String:
-      stringValue = string
-    default:
-      break
-    }
-    self.inputBuilder(form: self, key: key, value: stringValue, attributes: attributes, errors: [])
+  public func input(key: String, _ value: String, attributes: [String: String] = [:]) {
+    let errors = self.validationErrors.filter { $0.key == key }
+    self.inputBuilder(form: self, key: key, value: value, attributes: attributes, errors: errors)
   }
 }

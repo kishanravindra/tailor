@@ -41,28 +41,33 @@ public class Model {
     :returns:             The humanized attribute name.
     */
   public class func humanAttributeName(key: String, localization: Localization? = nil, capitalize: Bool = false) -> String {
-    var result = ""
-    
-    if localization != nil {
-      let translationKey = "record.\(self.modelName()).attributes.\(key.underscored())"
-      let translation = localization?.fetch(translationKey)
-      if translation != nil {
-        return capitalize ? translation!.capitalizedString : translation!
-      }
-    }
-    
-    for (index, character) in enumerate(key) {
-      let string = String(character)
-      if index == 0 {
-        result += string.capitalizedString
-      }
-      else {
-        if string == string.capitalizedString {
-          result += " "
-        }
-        result += string
-      }
-    }
-    return capitalize ? result : result.lowercaseString
+    return modelAttributeName(self.modelName(), key, localization: localization, capitalize: capitalize)
   }
+}
+
+func modelAttributeName(modelName: String, key: String, localization: Localization? = nil, capitalize: Bool = false) -> String {
+  
+  var result = ""
+  
+  if localization != nil {
+    let translationKey = "record.\(modelName).attributes.\(key.underscored())"
+    let translation = localization?.fetch(translationKey)
+    if translation != nil {
+      return capitalize ? translation!.capitalizedString : translation!
+    }
+  }
+  
+  for (index, character) in enumerate(key) {
+    let string = String(character)
+    if index == 0 {
+      result += string.capitalizedString
+    }
+    else {
+      if string == string.capitalizedString {
+        result += " "
+      }
+      result += string
+    }
+  }
+  return capitalize ? result : result.lowercaseString
 }
