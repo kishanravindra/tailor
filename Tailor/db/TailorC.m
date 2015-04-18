@@ -3,18 +3,6 @@
 #import <string.h>
 #import <mysql.h>
 
-void tailorInvokeSetter(id object, Method method, id value) {
-  typedef void (*setterType)(id, Method, id);
-  setterType setter = (setterType)method_invoke;
-  setter(object, method, value);
-}
-
-id tailorInvokeGetter(id object, Method method) {
-  typedef id (*getterType)(id, Method);
-  getterType getter = (getterType)method_invoke;
-  return getter(object, method);
-}
-
 void tailorInvokeFunction(id object, Method method) {
   typedef void (*functionType)(id, Method);
   functionType function = (functionType)method_invoke;

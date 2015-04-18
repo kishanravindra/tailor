@@ -36,7 +36,7 @@ class UniquenessValidatorTests: TailorTestCase {
   }
   
   func testUniquenessValidatorPutsNoErrorOnRecordWithoutValue() {
-    let shelf = Shelf()
+    let shelf = Shelf(name: nil)
     validator.validate(shelf)
     XCTAssertTrue(store.errors.isEmpty, "puts no error on record")
   }

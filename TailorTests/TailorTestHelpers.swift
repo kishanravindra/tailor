@@ -69,15 +69,15 @@ class TestConnection : DatabaseConnection {
 }
 
 class Hat : Record {
-  var brimSize: Int!
-  dynamic var color: String!
-  var shelfId: Int!
-  dynamic var owner: String!
-  dynamic var createdAt: NSDate!
-  dynamic var updatedAt: NSDate!
+  var brimSize: Int
+  var color: String
+  var shelfId: Int
+  var owner: String?
+  var createdAt: NSDate?
+  var updatedAt: NSDate?
   
   
-  init(brimSize: Int! = nil, color: String! = nil, shelfId: Int! = nil, owner: String! = nil, id: Int! = nil) {
+  init(brimSize: Int = 0, color: String = "", shelfId: Int = 0, owner: String? = nil, id: Int? = nil) {
     self.brimSize = brimSize
     self.color = color
     self.shelfId = shelfId
@@ -96,23 +96,30 @@ class Hat : Record {
   }
   
   override class func decode(databaseRow: [String:DatabaseValue]) -> Self? {
-    var result = self.init(
-      brimSize: databaseRow["brim_size"]?.intValue,
-      color: databaseRow["color"]?.stringValue,
-      shelfId: databaseRow["shelf_id"]?.intValue,
-      id: databaseRow["id"]?.intValue
-    )
-    result.createdAt = databaseRow["created_at"]?.dateValue
-    result.updatedAt = databaseRow["updated_at"]?.dateValue
-    return result
+    if let brimSize = databaseRow["brim_size"]?.intValue,
+      let color = databaseRow["color"]?.stringValue,
+      let shelfId = databaseRow["shelf_id"]?.intValue {
+        var result = self.init(
+          brimSize: brimSize,
+          color: color,
+          shelfId: shelfId,
+          id: databaseRow["id"]?.intValue
+        )
+        result.createdAt = databaseRow["created_at"]?.dateValue
+        result.updatedAt = databaseRow["updated_at"]?.dateValue
+        return result
+    }
+    else {
+      return nil
+    }
   }
 }
 
 class Shelf : Record {
-  dynamic var name: String!
-  var storeId: Int!
+  var name: String?
+  var storeId: Int
   
-  init(name: String! = nil, storeId: Int! = nil, id: Int? = nil) {
+  init(name: String?, storeId: Int = 0, id: Int? = nil) {
     self.name = name
     self.storeId = storeId
     super.init(id: id)
@@ -125,15 +132,19 @@ class Shelf : Record {
   }
   
   override class func decode(databaseRow: [String:DatabaseValue]) -> Self? {
-    var result = self.init(id: databaseRow["id"]?.intValue)
-    result.name = databaseRow["name"]?.stringValue
-    result.storeId = databaseRow["store_id"]?.intValue
-    return result
+    if let name = databaseRow["name"]?.stringValue {
+      var result = self.init(name: name, id: databaseRow["id"]?.intValue)
+      result.storeId = databaseRow["store_id"]?.intValue ?? 0
+      return result
+    }
+    else {
+      return nil
+    }
   }
 }
 
 class Store : Record {
-  dynamic var name: String
+  var name: String
   
   init(name: String, id: Int?=nil) {
     self.name = name

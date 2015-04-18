@@ -18,10 +18,10 @@ class RecordTests: TailorTestCase {
     let shelf2 = Shelf(name: "Second Shelf")
     shelf1.save()
     shelf2.save()
-    let hat = Hat(shelfId: shelf2.id)
+    let hat = Hat(shelfId: shelf2.id!)
     hat.save()
     if let result : Shelf = hat.toOne() {
-      assert(shelf2.name, equals: result.name, message: "fetches the second shelf")
+      assert(shelf2.name, equals: result.name!, message: "fetches the second shelf")
     }
     else {
       XCTFail("fetches the second shelf")
@@ -29,7 +29,7 @@ class RecordTests: TailorTestCase {
   }
   
   func testToManyFetchesRecordsByForeignKey() {
-    let shelf = Shelf()
+    let shelf = Shelf(name: "")
     shelf.save()
     let query : Query<Hat> = shelf.toMany()
     let clause = query.whereClause
@@ -154,12 +154,12 @@ class RecordTests: TailorTestCase {
     hat = Query<Hat>().find(hat.id!)!
     XCTAssertNotNil(hat.createdAt, "sets createdAt")
     if(hat.createdAt != nil) {
-      XCTAssertEqualWithAccuracy(hat.createdAt.timeIntervalSinceNow, 0, 2, "sets createdAt to current time")
+      XCTAssertEqualWithAccuracy(hat.createdAt!.timeIntervalSinceNow, 0, 2, "sets createdAt to current time")
     }
     
     XCTAssertNotNil(hat.updatedAt, "sets updatedAt")
     if(hat.updatedAt != nil) {
-      XCTAssertEqualWithAccuracy(hat.updatedAt.timeIntervalSinceNow, 0, 2, "sets updatedAt to current time")
+      XCTAssertEqualWithAccuracy(hat.updatedAt!.timeIntervalSinceNow, 0, 2, "sets updatedAt to current time")
     }
   }
   
@@ -170,9 +170,9 @@ class RecordTests: TailorTestCase {
     hat.save()
     
     hat = Query<Hat>().find(hat.id!)!
-    XCTAssertEqualWithAccuracy(hat.createdAt.timeIntervalSinceNow, -100, 2, "leaves createdAt unchanged")
+    XCTAssertEqualWithAccuracy(hat.createdAt!.timeIntervalSinceNow, -100, 2, "leaves createdAt unchanged")
     
-    XCTAssertEqualWithAccuracy(hat.updatedAt.timeIntervalSinceNow, 0, 2, "sets updatedAt to current time")
+    XCTAssertEqualWithAccuracy(hat.updatedAt!.timeIntervalSinceNow, 0, 2, "sets updatedAt to current time")
   }
   
   func testSaveInsertsNewRecord() {
@@ -345,7 +345,7 @@ class RecordTests: TailorTestCase {
   }
   
   func testDestroyExecutesDeleteQuery() {
-    let shelf = Shelf()
+    let shelf = Shelf(name: "Shelf")
     shelf.save()
     TestConnection.withTestConnection {
       connection in

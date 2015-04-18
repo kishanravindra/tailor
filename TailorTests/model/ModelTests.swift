@@ -97,22 +97,4 @@ class ModelTests: TailorTestCase {
     let name = Hat.humanAttributeName("brimSize", localization: TestLocalization(locale: "en"))
     assert(name, equals: "record.hat_for_model.attributes.brim_size translated", message: "gets string from localization")
   }
-  
-  func testValueForKeyGetsValueFromInstanceVariable() {
-    let hat = Hat()
-    hat.color = "black"
-    let result = hat.valueForKey("color") as! String
-    assert(result, equals: "black", message: "gets the value stored on the object")
-  }
-  
-  func testValueForKeyReturnsNilForInvalidName() {
-    let hat = Hat()
-    XCTAssertNil(hat.valueForKey("brandName"), "returns nil")
-  }
-  
-  func testSetValueCanSetStringValue() {
-    let hat = Hat()
-    hat.setValue("red", forKey: "color")
-    assert(hat.color, equals: "red", message: "sets the value on the object")
-  }
 }

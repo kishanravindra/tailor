@@ -54,7 +54,8 @@ public class RangeValidator : Validator {
     :param: model   The model object to validate.
     */
   public override func validate(model: Model) {
-    switch(model.valueForKey(self.key)) {
+    let value: AnyObject? = nil // model.valueForKey(self.key)
+    switch(value) {
     case let number as NSNumber:
       var matched = true
       if max != nil {

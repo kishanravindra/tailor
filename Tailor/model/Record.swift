@@ -52,7 +52,7 @@ public class Record : Model, Equatable {
     */
   public func toOne<OtherRecordType : Record>(foreignKey inputForeignKey: String? = nil) -> OtherRecordType? {
     let foreignKey = inputForeignKey ?? (OtherRecordType.foreignKeyName())
-    return Query<OtherRecordType>().filter(["id": self.valueForKey(foreignKey)]).first()
+    return nil//Query<OtherRecordType>().filter(["id": self.valueForKey(foreignKey)]).first()
   }
   
   /**

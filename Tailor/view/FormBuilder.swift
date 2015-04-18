@@ -74,7 +74,7 @@ public class FormBuilder {
     :param: attributes    Additional attributes to set on the input tag.
     */
   public func input(key: String, attributes: [String: String] = [:]) {
-    var value : AnyObject? = self.model.valueForKey(key)
+    var value : AnyObject? = nil
     var stringValue = ""
     switch(value) {
     case let number as NSNumber:

@@ -15,7 +15,7 @@ public class PresenceValidator : Validator {
     :param: model   The model object to validate.
     */
   public override func validate(model: Model) {
-    let value: AnyObject? = model.valueForKey(key)
+    let value: AnyObject? = nil// model.valueForKey(key)
     var present = true
     if value == nil {
       present = false

@@ -10,13 +10,13 @@ public class DatabaseLocalization: Localization {
     */
   public class Translation: Record {
     /** The key that this is a translation for. */
-    public dynamic var translationKey: String
+    public var translationKey: String
     
     /** The locale this translation applies to. */
-    public dynamic var locale: String
+    public var locale: String
     
     /** The translated value. */
-    public dynamic var translatedText: String
+    public var translatedText: String
     
     public override class func tableName() -> String {
       return "tailor_translations"

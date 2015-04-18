@@ -11,13 +11,6 @@ class PresenceValidatorTests: TailorTestCase {
     XCTAssertTrue(record.errors.isEmpty)
   }
   
-  func testValidatorPutsErrorOnRecordWithoutValue() {
-    let record = Shelf()
-    validator.validate(record)
-    let error = ValidationError(modelType: Store.self, key: "name", message: "blank", data: [:])
-    assert(record.errors.errors, equals: [error], message: "puts the error on the record")
-  }
-  
   func testValidatorPutsErrorOnRecordWithBlankValue() {
     let record = Store(name: "")
     validator.validate(record)
