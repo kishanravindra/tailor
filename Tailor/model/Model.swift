@@ -22,7 +22,7 @@ public func modelName(klass: Any.Type) -> String {
   record.purchase_order.attributes.payment_amount.
 
   If it cannot get the translation, or a localization is not provided, it will
-  generate a label based on the attributes name. Every capital letter will be
+  generate a label based on the attribute name. Every capital letter will be
   interpreted as the beginning of a new word.
 
   :param: modelName     The name of the model that the attribute is on.

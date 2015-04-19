@@ -5,6 +5,13 @@ import Foundation
 
   It provides encryption of passwords, validation of accounts, and is integrated
   into the session management.
+
+  To use this class, you must have a table called users, which must contain
+  columns for email_address and encrypted_password. Both of these columns must
+  be string types.
+
+  You can support a different table name or column layout by subclassing this
+  class and overriding the methods in the Persistable protocol.
   */
 public class User : Persistable {
   //MARK: - Structure
@@ -34,29 +41,41 @@ public class User : Persistable {
     self.id = nil
   }
   
-  public init(emailAddress: String, encryptedPassword: String, id: Int) {
-    self.emailAddress = emailAddress
-    self.encryptedPassword = encryptedPassword
-    self.id = id
-  }
-  
   //MARK: Persistence
   
   /** The name of the table where the records are stored. */
   public class func tableName() -> String { return "users" }
   
-  public required convenience init?(databaseRow: [String:DatabaseValue]) {
+  /**
+    This method initializes a user from a row in the database.
+
+    The row must have a column for email_address, encrypted_password, and id.
+    If it does not, this will return nil.
+  
+    :param: databaseRow   The information from the database.
+    */
+  public required init?(databaseRow: [String:DatabaseValue]) {
     if let emailAddress = databaseRow["email_address"]?.stringValue,
       let encryptedPassword = databaseRow["encrypted_password"]?.stringValue,
       let id = databaseRow["id"]?.intValue {
-        self.init(emailAddress: emailAddress, encryptedPassword: encryptedPassword, id: id)
+        self.emailAddress = emailAddress
+        self.encryptedPassword = encryptedPassword
+        self.id = id
     }
     else {
-      self.init(emailAddress: "", password: "")
+      self.emailAddress = ""
+      self.encryptedPassword = ""
+      self.id = nil
       return nil
     }
   }
   
+  /**
+    This method gets the columns that we persist for users.
+
+    For this implementation, we persist the email_address and encrypted_password
+    columns.
+    */
   public func valuesToPersist() -> [String : DatabaseValueConvertible?] {
     return [
       "email_address": self.emailAddress,

@@ -31,6 +31,13 @@ public class Layout: Template {
     self.init(controller: controller, template: Template(controller: controller))
   }
   
+  /**
+    This method adds the contents for this layout to its body.
+
+    This implementation just renders the template that it is wrapping around.
+    Subclasses should override this to add content before or after that template
+    body.
+    */
   public override func body() {
     self.renderTemplate(self.template)
   }

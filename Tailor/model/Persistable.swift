@@ -116,6 +116,8 @@ public func toManyRecords<OtherRecordType : Persistable, IntermediaryRecordType:
   return query.filter(through.whereClause.query, through.whereClause.parameters.map { $0 as DatabaseValueConvertible })
 }
 
+//MARK: - Persistence
+
 /**
   This method saves a record to the database.
 
@@ -147,8 +149,6 @@ public func saveRecord<RecordType: Persistable>(record: RecordType) -> RecordTyp
     return insertRecord(record, values)
   }
 }
-
-
 
 /**
 This method saves the record to the database by inserting it.

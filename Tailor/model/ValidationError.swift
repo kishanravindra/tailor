@@ -29,7 +29,7 @@ public struct ValidationError: Equatable {
   /**
     This method creates a validation error.
 
-    :param: modelType   The type of model the error is on.
+    :param: modelName   The name of the model the error is on.
     :param: key         The field on the model with the error.
     :param: data        Additional data giving details on the error.
     */

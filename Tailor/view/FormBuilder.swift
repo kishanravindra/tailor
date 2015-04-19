@@ -23,7 +23,6 @@ public class FormBuilder {
     This method creates a form builder.
 
     :param: template      The template that we are putting the form in.
-    :param: model         The model object that the form is for.
     :param: name          The name used for the model object in the input tags.
     :param: inputBuilder  A block we can use to build inputs. If this is not
                           provided, we will use a simple one with a div

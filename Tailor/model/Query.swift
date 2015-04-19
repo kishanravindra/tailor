@@ -202,8 +202,8 @@ public class Query<RecordType: Persistable> {
     This method adds a join to the query.
   
     :param: recordType    The target record type for the join.
-    :param: fromField     The field on the target record to match for the join.
-    :param: toField       The field on this record to match for the join.
+    :param: fromColumn    The field on the target record to match for the join.
+    :param: toColumn      The field on this record to match for the join.
     :returns:             The new query.
   */
   public func join<OtherRecordType: Persistable>(recordType: OtherRecordType.Type, fromColumn: String, toColumn: String) -> Query<RecordType> {
