@@ -44,7 +44,7 @@ public class RouteSet {
     public private(set) var controller: Controller.Type?
     
     /** The name of the action in the controller. */
-    public private(set) var action: String?
+    public private(set) var actionName: String?
     
     /**
       This method initializes a route.
@@ -228,18 +228,19 @@ public class RouteSet {
     :param: pathPattern   The pattern for the route.
     :param: method        The HTTP method for the route.
     :param: controller    The controller that will handle the requests.
-    :param: action        The name of the action in the controller.
+    :param: actionName    The name of the action in the controller.
     */
-  public func addRoute(pathPattern: String, method: String, controller: Controller.Type, action: String) {
-    let description = NSString(format: "%@#%@", NSStringFromClass(controller), action)
+  public func addRoute(pathPattern: String, method: String, controller controllerType: Controller.Type, actionName: String) {
+    let description = NSString(format: "%@#%@", controllerType.name, actionName)
     let handler = {
       (request: Request, callback: Server.ResponseCallback) -> () in
-      controller(request: request, action: action, callback: callback).respond()
+      let controller = controllerType(request: request, actionName: actionName, callback: callback)
+      controller.action.run(controller)
     }
     self.addRoute(pathPattern, method: method, handler: handler, description: description as! String)
     if let route = self.routes.last {
-      route.controller = controller
-      route.action = action
+      route.controller = controllerType
+      route.actionName = actionName
     }
   }
   
@@ -248,10 +249,10 @@ public class RouteSet {
     
     :param: pathPattern   The pattern for the route.
     :param: method        The HTTP method for the route.
-    :param: action        The name of the action in the controller.
+    :param: actionName    The name of the action in the controller.
     */
-  public func addRoute(pathPattern: String, method: String, action: String) {
-    self.addRoute(pathPattern, method: method, controller: self.currentController, action: action)
+  public func addRoute(pathPattern: String, method: String, actionName: String) {
+    self.addRoute(pathPattern, method: method, controller: self.currentController, actionName: actionName)
   }
   
   /**
@@ -294,7 +295,7 @@ public class RouteSet {
       default:
         break
       }
-      self.addRoute(route, method: method, action: action)
+      self.addRoute(route, method: method, actionName: action)
     }
   }
   
@@ -376,7 +377,7 @@ public class RouteSet {
     This method generates a path using our route set.
 
     :param: controller    The name of the controller that the link is to.
-    :param: action        The name of the action.
+    :param: actionName    The name of the action.
     :param: parameters    The parameters to interpolate into the route.
     :param: domain        The domain to use for a full URL. If this is omitted,
                           this will just give the path rather than a URL.
@@ -384,11 +385,11 @@ public class RouteSet {
                           domain is omitted, this value will be ignored.
     :returns:             The path, if we could match it up.
     */
-  public func pathFor(controllerName: String, action: String, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
+  public func pathFor(controllerName: String, actionName: String, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
     var matchingPath: String? = nil
     for route in self.routes {
-      if route.controller != nil && route.controller!.name() == controllerName &&
-      route.action != nil && route.action! == action {
+      if route.controller != nil && route.controller!.name == controllerName &&
+      route.actionName != nil && route.actionName! == actionName {
         var path = route.pathPattern
         var hasQuery = false
         for (key, value) in parameters {

@@ -7,10 +7,14 @@ class RouteSetTests: TailorTestCase {
   
   
   class TestController : Controller {
-    override class func name() -> String { return "TestController" }
-    override func respond() {
+    override class var name: String { return "TestController" }
+    override class var actions: [Action] { return [
+      Action(name: "index", body: wrap(index))
+    ]}
+    
+    func index() {
       let response = Response()
-      response.appendString("Test Controller: \(self.action)")
+      response.appendString("Test Controller: \(self.action.name)")
       self.callback(response)
     }
   }
@@ -107,10 +111,10 @@ class RouteSetTests: TailorTestCase {
     let expectation = expectationWithDescription("handler called")
     routeSet.withPrefix("path") {
       expectation.fulfill()
-      self.routeSet.addRoute("test", method: "GET", action: "test")
+      self.routeSet.addRoute("test", method: "GET", actionName: "test")
       self.assert(self.getLatestRoute().pathPattern, equals: "/path/test", message: "includes prefix in route in block")
     }
-    routeSet.addRoute("test", method: "GET", action: "test")
+    routeSet.addRoute("test", method: "GET", actionName: "test")
     assert(getLatestRoute().pathPattern, equals: "/test", message: "does not include prefix in route outside of block")
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
@@ -119,13 +123,13 @@ class RouteSetTests: TailorTestCase {
     let expectation = expectationWithDescription("handler called")
     routeSet.withPrefix("path", controller: TestController.self) {
       expectation.fulfill()
-      self.routeSet.addRoute("test", method: "GET", action: "test")
+      self.routeSet.addRoute("test", method: "GET", actionName: "test")
       let controller = self.getLatestRoute().controller
-      self.assert(controller?.name(), equals: "TestController", message: "includes controller in route in block")
+      self.assert(controller?.name, equals: "TestController", message: "includes controller in route in block")
     }
-    routeSet.addRoute("test", method: "GET", action: "test")
+    routeSet.addRoute("test", method: "GET", actionName: "test")
     let controller = self.getLatestRoute().controller
-    assert(controller?.name(), equals: "Tailor.Controller", message: "uses default controller in route in block")
+    assert(controller?.name, equals: "Tailor.Controller", message: "uses default controller in route in block")
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
@@ -162,7 +166,7 @@ class RouteSetTests: TailorTestCase {
   }
   
   func testAddRouteWithControllerBuildsHandlerForController() {
-    routeSet.addRoute("test", method: "GET", controller: TestController.self, action: "index")
+    routeSet.addRoute("test", method: "GET", controller: TestController.self, actionName: "index")
     let route = getLatestRoute()
     let expectation = expectationWithDescription("handler called")
     route.handler(createTestRequest()) {
@@ -182,50 +186,50 @@ class RouteSetTests: TailorTestCase {
     
     assert(routeSet.routes[0].pathPattern, equals: "/hats", message: "creates index route")
     assert(routeSet.routes[0].method,equals:  "GET", message: "creates index route")
-    assert(routeSet.routes[0].action!,equals:  "index", message: "creates index route")
+    assert(routeSet.routes[0].actionName!,equals:  "index", message: "creates index route")
     
     assert(routeSet.routes[1].pathPattern, equals: "/hats/new", message: "creates new route")
     assert(routeSet.routes[1].method, equals: "GET", message: "creates new route")
-    assert(routeSet.routes[1].action!, equals: "new", message: "creates new route")
+    assert(routeSet.routes[1].actionName!, equals: "new", message: "creates new route")
     
     assert(routeSet.routes[2].pathPattern, equals: "/hats", message: "creates create route")
     assert(routeSet.routes[2].method, equals: "POST", message: "creates create route")
-    assert(routeSet.routes[2].action!, equals: "create", message: "creates create route")
+    assert(routeSet.routes[2].actionName!, equals: "create", message: "creates create route")
     
     assert(routeSet.routes[3].pathPattern, equals: "/hats/:id", message: "creates show route")
     assert(routeSet.routes[3].method, equals: "GET", message: "creates show route")
-    assert(routeSet.routes[3].action!, equals: "show", message: "creates show route")
+    assert(routeSet.routes[3].actionName!, equals: "show", message: "creates show route")
     
     assert(routeSet.routes[4].pathPattern, equals: "/hats/:id/edit", message: "creates edit route")
     assert(routeSet.routes[4].method, equals: "GET", message: "creates edit route")
-    assert(routeSet.routes[4].action!, equals: "edit", message: "creates edit route")
+    assert(routeSet.routes[4].actionName!, equals: "edit", message: "creates edit route")
     
     assert(routeSet.routes[5].pathPattern, equals: "/hats/:id", message: "creates update route")
     assert(routeSet.routes[5].method, equals: "POST", message: "creates update route")
-    assert(routeSet.routes[5].action!, equals: "update", message: "creates update route")
+    assert(routeSet.routes[5].actionName!, equals: "update", message: "creates update route")
     
     assert(routeSet.routes[6].pathPattern, equals: "/hats/:id/destroy", message: "creates destroy route")
     assert(routeSet.routes[6].method, equals: "POST", message: "creates destroy route")
-    assert(routeSet.routes[6].action!, equals: "destroy", message: "creates destroy route")
+    assert(routeSet.routes[6].actionName!, equals: "destroy", message: "creates destroy route")
   }
   
   func testAddRestfulRoutesCreatesLimitedSetWithOnly() {
     routeSet.addRestfulRoutes(only: ["index", "show"])
     
     assert(routeSet.routes.count, equals: 2, message: "creates two routes")
-    assert(routeSet.routes[0].action!, equals: "index", message: "creates index route")
-    assert(routeSet.routes[1].action!, equals: "show", message: "creates show route")
+    assert(routeSet.routes[0].actionName!, equals: "index", message: "creates index route")
+    assert(routeSet.routes[1].actionName!, equals: "show", message: "creates show route")
   }
   
   func testAddRestfulRoutesCreatesLimitedSetWithExcept() {
     routeSet.addRestfulRoutes(except: ["edit", "update"])
     
     assert(routeSet.routes.count, equals: 5, message: "creates five routes")
-    assert(routeSet.routes[0].action, equals: "index", message: "creates index route")
-    assert(routeSet.routes[1].action, equals: "new", message: "creates new route")
-    assert(routeSet.routes[2].action, equals: "create", message: "creates create route")
-    assert(routeSet.routes[3].action, equals: "show", message: "creates show route")
-    assert(routeSet.routes[4].action, equals: "destroy", message: "creates destroy route")
+    assert(routeSet.routes[0].actionName, equals: "index", message: "creates index route")
+    assert(routeSet.routes[1].actionName, equals: "new", message: "creates new route")
+    assert(routeSet.routes[2].actionName, equals: "create", message: "creates create route")
+    assert(routeSet.routes[3].actionName, equals: "show", message: "creates show route")
+    assert(routeSet.routes[4].actionName, equals: "destroy", message: "creates destroy route")
   }
   
   func testHandleRequestCallsHandlerForMatchingRequests() {
@@ -277,44 +281,44 @@ class RouteSetTests: TailorTestCase {
   //MARK: - Generating URLs
   
   func testPathForGetsSimplePath() {
-    routeSet.addRoute("hats", method: "GET", controller: TestController.self, action: "index")
-    let url = routeSet.pathFor("TestController", action: "index")
+    routeSet.addRoute("hats", method: "GET", controller: TestController.self, actionName: "index")
+    let url = routeSet.pathFor("TestController", actionName: "index")
     self.assert(url, equals: "/hats", message: "generates correct route")
   }
   
   func testPathForGetsPathWithInterpolatedParameter() {
-    routeSet.addRoute("hats/:id", method: "GET", controller: TestController.self, action: "show")
-    let path = routeSet.pathFor("TestController", action: "show", parameters: ["id": "17"])
+    routeSet.addRoute("hats/:id", method: "GET", controller: TestController.self, actionName: "show")
+    let path = routeSet.pathFor("TestController", actionName: "show", parameters: ["id": "17"])
     self.assert(path, equals: "/hats/17", message: "generates correct route")
   }
   
   func testPathForGetsPathWithQueryString() {
-    routeSet.addRoute("hats", method: "GET", controller: TestController.self, action: "index")
-    let path = routeSet.pathFor("TestController", action: "index", parameters: ["color": "black", "brimSize": "15"])
+    routeSet.addRoute("hats", method: "GET", controller: TestController.self, actionName: "index")
+    let path = routeSet.pathFor("TestController", actionName: "index", parameters: ["color": "black", "brimSize": "15"])
     assert(path, equals: "/hats?brimSize=15&color=black", message: "generates correct route")
   }
   
   func testPathForWithDomainGetsUrl() {
-    routeSet.addRoute("hats", method: "GET", controller: TestController.self, action: "index")
-    let url = routeSet.pathFor("TestController", action: "index", domain: "haberdashery.com")
+    routeSet.addRoute("hats", method: "GET", controller: TestController.self, actionName: "index")
+    let url = routeSet.pathFor("TestController", actionName: "index", domain: "haberdashery.com")
     assert(url, equals: "https://haberdashery.com/hats", message: "generates correct URL")
   }
   
   func testPathForWithDomainAndHttpFlagGetsUrl() {
-    routeSet.addRoute("hats", method: "GET", controller: TestController.self, action: "index")
-    let url = routeSet.pathFor("TestController", action: "index", domain: "haberdashery.com", https: false)
+    routeSet.addRoute("hats", method: "GET", controller: TestController.self, actionName: "index")
+    let url = routeSet.pathFor("TestController", actionName: "index", domain: "haberdashery.com", https: false)
     assert(url, equals: "http://haberdashery.com/hats", message: "generates correct URL")
   }
   
   func testPathForReturnsNilForNonMatchingPath() {
-    routeSet.addRoute("hats", method: "GET", controller: TestController.self, action: "index")
-    let path = routeSet.pathFor("TestController", action: "show")
+    routeSet.addRoute("hats", method: "GET", controller: TestController.self, actionName: "index")
+    let path = routeSet.pathFor("TestController", actionName: "show")
     XCTAssertNil(path, "gives nil path")
   }
   
   func testPathForReturnsNilForNonMatchingPathWithDomain() {
-    routeSet.addRoute("hats", method: "GET", controller: TestController.self, action: "index")
-    let path = routeSet.pathFor("TestController", action: "show", domain: "haberdashery.com")
+    routeSet.addRoute("hats", method: "GET", controller: TestController.self, actionName: "index")
+    let path = routeSet.pathFor("TestController", actionName: "show", domain: "haberdashery.com")
     XCTAssertNil(path, "gives nil path")
   }
 }

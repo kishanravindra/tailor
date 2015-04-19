@@ -91,8 +91,6 @@
 		52BD143119E9DA1D006D72B0 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140D19E9DA1D006D72B0 /* Session.swift */; };
 		52BD143219E9DA1D006D72B0 /* DatabaseConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140F19E9DA1D006D72B0 /* DatabaseConnection.swift */; };
 		52BD143519E9DA1D006D72B0 /* MysqlConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD141219E9DA1D006D72B0 /* MysqlConnection.swift */; };
-		52BD143619E9DA1D006D72B0 /* TailorC.h in Headers */ = {isa = PBXBuildFile; fileRef = 52BD141319E9DA1D006D72B0 /* TailorC.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		52BD143719E9DA1D006D72B0 /* TailorC.m in Sources */ = {isa = PBXBuildFile; fileRef = 52BD141419E9DA1D006D72B0 /* TailorC.m */; };
 		52BD143819E9DA1D006D72B0 /* NSDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD141619E9DA1D006D72B0 /* NSDate.swift */; };
 		52BD143919E9DA1D006D72B0 /* NSString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD141719E9DA1D006D72B0 /* NSString.swift */; };
 		52BD143A19E9DA1D006D72B0 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD141819E9DA1D006D72B0 /* String.swift */; };
@@ -236,8 +234,6 @@
 		52BD140D19E9DA1D006D72B0 /* Session.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
 		52BD140F19E9DA1D006D72B0 /* DatabaseConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseConnection.swift; sourceTree = "<group>"; };
 		52BD141219E9DA1D006D72B0 /* MysqlConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MysqlConnection.swift; sourceTree = "<group>"; };
-		52BD141319E9DA1D006D72B0 /* TailorC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TailorC.h; sourceTree = "<group>"; };
-		52BD141419E9DA1D006D72B0 /* TailorC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TailorC.m; sourceTree = "<group>"; };
 		52BD141619E9DA1D006D72B0 /* NSDate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSDate.swift; sourceTree = "<group>"; };
 		52BD141719E9DA1D006D72B0 /* NSString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSString.swift; sourceTree = "<group>"; };
 		52BD141819E9DA1D006D72B0 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
@@ -568,8 +564,6 @@
 			children = (
 				52BD140F19E9DA1D006D72B0 /* DatabaseConnection.swift */,
 				52A95E301AE0A3B9001AED1F /* DatabaseValue.swift */,
-				52BD141319E9DA1D006D72B0 /* TailorC.h */,
-				52BD141419E9DA1D006D72B0 /* TailorC.m */,
 				52A5006C1AA2611400F3F031 /* mysql */,
 			);
 			path = db;
@@ -693,7 +687,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				52BD13A319E9D7E4006D72B0 /* Tailor.h in Headers */,
-				52BD143619E9DA1D006D72B0 /* TailorC.h in Headers */,
 				52C6252819EE12AE0024453F /* crypt_blowfish.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -843,7 +836,6 @@
 				5214B5D21AA38B0800624E9D /* ValidationError.swift in Sources */,
 				525C80851A1C1B4900E7035F /* Query.swift in Sources */,
 				52BD142C19E9DA1D006D72B0 /* RouteSet.swift in Sources */,
-				52BD143719E9DA1D006D72B0 /* TailorC.m in Sources */,
 				52B2B6EE19F3F75C0086261B /* Sanitizer.swift in Sources */,
 				52B2B6F419F405620086261B /* SqlSanitizer.swift in Sources */,
 				52A95E311AE0A3B9001AED1F /* DatabaseValue.swift in Sources */,

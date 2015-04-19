@@ -14,7 +14,7 @@ class TemplateTests: TailorTestCase {
     }
     self.controller = Controller(
       request: request,
-      action: "index",
+      actionName: "index",
       callback: callback
     )
     self.controller.localization = PropertyListLocalization(locale: "en")
@@ -153,19 +153,19 @@ class TemplateTests: TailorTestCase {
   
   func testLinkPutsLinkTagInBuffer() {
     class InnerTestController: Controller {
-      override func pathFor(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
+      override func pathFor(controllerName: String? = nil, actionName: String? = nil, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
         XCTAssertEqual(controllerName!, "TestController", "has the controller name")
-        XCTAssertEqual(action!, "index", "has the action")
+        XCTAssertEqual(action.name, "index", "has the action")
         XCTAssertEqual(parameters, ["id": "5"], "has the parameters")
         return "/test/path"
       }
     }
     let template2 = Template(controller: InnerTestController(
       request: controller.request,
-      action: controller.action,
+      actionName: controller.action.name,
       callback: controller.callback
     ))
-    template2.link(controllerName: "TestController", action: "index", parameters: ["id": "5"], attributes: ["class": "btn"]) {
+    template2.link(controllerName: "TestController", actionName: "index", parameters: ["id": "5"], attributes: ["class": "btn"]) {
       template2.text("Click here")
     }
     assert(template2.buffer, equals: "<a class=\"btn\" href=\"/test/path\">Click here</a>", message: "puts the tag in the buffer")
@@ -299,7 +299,7 @@ class TemplateTests: TailorTestCase {
     request.requestParameters = ["id": "5", "color": "red", "size": "10"]
     let template = Template(controller: Controller(
       request: request,
-      action: controller.action,
+      actionName: controller.action.name,
       callback: controller.callback
     ))
     let parameters = template.requestParameters("id", "color", "shelf")
@@ -311,7 +311,7 @@ class TemplateTests: TailorTestCase {
     request.requestParameters = ["id": "5", "color": "red", "size": "10"]
     let template = Template(controller: Controller(
       request: request,
-      action: controller.action,
+      actionName: controller.action.name,
       callback: controller.callback
       ))
     if let param1 = template.requestParameter("id") {

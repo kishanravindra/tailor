@@ -6,6 +6,6 @@ public extension Controller {
     callback.
     */
   public convenience init() {
-    self.init(request: Request(), action: "index", callback: {_ in })
+    self.init(request: Request(), actionName: "index", callback: {_ in })
   }
 }

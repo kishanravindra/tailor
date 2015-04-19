@@ -28,17 +28,19 @@ public class TemplateTestCase: TailorTestCase {
   /**
     This method builds the controller for the template.
 
-    :param: type      The type of controller that will be rendering the template.
-    :param: action    The action on the controller that is being called.
-    :param: user      The user who is signed in to the controller.
+    :param: type          The type of controller that will be rendering the 
+                          template.
+    :param: actionName    The name of the  action on the controller that is
+                          being called.
+    :param: user          The user who is signed in to the controller.
     */
-  public func setUpController(type: Controller.Type, action: String = "index", user: User! = nil) {
+  public func setUpController(type: Controller.Type, actionName: String = "index", user: User! = nil) {
     
     var request = Request()
     if user != nil {
       request = Request(sessionData: ["userId": String(user.id ?? 0)])
     }
-    controller = type.init(request: request, action: action, callback: {_ in})
+    controller = type.init(request: request, actionName: actionName, callback: {_ in})
   }
   
   /**

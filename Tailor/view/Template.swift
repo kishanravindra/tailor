@@ -172,15 +172,15 @@ public class Template {
   
     :param: controllerName  The controller to link to. This will default to the
                             current controller.
-    :param: action          The action to link to.
+    :param: actionName      The action to link to.
     :param: parameters      Additional parameters for the path.
     :param: attributes      Additional attributes for the tag.
     :param: with            A closure that adds the contents of the link.
     */
-  public func link(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:], attributes: [String:String] = [:], with contents: ()->()={}) {
+  public func link(controllerName: String? = nil, actionName: String? = nil, parameters: [String:String] = [:], attributes: [String:String] = [:], with contents: ()->()={}) {
     var mergedAttributes = attributes
     mergedAttributes["href"] = self.controller.pathFor(controllerName: controllerName,
-      action: action, parameters: parameters) ?? ""
+      actionName: actionName, parameters: parameters) ?? ""
     self.tag("a", mergedAttributes, with: contents)
   }
   

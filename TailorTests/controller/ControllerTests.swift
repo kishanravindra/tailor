@@ -4,14 +4,14 @@ import TailorTesting
 
 class ControllerTests: TailorTestCase {
   class TestController : Controller {
-    required init(request: Request, action: String, callback: Server.ResponseCallback) {
-      super.init(request: request, action: action, callback: callback)
-      self.addFilter(filter: self.checkParams)
-    }
     
-    override class func name() -> String {
+    override class var name: String {
       return "TailorTests.TestController"
     }
+    
+    override class var actions: [Action] { return [
+      Action( name: "index", body: wrap(indexAction), filters: [wrap(checkParams)])
+    ]}
     
     func checkParams() -> Bool {
       if let param = request.requestParameters["failFilter"] {
@@ -39,17 +39,19 @@ class ControllerTests: TailorTestCase {
   
   override func setUp() {
     super.setUp()
+    
+    let function = Controller.respondWith
     user = saveRecord(User(emailAddress: "test@test.com", password: "test"))!
     
     var routeSet = RouteSet()
-    routeSet.addRoute("route1", method: "GET", controller: TestController.self, action: "index")
-    routeSet.addRoute("route1/:id", method: "GET", controller: TestController.self, action: "show")
-    routeSet.addRoute("route2", method: "GET", controller: SecondTestController.self, action: "index")
+    routeSet.addRoute("route1", method: "GET", controller: TestController.self, actionName: "index")
+    routeSet.addRoute("route1/:id", method: "GET", controller: TestController.self, actionName: "show")
+    routeSet.addRoute("route2", method: "GET", controller: SecondTestController.self, actionName: "index")
     Application.sharedApplication().routeSet = routeSet
     
     controller = Controller(
       request: Request(),
-      action: "index",
+      actionName: "index",
       callback: {
         response in
         self.callback(response)
@@ -64,7 +66,7 @@ class ControllerTests: TailorTestCase {
   func testInitializeSetsUserFromIdInSession() {
     controller = Controller(
       request: Request(sessionData: ["userId": String(user.id!)]),
-      action: "index",
+      actionName: "index",
       callback: {
         (response) in
       }
@@ -75,7 +77,7 @@ class ControllerTests: TailorTestCase {
   func testInitializerSetsUserToNilWithBadId() {
     controller = Controller(
       request: Request(sessionData: ["userId": String(user.id! + 1)]),
-      action: "index",
+      actionName: "index",
       callback: {
         (response) in
       }
@@ -86,7 +88,7 @@ class ControllerTests: TailorTestCase {
   func testInitializerSetsUserToNilWithNoId() {
     controller = Controller(
       request: Request(),
-      action: "index",
+      actionName: "index",
       callback: {
         (response) in
       }
@@ -101,7 +103,7 @@ class ControllerTests: TailorTestCase {
     
     controller = TestController(
       request: Request(),
-      action: "index",
+      actionName: "index",
       callback: {
         response in
         expectation.fulfill()
@@ -118,7 +120,7 @@ class ControllerTests: TailorTestCase {
     
     let controller = TestController(
       request: Request(),
-      action: "show",
+      actionName: "show",
       callback: {
         response in
         expectation.fulfill()
@@ -134,7 +136,7 @@ class ControllerTests: TailorTestCase {
     
     let controller = TestController(
       request: Request(parameters: ["failFilter": "1"]),
-      action: "index",
+      actionName: "index",
       callback: {
         response in
         expectation.fulfill()
@@ -176,7 +178,7 @@ class ControllerTests: TailorTestCase {
     let expectation = expectationWithDescription("callback called")
     controller = Controller(
       request: Request(cookies: ["cookie1": "value1"]),
-      action: "index",
+      actionName: "index",
       callback: { self.callback($0) }
     )
     
@@ -269,14 +271,14 @@ class ControllerTests: TailorTestCase {
   }
   
   func testPathForCanGetFullyQualifiedRoute() {
-    let path = self.controller.pathFor(controllerName: TestController.name(), action: "index", parameters: ["id": "5"])
+    let path = self.controller.pathFor(controllerName: TestController.name, actionName: "index", parameters: ["id": "5"])
     assert(path, equals: "/route1?id=5", message: "gets the url for the controller and action")
   }
   
   func testPathForCanGetPathForSameAction() {
     self.controller = SecondTestController(
       request: Request(),
-      action: "index",
+      actionName: "index",
       callback: { self.callback($0) }
     )
     let path = self.controller.pathFor(parameters: ["confirmed": "1"])
@@ -284,7 +286,7 @@ class ControllerTests: TailorTestCase {
   }
   
   func testPathForCanGetUrlWithDomain() {
-    let path = self.controller.pathFor(controllerName: TestController.name(), action: "index", parameters: ["id": "5"], domain: "test.com")
+    let path = self.controller.pathFor(controllerName: TestController.name, actionName: "index", parameters: ["id": "5"], domain: "test.com")
     assert(path, equals: "https://test.com/route1?id=5", message: "gets the url for the controller and action")
   }
   
@@ -301,7 +303,7 @@ class ControllerTests: TailorTestCase {
       self.assert(response.code, equals: 302, message: "gives a 302 response")
       self.assert(response.headers, equals: ["Location": "/route1"], message: "has a location header")
     }
-    self.controller.redirectTo(controllerName: TestController.name(), action: "index")
+    self.controller.redirectTo(controllerName: TestController.name, actionName: "index")
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
@@ -313,7 +315,7 @@ class ControllerTests: TailorTestCase {
       self.assert(response.code, equals: 302, message: "gives a 302 response")
       self.assert(response.headers, equals: ["Location": "/route1"], message: "has a location header")
     }
-    self.controller.redirectTo(TestController.self, action: "index")
+    self.controller.redirectTo(TestController.self, actionName: "index")
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
@@ -360,71 +362,10 @@ class ControllerTests: TailorTestCase {
     XCTAssertFalse(result, "returns false")
   }
   
-  //MARK: - Filters
-  
-  func testAddFiltersAddsFilterToList() {
-    let expectation = expectationWithDescription("filter called")
-    let filterMethod = {
-      () -> Bool in
-      expectation.fulfill()
-      return true
-    }
-    controller.addFilter(only: ["index", "show"], except: ["edit"], filter: filterMethod)
-    assert(controller.filters.count, equals: 1, message: "has one filter")
-    if controller.filters.count == 1 {
-      let filter = controller.filters[0]
-      assert(filter.1, equals: ["index", "show"], message: "sets the list of allowed actions")
-      assert(filter.2, equals: ["edit"], message: "sets the list of excluded actions")
-      filter.0()
-    }
-    waitForExpectationsWithTimeout(0.01, handler: nil)
-  }
-  
-  func testRunFiltersReturnsFalseWhenFilterFails() {
-    controller.addFilter { return false }
-    let result = controller.runFilters()
-    XCTAssertFalse(result, "returns false")
-  }
-  
-  func testRunFiltersReturnTrueWhenFilterPasses() {
-    controller.addFilter { return true }
-    let result = controller.runFilters()
-    XCTAssertTrue(result, "returns true")
-  }
-  
-  func testRunFiltersReturnsTrueWithNoFilters() {
-    let result = controller.runFilters()
-    XCTAssertTrue(result, "returns true")
-  }
-  
-  func testRunFiltersReturnsTrueWithNoFiltersForAction() {
-    controller.addFilter(only: ["show"]) {
-      return false
-    }
-    let result = controller.runFilters()
-    XCTAssertTrue(result, "returns true")
-  }
-  
-  func testRunFiltersReturnsTrueWithFilterThatExcludesAction() {
-    controller.addFilter(except: ["index"]) {
-      return false
-    }
-    let result = controller.runFilters()
-    XCTAssertTrue(result, "returns true")
-  }
-  
-  func testRunFiltersReturnsFalseWithFilterThatExcludesOtherAction() {
-    controller.addFilter(except: ["show"]) {
-      return false
-    }
-    let result = controller.runFilters()
-    XCTAssertFalse(result, "returns false")
-  }
-  
   //MARK: - Localization
   
   func testLocalizationPrefixGetsUnderscoredControllerNameAndAction() {
-    let controller = TestController(request: Request(), action: "index", callback: {_ in })
+    let controller = TestController(request: Request(), actionName: "index", callback: {_ in })
     let prefix = controller.localizationPrefix
     assert(prefix, equals: "tailor_tests.test_controller.index")
   }
@@ -454,8 +395,11 @@ class ControllerTests: TailorTestCase {
   func testCallActionCanCallAction() {
     let expectation = expectationWithDescription("respond method called")
     class TestController: Controller {
-      override func respond() {
-        XCTAssertEqual(action, "runTest", "sets the controller's action")
+      override class var actions: [Action] { return [
+        Action(name: "runTest", body: wrap(index))
+      ] }
+      func index() {
+        XCTAssertEqual(action.name, "runTest", "sets the controller's action")
         let value1 = request.requestParameters["test1"]
         XCTAssertNotNil(value1)
         if value1 != nil {

@@ -5,20 +5,72 @@ import Foundation
   */
 public class Controller {
   /**
-    This type represents a filter that can be run before processing an action.
-  
-    :param: filter          The function to run as the filter. This should
-                            return true if the filter passed. If the filter
-                            fails, this must either render or redirect.
-    :param: includedActions The actions that this filter should be run for.
-                            If this is empty, it will be run for all actions.
-    :param: excludedActions The actions that this filter should not be run for.
+    This structure contains all the information about an action that can be run
+    on a controller.
     */
-  public typealias Filter = (
-    filter: ()->Bool,
-    includedActions: [String],
-    excludedActions: [String]
-  )
+  public struct Action {
+    /** The name of the action. */
+    public let name: String
+    
+    /**
+      The block that provides a normal response for the action.
+    
+      This has an unusual type signature to support curried methods. For
+      instance, if you are writing a controller called `HatsController`, and
+      you want to use its `index` method as the body of an action, you can
+      just set the body to `HatsController.wrap(HatsController.index)`. If you
+      are setting the body inside of a class method on `HatsController`, which
+      will be the common case, you can just set it to `wrap(index)`. The wrapper
+      method is necessary to support any controller type rather than just
+      `HatsController`, which actions require.
+    
+      If you are not using a curried function, then the body should take in a
+      controller and return another block that will execute the action on that
+      controller.
+      */
+    public let body: (Controller)->()->()
+    
+    /**
+      The filters that run for this action.
+
+      A filter provides a pre-check before an action's body is run. It can check
+      that the request data is valid and potentially render an error response.
+
+      By keeping this logic separate from the action body, it can be easier to 
+      re-use in multiple actions.
+
+      If the check fails, this must return false. As soon as a filter returns
+      false, the request processing stops, so any filter that returns false must
+      also respond to the request.
+      */
+    public let filters: [(Controller)->()->Bool]
+    
+    /**
+      This method creates an action.
+
+      :param: name      The name of the action.
+      :param: body      The body of the action.
+      :param: filters   The filters that should be run before the body is
+                        called.
+      */
+    public init(name: String, body: (Controller)->()->(), filters: [(Controller)->()->Bool] = []) {
+      self.name = name
+      self.body = body
+      self.filters = filters
+    }
+    
+    /**
+      This method runs the filters and the action body.
+      */
+    public func run(controller: Controller) {
+      for filter in self.filters {
+        if !filter(controller)() {
+          return
+        }
+      }
+      self.body(controller)()
+    }
+  }
   
   /** The request that we are currently handling. */
   public let request: Request
@@ -27,7 +79,7 @@ public class Controller {
   public let callback: Server.ResponseCallback
   
   /** The action that we are executing. */
-  public let action: String
+  public private(set) var action: Action! = nil
   
   /** The session information for this request. */
   public let session: Session
@@ -38,8 +90,13 @@ public class Controller {
   /** The localization that provides content for this controller. */
   public var localization: Localization
   
-  /** The filters that this controller runs. */
-  public private(set) var filters: [Filter] = []
+  /**
+    The actions that this controller supports.
+
+    This implementation provides no actions. Subclasses must override this with
+    their actions.
+    */
+  public class var actions: [Action] { return [] }
   
   /**
     The templates that this controller has rendered in the course of responding
@@ -50,24 +107,74 @@ public class Controller {
   /** Whether we have responded to our request. */
   var responded = false
   
+  /**
+    This method takes in an action body using a specialized controller
+    type and returns a more general one that will take any controller type.
+  
+    When the resulting function is called, this will perform an safe cast from
+    the general controller to the specialized type. If the case fails, this will
+    return a block that always renders a 404 page.
+  
+    :param: block   The block with the specialized controller type.
+    :returns:       The block with the general controller type.
+    */
+  public class func wrap<ControllerType: Controller>(block: (ControllerType)->()->())->(Controller)->()->() {
+    return {
+      (controller) in
+      if let controller = controller as? ControllerType {
+        return block(controller)
+      }
+      else {
+        return { controller.render404() }
+      }
+    }
+  }
+  
+  /**
+    This method takes in an action filter using a specialized controller
+    type and returns a more general one that will take any controller type.
+    
+    When the resulting function is called, this will perform an safe cast from
+    the general controller to the specialized type. If the case fails, this will
+    return a block that always renders a 404 page.
+    
+    :param: block   The block with the specialized controller type.
+    :returns:       The block with the general controller type.
+    */
+  public class func wrap<ControllerType: Controller>(block: (ControllerType)->()->(Bool))->(Controller)->()->(Bool) {
+    return {
+      (controller) in
+      if let controller = controller as? ControllerType {
+        return block(controller)
+      }
+      else {
+        return { controller.render404(); return false }
+      }
+    }
+  }
+  
   /** The name used to identify the controller in routing. */
-  public class func name() -> String {
-    return NSStringFromClass(self)
+  public class var name: String {
+    return reflect(self).summary
   }
   
   /**
     This method creates a controller for handling a request.
 
-    :param: request   The request that we are processing
-    :param: action    The action that we are executing.
-    :param: callback  The callback to give the response to.
+    :param: request       The request that we are processing
+    :param: actionName    The name of the action that we are executing.
+    :param: callback      The callback to give the response to.
     */
-  public required init(request: Request, action: String, callback: Server.ResponseCallback) {
+  public required init(request: Request, actionName: String, callback: Server.ResponseCallback) {
     self.request = request
-    self.action = action
     self.callback = callback
     self.session = Session(request: request)
     self.localization = Application.sharedApplication().localization("en")
+    
+    self.action = self.dynamicType.actions.filter { $0.name == actionName }.first ?? Action(
+      name: actionName,
+      body: Controller.render404
+    )
     
     if let userId = self.session["userId"]?.toInt() {
       self.currentUser = Query<User>().find(userId)
@@ -86,22 +193,10 @@ public class Controller {
   //MARK: - Responses
   
   /**
-    This method executes our current action.
-  
-    This implementation renders a 404 response. Sublcasses should map this to
-    real implementations.
+    This method calls the controller's action and generates a response.
     */
-  public func respond() {
-    if !runFilters() { return }
-    var klass : AnyClass! = object_getClass(self)
-    let method = class_getInstanceMethod(klass, Selector("\(self.action)Action"))
-    
-    if method != nil {
-      tailorInvokeFunction(self, method)
-    }
-    else {
-      render404()
-    }
+  public final func respond() {
+    self.action.run(self)
   }
   
   /**
@@ -113,7 +208,7 @@ public class Controller {
     */
   public func generateResponse(contents: (inout Response)->()) {
     if self.responded {
-      NSLog("Error: Controller attempted to respond twice for %@:%@. Subsequent responses will be ignored.", self.dynamicType.name(), self.action)
+      NSLog("Error: Controller attempted to respond twice for %@:%@. Subsequent responses will be ignored.", self.dynamicType.name, self.action.name)
       return
     }
     var response = Response()
@@ -160,7 +255,7 @@ public class Controller {
   
     :param: controllerName  The controller to link to. This will default to the
                             current controller.
-    :param: action          The action to link to.
+    :param: actionName      The action to link to.
     :param: parameters      Additional parameters for the path.
     :param: domain          The domain to use for the URL. If this is omitted,
                             the result will just be the path part of the URL.
@@ -168,10 +263,10 @@ public class Controller {
                             domain is omitted, this is ignored.
     :returns:               The path
   */
-  public func pathFor(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
+  public func pathFor(controllerName: String? = nil, actionName: String? = nil, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
     var path = Application.sharedApplication().routeSet.pathFor(
-      controllerName ?? self.dynamicType.name(),
-      action: action ?? self.action,
+      controllerName ?? self.dynamicType.name,
+      actionName: actionName ?? self.action.name,
       parameters: parameters,
       domain: domain,
       https: https
@@ -191,11 +286,11 @@ public class Controller {
 
     :param: controllerName  The controller to link to. This will default to the
                             current controller.
-    :param: action          The action to link to.
+    :param: actionName      The action to link to.
     :param: parameters      Additional parameters for the path.
     */
-  public func redirectTo(controllerName: String? = nil, action: String? = nil, parameters: [String:String] = [:]) {
-    let path = self.pathFor(controllerName: controllerName, action: action, parameters: parameters) ?? "/"
+  public func redirectTo(controllerName: String? = nil, actionName: String? = nil, parameters: [String:String] = [:]) {
+    let path = self.pathFor(controllerName: controllerName, actionName: actionName, parameters: parameters) ?? "/"
     self.redirectTo(path)
   }
   
@@ -208,13 +303,13 @@ public class Controller {
   
     :param: controllerName  The controller to link to. This will default to the
             current controller.
-    :param: action          The action to link to.
+    :param: actionName      The name of the action to link to.
     :param: parameters      Additional parameters for the path.
   */
-  public func redirectTo(controller: Controller.Type, action: String, parameters: [String:String] = [:]) {
+  public func redirectTo(controller: Controller.Type, actionName: String, parameters: [String:String] = [:]) {
     self.redirectTo(
-      controllerName: controller.name(),
-      action: action,
+      controllerName: controller.name,
+      actionName: actionName,
       parameters: parameters
     )
   }
@@ -273,38 +368,6 @@ public class Controller {
     }
   }
   
-  
-  //MARK: - Filters
-  
-  /**
-    This method adds a filter.
-  
-    :param: filter    The filter function.
-    :param: only      The actions to run the filter for.
-    :param: except    The actions not to run the filter for.
-  */
-  public func addFilter(only: [String] = [], except: [String] = [], filter: ()->Bool) {
-    filters.append((filter, only, except))
-  }
-  
-  /**
-    This method runs all the filters set for this controller.
-  
-    If any of the filters returns false, this will return false immediately.
-  
-    :returns:   Whether all the filters passed.
-  */
-  public func runFilters() -> Bool {
-    for (filter, only, except) in self.filters {
-      if (only.isEmpty || contains(only, action)) && !contains(except, action) {
-        if !filter() {
-          return false
-        }
-      }
-    }
-    return true
-  }
-  
   //MARK: - Localization
   
   /**
@@ -314,7 +377,7 @@ public class Controller {
     This will only be added to keys that start with a dot.
     */
   public var localizationPrefix: String {
-    return self.dynamicType.name().underscored() + "." + self.action
+    return self.dynamicType.name.underscored() + "." + self.action.name
   }
   
   /**
@@ -345,19 +408,19 @@ public class Controller {
     This method calls an action manually on a controller. It is intended for use
     in testing.
 
-    :param: action    The name of the action to call.
-    :param: request   The request to provide to the controller.
-    :param: callback  The callback to call with the response.
+    :param: actionName  The name of the action to call.
+    :param: request     The request to provide to the controller.
+    :param: callback    The callback to call with the response.
     */
-  public class func callAction(action: String, _ request: Request, callback: (Response,Controller)->()) {
+  public class func callAction(actionName: String, _ request: Request, callback: (Response,Controller)->()) {
     var controller: Controller!
     
     controller = self.init(
       request: request,
-      action: action,
+      actionName: actionName,
       callback: { response in callback(response, controller) }
     )
-    controller.respond()
+    controller.action.run(controller)
   }
   
   /**
