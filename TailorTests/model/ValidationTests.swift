@@ -3,201 +3,197 @@ import TailorTesting
 import XCTest
 
 class ValidationTests: TailorTestCase {
+  //MARK: - Initialization
+  
+  func testInitializationSetsModelNameAndErrors() {
+    
+  }
+  
   //MARK: - Running Validations
   
   func testValidatePresenceOfWithValueGetsError() {
     let hat = Hat()
-    let result = Validation<Hat>().validate(presenceOf: "owner", hat.owner)
+    let result = Validation(modelName(Hat.self)).validate(presenceOf: "owner", hat.owner)
     assert(result.errors, equals: [
-      ValidationError(modelType: Hat.self, key: "owner", message: "blank")
+      ValidationError(modelName: modelName(Hat.self), key: "owner", message: "blank")
     ])
   }
   
   func testValidatePresenceOfWithIntegerGetsNoError() {
     let hat = Hat(brimSize: 10)
-    let result = Validation<Hat>().validate(presenceOf: "brimSize", hat.brimSize)
+    let result = Validation(modelName(Hat.self)).validate(presenceOf: "brimSize", hat.brimSize)
     assert(result.errors, equals: [])
   }
   
   func testValidatePresenceOfWithStringGetsNoError() {
     let hat = Hat(color: "red")
-    let result = Validation<Hat>().validate(presenceOf: "color", hat.color)
+    let result = Validation(modelName(Hat.self)).validate(presenceOf: "color", hat.color)
     assert(result.errors, equals: [])
   }
   
   func testValidatePresenceOfWithEmptyStringGetsError() {
     let hat = Hat(color: "")
-    let result = Validation<Hat>().validate(presenceOf: "color", hat.color)
+    let result = Validation(modelName(Hat.self)).validate(presenceOf: "color", hat.color)
     assert(result.errors, equals: [
-      ValidationError(modelType: Hat.self, key: "color", message: "blank")
+      ValidationError(modelName: modelName(Hat.self), key: "color", message: "blank")
       ])
   }
   
   func testValidateBoundsWithValueInBoundsGetsNoError() {
     let hat = Hat(brimSize: 10)
-    let result = Validation<Hat>().validate("brimSize", hat.brimSize, inBounds: 5...15)
+    let result = Validation(modelName(Hat.self)).validate("brimSize", hat.brimSize, inBounds: 5...15)
     assert(result.errors, equals: [])
   }
   
   func testValidateBoundsWithValueBelowBoundsGetsError() {
     let hat = Hat(brimSize: 4)
-    let result = Validation<Hat>().validate("brimSize", hat.brimSize, inBounds: 5...15)
+    let result = Validation(modelName(Hat.self)).validate("brimSize", hat.brimSize, inBounds: 5...15)
     assert(result.errors, equals: [
-      ValidationError(modelType: Hat.self, key: "brimSize", message: "tooLow", data: ["min": "5"])
+      ValidationError(modelName: modelName(Hat.self), key: "brimSize", message: "tooLow", data: ["min": "5"])
     ])
   }
   
   func testValidateBoundsWithValueAtBottomOfOpenIntervalGetsNoError() {
     let hat = Hat(brimSize: 5)
-    let result = Validation<Hat>().validate("brimSize", hat.brimSize, inBounds: 5..<15)
+    let result = Validation(modelName(Hat.self)).validate("brimSize", hat.brimSize, inBounds: 5..<15)
     assert(result.errors, equals: [])
   }
   
   func testValidateBoundsWithValueAboveBoundsGetsError() {
     let hat = Hat(brimSize: 16)
-    let result = Validation<Hat>().validate("brimSize", hat.brimSize, inBounds: 5...15)
+    let result = Validation(modelName(Hat.self)).validate("brimSize", hat.brimSize, inBounds: 5...15)
     assert(result.errors, equals: [
-      ValidationError(modelType: Hat.self, key: "brimSize", message: "tooHigh", data: ["max": "15"])
+      ValidationError(modelName: modelName(Hat.self), key: "brimSize", message: "tooHigh", data: ["max": "15"])
     ])
   }
   
   func testValidateBoundsWithValueAtTopOfOpenIntervalGetsNoError() {
     let hat = Hat(brimSize: 15)
-    let result = Validation<Hat>().validate("brimSize", hat.brimSize, inBounds: 5..<15)
+    let result = Validation(modelName(Hat.self)).validate("brimSize", hat.brimSize, inBounds: 5..<15)
     assert(result.errors, equals: [
-      ValidationError(modelType: Hat.self, key: "brimSize", message: "tooHigh", data: ["max": "15"])
+      ValidationError(modelName: modelName(Hat.self), key: "brimSize", message: "tooHigh", data: ["max": "15"])
     ])
   }
   
   func testValidateBoundsWithValueAtTopOfClosedIntervalGetsNoError() {
     let hat = Hat(brimSize: 15)
-    let result = Validation<Hat>().validate("brimSize", hat.brimSize, inBounds: 5...15)
+    let result = Validation(modelName(Hat.self)).validate("brimSize", hat.brimSize, inBounds: 5...15)
     assert(result.errors, equals: [])
   }
   
   func testValidateWithMultipleErrorsCollectsErrors() {
     let hat = Hat(brimSize: 5, color: "")
-    let result = Validation<Hat>()
+    let result = Validation(modelName(Hat.self))
       .validate(presenceOf: "color", hat.color)
       .validate("brimSize", hat.brimSize, inBounds: 10...15)
     
     assert(result.errors, equals: [
-      ValidationError(modelType: Hat.self, key: "color", message: "blank"),
-      ValidationError(modelType: Hat.self, key: "brimSize", message: "tooLow", data: ["min": "10"])
+      ValidationError(modelName: modelName(Hat.self), key: "color", message: "blank"),
+      ValidationError(modelName: modelName(Hat.self), key: "brimSize", message: "tooLow", data: ["min": "10"])
       ])
   }
   
   func testValidateWithBlockAddsErrors() {
-    let result = Validation<Hat>().validate {
+    let result = Validation(modelName(Hat.self)).validate {
       [
         ("color", "blank", [:]),
         ("brimSize", "tooLow", ["min": "5"])
       ]
     }
     assert(result.errors, equals: [
-      ValidationError(modelType: Hat.self, key: "color", message: "blank"),
-      ValidationError(modelType: Hat.self, key: "brimSize", message: "tooLow", data: ["min": "5"])
+      ValidationError(modelName: modelName(Hat.self), key: "color", message: "blank"),
+      ValidationError(modelName: modelName(Hat.self), key: "brimSize", message: "tooLow", data: ["min": "5"])
     ])
   }
   
   func testValidateUniquenessWithTakenFieldHasError() {
-    let hat1 = Hat(color: "red")
-    hat1.save()
+    let hat1 = saveRecord(Hat(color: "red"))!
     let hat2 = Hat(color: "red")
-    let result = Validation<Hat>().validate(uniquenessOf: ["color": hat2.color], id: hat2.id)
+    let result = Validation(modelName(Hat.self)).validate(uniquenessOf: ["color": hat2.color], on: hat2)
     assert(result.errors, equals: [
-      ValidationError(modelType: Hat.self, key: "color", message: "taken")
+      ValidationError(modelName: modelName(Hat.self), key: "color", message: "taken")
     ])
   }
   
   func testValidateUniquenessWithNoOthersHasNoError() {
     let hat1 = Hat(color: "red")
-    let result = Validation<Hat>().validate(uniquenessOf: ["color": hat1.color], id: hat1.id)
+    let result = Validation(modelName(Hat.self)).validate(uniquenessOf: ["color": hat1.color], on: hat1)
     assert(result.errors, equals: [])
   }
   
   func testValidateUniquenessWithSavedRecordWithNoOthersHasNoError() {
-    let hat1 = Hat(color: "red")
-    hat1.save()
-    let result = Validation<Hat>().validate(uniquenessOf: ["color": hat1.color], id: hat1.id)
+    let hat1 = saveRecord(Hat(color: "red"))!
+    let result = Validation(modelName(Hat.self)).validate(uniquenessOf: ["color": hat1.color], on: hat1)
     assert(result.errors, equals: [])
   }
   
   func testValidateUniquenessWithSavedRecordWithTakenFieldHasError() {
-    let hat1 = Hat(color: "red")
-    hat1.save()
-    let hat2 = Hat(color: "red")
-    hat2.save()
-    let result = Validation<Hat>().validate(uniquenessOf: ["color": hat2.color], id: hat2.id)
+    let hat1 = saveRecord(Hat(color: "red"))!
+    let hat2 = saveRecord(Hat(color: "red"))!
+    let result = Validation(modelName(Hat.self)).validate(uniquenessOf: ["color": hat2.color], on: hat2)
     assert(result.errors, equals: [
-      ValidationError(modelType: Hat.self, key: "color", message: "taken")
+      ValidationError(modelName: modelName(Hat.self), key: "color", message: "taken")
       ])
   }
   
   func testValidateUniquenessWithMultipleFieldsWithAllTakenHasError() {
-    let hat1 = Hat(color: "red", brimSize: 10)
-    hat1.save()
+    let hat1 = saveRecord(Hat(color: "red", brimSize: 10))!
     let hat2 = Hat(color: "red", brimSize: 10)
-    let result = Validation<Hat>().validate(uniquenessOf: ["color": hat2.color, "brim_size": hat2.brimSize], id: hat2.id)
+    let result = Validation(modelName(Hat.self)).validate(uniquenessOf: ["color": hat2.color, "brim_size": hat2.brimSize], on: hat2)
     assert(result.errors, equals: [
-      ValidationError(modelType: Hat.self, key: "brim_size_color", message: "taken")
+      ValidationError(modelName: modelName(Hat.self), key: "brim_size_color", message: "taken")
       ])
   }
   
   func testValidateUniquenessWithPartialOverlapHasNoError() {
-    let hat1 = Hat(color: "red", brimSize: 10)
-    hat1.save()
-    let hat2 = Hat(color: "red", brimSize: 15)
-    hat2.save()
-    let hat3 = Hat(color: "brown", brimSize: 10)
-    hat3.save()
-    let result1 = Validation<Hat>().validate(uniquenessOf: ["color": hat2.color, "brim_size": hat2.brimSize], id: hat2.id)
-    let result2 = Validation<Hat>().validate(uniquenessOf: ["color": hat3.color, "brim_size": hat3.brimSize], id: hat3.id)
+    let hat1 = saveRecord(Hat(color: "red", brimSize: 10))!
+    let hat2 = saveRecord(Hat(color: "red", brimSize: 15))!
+    let hat3 = saveRecord(Hat(color: "brown", brimSize: 10))!
+    let result1 = Validation(modelName(Hat.self)).validate(uniquenessOf: ["color": hat2.color, "brim_size": hat2.brimSize], on: hat2)
+    let result2 = Validation(modelName(Hat.self)).validate(uniquenessOf: ["color": hat3.color, "brim_size": hat3.brimSize], on: hat3)
     assert(result1.errors, equals: [])
     assert(result2.errors, equals: [])
   }
   
   func testValidateUniquenessWithNilValueWithNullTakenReturnsError() {
-    let shelf1 = Shelf(name: nil)
-    shelf1.save()
+    let shelf1 = saveRecord(Shelf(name: nil))!
     let shelf2 = Shelf(name: nil)
-    let result = Validation<Shelf>().validate(uniquenessOf: ["name": shelf2.name], id: shelf2.id)
+    let result = Validation(modelName(Shelf.self)).validate(uniquenessOf: ["name": shelf2.name], on: shelf2)
     assert(result.errors, equals: [
-      ValidationError(modelType: Shelf.self, key: "name", message: "taken")
+      ValidationError(modelName: "shelf", key: "name", message: "taken")
     ])
   }
   
   func testValidateUniquenessWIthNilValueWithRealValueTakenReturnsNoError() {
-    let shelf1 = Shelf(name: "Shelf")
-    shelf1.save()
+    let shelf1 = saveRecord(Shelf(name: "Shelf"))!
     let shelf2 = Shelf(name: nil)
-    let result = Validation<Shelf>().validate(uniquenessOf: ["name": shelf2.name], id: shelf2.id)
+    let result = Validation(modelName(Shelf.self)).validate(uniquenessOf: ["name": shelf2.name], on: shelf2)
     assert(result.errors, equals: [])
   }
   
   //MARK: - Error Access
   
   func testSubscriptReturnsErrorsWithMatchingKey() {
-    let validation = Validation<Hat>([
-      ValidationError(modelType: Hat.self, key: "color", message: "blank"),
-      ValidationError(modelType: Hat.self, key: "brimSize", message: "blank"),
-      ValidationError(modelType: Hat.self, key: "color", message: "tooShort"),
+    let validation = Validation(modelName(Hat.self), errors: [
+      ValidationError(modelName: modelName(Hat.self), key: "color", message: "blank"),
+      ValidationError(modelName: modelName(Hat.self), key: "brimSize", message: "blank"),
+      ValidationError(modelName: modelName(Hat.self), key: "color", message: "tooShort"),
     ])
     let errors = validation["color"]
     assert(errors, equals: [
-      ValidationError(modelType: Hat.self, key: "color", message: "blank"),
-      ValidationError(modelType: Hat.self, key: "color", message: "tooShort"),
+      ValidationError(modelName: modelName(Hat.self), key: "color", message: "blank"),
+      ValidationError(modelName: modelName(Hat.self), key: "color", message: "tooShort"),
     ])
   }
   
   func testValidationWithNoErrorsIsValid() {
-    let validation = Validation<Hat>()
+    let validation = Validation(modelName(Hat.self))
     XCTAssertTrue(validation.valid)
   }
   
   func testValidationWithErrorIsNotValid() {
-    let validation = Validation<Hat>([
-      ValidationError(modelType: Hat.self, key: "color", message: "blank")
+    let validation = Validation(modelName(Hat.self), errors: [
+      ValidationError(modelName: modelName(Hat.self), key: "color", message: "blank")
     ])
     XCTAssertFalse(validation.valid)
   }

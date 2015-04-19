@@ -6,10 +6,8 @@ class UserTests: TailorTestCase {
   var user : User!
   
   override func setUp() {
-    Application.start()
-    DatabaseConnection.sharedConnection().executeQuery("TRUNCATE TABLE `users`")
-    user = User(emailAddress: "test@test.com", password: "Monkey")
-    user.save()
+    super.setUp()
+    user = saveRecord(User(emailAddress: "test@test.com", password: "Monkey"))
   }
   
   //MARK: - Sign Up

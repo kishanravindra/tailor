@@ -326,9 +326,9 @@ class TemplateTests: TailorTestCase {
   }
   
   func testAttributeNameGetsNameFromModel() {
-    let name1 = template.attributeName(Hat.self, "brimSize")
+    let name1 = template.attributeName("hat", "brimSize")
     assert(name1, equals: "Brim Size", message: "gets a capitalized name from a model")
-    let name2 = template.attributeName(Shelf.self, "store")
+    let name2 = template.attributeName("shelf", "store")
     assert(name2, equals: "Hat Store", message: "gets a capitalized name from the localization")
   }
 }

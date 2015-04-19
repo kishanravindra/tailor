@@ -4,10 +4,10 @@
   */
 public struct ValidationError: Equatable {
   /**
-    The type of model the error is for. This is used for translating error
+    The name of the model the error is for. This is used for translating error
     messages.
     */
-  public let modelType: Model.Type
+  public let modelName: String
   
   /**
     The key that the error is on.
@@ -33,8 +33,8 @@ public struct ValidationError: Equatable {
     :param: key         The field on the model with the error.
     :param: data        Additional data giving details on the error.
     */
-  public init(modelType: Model.Type, key: String, message: String, data: [String:String] = [:]) {
-    self.modelType = modelType
+  public init(modelName: String, key: String, message: String, data: [String:String] = [:]) {
+    self.modelName = modelName
     self.key = key
     self.message = message
     self.data = data
@@ -57,7 +57,6 @@ public struct ValidationError: Equatable {
     :returns:               The description
     */
   public func localize(localization: Localization) -> String {
-    var modelName = self.modelType.modelName()
     var message = self.message.underscored()
     var key = self.key.underscored()
     let keys = [

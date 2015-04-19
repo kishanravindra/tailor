@@ -3,7 +3,7 @@ import Tailor
 import TailorTesting
 
 class ValidationErrorTests: TailorTestCase {
-  let error = ValidationError(modelType: Hat.self, key: "height", message: "tooLow", data: ["value": "7"])
+  let error = ValidationError(modelName: "hat", key: "height", message: "tooLow", data: ["value": "7"])
   let localization = PropertyListLocalization(locale: "en")
   var content: ConfigurationSetting!
   
@@ -18,33 +18,33 @@ class ValidationErrorTests: TailorTestCase {
     ])
   }
   func testEqualityAcceptsErrorsWithSameInformation() {
-    let error2 = ValidationError(modelType: Hat.self, key: "height", message: "tooLow", data: ["value": "7"])
+    let error2 = ValidationError(modelName: "hat", key: "height", message: "tooLow", data: ["value": "7"])
     assert(error, equals: error2)
   }
   
   func testEqualityRejectsErrorsWithDifferentMessage() {
-    let error2 = ValidationError(modelType: Hat.self, key: "height", message: "tooHigh", data: ["value": "7"])
+    let error2 = ValidationError(modelName: "hat", key: "height", message: "tooHigh", data: ["value": "7"])
     XCTAssertNotEqual(error, error2)
   }
   
   func testEqualityRejectsErrorsWithDifferentDataValues() {
-    let error2 = ValidationError(modelType: Hat.self, key: "height", message: "tooLow", data: ["value": "8"])
+    let error2 = ValidationError(modelName: "hat", key: "height", message: "tooLow", data: ["value": "8"])
     XCTAssertNotEqual(error, error2)
   }
   
   func testEqualityRejectsErrorsWithDifferentDataKeys() {
-    let error2 = ValidationError(modelType: Hat.self, key: "height", message: "tooLow", data: ["value": "7", "otherValue": "8"])
+    let error2 = ValidationError(modelName: "hat", key: "height", message: "tooLow", data: ["value": "7", "otherValue": "8"])
     XCTAssertNotEqual(error, error2)
     XCTAssertNotEqual(error2, error)
   }
   
   func testEqualityRejectsErrorWithDifferentKeys() {
-    let error2 = ValidationError(modelType: Hat.self, key: "width", message: "tooLow", data: ["value": "7"])
+    let error2 = ValidationError(modelName: "hat", key: "width", message: "tooLow", data: ["value": "7"])
     XCTAssertNotEqual(error, error2)
   }
   
   func testEqualityAcceptsErrorsWithDifferentModels() {
-    let error2 = ValidationError(modelType: Record.self, key: "height", message: "tooLow", data: ["value": "7"])
+    let error2 = ValidationError(modelName: "shelf", key: "height", message: "tooLow", data: ["value": "7"])
     assert(error, equals: error2)
   }
   
@@ -80,22 +80,13 @@ class ValidationErrorTests: TailorTestCase {
   
   func testLocalizeCanUnderscoreKey() {
     content["hat.errors.brim_size.too_low"] = "test"
-    let error = ValidationError(modelType: Hat.self, key: "brimSize", message: "tooLow", data: [:])
-    assert(error.localize(localization), equals: "test")
-  }
-  
-  func testLocalizeCanUnderscoreModelName() {
-    @objc(TestHat) class TestHat: Hat {
-      
-    }
-    content["test_hat.errors.height.too_low"] = "test"
-    let error = ValidationError(modelType: TestHat.self, key: "height", message: "tooLow", data: [:])
+    let error = ValidationError(modelName: "hat", key: "brimSize", message: "tooLow", data: [:])
     assert(error.localize(localization), equals: "test")
   }
   
   func testLocalizeCanInterpolateData() {
     content["hat.errors.height.too_low"] = "must be at least \\(height)"
-    let error = ValidationError(modelType: Hat.self, key: "height", message: "tooLow", data: ["height": "10"])
+    let error = ValidationError(modelName: "hat", key: "height", message: "tooLow", data: ["height": "10"])
     assert(error.localize(localization), equals: "must be at least 10")
   }
 }

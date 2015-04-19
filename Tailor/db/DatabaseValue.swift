@@ -184,3 +184,7 @@ extension Double: DatabaseValueConvertible {
 extension NSDate: DatabaseValueConvertible {
   public var databaseValue: DatabaseValue { return DatabaseValue.Date(self) }
 }
+
+extension DatabaseValue: DatabaseValueConvertible {
+  public var databaseValue: DatabaseValue { return self }
+}

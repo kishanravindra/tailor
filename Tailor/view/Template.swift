@@ -256,11 +256,11 @@ public class Template {
   /**
     This method gets a localized, capitalized attribute name.
 
-    :param: model           The model whose attribute this is.
+    :param: modelName       The name of the model whose attribute this is.
     :param: attributeName   The name of the attribute to localize.
     :returns:               The localized attribute.
     */
-  public func attributeName(model: Model.Type, _ attributeName: String) -> String {
-    return model.humanAttributeName(attributeName, localization: self.localization, capitalize: true)
+  public func attributeName(modelName: String, _ attributeName: String) -> String {
+    return modelAttributeName(modelName, attributeName, localization: self.localization, capitalize: true)
   }
 }

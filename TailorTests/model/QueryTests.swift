@@ -5,11 +5,10 @@ import TailorTesting
 class QueryTests: TailorTestCase {
   let baseQuery = Query<Hat>(
     selectClause: "hats.id,hats.color,hats.brim_size",
-    whereClause: ("hats.store_id=?", ["5"]),
+    whereClause: ("hats.store_id=?", [DatabaseValue.Integer(5)]),
     orderClause: ("hats.created_at ASC", []),
     limitClause: ("5", []),
     joinClause: ("INNER JOIN shelfs ON shelfs.id = hats.shelf_id", []),
-    conditions: ["storeId": NSNumber(int: 5)],
     cacheResults: true
   )
   
@@ -34,7 +33,6 @@ class QueryTests: TailorTestCase {
     assert(query.limitClause.parameters, equals: [], message: "has an empty limit clause")
     assert(query.joinClause.query, equals: "", message: "has an empty join clause")
     assert(query.joinClause.parameters, equals: [], message: "has an empty join clause")
-    XCTAssertTrue(query.conditions.isEmpty, "has no conditions")
     XCTAssertFalse(query.cacheResults, "has cacheResults set to false")
   }
   
@@ -50,13 +48,6 @@ class QueryTests: TailorTestCase {
     assert(query.joinClause.query, equals: baseQuery.joinClause.query, message: "copies join clause")
     assert(query.joinClause.parameters, equals: baseQuery.joinClause.parameters, message: "copies join clause")
     assert(query.cacheResults, equals: true, message: "copies cacheResults field")
-    
-    if let storeId = query.conditions["storeId"] as? NSNumber {
-      assert(storeId, equals: NSNumber(int: 5), message: "copies conditions")
-    }
-    else {
-      XCTFail("copies conditions")
-    }
   }
 
   //MARK: - Query Building
@@ -67,7 +58,7 @@ class QueryTests: TailorTestCase {
     
     assert(query2.selectClause, equals: baseQuery.selectClause, message: "copies select clause")
     assert(query2.whereClause.query, equals: "hats.color=?", message: "sets where clause")
-    assert(query2.whereClause.parameters, equals: ["red"], message: "sets where clause")
+    assert(query2.whereClause.parameters, equals: [DatabaseValue.String("red")], message: "sets where clause")
     assert(query2.orderClause.query, equals: baseQuery.orderClause.query, message: "copies order clause")
     assert(query2.orderClause.parameters, equals: baseQuery.orderClause.parameters, message: "copies order clause")
     assert(query2.limitClause.query, equals: baseQuery.limitClause.query, message: "copies limit clause")
@@ -81,7 +72,7 @@ class QueryTests: TailorTestCase {
     
     assert(query.selectClause, equals: baseQuery.selectClause, message: "copies select clause")
     assert(query.whereClause.query, equals: "hats.store_id=? AND hats.color=?", message: "sets where clause")
-    assert(query.whereClause.parameters, equals: ["5", "red"], message: "sets where clause")
+    assert(query.whereClause.parameters, equals: [5.databaseValue, "red".databaseValue], message: "sets where clause")
     assert(query.orderClause.query, equals: baseQuery.orderClause.query, message: "copies order clause")
     assert(query.orderClause.parameters, equals: baseQuery.orderClause.parameters, message: "copies order clause")
     assert(query.limitClause.query, equals: baseQuery.limitClause.query, message: "copies limit clause")
@@ -95,15 +86,13 @@ class QueryTests: TailorTestCase {
     
     assert(query.selectClause, equals: baseQuery.selectClause, message: "copies select clause")
     assert(query.whereClause.query, equals: "hats.store_id=? AND hats.color=?", message: "sets where clause")
-    assert(query.whereClause.parameters, equals: ["5", "red"], message: "sets where clause")
+    assert(query.whereClause.parameters, equals: [5.databaseValue, "red".databaseValue], message: "sets where clause")
     assert(query.orderClause.query, equals: baseQuery.orderClause.query, message: "copies order clause")
     assert(query.orderClause.parameters, equals: baseQuery.orderClause.parameters, message: "copies order clause")
     assert(query.limitClause.query, equals: baseQuery.limitClause.query, message: "copies limit clause")
     assert(query.limitClause.parameters, equals: baseQuery.limitClause.parameters, message: "copies limit clause")
     assert(query.joinClause.query, equals: baseQuery.joinClause.query, message: "copies join clause")
     assert(query.joinClause.parameters, equals: baseQuery.joinClause.parameters, message: "copies join clause")
-    
-    assert(query.conditions.keys.array, equals: ["storeId", "color"], message: "combines conditions")
   }
   
   func testFilterWithNilConditionPutsNullInConditions() {
@@ -111,15 +100,13 @@ class QueryTests: TailorTestCase {
     
     assert(query.selectClause, equals: baseQuery.selectClause, message: "copies select clause")
     assert(query.whereClause.query, equals: "hats.store_id=? AND hats.color IS NULL", message: "sets where clause")
-    assert(query.whereClause.parameters, equals: ["5"], message: "sets where clause")
+    assert(query.whereClause.parameters, equals: [5.databaseValue], message: "sets where clause")
     assert(query.orderClause.query, equals: baseQuery.orderClause.query, message: "copies order clause")
     assert(query.orderClause.parameters, equals: baseQuery.orderClause.parameters, message: "copies order clause")
     assert(query.limitClause.query, equals: baseQuery.limitClause.query, message: "copies limit clause")
     assert(query.limitClause.parameters, equals: baseQuery.limitClause.parameters, message: "copies limit clause")
     assert(query.joinClause.query, equals: baseQuery.joinClause.query, message: "copies join clause")
     assert(query.joinClause.parameters, equals: baseQuery.joinClause.parameters, message: "copies join clause")
-    
-    assert(query.conditions.keys.array, equals: ["storeId", "color"], message: "combines conditions")
   }
   
   func testOrderAppendsNewOrdering() {
@@ -252,29 +239,22 @@ class QueryTests: TailorTestCase {
   func testToSqlCombinesPartsOfQuery() {
     let (query, parameters) = baseQuery.toSql()
     assert(query, equals: "SELECT hats.id,hats.color,hats.brim_size FROM hats INNER JOIN shelfs ON shelfs.id = hats.shelf_id WHERE hats.store_id=? ORDER BY hats.created_at ASC LIMIT 5", message: "combines all parts of the query")
-    assert(parameters, equals: ["5"], message: "combines all parameters")
+    assert(parameters, equals: [5.databaseValue], message: "combines all parameters")
   }
   
   func testAllFetchesRecordsUsingQuery() {
-    let hat1 = Hat(color: "black")
-    let hat2 = Hat(color: "black")
-    let hat3 = Hat(color: "red")
-    let hat4 = Hat(color: "black")
-    hat1.save()
-    hat2.save()
-    hat3.save()
-    hat4.save()
+    let hat1 = saveRecord(Hat(color: "black"))!
+    let hat2 = saveRecord(Hat(color: "black"))!
+    let hat3 = saveRecord(Hat(color: "red"))!
+    let hat4 = saveRecord(Hat(color: "black"))!
     let results = Query<Hat>().filter(["color": "black"]).order("id", .OrderedDescending).limit(2).all()
     assert(results, equals: [hat4, hat2], message: "fetches the correct records")
   }
   
   func testFirstGetsFirstMatchingRecord() {
-    let hat1 = Hat(color: "red")
-    let hat2 = Hat(color: "black")
-    let hat3 = Hat(color: "black")
-    hat1.save()
-    hat2.save()
-    hat3.save()
+    let hat1 = saveRecord(Hat(color: "red"))!
+    let hat2 = saveRecord(Hat(color: "black"))!
+    let hat3 = saveRecord(Hat(color: "black"))!
     let query = Query<Hat>().filter(["color": "black"]).order("id", .OrderedAscending)
     if let record = query.first() {
       assert(record, equals: hat2, message: "fetches the correct record")
@@ -285,36 +265,28 @@ class QueryTests: TailorTestCase {
   }
   
   func testFirstReturnsNilWithNoMatch() {
-    let hat1 = Hat(color: "red")
-    let hat2 = Hat(color: "black")
-    let hat3 = Hat(color: "black")
-    hat1.save()
-    hat2.save()
-    hat3.save()
+    let hat1 = saveRecord(Hat(color: "red"))!
+    let hat2 = saveRecord(Hat(color: "black"))!
+    let hat3 = saveRecord(Hat(color: "black"))!
     let query = Query<Hat>().filter(["color": "green"])
-    XCTAssertNil(query.first(), "returns nil")
+    XCTAssertTrue(query.first() == nil, "returns nil")
   }
   
   func testLastGetsLastRecordBasedOnOrdering() {
-    let hat1 = Hat(color: "black")
-    let hat2 = Hat(color: "red")
-    let hat3 = Hat(color: "blue")
-    hat1.save()
-    hat2.save()
-    hat3.save()
+    let hat1 = saveRecord(Hat(color: "black"))!
+    let hat2 = saveRecord(Hat(color: "red"))!
+    let hat3 = saveRecord(Hat(color: "blue"))!
     let query = Query<Hat>().order("color", .OrderedAscending)
     let record = query.last()
-    XCTAssertNotNil(record, "gets a record")
+    XCTAssertTrue(record != nil, "gets a record")
     if record != nil {
       assert(record!, equals: hat2, message: "gets the last one by the ordering criteria")
     }
   }
   
   func testFindGetsRecordById() {
-    let hat1 = Hat(color: "red")
-    let hat2 = Hat(color: "black")
-    hat1.save()
-    hat2.save()
+    let hat1 = saveRecord(Hat(color: "red"))!
+    let hat2 = saveRecord(Hat(color: "black"))!
     
     if let id=hat2.id, let record = Query<Hat>().find(id) {
       assert(record, equals: hat2, message: "fetches the correct record")
@@ -325,33 +297,25 @@ class QueryTests: TailorTestCase {
   }
   
   func testFindReturnsNilWithNoMatchingRecord() {
-    let hat1 = Hat(color: "red")
-    let hat2 = Hat(color: "black")
-    hat1.save()
-    hat2.save()
+    let hat1 = saveRecord(Hat(color: "red"))!
+    let hat2 = saveRecord(Hat(color: "black"))!
     
-    XCTAssertNil(Query<Hat>().find(hat2.id! + 1), "returns nil with no matching id")
-    XCTAssertNil(Query<Hat>().filter(["color": "red"]).find(hat2.id!), "returns nil when id fails other constraints")
+    XCTAssertTrue(Query<Hat>().find(hat2.id! + 1) == nil, "returns nil with no matching id")
+    XCTAssertTrue(Query<Hat>().filter(["color": "red"]).find(hat2.id!) == nil, "returns nil when id fails other constraints")
   }
   
   func testCountGetsNumberOfMatchingRecords() {
-    let hat1 = Hat(color: "red")
-    let hat2 = Hat(color: "black")
-    let hat3 = Hat(color: "black")
-    hat1.save()
-    hat2.save()
-    hat3.save()
+    let hat1 = saveRecord(Hat(color: "red"))!
+    let hat2 = saveRecord(Hat(color: "black"))!
+    let hat3 = saveRecord(Hat(color: "black"))!
     let count = Query<Hat>().filter(["color": "black"]).count()
     assert(count, equals: 2, message: "finds two records")
   }
   
   func testIsEmptyIsTrueWithMatchingRecords() {
-    let hat1 = Hat(color: "red")
-    let hat2 = Hat(color: "black")
-    let hat3 = Hat(color: "black")
-    hat1.save()
-    hat2.save()
-    hat3.save()
+    let hat1 = saveRecord(Hat(color: "red"))!
+    let hat2 = saveRecord(Hat(color: "black"))!
+    let hat3 = saveRecord(Hat(color: "black"))!
     var query = Query<Hat>().filter(["color": "black"])
     XCTAssertFalse(query.isEmpty(), "is false when there are matches")
     query = Query<Hat>().filter(["color": "green"])
@@ -359,30 +323,23 @@ class QueryTests: TailorTestCase {
   }
   
   func testFetchAllWithCachingOnCachesResults() {
-    let hat1 = Hat(color: "red")
-    let hat2 = Hat(color: "black")
-    let hat3 = Hat(color: "black")
-    hat1.save()
-    hat2.save()
-    hat3.save()
+    let hat1 = saveRecord(Hat(color: "red"))!
+    let hat2 = saveRecord(Hat(color: "black"))!
+    let hat3 = saveRecord(Hat(color: "black"))!
     
     CacheStore.shared().clear()
     let query = Query<Hat>().filter(["color": "black"]).cached()
     let firstResults = query.all()
     assert(firstResults.count, equals: 2, message: "gets two results")
-    let hat4 = Hat(color: "black")
-    hat4.save()
+    let hat4 = saveRecord(Hat(color: "black"))!
     let secondResults = query.all()
     assert(secondResults.count, equals: 2, message: "still gets two results after one is created")
   }
   
   func testFetchAllWithCachingOnPreservesOriginalOrder() {
-    let hat1 = Hat(color: "red")
-    let hat2 = Hat(color: "black", brimSize: 10)
-    let hat3 = Hat(color: "black", brimSize: 11)
-    hat1.save()
-    hat2.save()
-    hat3.save()
+    let hat1 = saveRecord(Hat(color: "red"))!
+    let hat2 = saveRecord(Hat(color: "black", brimSize: 10))!
+    let hat3 = saveRecord(Hat(color: "black", brimSize: 11))!
     
     CacheStore.shared().clear()
     let query = Query<Hat>().order("brim_size", .OrderedDescending).filter(["color": "black"]).cached()
@@ -394,12 +351,9 @@ class QueryTests: TailorTestCase {
   }
   
   func testFetchAllWithInjectionInCacheDoesNotCacheResults() {
-    let hat1 = Hat(color: "red")
-    let hat2 = Hat(color: "black")
-    let hat3 = Hat(color: "black")
-    hat1.save()
-    hat2.save()
-    hat3.save()
+    let hat1 = saveRecord(Hat(color: "red"))!
+    let hat2 = saveRecord(Hat(color: "black"))!
+    let hat3 = saveRecord(Hat(color: "black"))!
     
     CacheStore.shared().clear()
     let query = Query<Hat>().filter(["color": "black"]).cached()
@@ -409,27 +363,22 @@ class QueryTests: TailorTestCase {
     let cacheKey = "SELECT hats.* FROM hats WHERE hats.color=?(black)"
     XCTAssertNotNil(CacheStore.shared().read(cacheKey))
     CacheStore.shared().write(cacheKey, value: "0); DROP TABLE `hats`; SELECT (0")
-    let hat4 = Hat(color: "black")
-    hat4.save()
+    let hat4 = saveRecord(Hat(color: "black"))!
     let secondResults = query.all()
     assert(secondResults.count, equals: 3, message: "gets three results after one is created")
     assert(Query<Hat>().count(), equals: 4, message: "finds four total results")
   }
   
   func testFetchAllWithCachingOffDoesNotCacheResults() {
-    let hat1 = Hat(color: "red")
-    let hat2 = Hat(color: "black")
-    let hat3 = Hat(color: "black")
-    hat1.save()
-    hat2.save()
-    hat3.save()
+    let hat1 = saveRecord(Hat(color: "red"))!
+    let hat2 = saveRecord(Hat(color: "black"))!
+    let hat3 = saveRecord(Hat(color: "black"))!
     
     CacheStore.shared().clear()
     let query = Query<Hat>().filter(["color": "black"])
     let firstResults = query.all()
     assert(firstResults.count, equals: 2, message: "gets two results")
-    let hat4 = Hat(color: "black")
-    hat4.save()
+    let hat4 = saveRecord(Hat(color: "black"))!
     let secondResults = query.all()
     assert(secondResults.count, equals: 3, message: "gets three results after one is created")
   }

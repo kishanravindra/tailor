@@ -68,7 +68,8 @@ class TestConnection : DatabaseConnection {
   }
 }
 
-class Hat : Record {
+struct Hat : Persistable {
+  let id: Int?
   var brimSize: Int
   var color: String
   var shelfId: Int!
@@ -77,15 +78,16 @@ class Hat : Record {
   var updatedAt: NSDate?
   
   
-  init(brimSize: Int = 0, color: String = "", shelfId: Int = 0, owner: String? = nil, id: Int? = nil) {
+  init(brimSize: Int = 0, color: String = "", shelfId: Int? = nil, owner: String? = nil, id: Int? = nil) {
     self.brimSize = brimSize
     self.color = color
     self.shelfId = shelfId
     self.owner = owner
-    super.init(id: id)
+    self.id = id
   }
   
-  override func valuesToPersist() -> [String : DatabaseValueConvertible?] {
+  static func tableName() -> String { return "hats" }
+  func valuesToPersist() -> [String : DatabaseValueConvertible?] {
     return [
       "brim_size": brimSize,
       "color": color,
@@ -95,14 +97,13 @@ class Hat : Record {
     ]
   }
   
-  required convenience init?(databaseRow: [String:DatabaseValue]){
+  init?(databaseRow: [String:DatabaseValue]){
     if let brimSize = databaseRow["brim_size"]?.intValue,
-      let color = databaseRow["color"]?.stringValue,
-      let shelfId = databaseRow["shelf_id"]?.intValue {
+      let color = databaseRow["color"]?.stringValue {
         self.init(
           brimSize: brimSize,
           color: color,
-          shelfId: shelfId,
+          shelfId: databaseRow["id"]?.intValue,
           id: databaseRow["id"]?.intValue
         )
         createdAt = databaseRow["created_at"]?.dateValue
@@ -115,49 +116,51 @@ class Hat : Record {
   }
 }
 
-class Shelf : Record {
+struct Shelf : Persistable {
+  let id: Int?
   var name: String?
   var storeId: Int
   
   init(name: String?, storeId: Int = 0, id: Int? = nil) {
     self.name = name
     self.storeId = storeId
-    super.init(id: id)
+    self.id = id
   }
-  override func valuesToPersist() -> [String: DatabaseValueConvertible?] {
+  
+  static func tableName() -> String { return "shelfs" }
+  
+  func valuesToPersist() -> [String: DatabaseValueConvertible?] {
     return [
       "name": name,
       "store_id": storeId
     ]
   }
   
-  required convenience init?(databaseRow: [String:DatabaseValue]) {
-    if let name = databaseRow["name"]?.stringValue {
-      self.init(name: name, id: databaseRow["id"]?.intValue)
-      storeId = databaseRow["store_id"]?.intValue ?? 0
-    }
-    else {
-      self.init(name: nil)
-      return nil
-    }
+  init?(databaseRow: [String:DatabaseValue]) {
+    self.name = databaseRow["name"]?.stringValue
+    self.id = databaseRow["id"]?.intValue
+    self.storeId = databaseRow["store_id"]?.intValue ?? 0
   }
 }
 
-class Store : Record {
+struct Store : Persistable {
+  let id: Int?
   var name: String
   
   init(name: String, id: Int?=nil) {
     self.name = name
-    super.init(id: id)
+    self.id = id
   }
   
-  override func valuesToPersist() -> [String : DatabaseValueConvertible?] {
+  static func tableName() -> String { return "stores" }
+  
+  func valuesToPersist() -> [String : DatabaseValueConvertible?] {
     return [
       "name": name
     ]
   }
   
-  required convenience init?(databaseRow: [String:DatabaseValue]) {
+  init?(databaseRow: [String:DatabaseValue]) {
     if let name = databaseRow["name"]?.stringValue,
       let id = databaseRow["id"]?.intValue {
       self.init(name: name, id: id)

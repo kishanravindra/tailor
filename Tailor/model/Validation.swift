@@ -7,7 +7,10 @@
   new validation will have a new error in its collection, as well as all the
   errors from the previous validation.
   */
-public struct Validation<ModelType: Model> {
+public struct Validation {
+  /** The name of the model that we are working with. */
+  public let modelName: String
+  
   /** The validation errors that we have collected. */
   public let errors: [ValidationError]
   
@@ -17,9 +20,11 @@ public struct Validation<ModelType: Model> {
     You will generally want to initialize your validations with no errors, and
     then use the validate methods to collect them.
     
-    :param: errors    The validation errors that we are collecting.
+    :param: modelName   The name of the model that we are working with.
+    :param: errors      The validation errors that we are collecting.
     */
-  public init(_ errors: [ValidationError] = []) {
+  public init(_ modelName: String, errors: [ValidationError] = []) {
+    self.modelName = modelName
     self.errors = errors
   }
   
@@ -34,9 +39,9 @@ public struct Validation<ModelType: Model> {
     :param: data      The data to interpolate in the localized error message
     :returns:         The validation with this new error
     */
-  public func withError(key: String, _ message: String, data: [String:String] = [:]) -> Validation<ModelType> {
-    return Validation<ModelType>(self.errors + [ValidationError(
-      modelType: ModelType.self,
+  public func withError(key: String, _ message: String, data: [String:String] = [:]) -> Validation {
+    return Validation(modelName, errors: self.errors + [ValidationError(
+      modelName: modelName,
       key: key,
       message: message,
       data: data
@@ -50,7 +55,7 @@ public struct Validation<ModelType: Model> {
     :param value  The value for the field.
     :returns:     The new validation with the error added.
     */
-  public func validate(presenceOf key: String, _ value: Any?) -> Validation<ModelType> {
+  public func validate(presenceOf key: String, _ value: Any?) -> Validation {
     if value == nil {
       return withError(key, "blank")
     }
@@ -72,7 +77,7 @@ public struct Validation<ModelType: Model> {
     :param: bounds  The interval that the value must be within
     :returns        The new validation with the error added.
     */
-  public func validate<T: IntervalType where T.Bound : Printable>(key: String, _ value: T.Bound, inBounds bounds: T) -> Validation<ModelType> {
+  public func validate<T: IntervalType where T.Bound : Printable>(key: String, _ value: T.Bound, inBounds bounds: T) -> Validation {
     if !bounds.contains(value) {
       if value <= bounds.start {
         return withError(key, "tooLow", data: ["min": bounds.start.description])
@@ -96,11 +101,11 @@ public struct Validation<ModelType: Model> {
     :param: block   The block that will run the checks
     :returns:       The new validation with the errors added.
     */
-  public func validate(block: ()->[(String,String,[String:String])]) -> Validation<ModelType> {
+  public func validate(block: ()->[(String,String,[String:String])]) -> Validation {
     let newErrors = block().map {
-      ValidationError(modelType: ModelType.self, key: $0.0, message: $0.1, data: $0.2)
+      ValidationError(modelName: self.modelName, key: $0.0, message: $0.1, data: $0.2)
     }
-    return Validation<ModelType>(self.errors + newErrors)
+    return Validation(modelName, errors: self.errors + newErrors)
   }
   
   /**
@@ -117,26 +122,21 @@ public struct Validation<ModelType: Model> {
     `first_name_last_name`.
     
     This will return an error whenever there is any value with all of the values
-    in the dictionary for the field names in the dictionary. If an id is
-    provided, this will ignore any records with that id. If you are validating
-    a persisted record, you must provide the id. If you do not, the validation
-    will likely find the record itself as a duplicate and give a false error.
+    in the dictionary for the field names in the dictionary. If a record with an
+    id is provided, this will ignore any duplicates with that record's id, to
+    keep the record itself from coming up as a duplicate.
 
     :param: fields    The fields that must be unique.
-    :param: id        The id of the record that we are validating.
+    :param: record    The record that we are checking uniqueness on.
     :returns:         The new validation with the error added.
     */
-  public func validate(uniquenessOf fields: [String: DatabaseValueConvertible?], id: Int?) -> Validation<ModelType> {
-    let recordType: Record.Type! = ModelType.self as? Record.Type
-    if recordType == nil {
-      return self
-    }
+  public func validate<RecordType: Persistable>(uniquenessOf fields: [String: DatabaseValueConvertible?], on record: RecordType) -> Validation {
     
     if fields.isEmpty {
       return self
     }
     
-    var query = "SELECT * FROM \(recordType.tableName()) WHERE "
+    var query = "SELECT * FROM \(RecordType.tableName()) WHERE "
     
     var parameterString = ""
     var parameters = [DatabaseValue]()
@@ -156,9 +156,9 @@ public struct Validation<ModelType: Model> {
       }
     }
     
-    if id != nil {
+    if record.id != nil {
       parameterString += " AND id!=?"
-      parameters.append(id!.databaseValue)
+      parameters.append(record.id!.databaseValue)
     }
     
     query += parameterString

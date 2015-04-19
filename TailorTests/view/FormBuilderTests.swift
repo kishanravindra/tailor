@@ -34,10 +34,10 @@ class FormBuilderTests: TailorTestCase {
   
   func testInputCallsInputBuilder() {
     let expectation = expectationWithDescription("block called")
-    let errors = [
-      ValidationError(modelType: Hat.self, key: "color", message: "tooShort"),
-      ValidationError(modelType: Hat.self, key: "brimSize", message: "tooLow"),
-      ValidationError(modelType: Hat.self, key: "color", message: "blank")
+    let errors: [ValidationError] = [
+      ValidationError(modelName: "hat", key: "color", message: "tooShort"),
+      ValidationError(modelName: "hat", key: "brimSize", message: "tooLow"),
+      ValidationError(modelName: "hat", key: "color", message: "blank")
     ]
     builder = FormBuilder(template: template, name: "test_model", validationErrors: errors, inputBuilder: {
       form, key, value, attributes, errors in
@@ -47,8 +47,8 @@ class FormBuilderTests: TailorTestCase {
       self.assert(value, equals: "red", message: "passes the value to the builder")
       self.assert(attributes, equals: ["length": "10"], message: "passes the attributes to the builder")
       self.assert(errors, equals: [
-        ValidationError(modelType: Hat.self, key: "color", message: "tooShort"),
-        ValidationError(modelType: Hat.self, key: "color", message: "blank")
+        ValidationError(modelName: "hat", key: "color", message: "tooShort"),
+        ValidationError(modelName: "hat", key: "color", message: "blank")
       ])
     })
     builder.input("color", "red", attributes: ["length": "10"])

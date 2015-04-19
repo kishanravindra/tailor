@@ -39,8 +39,7 @@ class ControllerTests: TailorTestCase {
   
   override func setUp() {
     super.setUp()
-    user = User(emailAddress: "test@test.com", password: "test")
-    user.save()
+    user = saveRecord(User(emailAddress: "test@test.com", password: "test"))!
     
     var routeSet = RouteSet()
     routeSet.addRoute("route1", method: "GET", controller: TestController.self, action: "index")
@@ -295,30 +294,6 @@ class ControllerTests: TailorTestCase {
     assert(s, equals: "2009-02-13 03:05:45", message: "returns the formatted date")
   }
   
-  func testFilterForJsonWithRecordReturnsProperties() {
-    let store = Store(name: "Shop")
-    let result = Controller.filterForJson(store) as? [String:String] ?? [:]
-    assert(result, equals: ["name": "Shop"], message: "returns the formatted attributes")
-  }
-  
-  func testFilterForJsonWithArrayReturnsFilteredList() {
-    let list = [
-      Store(name: "Shop 1"),
-      Store(name: "Shop 2")
-    ]
-    let result = Controller.filterForJson(list) as? [[String: String]] ?? []
-    assert(result, equals: [["name": "Shop 1"], ["name": "Shop 2"]], message: "returns the formatted attributes")
-  }
-  
-  func testFilterForJsonWithDictionaryReturnsFilteredDictionary() {
-    let list = [
-      "1": Store(name: "Shop 1"),
-      "2": Store(name: "Shop 2")
-    ]
-    let result = Controller.filterForJson(list) as? [String: [String: String]] ?? [:]
-    assert(result, equals: ["1": ["name": "Shop 1"], "2": ["name": "Shop 2"]], message: "returns the formatted attributes")
-  }
-  
   func testFilterForJsonWithCustomTypeReturnsNil() {
     let input = TestApplication.sharedApplication()
     XCTAssertNil(Controller.filterForJson(input), "returns nil")
@@ -425,8 +400,7 @@ class ControllerTests: TailorTestCase {
   //MARK: - Authentication
   
   func testSignInSetsCurrentUserAndStoresIdInSession() {
-    let user2 = User(emailAddress: "test2@test.com", password: "test")
-    user2.save()
+    let user2 = saveRecord(User(emailAddress: "test2@test.com", password: "test"))!
     self.controller.signIn(user2)
     
     assert(self.controller.currentUser, equals: user2, message: "sets user")
@@ -597,8 +571,7 @@ class ControllerTests: TailorTestCase {
   
   func testCallActionCanCallActionWithUserAndParameters() {
     let expectation = expectationWithDescription("respond method called")
-    let user = User(emailAddress: "test@test.com", password: "test")
-    user.save()
+    let user = saveRecord(User(emailAddress: "test@test.com", password: "test"))!
     TestController.callAction("index", user: user, parameters: ["id": "5"]) {
       response, controller in
       expectation.fulfill()
@@ -612,8 +585,7 @@ class ControllerTests: TailorTestCase {
   
   func testCallActionCanCallActionWithUser() {
     let expectation = expectationWithDescription("respond method called")
-    let user = User(emailAddress: "test@test.com", password: "test")
-    user.save()
+    let user = saveRecord(User(emailAddress: "test@test.com", password: "test"))!
     TestController.callAction("index", user: user) {
       response, controller in
       expectation.fulfill()

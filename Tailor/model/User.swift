@@ -6,14 +6,17 @@ import Foundation
   It provides encryption of passwords, validation of accounts, and is integrated
   into the session management.
   */
-public class User : Record {
+public class User : Persistable {
   //MARK: - Structure
   
+  /** The primary key for the record. */
+  public let id: Int?
+  
   /** The user's email address. */
-  public dynamic var emailAddress: String
+  public var emailAddress: String
   
   /** The user's password, encrypted with bcrypt. */
-  public dynamic var encryptedPassword: String
+  public var encryptedPassword: String
   
   //MARK: Sign-Up
   /**
@@ -28,16 +31,19 @@ public class User : Record {
   public init(emailAddress: String, password: String) {
     self.emailAddress = emailAddress
     self.encryptedPassword = BcryptHasher().encrypt(password) ?? ""
-    super.init()
+    self.id = nil
   }
   
   public init(emailAddress: String, encryptedPassword: String, id: Int) {
     self.emailAddress = emailAddress
     self.encryptedPassword = encryptedPassword
-    super.init(id: id)
+    self.id = id
   }
   
   //MARK: Persistence
+  
+  /** The name of the table where the records are stored. */
+  public class func tableName() -> String { return "users" }
   
   public required convenience init?(databaseRow: [String:DatabaseValue]) {
     if let emailAddress = databaseRow["email_address"]?.stringValue,
@@ -51,7 +57,7 @@ public class User : Record {
     }
   }
   
-  public override func valuesToPersist() -> [String : DatabaseValueConvertible?] {
+  public func valuesToPersist() -> [String : DatabaseValueConvertible?] {
     return [
       "email_address": self.emailAddress,
       "encrypted_password": self.encryptedPassword

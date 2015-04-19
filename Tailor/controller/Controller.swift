@@ -177,8 +177,6 @@ public class Controller {
       return results
     case let a as Array<AnyObject>:
       return removeNils(a.map { self.filterForJson($0) })
-    case let r as Record:
-      return self.filterForJson(r.toPropertyList())
     default:
       return nil
     }
