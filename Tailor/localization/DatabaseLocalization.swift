@@ -32,7 +32,7 @@ public class DatabaseLocalization: Localization {
     public let id: Int?
     
     /** The name of the table in the database. */
-    public static func tableName() -> String { return "tailor_translations" }
+    public static var tableName: String { return "tailor_translations" }
     
     /**
       This method gets the columns that we persist in the database from this 

@@ -86,7 +86,7 @@ struct Hat : Persistable {
     self.id = id
   }
   
-  static func tableName() -> String { return "hats" }
+  static var tableName: String { return "hats" }
   func valuesToPersist() -> [String : DatabaseValueConvertible?] {
     return [
       "brim_size": brimSize,
@@ -127,7 +127,7 @@ struct Shelf : Persistable {
     self.id = id
   }
   
-  static func tableName() -> String { return "shelfs" }
+  static var tableName: String { return "shelfs" }
   
   func valuesToPersist() -> [String: DatabaseValueConvertible?] {
     return [
@@ -152,7 +152,7 @@ struct Store : Persistable {
     self.id = id
   }
   
-  static func tableName() -> String { return "stores" }
+  static var tableName: String { return "stores" }
   
   func valuesToPersist() -> [String : DatabaseValueConvertible?] {
     return [

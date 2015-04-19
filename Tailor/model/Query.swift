@@ -46,7 +46,7 @@ public class Query<RecordType: Persistable> {
     :param: cacheResults    Whether the query should cache its results.
     */
   public required init(copyFrom: Query<RecordType>? = nil, selectClause: String? = nil, whereClause: SqlFragment? = nil, orderClause: SqlFragment? = nil, limitClause: SqlFragment? = nil, joinClause: SqlFragment? = nil, cacheResults: Bool? = nil) {
-    self.selectClause = selectClause ?? copyFrom?.selectClause ?? "\(RecordType.tableName()).*"
+    self.selectClause = selectClause ?? copyFrom?.selectClause ?? "\(RecordType.tableName).*"
     self.whereClause = whereClause ?? copyFrom?.whereClause ?? ("", [])
     self.orderClause = orderClause ?? copyFrom?.orderClause ?? ("", [])
     self.limitClause = limitClause ?? copyFrom?.limitClause ?? ("", [])
@@ -94,7 +94,7 @@ public class Query<RecordType: Persistable> {
   public func filter(conditions: [String: DatabaseValueConvertible?]) -> Query<RecordType> {
     var query = ""
     var parameters : [DatabaseValue] = []
-    let tableName = RecordType.tableName()
+    let tableName = RecordType.tableName
     if !conditions.isEmpty {
       for (columnName,value) in conditions {
         if !query.isEmpty {
@@ -128,7 +128,7 @@ public class Query<RecordType: Persistable> {
       clause.query += ", "
     }
     let orderDescription = order == .OrderedAscending ? "ASC" : "DESC"
-    clause.query += "\(RecordType.tableName()).\(columnName) \(orderDescription)"
+    clause.query += "\(RecordType.tableName).\(columnName) \(orderDescription)"
     return self.dynamicType.init(
       copyFrom: self,
       orderClause: clause
@@ -207,8 +207,8 @@ public class Query<RecordType: Persistable> {
     :returns:             The new query.
   */
   public func join<OtherRecordType: Persistable>(recordType: OtherRecordType.Type, fromColumn: String, toColumn: String) -> Query<RecordType> {
-    let fromTable = recordType.tableName()
-    let toTable = RecordType.tableName()
+    let fromTable = recordType.tableName
+    let toTable = RecordType.tableName
     return self.join("INNER JOIN \(fromTable) ON \(fromTable).\(fromColumn) = \(toTable).\(toColumn)")
   }
 
@@ -265,7 +265,7 @@ public class Query<RecordType: Persistable> {
     :returns: The SQL query and bind parameters.
     */
   public func toSql() -> SqlFragment {
-    var query = "SELECT \(selectClause) FROM \(RecordType.tableName())"
+    var query = "SELECT \(selectClause) FROM \(RecordType.tableName)"
     var parameters : [DatabaseValue] = []
     let clauses = [
       ("", joinClause),

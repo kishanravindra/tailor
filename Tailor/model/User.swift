@@ -44,7 +44,7 @@ public class User : Persistable {
   //MARK: Persistence
   
   /** The name of the table where the records are stored. */
-  public class func tableName() -> String { return "users" }
+  public class var tableName: String { return "users" }
   
   /**
     This method initializes a user from a row in the database.

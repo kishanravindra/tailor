@@ -22,7 +22,7 @@ public protocol Persistable: Equatable {
     This method provides name of the table that backs this class.
     :returns: The table name.
     */
-  static func tableName() -> String
+  static var tableName: String { get }
   
   /**
     This method gets the values to save to the database when this record is
@@ -49,7 +49,7 @@ public func ==<T: Persistable>(lhs: T, rhs: T) -> Bool {
   return  lhs.id != nil &&
     rhs.id != nil &&
     lhs.id == rhs.id &&
-    lhs.dynamicType.tableName() == rhs.dynamicType.tableName()
+    lhs.dynamicType.tableName == rhs.dynamicType.tableName
 }
 
 //MARK: - Associations
@@ -156,7 +156,7 @@ This method saves the record to the database by inserting it.
 :returns:   Whether we were able to save the record.
 */
 private func insertRecord<RecordType: Persistable>(record: RecordType, values: [String:DatabaseValueConvertible?]) -> RecordType? {
-  var query = "INSERT INTO \(RecordType.tableName()) ("
+  var query = "INSERT INTO \(RecordType.tableName) ("
   var parameters = [DatabaseValue]()
   
   var firstParameter = true
@@ -203,7 +203,7 @@ private func insertRecord<RecordType: Persistable>(record: RecordType, values: [
 
 private func updateRecord<RecordType: Persistable>(record: RecordType, values: [String:DatabaseValueConvertible?]) -> RecordType? {
   
-  var query = "UPDATE \(RecordType.tableName())"
+  var query = "UPDATE \(RecordType.tableName)"
   var parameters = [DatabaseValue]()
   var mappedValues = [String:DatabaseValue]()
   
@@ -250,7 +250,7 @@ private func updateRecord<RecordType: Persistable>(record: RecordType, values: [
   */
 public func destroyRecord<RecordType: Persistable>(record: RecordType) {
   if record.id != nil {
-    let query = "DELETE FROM \(RecordType.tableName()) WHERE id = ?"
+    let query = "DELETE FROM \(RecordType.tableName) WHERE id = ?"
     DatabaseConnection.sharedConnection().executeQuery(query, parameters: [record.id!.databaseValue])
   }
 }

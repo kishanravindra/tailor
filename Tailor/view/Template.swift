@@ -128,7 +128,7 @@ public class Template {
     :param: attributes    Additional attributes for the tag.
     :param: with          A closure that adds the contents of the tag.
     */
-  public func tag(name: String, _ attributes: [String:String], with contents: ()->() = {}) -> () {
+  public func tag(name: String, _ attributes: [String:String], @noescape with contents: ()->() = {}) -> () {
     var text = ""
     var openingTag = "<\(name)"
     
@@ -152,7 +152,7 @@ public class Template {
     :param: name          The name of the element.
     :param: contents      A closure that adds the contents of the tag.
     */
-  public func tag(name: String, with contents: ()->() = {}) -> () {
+  public func tag(name: String, @noescape with contents: ()->() = {}) -> () {
     self.tag(name, [:], with: contents)
   }
   
@@ -177,7 +177,7 @@ public class Template {
     :param: attributes      Additional attributes for the tag.
     :param: with            A closure that adds the contents of the link.
     */
-  public func link(controllerName: String? = nil, actionName: String? = nil, parameters: [String:String] = [:], attributes: [String:String] = [:], with contents: ()->()={}) {
+  public func link(controllerName: String? = nil, actionName: String? = nil, parameters: [String:String] = [:], attributes: [String:String] = [:], @noescape with contents: ()->()={}) {
     var mergedAttributes = attributes
     mergedAttributes["href"] = self.controller.pathFor(controllerName: controllerName,
       actionName: actionName, parameters: parameters) ?? ""
@@ -206,7 +206,7 @@ public class Template {
                     generate the content as you would any other part of the
                     template body, using the normal helper methods.
     */
-  public func cache(key: String, block: ()->()) {
+  public func cache(key: String, @noescape block: ()->()) {
     let cache = CacheStore.shared()
     if let cachedContent = cache.read(key) {
       self.buffer.appendString(cachedContent)

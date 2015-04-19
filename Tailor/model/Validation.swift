@@ -136,7 +136,7 @@ public struct Validation {
       return self
     }
     
-    var query = "SELECT * FROM \(RecordType.tableName()) WHERE "
+    var query = "SELECT * FROM \(RecordType.tableName) WHERE "
     
     var parameterString = ""
     var parameters = [DatabaseValue]()

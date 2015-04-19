@@ -58,7 +58,7 @@ public class FormBuilder {
     :param: attributes  Additional attributes for the form tag.
     :param: contents    A block that will populate the contents of the form.
     */
-  public func form(path: String, _ method: String = "POST", attributes: [String:String] = [:], with contents: ()->()) {
+  public func form(path: String, _ method: String = "POST", attributes: [String:String] = [:], @noescape with contents: ()->()) {
     var mergedAttributes = attributes
     mergedAttributes["method"] = method
     mergedAttributes["action"] = path
