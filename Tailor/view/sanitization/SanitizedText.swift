@@ -18,19 +18,37 @@ public struct SanitizedText : CVarArgType, StringLiteralConvertible {
     return self.text.encode()
   }
   
+  /**
+    This initializer creates a sanitized text wrapper from the sanitized text.
+
+    :param: text          The sanitized text
+    :param: sanitizers    The sanitizers that have been applied.
+    */
   public init(text: String, sanitizers: [Sanitizer.Type]) {
     self.text = text
     self.sanitizers = sanitizers
   }
-  
+
+  /**
+    This initializer creates sanitized text from a string literal.
+    :param: value   The string literal value.
+    */
   public init(unicodeScalarLiteral value: StringLiteralType) {
     self.init(text: value, sanitizers: [])
   }
   
+  /**
+    This initializer creates sanitized text from a string literal.
+    :param: value   The string literal value.
+  */
   public init(stringLiteral value: StringLiteralType) {
     self.init(text: value, sanitizers: [])
   }
   
+  /**
+    This initializer creates sanitized text from a string literal.
+    :param: value   The string literal value.
+  */
   public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
     self.init(text: value, sanitizers: [])
   }

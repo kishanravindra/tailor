@@ -18,6 +18,13 @@ public class DatabaseLocalization: Localization {
     /** The translated value. */
     public var translatedText: String
     
+    /**
+      This initializer creates a database localization.
+
+      :param: translationKey    The key for the translation
+      :param: locale            The locale for the translation.
+      :param: translatedText    The text for the translation.
+      */
     public init(translationKey: String, locale: String, translatedText: String) {
       self.translationKey = translationKey
       self.locale = locale
@@ -74,6 +81,13 @@ public class DatabaseLocalization: Localization {
     }
   }
   
+  /**
+    This method fetches localized text from the database.
+
+    :param: key       The key for the localization
+    :param: locale    The locale for the localization
+    :returns:         The localized text, if we could find it.
+    */
   public override func fetch(key: String, inLocale locale: String) -> String? {
     let translation = Query<Translation>().filter(["locale": locale, "translation_key": key]).first()
     return translation?.translatedText

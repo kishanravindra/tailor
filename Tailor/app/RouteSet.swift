@@ -135,7 +135,10 @@ public class RouteSet {
   /** The controller that will be handling requests in a block. */
   private var currentController = Controller.self
   
-  public required init() {
+  /**
+    This method creates an empty route set.
+    */
+  public init() {
     
   }
   

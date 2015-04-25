@@ -90,6 +90,11 @@ public class MysqlConnection : DatabaseConnection {
 
   //MARK: Transactions
 
+  /**
+    This method executes a block inside of a MySQL connection.
+
+    :param: block   The block to execute.
+    */
   public override func transaction(block: ()->()) {
     mysql_query(self.connection, "START TRANSACTION;")
     block()

@@ -367,7 +367,7 @@ public class Query<RecordType: Persistable> {
   public func count() -> Int {
     let (query, parameters) = self.select("count(*) as tailor_record_count").toSql()
     let results = DatabaseConnection.sharedConnection().executeQuery(query, parameters: parameters)
-    let count = results.isEmpty ? 0 : results[0].data["tailor_record_count"]!.intValue!
+    let count = results.isEmpty ? 0 : results[0].data["tailor_record_count"]?.intValue ?? 0
     return count
   }
   

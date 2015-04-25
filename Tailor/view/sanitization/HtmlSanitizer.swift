@@ -7,10 +7,12 @@ import Foundation
   single quotes.
   */
 public class HtmlSanitizer : Sanitizer {
+  /** This method creates a sanitizer. */
   public required init() {
     super.init()
   }
   
+  /** This method gets the mapping for the sanitizer. */
   public override class func mapping() -> [Character:String] { return [
       "<": "&lt;",
       ">": "&gt;",

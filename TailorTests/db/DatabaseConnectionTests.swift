@@ -79,7 +79,7 @@ class DatabaseConnectionTests: TailorTestCase {
   func testExecuteQueryWithStringArgumentsConvertsToData() {
     TestConnection.withTestConnection {
       connection in
-      connection.executeQuery("SELECT * FROM hats WHERE color=? AND brim_size=?", stringParameters: ["red", "10"])
+      connection.executeQuery("SELECT * FROM hats WHERE color=? AND brim_size=?", parameterValues: ["red", "10"])
       if connection.queries.count > 0 {
         let (query,parameters) = connection.queries[0]
         self.assert(query, equals: "SELECT * FROM hats WHERE color=? AND brim_size=?")

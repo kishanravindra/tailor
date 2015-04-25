@@ -127,6 +127,15 @@ public enum DatabaseValue: Equatable, Printable {
 
 //MARK: - Comparison
 
+/**
+  This method determines if two database values are equal.
+
+  They are equal if they have the same type and their wrapped values are equal.
+
+  :param: lhs   The left-hand of the equality
+  :param: rhs   The right-hand of the equality
+  :returns:     Whether they are equal.
+  */
 public func ==(lhs: DatabaseValue, rhs: DatabaseValue) -> Bool {
   switch(lhs,rhs) {
   case (let .String(string1), let .String(string2)):
@@ -161,30 +170,68 @@ public protocol DatabaseValueConvertible {
   var databaseValue: DatabaseValue { get }
 }
 
+/**
+  This extension provides a helper for converting a string into a wrapped
+  database value.
+  */
 extension String: DatabaseValueConvertible {
+  /** The wrapped database value. */
   public var databaseValue: DatabaseValue { return DatabaseValue.String(self) }
 }
 
+/**
+  This extension provides a helper for converting a boolean into a wrapped
+  database value.
+  */
 extension Bool: DatabaseValueConvertible {
+  /** The wrapped database value. */
   public var databaseValue: DatabaseValue { return DatabaseValue.Boolean(self) }
 }
 
+/**
+  This extension provides a helper for converting a data blob into a wrapped
+  database value.
+  */
 extension NSData: DatabaseValueConvertible {
+  /** The wrapped database value. */
   public var databaseValue: DatabaseValue { return DatabaseValue.Data(self) }
 }
 
+/**
+  This extension provides a helper for converting an integer into a wrapped
+  database value.
+  */
 extension Int: DatabaseValueConvertible {
+  /** The wrapped database value. */
   public var databaseValue: DatabaseValue { return DatabaseValue.Integer(self) }
 }
 
+/**
+  This extension provides a helper for converting a double into a wrapped
+  database value.
+  */
 extension Double: DatabaseValueConvertible {
+  /** The wrapped database value. */
   public var databaseValue: DatabaseValue { return DatabaseValue.Double(self) }
 }
 
+/**
+  This extension provides a helper for converting a date into a wrapped
+  database value.
+  */
 extension NSDate: DatabaseValueConvertible {
+  /** The wrapped database value. */
   public var databaseValue: DatabaseValue { return DatabaseValue.Date(self) }
 }
 
+/**
+  This extension provides a helper for converting a database value into a
+  wrapped database value.
+
+  It doesn't change anything about the value. It just makes it easier to use
+  values and wrapped values interchangeably.
+  */
 extension DatabaseValue: DatabaseValueConvertible {
+  /** The wrapped database value. */
   public var databaseValue: DatabaseValue { return self }
 }

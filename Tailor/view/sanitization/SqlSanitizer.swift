@@ -7,10 +7,12 @@ import Foundation
   with a backslash.
   */
 public class SqlSanitizer : Sanitizer {
+  /** This method creates the sanitizer. */
   public required init() {
     super.init()
   }
   
+  /** This method gets the mapping for the sanitizer. */
   public override class func mapping() -> [Character:String] { return [
       "\\": "\\\\",
       "\"": "\\\"",

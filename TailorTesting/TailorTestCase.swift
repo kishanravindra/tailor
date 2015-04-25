@@ -98,4 +98,64 @@ public class TailorTestCase: XCTestCase {
       self.recordFailureWithDescription("\(string) does not contain \(substring) - \(message)", inFile: file, atLine: line, expected: true)
     }
   }
+  
+  /**
+    This method asserts that a value is nil.
+  
+    :param: value       The value to check.
+    :param: message     The message to show if the assertion fails.
+    :param: file        The name of the file where the assertion is coming from.
+                        You should generally omit this, since it will be
+                        provided automatically.
+    :param: line        The line of the file where the assertion is coming from.
+                        You should generally omit this, since it will be
+                        provided automatically.
+    */
+  public func assert(isNil value: Any?, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+    if value != nil {
+      self.recordFailureWithDescription("value was not nil - \(message)", inFile: file, atLine: line, expected: true)
+    }
+  }
+  
+  /**
+    This method asserts that a value is not nil.
+    
+    :param: value       The value to check.
+    :param: message     The message to show if the assertion fails.
+    :param: file        The name of the file where the assertion is coming from.
+                        You should generally omit this, since it will be
+                        provided automatically.
+    :param: line        The line of the file where the assertion is coming from.
+                        You should generally omit this, since it will be
+                        provided automatically.
+  */
+  public func assert(isNotNil value: Any?, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+    if value == nil {
+      self.recordFailureWithDescription("value was nil - \(message)", inFile: file, atLine: line, expected: true)
+    }
+  }
+  /**
+    This method asserts that a value is close to another value.
+    
+    :param: value         The value to check.
+    :param: within        How close the value has to be to the correct value.
+    :param: correctValue  What the value is supposed to be.
+    :param: message       The message to show if the assertion fails.
+    :param: file          The name of the file where the assertion is coming
+                          from. You should generally omit this, since it will be
+                          provided automatically.
+    :param: line          The line of the file where the assertion is coming
+                          from. You should generally omit this, since it will be
+                          provided automatically.
+  */
+  public func assert(value: Double?, within range: Double, of correctValue: Double, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+    if value == nil {
+      self.recordFailureWithDescription("value was nil - \(message)", inFile: file, atLine: line, expected: true)
+    }
+    else {
+      if value! < correctValue - range || value! > correctValue + range {
+        self.recordFailureWithDescription("\(value!) is not within \(range) of \(correctValue) - \(message)", inFile: file, atLine: line, expected: true)
+      }
+    }
+  }
 }

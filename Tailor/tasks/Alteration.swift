@@ -76,7 +76,7 @@ public class Alteration {
     */
   public func query(components: String?...) {
     var query = ""
-    var parameters = [String]()
+    var parameters = [DatabaseValueConvertible]()
     var foundNil = false
     
     for component in components {
@@ -91,10 +91,10 @@ public class Alteration {
         query += component! + "\n"
       }
     }
-    let results = DatabaseConnection.sharedConnection().executeQuery(query, stringParameters: parameters)
+    let results = DatabaseConnection.sharedConnection().executeQuery(query, parameterValues: parameters)
     if !results.isEmpty && results[0].error != nil {
       NSLog("Error running query")
-      NSLog("%@ %@", query, parameters)
+      NSLog("%@ %@", query, parameters.map { $0.databaseValue.description })
       NSLog("Error: %@", results[0].error!)
       exit(1)
     }

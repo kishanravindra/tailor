@@ -48,6 +48,7 @@ public class DatabaseConnection {
     }
   }
   
+  /** The time zone that the database is using. */
   public internal(set) var timeZone: NSTimeZone
 
   /**
@@ -93,8 +94,8 @@ public class DatabaseConnection {
                             database side.
     :returns                The interpreted result set.
     */
-  public func executeQuery(query: String, _ bindParameters: String...) -> [Row] {
-    return self.executeQuery(query, stringParameters: bindParameters)
+  public func executeQuery(query: String, _ bindParameters: DatabaseValueConvertible...) -> [Row] {
+    return self.executeQuery(query, parameterValues: bindParameters)
   }
   
   /**
@@ -105,7 +106,7 @@ public class DatabaseConnection {
                             database side.
     :returns                The interpreted result set.
   */
-  public func executeQuery(query: String, stringParameters bindParameters: [String]) -> [Row] {
+  public func executeQuery(query: String, parameterValues bindParameters: [DatabaseValueConvertible]) -> [Row] {
     let wrappedParameters = bindParameters.map { $0.databaseValue }
     return executeQuery(query, parameters: wrappedParameters)
   }
