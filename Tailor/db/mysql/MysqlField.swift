@@ -4,7 +4,7 @@ import Foundation
 /**
   This class provides a wrapper around the MySQL field data structure.
   */
-public class MysqlField {
+public struct MysqlField {
   /** The raw field data. */
   private let field: MYSQL_FIELD
   
@@ -55,7 +55,7 @@ public class MysqlField {
       A tuple holding the size of the itmes in the buffer and the number of
       itmes. in the buffer.
     */
-  public class func bufferSize(type: enum_field_types) -> (size: UInt, count: UInt) {
+  public static func bufferSize(type: enum_field_types) -> (size: UInt, count: UInt) {
     var size = UInt(sizeof(UInt8))
     var length = UInt(1)
     switch type.value {

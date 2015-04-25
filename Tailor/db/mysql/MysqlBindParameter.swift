@@ -4,7 +4,7 @@ import mysql
   This class wraps around a MySQL bind parameter to provide easier access to
   metadata and field values.
   */
-public class MysqlBindParameter {
+public struct MysqlBindParameter {
   /** The raw MySQL bind parameter. */
   public let parameter: MYSQL_BIND
   

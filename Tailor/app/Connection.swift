@@ -3,12 +3,19 @@ import Foundation
 /**
   This class represents a connection with a client.
   */
-public class Connection : NSObject {
+public struct Connection {
+  
+  /** A callback that can be given a response. */
+  public typealias ResponseCallback = (Response)->()
+  
+  /** A closure that can process a request. */
+  public typealias RequestHandler = (Request, ResponseCallback)->()
+  
   /** The file descriptor that we are using to communicate with the client.*/
   let socketDescriptor: Int32
   
   /** A callback to the code to provide the request. */
-  let handler: Server.RequestHandler
+  let handler: RequestHandler
   
   /** The maximum number of connections to process at once. */
   let simultaneousConnectionLimit = 10
@@ -23,10 +30,9 @@ public class Connection : NSObject {
                               using for the connection.
     :param: handler           A callback that will handle the request.
     */
-  public required init(fileDescriptor: Int32, handler: Server.RequestHandler) {
+  public init(fileDescriptor: Int32, handler: RequestHandler) {
     self.socketDescriptor = fileDescriptor
     self.handler = handler
-    super.init()
     
     self.listenToSocket()
   }
@@ -43,7 +49,7 @@ public class Connection : NSObject {
     queue for reading from the socket, and put an operation on the main queue
     for listening for a new connection.
     */
-  public func listenToSocket() {
+  public mutating func listenToSocket() {
     NSOperationQueue.mainQueue().addOperationWithBlock {
       let connectionDescriptor = accept(self.socketDescriptor, nil, nil)
       
@@ -70,7 +76,7 @@ public class Connection : NSObject {
   
     :param: connectionDescriptor    The file descriptor for the connection.
     */
-  public func readFromSocket(connectionDescriptor: Int32) {
+  public mutating func readFromSocket(connectionDescriptor: Int32) {
     var data = NSMutableData()
     let bufferLength: UInt = 1024
     var buffer = [UInt8](count: Int(bufferLength), repeatedValue: 0)
@@ -111,5 +117,57 @@ public class Connection : NSObject {
       self.activeConnections -= 1
       NSLog("Finished processing %@", request.path)
     }
+  }
+
+  /**
+    This method starts the server.
+
+    It will open the connection and then tell the run loop to run indefinitely.
+
+    :param: address   The IP address to listen on.
+    :param: port      The port to listen on.
+    :param: handler   A callback that will be called when a request is ready for
+                      processing. This will be given a request and another
+                      callback that it can call with a response.
+
+    :returns:         Whether we were able to open the connection.
+    */
+  public static func startServer(address: (Int,Int,Int,Int), port: Int, handler: RequestHandler) -> Bool {
+    let socketDescriptor = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)
+    let flag = [1]
+    setsockopt(socketDescriptor, SOL_SOCKET, SO_REUSEADDR, flag, UInt32(sizeof(Int)))
+    setsockopt(socketDescriptor, SOL_SOCKET, SO_KEEPALIVE, flag, UInt32(sizeof(Int)))
+    
+    if socketDescriptor == -1 {
+      NSLog("Error creating socket")
+      return false
+    }
+    
+    var socketAddress = sockaddr_in()
+    socketAddress.sin_family = UInt8(AF_INET)
+    socketAddress.sin_port = CFSwapInt16(UInt16(port))
+    
+    func socketAddressPointer(pointer: UnsafePointer<sockaddr_in>) -> UnsafePointer<sockaddr> {
+      return UnsafePointer<sockaddr>(pointer)
+    }
+    
+    if bind(socketDescriptor, socketAddressPointer(&socketAddress), UInt32(sizeof(sockaddr_in))) == -1 {
+      NSLog("Error binding to socket")
+      close(socketDescriptor)
+      return false
+    }
+    
+    if listen(socketDescriptor, 10) == -1 {
+      NSLog("Error listening on socket")
+      close(socketDescriptor)
+      return false
+    }
+    
+    Connection(fileDescriptor: socketDescriptor, handler: handler)
+    
+    NSLog("Listening on port %d", port)
+    
+    NSRunLoop.currentRunLoop().run()
+    return true
   }
 }

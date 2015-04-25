@@ -4,7 +4,7 @@ import Foundation
   This class encapsulates a configuration setting or family of configuration
   settings.
   */
-public class ConfigurationSetting: Equatable {
+public final class ConfigurationSetting: Equatable {
   /** The value at this node. */
   public var value: String?
   

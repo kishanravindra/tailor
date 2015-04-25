@@ -4,7 +4,7 @@ import mysql
 /**
   This class provides a wrapper around a MySQL result set.
   */
-public class MysqlResultSet {
+public final class MysqlResultSet {
   /** The raw result set. */
   private let result: UnsafeMutablePointer<MYSQL_RES>
   

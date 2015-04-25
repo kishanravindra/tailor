@@ -76,7 +76,7 @@ public class Controller {
   public let request: Request
   
   /** The callback for the current request's response. */
-  public let callback: Server.ResponseCallback
+  public let callback: Connection.ResponseCallback
   
   /** The action that we are executing. */
   public private(set) var action: Action! = nil
@@ -165,7 +165,7 @@ public class Controller {
     :param: actionName    The name of the action that we are executing.
     :param: callback      The callback to give the response to.
     */
-  public required init(request: Request, actionName: String, callback: Server.ResponseCallback) {
+  public required init(request: Request, actionName: String, callback: Connection.ResponseCallback) {
     self.request = request
     self.callback = callback
     self.session = Session(request: request)

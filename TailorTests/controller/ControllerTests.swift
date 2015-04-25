@@ -34,7 +34,7 @@ class ControllerTests: TailorTestCase {
   }
   
   var user: User!
-  var callback: Server.ResponseCallback = {response in }
+  var callback: Connection.ResponseCallback = {response in }
   var controller: Controller!
   
   override func setUp() {

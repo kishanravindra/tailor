@@ -16,7 +16,7 @@ public class RouteSet {
     format `:parameter_name`, which will capture a variable portion of the route
     in a request parameter called `parameter_name`.
     */
-  public class Route {
+  public struct Route {
     /** The pattern for the path. */
     public let pathPattern: String
     
@@ -24,7 +24,7 @@ public class RouteSet {
     public let method: String
     
     /** The implementation of the response handler. */
-    public let handler: Server.RequestHandler
+    public let handler: Connection.RequestHandler
     
     /** A description of the route for logging purposes. */
     public let description: String
@@ -53,7 +53,7 @@ public class RouteSet {
       :param: handler       The response handler.
       :param: description   The description for the route.
       */
-    public init(pathPattern: String, method: String, handler: Server.RequestHandler, description: String) {
+    public init(pathPattern: String, method: String, handler: Connection.RequestHandler, description: String) {
       self.pathPattern = pathPattern
       self.handler = handler
       self.description = description
@@ -108,7 +108,7 @@ public class RouteSet {
       :param: request   The request to handle.
       :param: callback  The callback that the route should give the response to.
       */
-    public func handleRequest(request: Request, callback: Server.ResponseCallback) {
+    public func handleRequest(request: Request, callback: Connection.ResponseCallback) {
       NSLog("Processing with %@", self.description)
       var requestCopy = request
       let path = request.path
@@ -204,13 +204,17 @@ public class RouteSet {
     :param: pathPattern   The pattern for the route.
     :param: handler       The block that will handle the request.
     :param: description   The description of the route implementation.
+    :param: controller    The controller that will handle the request.
+    :param: actionName    The name of the action that will handle the request.
     */
-  public func addRoute(pathPattern: String, method: String, handler: Server.RequestHandler, description: String) {
+  public func addRoute(pathPattern: String, method: String, handler: Connection.RequestHandler, description: String, controller: Controller.Type? = nil, actionName: String? = nil) {
     var fullPattern = self.currentPathPrefix
     if !pathPattern.isEmpty {
       fullPattern += "/" + pathPattern
     }
-    let route = Route(pathPattern: fullPattern, method: method, handler: handler, description: description)
+    var route = Route(pathPattern: fullPattern, method: method, handler: handler, description: description)
+    route.controller = controller
+    route.actionName = actionName
     self.routes.append(route)
   }
   
@@ -221,7 +225,7 @@ public class RouteSet {
     :param: method        The HTTP method for the route.
     :param: handler       The block that will handle the request.
   */
-  public func addRoute(pathPattern: String, method: String, handler: Server.RequestHandler) {
+  public func addRoute(pathPattern: String, method: String, handler: Connection.RequestHandler) {
     self.addRoute(pathPattern, method: method, handler: handler, description: "custom block")
   }
   
@@ -236,15 +240,11 @@ public class RouteSet {
   public func addRoute(pathPattern: String, method: String, controller controllerType: Controller.Type, actionName: String) {
     let description = NSString(format: "%@#%@", controllerType.name, actionName)
     let handler = {
-      (request: Request, callback: Server.ResponseCallback) -> () in
+      (request: Request, callback: Connection.ResponseCallback) -> () in
       let controller = controllerType(request: request, actionName: actionName, callback: callback)
       controller.action.run(controller)
     }
-    self.addRoute(pathPattern, method: method, handler: handler, description: description as! String)
-    if let route = self.routes.last {
-      route.controller = controllerType
-      route.actionName = actionName
-    }
+    self.addRoute(pathPattern, method: method, handler: handler, description: description as! String, controller: controllerType, actionName: actionName)
   }
   
   /**
@@ -322,7 +322,7 @@ public class RouteSet {
     :param: request   The request that we should handle.
     :param: callback  The callback that we should give the response to.
     */
-  public func handleRequest(request: Request, callback: Server.ResponseCallback) {
+  public func handleRequest(request: Request, callback: Connection.ResponseCallback) {
     NSLog("Processing %@ %@", request.method, request.path)
     for route in self.routes {
       if route.canHandleRequest(request) {

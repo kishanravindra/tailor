@@ -111,7 +111,7 @@ public class Application {
     This method starts a server for this application.
     */
   public func startServer() {
-    Server().start(ipAddress, port: port, handler: { self.routeSet.handleRequest($0, callback: $1) })
+    Connection.startServer(ipAddress, port: port, handler: { self.routeSet.handleRequest($0, callback: $1) })
   }
   
   /** Starts a version of this application as the shared application. */

@@ -86,7 +86,6 @@
 		52BD142A19E9DA1D006D72B0 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140519E9DA1D006D72B0 /* Request.swift */; };
 		52BD142B19E9DA1D006D72B0 /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140619E9DA1D006D72B0 /* Response.swift */; };
 		52BD142C19E9DA1D006D72B0 /* RouteSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140719E9DA1D006D72B0 /* RouteSet.swift */; };
-		52BD142D19E9DA1D006D72B0 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140819E9DA1D006D72B0 /* Server.swift */; };
 		52BD142F19E9DA1D006D72B0 /* Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140B19E9DA1D006D72B0 /* Controller.swift */; };
 		52BD143119E9DA1D006D72B0 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140D19E9DA1D006D72B0 /* Session.swift */; };
 		52BD143219E9DA1D006D72B0 /* DatabaseConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140F19E9DA1D006D72B0 /* DatabaseConnection.swift */; };
@@ -229,7 +228,6 @@
 		52BD140519E9DA1D006D72B0 /* Request.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
 		52BD140619E9DA1D006D72B0 /* Response.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Response.swift; sourceTree = "<group>"; };
 		52BD140719E9DA1D006D72B0 /* RouteSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteSet.swift; sourceTree = "<group>"; };
-		52BD140819E9DA1D006D72B0 /* Server.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
 		52BD140B19E9DA1D006D72B0 /* Controller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Controller.swift; sourceTree = "<group>"; };
 		52BD140D19E9DA1D006D72B0 /* Session.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
 		52BD140F19E9DA1D006D72B0 /* DatabaseConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseConnection.swift; sourceTree = "<group>"; };
@@ -543,7 +541,6 @@
 				52BD140519E9DA1D006D72B0 /* Request.swift */,
 				52BD140619E9DA1D006D72B0 /* Response.swift */,
 				52BD140719E9DA1D006D72B0 /* RouteSet.swift */,
-				52BD140819E9DA1D006D72B0 /* Server.swift */,
 				5262542F1AABC37900D63024 /* CacheStore.swift */,
 				526254361AABC9C800D63024 /* MemoryCacheStore.swift */,
 			);
@@ -877,7 +874,6 @@
 				523D655D1A98CC1B000C686B /* PropertyListLocalization.swift in Sources */,
 				5262EEF61AD19897006F864D /* MysqlBindParameterSet.swift in Sources */,
 				5262EEF81AD19B18006F864D /* MysqlBindParameter.swift in Sources */,
-				52BD142D19E9DA1D006D72B0 /* Server.swift in Sources */,
 				52B2B6A919F2B1D00086261B /* Task.swift in Sources */,
 				52BD142719E9DA1D006D72B0 /* Connection.swift in Sources */,
 				521E87481A0FCEDA00D84B7B /* NSData.swift in Sources */,

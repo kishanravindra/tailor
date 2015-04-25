@@ -4,7 +4,7 @@ import mysql
 /**
   This class represents a connection to a MySQL database.
   */
-public class MysqlConnection : DatabaseConnection {  
+public class MysqlConnection : DatabaseConnection {
   /** The underlying MySQL connection. */
   public var connection : UnsafeMutablePointer<MYSQL>
   

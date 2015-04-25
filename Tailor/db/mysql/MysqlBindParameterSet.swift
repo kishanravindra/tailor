@@ -10,7 +10,7 @@ import mysql
   necessary memory management for the buffers for sending and retrieving the
   data.
   */
-public class MysqlBindParameterSet {
+public final class MysqlBindParameterSet {
   /** The raw MySQL parameters. */
   public private(set) var mysqlParameters: [MYSQL_BIND];
   
