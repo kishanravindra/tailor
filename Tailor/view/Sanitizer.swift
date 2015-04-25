@@ -3,31 +3,28 @@ import Foundation
 /**
   This class represents a filter for sanitizing text.
   */
-public class Sanitizer {
+public struct Sanitizer {
   /**
-    A mapping of characters to replace.
-
-    The keys are the characters that should be removed, and the values are the
-    strings that should replace them.
-  
-    This implementation returns an empty mapping, but subclasses can override
-    it.
+    The characters that the sanitizer replaces.
     */
-  public class func mapping() -> [Character:String] { return [:] }
+  public let mapping: [Character: String]
   
   /**
     This method initializes a sanitizer.
+  
+    :param: mapping   The characters that the sanitizer replaces.
     */
-  public required init() {
+  public init(_ mapping: [Character: String]) {
+    self.mapping = mapping
   }
   
   /**
     This method determines if a sanitized text wrapper has been sanitized with
     this sanitizer.
     */
-  public class func isSanitized(text: SanitizedText) -> Bool {
+  public func isSanitized(text: SanitizedText) -> Bool {
     for sanitizer in text.sanitizers {
-      if NSStringFromClass(sanitizer) == NSStringFromClass(self) {
+      if sanitizer == self {
         return true
       }
     }
@@ -47,7 +44,7 @@ public class Sanitizer {
   public func sanitizeString(string: String) -> String {
     var sanitized = ""
     for character in string {
-      var result = self.dynamicType.mapping()[character] ?? String(character)
+      var result = self.mapping[character] ?? String(character)
       sanitized += result
     }
     return sanitized
@@ -64,10 +61,10 @@ public class Sanitizer {
     :returns:     The sanitized text wrapper for the new level of sanitization.
     */
   public func sanitize(text: SanitizedText) -> SanitizedText {
-    if self.dynamicType.isSanitized(text) {
+    if self.isSanitized(text) {
       return text
     }
-    return SanitizedText(text: self.sanitizeString(text.text), sanitizers: text.sanitizers + [self.dynamicType])
+    return SanitizedText(text: self.sanitizeString(text.text), sanitizers: text.sanitizers + [self])
   }
   
   /**
@@ -81,6 +78,35 @@ public class Sanitizer {
     :returns:         The sanitized text wrapper.
   */
   public func accept(string: String) -> SanitizedText {
-    return SanitizedText(text: string, sanitizers: [self.dynamicType])
+    return SanitizedText(text: string, sanitizers: [self])
   }
+  
+  //MARK: - Built-in Sanitizers
+  
+  /** A sanitizer for sanitizing HTML text. */
+  public static var htmlSanitizer : Sanitizer { return Sanitizer([
+    "<": "&lt;",
+    ">": "&gt;",
+    "&": "&amp;",
+    "\"": "&quot;",
+    "'": "&#39;"
+    ])
+  }
+  
+  /** A sanitizer for sanitizing SQL strings. */
+  public static var sqlSanitizer: Sanitizer { return Sanitizer([
+    "\\": "\\\\",
+    "\"": "\\\"",
+    "'": "\\'"
+    ]) }
+
+}
+
+/**
+  This function determines if two sanitizers are equal.
+
+  The sanitizers will be equal if they have the same mapping.
+  */
+public func ==(lhs: Sanitizer, rhs: Sanitizer) -> Bool {
+  return lhs.mapping == rhs.mapping
 }

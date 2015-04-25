@@ -28,7 +28,6 @@
 		523D65681A99521E000C686B /* DatabaseLocalizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523D65671A99521E000C686B /* DatabaseLocalizationTests.swift */; };
 		523F29351A583EEB00C1BBC0 /* SanitizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523F29341A583EEB00C1BBC0 /* SanitizerTests.swift */; };
 		523F29391A58459200C1BBC0 /* SanitizedTextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523F29381A58459200C1BBC0 /* SanitizedTextTests.swift */; };
-		523F293B1A5848FE00C1BBC0 /* SqlSanitizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523F293A1A5848FE00C1BBC0 /* SqlSanitizerTests.swift */; };
 		523F293E1A584F7A00C1BBC0 /* ControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523F293D1A584F7A00C1BBC0 /* ControllerTests.swift */; };
 		5258989F1A4F289800DD853D /* DatabaseConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5258989E1A4F289800DD853D /* DatabaseConnectionTests.swift */; };
 		525C80851A1C1B4900E7035F /* Query.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525C80841A1C1B4900E7035F /* Query.swift */; };
@@ -38,7 +37,6 @@
 		526254371AABC9C800D63024 /* MemoryCacheStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526254361AABC9C800D63024 /* MemoryCacheStore.swift */; };
 		5262EE7A1AD0AC9B006F864D /* RequestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EADCC91A40504000D9A8CF /* RequestTests.swift */; };
 		5262EE7B1AD0AC9B006F864D /* DictionaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784C61A5B72990065C10D /* DictionaryTests.swift */; };
-		5262EE7D1AD0AC9B006F864D /* HtmlSanitizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523F29361A5844BF00C1BBC0 /* HtmlSanitizerTests.swift */; };
 		5262EE7E1AD0AC9B006F864D /* ServerTaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784CE1A5CC6350065C10D /* ServerTaskTests.swift */; };
 		5262EEA41AD0BA3D006F864D /* Tailor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5262EEA21AD0BA3D006F864D /* Tailor.framework */; };
 		5262EEA51AD0BA3D006F864D /* TailorTesting.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5262EEA31AD0BA3D006F864D /* TailorTesting.framework */; };
@@ -75,9 +73,7 @@
 		52B2B6B219F2DAD30086261B /* Alteration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6B119F2DAD30086261B /* Alteration.swift */; };
 		52B2B6E119F3656F0086261B /* TemplateInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 52B2B6E019F3656F0086261B /* TemplateInfo.plist */; };
 		52B2B6EE19F3F75C0086261B /* Sanitizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6ED19F3F75C0086261B /* Sanitizer.swift */; };
-		52B2B6F019F3F7E20086261B /* HtmlSanitizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6EF19F3F7E20086261B /* HtmlSanitizer.swift */; };
 		52B2B6F219F3F7FC0086261B /* SanitizedText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6F119F3F7FC0086261B /* SanitizedText.swift */; };
-		52B2B6F419F405620086261B /* SqlSanitizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6F319F405620086261B /* SqlSanitizer.swift */; };
 		52BD13A319E9D7E4006D72B0 /* Tailor.h in Headers */ = {isa = PBXBuildFile; fileRef = 52BD13A219E9D7E4006D72B0 /* Tailor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52BD142619E9DA1D006D72B0 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140119E9DA1D006D72B0 /* Application.swift */; };
 		52BD142719E9DA1D006D72B0 /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140219E9DA1D006D72B0 /* Connection.swift */; };
@@ -166,9 +162,7 @@
 		523D65631A98D7A4000C686B /* ConfigurationSettingTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigurationSettingTests.swift; sourceTree = "<group>"; };
 		523D65671A99521E000C686B /* DatabaseLocalizationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseLocalizationTests.swift; sourceTree = "<group>"; };
 		523F29341A583EEB00C1BBC0 /* SanitizerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SanitizerTests.swift; sourceTree = "<group>"; };
-		523F29361A5844BF00C1BBC0 /* HtmlSanitizerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HtmlSanitizerTests.swift; sourceTree = "<group>"; };
 		523F29381A58459200C1BBC0 /* SanitizedTextTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SanitizedTextTests.swift; sourceTree = "<group>"; };
-		523F293A1A5848FE00C1BBC0 /* SqlSanitizerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SqlSanitizerTests.swift; sourceTree = "<group>"; };
 		523F293D1A584F7A00C1BBC0 /* ControllerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControllerTests.swift; sourceTree = "<group>"; };
 		5242C35519F4466F00E605D2 /* TemplateInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = TemplateInfo.plist; sourceTree = "<group>"; };
 		5247FF9E19F4629700C08156 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
@@ -214,9 +208,7 @@
 		52B2B6E019F3656F0086261B /* TemplateInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = TemplateInfo.plist; sourceTree = "<group>"; };
 		52B2B6E219F3EE8B0086261B /* ___FILEBASENAME___.swift */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; path = "___FILEBASENAME___.swift"; sourceTree = "<group>"; };
 		52B2B6ED19F3F75C0086261B /* Sanitizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sanitizer.swift; sourceTree = "<group>"; };
-		52B2B6EF19F3F7E20086261B /* HtmlSanitizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HtmlSanitizer.swift; sourceTree = "<group>"; };
 		52B2B6F119F3F7FC0086261B /* SanitizedText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SanitizedText.swift; sourceTree = "<group>"; };
-		52B2B6F319F405620086261B /* SqlSanitizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SqlSanitizer.swift; sourceTree = "<group>"; };
 		52BD139D19E9D7E4006D72B0 /* Tailor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Tailor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52BD13A219E9D7E4006D72B0 /* Tailor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Tailor.h; sourceTree = "<group>"; };
 		52BD13A819E9D7E4006D72B0 /* TailorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TailorTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -326,17 +318,6 @@
 			path = TailorTesting;
 			sourceTree = "<group>";
 		};
-		523F29331A583EC800C1BBC0 /* sanitizers */ = {
-			isa = PBXGroup;
-			children = (
-				523F29341A583EEB00C1BBC0 /* SanitizerTests.swift */,
-				523F29361A5844BF00C1BBC0 /* HtmlSanitizerTests.swift */,
-				523F29381A58459200C1BBC0 /* SanitizedTextTests.swift */,
-				523F293A1A5848FE00C1BBC0 /* SqlSanitizerTests.swift */,
-			);
-			path = sanitizers;
-			sourceTree = "<group>";
-		};
 		523F293C1A584F4E00C1BBC0 /* controller */ = {
 			isa = PBXGroup;
 			children = (
@@ -373,7 +354,8 @@
 			children = (
 				528D6FA61A56354400783BE5 /* TemplateTests.swift */,
 				528D6FA41A562D5900783BE5 /* FormBuilderTests.swift */,
-				523F29331A583EC800C1BBC0 /* sanitizers */,
+				523F29341A583EEB00C1BBC0 /* SanitizerTests.swift */,
+				523F29381A58459200C1BBC0 /* SanitizedTextTests.swift */,
 			);
 			path = view;
 			sourceTree = "<group>";
@@ -441,10 +423,6 @@
 		52B2B6EA19F3F70A0086261B /* sanitization */ = {
 			isa = PBXGroup;
 			children = (
-				52B2B6ED19F3F75C0086261B /* Sanitizer.swift */,
-				52B2B6EF19F3F7E20086261B /* HtmlSanitizer.swift */,
-				52B2B6F119F3F7FC0086261B /* SanitizedText.swift */,
-				52B2B6F319F405620086261B /* SqlSanitizer.swift */,
 			);
 			path = sanitization;
 			sourceTree = "<group>";
@@ -599,6 +577,8 @@
 				52BD142419E9DA1D006D72B0 /* FormBuilder.swift */,
 				528D18401A8FE15D00A6E116 /* Layout.swift */,
 				52BD142519E9DA1D006D72B0 /* Template.swift */,
+				52B2B6ED19F3F75C0086261B /* Sanitizer.swift */,
+				52B2B6F119F3F7FC0086261B /* SanitizedText.swift */,
 				52B2B6EA19F3F70A0086261B /* sanitization */,
 			);
 			path = view;
@@ -834,7 +814,6 @@
 				525C80851A1C1B4900E7035F /* Query.swift in Sources */,
 				52BD142C19E9DA1D006D72B0 /* RouteSet.swift in Sources */,
 				52B2B6EE19F3F75C0086261B /* Sanitizer.swift in Sources */,
-				52B2B6F419F405620086261B /* SqlSanitizer.swift in Sources */,
 				52A95E311AE0A3B9001AED1F /* DatabaseValue.swift in Sources */,
 				52EF127419F0A58400B61DF4 /* Localization.swift in Sources */,
 				52B2B6B219F2DAD30086261B /* Alteration.swift in Sources */,
@@ -845,7 +824,6 @@
 				526254371AABC9C800D63024 /* MemoryCacheStore.swift in Sources */,
 				52BD142619E9DA1D006D72B0 /* Application.swift in Sources */,
 				52BD142919E9DA1D006D72B0 /* CookieJar.swift in Sources */,
-				52B2B6F019F3F7E20086261B /* HtmlSanitizer.swift in Sources */,
 				52EF126419EF545000B61DF4 /* User.swift in Sources */,
 				52BD142A19E9DA1D006D72B0 /* Request.swift in Sources */,
 				52A5008C1AA34DF800F3F031 /* MysqlResultSet.swift in Sources */,
@@ -904,7 +882,6 @@
 				5262EEBF1AD16B5F006F864D /* MysqlFieldTests.swift in Sources */,
 				523F293E1A584F7A00C1BBC0 /* ControllerTests.swift in Sources */,
 				5262EE7B1AD0AC9B006F864D /* DictionaryTests.swift in Sources */,
-				5262EE7D1AD0AC9B006F864D /* HtmlSanitizerTests.swift in Sources */,
 				520BD5021AA90E2600CBC3DC /* PropertyListLocalizationTests.swift in Sources */,
 				523F29351A583EEB00C1BBC0 /* SanitizerTests.swift in Sources */,
 				52ACAC781A56059200E875D9 /* UserTests.swift in Sources */,
@@ -921,7 +898,6 @@
 				52A95E331AE0A3E6001AED1F /* DatabaseValueTests.swift in Sources */,
 				529230061A3CF4E4006DD6EB /* ApplicationTests.swift in Sources */,
 				5262EE7E1AD0AC9B006F864D /* ServerTaskTests.swift in Sources */,
-				523F293B1A5848FE00C1BBC0 /* SqlSanitizerTests.swift in Sources */,
 				523F29391A58459200C1BBC0 /* SanitizedTextTests.swift in Sources */,
 				52E784D11A5CC7AE0065C10D /* AlterationsTaskTests.swift in Sources */,
 				52EC6D481A475B8000A4D822 /* ResponseTests.swift in Sources */,

@@ -114,13 +114,13 @@ class TemplateTests: TailorTestCase {
   }
   
   func testAddSanitizedTextAddsHtmlSanitizedText() {
-    let text = HtmlSanitizer().sanitize("4 < 5")
+    let text = Sanitizer.htmlSanitizer.sanitize("4 < 5")
     template.addSanitizedText(text)
     assert(template.buffer, equals: "4 &lt; 5", message: "adds text to buffer")
   }
   
   func testAddSanitizedTextSanitizesTextThatHasNotBeenSanitized() {
-    let text = SqlSanitizer().sanitize("4 > 3")
+    let text = Sanitizer.sqlSanitizer.sanitize("4 > 3")
     template.addSanitizedText(text)
     assert(template.buffer, equals: "4 &gt; 3", message: "adds text to buffer")
   }

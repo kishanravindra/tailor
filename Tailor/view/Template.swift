@@ -88,7 +88,7 @@ public class Template {
     */
   public func text(text: String, localize: Bool = true) {
     let localizedText = localize ? self.localize(text) ?? text : text
-    let sanitizedText = HtmlSanitizer().sanitize(SanitizedText(stringLiteral: localizedText))
+    let sanitizedText = Sanitizer.htmlSanitizer.sanitize(SanitizedText(stringLiteral: localizedText))
     self.addSanitizedText(sanitizedText)
   }
   
@@ -101,7 +101,7 @@ public class Template {
     */
   public func raw(text: String, localize: Bool = true) {
     let localizedText = localize ? self.controller.localize(text) ?? text : text
-    self.addSanitizedText(HtmlSanitizer().accept(localizedText))
+    self.addSanitizedText(Sanitizer.htmlSanitizer.accept(localizedText))
   }
   
   /**
@@ -113,8 +113,9 @@ public class Template {
     :param: text    The text to add.
     */
   public func addSanitizedText(text: SanitizedText) {
-    if !HtmlSanitizer.isSanitized(text) {
-      self.addSanitizedText(HtmlSanitizer().sanitize(text))
+    let sanitizer = Sanitizer.htmlSanitizer
+    if !sanitizer.isSanitized(text) {
+      self.addSanitizedText(sanitizer.sanitize(text))
     }
     else {
       self.buffer.appendString(text.text)

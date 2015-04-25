@@ -145,7 +145,7 @@ public struct Validation {
       if !parameterString.isEmpty {
         parameterString += " AND "
       }
-      let sanitizedKey = SqlSanitizer().sanitizeString(key)
+      let sanitizedKey = Sanitizer.sqlSanitizer.sanitizeString(key)
       
       if value == nil {
         parameterString += "\(sanitizedKey) IS NULL"

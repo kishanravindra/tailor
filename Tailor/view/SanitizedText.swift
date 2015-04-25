@@ -11,7 +11,7 @@ public struct SanitizedText : CVarArgType, StringLiteralConvertible {
   public let text: String
   
   /** The sanitizers that have been applied to the text. */
-  public let sanitizers: [Sanitizer.Type]
+  public let sanitizers: [Sanitizer]
   
   /** Encodes the text for use in logging. */
   public func encode() -> [Word] {
@@ -24,7 +24,7 @@ public struct SanitizedText : CVarArgType, StringLiteralConvertible {
     :param: text          The sanitized text
     :param: sanitizers    The sanitizers that have been applied.
     */
-  public init(text: String, sanitizers: [Sanitizer.Type]) {
+  public init(text: String, sanitizers: [Sanitizer]) {
     self.text = text
     self.sanitizers = sanitizers
   }
