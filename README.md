@@ -20,7 +20,7 @@ it through the command-line so that you can provide the runtime arguments.
 
 You can find sample apps at
 [the official website](http://www.johnbrownlee.com/tailor/samples/).
-Documentation is available [here](http://brownleej.github.io/tailor/).
+Documentation is available [here](http://tailorframe.work/docs/).
 Tutorials will be coming in the future, once the core is stabilized.
 
 ### Feedback and Contributions
