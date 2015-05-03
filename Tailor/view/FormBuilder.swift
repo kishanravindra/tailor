@@ -4,7 +4,14 @@ import Foundation
   This class provides helper methods for building forms.
   */
 public class FormBuilder {
-  /** A block that can build an input for a model property. */
+  /**
+    A block that can build an input for a model property.
+  
+    :param: form        The form that will hold the input.
+    :param: key         The name of the field
+    :param: attributes  The HTML attributes to put on the control.
+    :param: errors      The errors that we should show in the field.
+    */
   public typealias InputBuilder = (form: FormBuilder, key: String, value: String, attributes: [String:String], errors: [ValidationError])->()
   
   /** The template that we are putting the form in. */
@@ -37,7 +44,13 @@ public class FormBuilder {
       self.inputBuilder = {
         (form, key: String, value, attributes, _) -> () in
         form.template.tag("div") {
-          form.template.tag("label", text: key)
+          var label = key
+          if let type = attributes["type"] {
+            if type == "radio" {
+              label = template.localize("\(name).\(key).\(value)") ?? value
+            }
+          }
+          form.template.tag("label", text: label)
           var mergedAttributes = attributes
           mergedAttributes["name"] = "\(form.name)[\(key)]"
           mergedAttributes["value"] = value
@@ -75,5 +88,74 @@ public class FormBuilder {
   public func input(key: String, _ value: String, attributes: [String: String] = [:]) {
     let errors = self.validationErrors.filter { $0.key == key }
     self.inputBuilder(form: self, key: key, value: value, attributes: attributes, errors: errors)
+  }
+  
+  /**
+    This method generates a select tag.
+
+    :param: key         The name of the property.
+    :param: value       The currently selected value.
+    :param: values      A list of pairs that contain the values and labels for
+                        the options in the dropdown.
+    :param: attributes  Additional attributes to set on the select tag.
+    */
+  public func dropdown(key: String, value selectedValue: String? = nil, values: [(String, String)], attributes: [String:String] = [:]) {
+    var mergedAttributes = attributes
+    mergedAttributes["name"] = "\(self.name)[\(key)]"
+    self.template.tag("select", mergedAttributes) {
+      for (value,label) in values {
+        let optionAttributes: [String:String]
+        
+        if selectedValue != nil && selectedValue! == value {
+          optionAttributes = ["selected": "selected", "value": value]
+        }
+        else {
+          optionAttributes = ["value": value]
+        }
+        self.template.tag("option", text: label, attributes: optionAttributes)
+      }
+    }
+  }
+  
+  /**
+    This method generates a select tag.
+    
+    :param: key         The name of the property.
+    :param: value       The currently selected value.
+    :param: values      A list of values for the dropdown. The values will also
+                        be the labels for the options.
+    :param: attributes  Additional attributes to set on the select tag.
+  */
+  public func dropdown(key: String, value: String? = nil, values: [String], attributes: [String:String] = [:]) {
+    let values = values.map { ($0,$0) }
+    self.dropdown(key, value: value, values: values, attributes: attributes)
+  }
+  
+  /**
+    This method generates a set of radio button tags.
+
+    Each tag will have the "type" attribute set to radio, and the "value" 
+    attribute set to the value that the radio button is for. The default input
+    builders will use that value to construct a label, which will be of the form
+    (form name).(key).(value).
+  
+    :param: key           The key for the inputs.
+    :param: value         The value that is selected.
+    :param: values        The values for the radio buttons.
+    :param: attributes    The attributes to set on the input tags.
+    */
+  public func radioButtons(key: String, value selectedValue: String? = nil, values: [String], attributes: [String:String] = [:]) {
+    let mergedAttributes = merge(attributes, ["type": "radio"])
+    for value in values {
+      let optionAttributes: [String:String]
+      
+      if selectedValue != nil && selectedValue! == value {
+        optionAttributes = merge(mergedAttributes, ["checked": "checked"])
+      }
+      else {
+        optionAttributes = mergedAttributes
+      }
+      self.input(key, value, attributes: optionAttributes)
+    }
   }
 }

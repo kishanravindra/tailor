@@ -428,13 +428,6 @@
 			path = Alteration.xctemplate;
 			sourceTree = "<group>";
 		};
-		52B2B6EA19F3F70A0086261B /* sanitization */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = sanitization;
-			sourceTree = "<group>";
-		};
 		52B2B6F519F43DB60086261B /* Tailor Application.xctemplate */ = {
 			isa = PBXGroup;
 			children = (
@@ -591,7 +584,6 @@
 				52BD142519E9DA1D006D72B0 /* Template.swift */,
 				52B2B6ED19F3F75C0086261B /* Sanitizer.swift */,
 				52B2B6F119F3F7FC0086261B /* SanitizedText.swift */,
-				52B2B6EA19F3F70A0086261B /* sanitization */,
 			);
 			path = view;
 			sourceTree = "<group>";

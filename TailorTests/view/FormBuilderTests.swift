@@ -59,4 +59,29 @@ class FormBuilderTests: TailorTestCase {
     builder.input("color", "black", attributes: ["maxLength": "20"])
     assert(template.buffer, equals: "<div><label>color</label><input maxLength=\"20\" name=\"hat[color]\" value=\"black\"></input></div>", message: "puts label and input in template")
   }
+  
+  func testDropdownBuildsSelectTag() {
+    builder.dropdown("brimSize", values: [("", "None"), ("10", "Ten"), ("20", "Twenty")], attributes: ["multiple": "multiple"])
+    assert(template.buffer, equals: "<select multiple=\"multiple\" name=\"hat[brimSize]\"><option value=\"\">None</option><option value=\"10\">Ten</option><option value=\"20\">Twenty</option></select>")
+  }
+  
+  func testDropdownWithSelectedValueSelectsValue() {
+    builder.dropdown("brimSize", value: "10", values: [("", "None"), ("10", "Ten"), ("20", "Twenty")])
+    assert(template.buffer, equals: "<select name=\"hat[brimSize]\"><option value=\"\">None</option><option selected=\"selected\" value=\"10\">Ten</option><option value=\"20\">Twenty</option></select>")
+  }
+  
+  func testDropdownWithSingleValueListBuildsSelectTag() {
+    builder.dropdown("brimSize", values: ["", "10", "20"])
+    assert(template.buffer, equals: "<select name=\"hat[brimSize]\"><option value=\"\"></option><option value=\"10\">10</option><option value=\"20\">20</option></select>")
+  }
+  
+  func testRadioButtonsBuildsInputTags() {
+    builder.radioButtons("brimSize", values: ["10", "20"], attributes: ["extra-data": "hello"])
+    assert(template.buffer, equals: "<div><label>10</label><input extra-data=\"hello\" name=\"hat[brimSize]\" type=\"radio\" value=\"10\"></input></div><div><label>20</label><input extra-data=\"hello\" name=\"hat[brimSize]\" type=\"radio\" value=\"20\"></input></div>")
+  }
+  
+  func testRadioButtonWithSelectedValueSelectsValue() {
+    builder.radioButtons("brimSize", value: "10", values: ["10", "20"], attributes: ["extra-data": "hello"])
+    assert(template.buffer, equals: "<div><label>10</label><input checked=\"checked\" extra-data=\"hello\" name=\"hat[brimSize]\" type=\"radio\" value=\"10\"></input></div><div><label>20</label><input extra-data=\"hello\" name=\"hat[brimSize]\" type=\"radio\" value=\"20\"></input></div>")
+  }
 }
