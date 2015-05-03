@@ -7,15 +7,13 @@
 		<string>public.swift-source</string>
 	</array>
 	<key>DefaultCompletionName</key>
-	<string>File</string>
+	<string>MyAlteration</string>
 	<key>Description</key>
 	<string>A Tailor alteration script</string>
 	<key>Kind</key>
 	<string>Xcode.IDEKit.TextSubstitutionFileTemplateKind</string>
 	<key>MainTemplateFile</key>
 	<string>___FILEBASENAME___.swift</string>
-	<key>SortOrder</key>
-	<string>5</string>
 	<key>Summary</key>
 	<string>A Tailor alteration script</string>
 </dict>

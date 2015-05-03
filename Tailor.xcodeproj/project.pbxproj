@@ -141,6 +141,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		520526E91AF69DCC00B02CCF /* Model.xctemplate */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Model.xctemplate; sourceTree = "<group>"; };
+		5205278E1AF6A3C400B02CCF /* Controller.xctemplate */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Controller.xctemplate; path = Tailor/ext/xcode_templates/Controller.xctemplate; sourceTree = SOURCE_ROOT; };
 		5209E2881A50920C0044EE70 /* ModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelTests.swift; sourceTree = "<group>"; };
 		5214B5D11AA38B0800624E9D /* ValidationError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidationError.swift; sourceTree = "<group>"; };
 		5214B5D41AA3903800624E9D /* ValidationErrorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidationErrorTests.swift; sourceTree = "<group>"; };
@@ -411,6 +413,8 @@
 			children = (
 				52B2B6F519F43DB60086261B /* Tailor Application.xctemplate */,
 				52B2B6DE19F3653A0086261B /* Alteration.xctemplate */,
+				5205278E1AF6A3C400B02CCF /* Controller.xctemplate */,
+				520526E91AF69DCC00B02CCF /* Model.xctemplate */,
 			);
 			path = xcode_templates;
 			sourceTree = "<group>";
