@@ -241,6 +241,10 @@
 		52C6252619EE12AE0024453F /* crypt_blowfish.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt_blowfish.h; sourceTree = "<group>"; };
 		52D61A7319FDB27800FFA2EF /* libmysqlclient.18.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmysqlclient.18.dylib; path = ../../../../../usr/local/Cellar/mysql/5.6.19/lib/libmysqlclient.18.dylib; sourceTree = "<group>"; };
 		52DDCF001A538C5800D3A47E /* QueryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = QueryTests.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		52E758931AF68AE000EA7EEE /* ___PACKAGENAME___Routes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "___PACKAGENAME___Routes.swift"; sourceTree = "<group>"; };
+		52E758941AF68AE000EA7EEE /* database.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = database.plist; sourceTree = "<group>"; };
+		52E758951AF68AE000EA7EEE /* localization.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = localization.plist; sourceTree = "<group>"; };
+		52E758961AF68AE000EA7EEE /* sessions.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = sessions.plist; sourceTree = "<group>"; };
 		52E784B41A59C12D0065C10D /* SessionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionTests.swift; sourceTree = "<group>"; };
 		52E784B71A59F2030065C10D /* AesEncryptorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AesEncryptorTests.swift; sourceTree = "<group>"; };
 		52E784B91A5A04590065C10D /* BcryptHasherTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BcryptHasherTests.swift; sourceTree = "<group>"; };
@@ -433,6 +437,10 @@
 				5242C35519F4466F00E605D2 /* TemplateInfo.plist */,
 				5247FF9E19F4629700C08156 /* main.swift */,
 				5247FF9F19F462C200C08156 /* ___PACKAGENAME___Application.swift */,
+				52E758931AF68AE000EA7EEE /* ___PACKAGENAME___Routes.swift */,
+				52E758941AF68AE000EA7EEE /* database.plist */,
+				52E758951AF68AE000EA7EEE /* localization.plist */,
+				52E758961AF68AE000EA7EEE /* sessions.plist */,
 			);
 			path = "Tailor Application.xctemplate";
 			sourceTree = "<group>";
