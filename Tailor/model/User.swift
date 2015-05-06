@@ -37,7 +37,7 @@ public class User : Persistable {
     */
   public init(emailAddress: String, password: String) {
     self.emailAddress = emailAddress
-    self.encryptedPassword = BcryptHasher().encrypt(password) ?? ""
+    self.encryptedPassword = PasswordHasher().encrypt(password) ?? ""
     self.id = nil
   }
   
@@ -92,7 +92,7 @@ public class User : Persistable {
     :returns:           Whether the password is correct.
     */
   public func hasPassword(password: String) -> Bool {
-    return BcryptHasher.isMatch(password, encryptedHash: self.encryptedPassword)
+    return PasswordHasher.isMatch(password, encryptedHash: self.encryptedPassword)
   }
   
   /**

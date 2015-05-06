@@ -8,4 +8,4 @@ FOUNDATION_EXPORT const unsigned char TailorVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <Tailor/PublicHeader.h>
 
-#include "crypt_blowfish.h"
+extern void CC_SHA512(const void *data, unsigned int len, unsigned char *md);

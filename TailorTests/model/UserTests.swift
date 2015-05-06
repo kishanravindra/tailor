@@ -17,7 +17,7 @@ class UserTests: TailorTestCase {
   }
   
   func testInitializationSetsEncryptedPassword() {
-    XCTAssertTrue(BcryptHasher.isMatch("Monkey", encryptedHash: user.encryptedPassword), "sets encrypted password")
+    XCTAssertTrue(PasswordHasher.isMatch("Monkey", encryptedHash: user.encryptedPassword), "sets encrypted password")
   }
   
   //MARK: - Authentication
