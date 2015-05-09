@@ -268,7 +268,7 @@ class MysqlBindParameterTests: TailorTestCase {
     DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at date")
     connection.executeQuery("INSERT INTO hats (updated_at) VALUES ('2015-03-14')")
     runQuery("SELECT updated_at FROM hats")
-    if let result = parameter.data().dateValue {
+    if let result = parameter.data().foundationDateValue {
       let components = dateComponents(result)
       assert(components.year, equals: 2015)
       assert(components.month, equals: 3)
@@ -285,7 +285,7 @@ class MysqlBindParameterTests: TailorTestCase {
     DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at datetime")
     connection.executeQuery("INSERT INTO hats (updated_at) VALUES ('2015-04-01 09:30:00')")
     runQuery("SELECT updated_at FROM hats")
-    if let result = parameter.data().dateValue {
+    if let result = parameter.data().foundationDateValue {
       let components = dateComponents(result)
       assert(components.year, equals: 2015)
       assert(components.month, equals: 4)
@@ -303,7 +303,7 @@ class MysqlBindParameterTests: TailorTestCase {
   func testDataWithTimestampReturnsDateWithThatTimestamp() {
     connection.executeQuery("INSERT INTO hats (updated_at) VALUES ('2015-04-01 09:30:00')")
     runQuery("SELECT updated_at FROM hats")
-    if let result = parameter.data().dateValue {
+    if let result = parameter.data().foundationDateValue {
       let components = dateComponents(result)
       assert(components.year, equals: 2015)
       assert(components.month, equals: 4)
@@ -320,7 +320,7 @@ class MysqlBindParameterTests: TailorTestCase {
   func testDataWithTimestampReturnsDateWithThatTime() {
     connection.executeQuery("INSERT INTO hats (updated_at) VALUES ('2015-04-01 09:30:00')")
     runQuery("SELECT updated_at FROM hats")
-    if let result = parameter.data().dateValue {
+    if let result = parameter.data().foundationDateValue {
       let components = dateComponents(result)
       assert(components.year, equals: 2015)
       assert(components.month, equals: 4)

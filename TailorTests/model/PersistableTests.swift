@@ -194,8 +194,8 @@ class PersistableTests: TailorTestCase {
         self.assert(parameters[1], equals: expectedParameters[1], message: "has the color parameter")
         
         let currentTimestamp = NSDate().timeIntervalSince1970
-        let date1 = parameters[2].dateValue?.timeIntervalSince1970 ?? 0
-        let date2 = parameters[3].dateValue?.timeIntervalSince1970 ?? 0
+        let date1 = parameters[2].foundationDateValue?.timeIntervalSince1970 ?? 0
+        let date2 = parameters[3].foundationDateValue?.timeIntervalSince1970 ?? 0
         XCTAssertEqualWithAccuracy(date1, currentTimestamp, 1)
         XCTAssertEqualWithAccuracy(date2, currentTimestamp, 1)
       }

@@ -69,14 +69,14 @@ class DatabaseValueTests: TailorTestCase {
   
   func testDateValueWithDateReturnsValue() {
     let date1 = NSDate()
-    let value = DatabaseValue.Date(date1)
-    let date2 = value.dateValue
+    let value = DatabaseValue.FoundationDate(date1)
+    let date2 = value.foundationDateValue
     assert(date2, equals: date1)
   }
   
   func testDateValueWithStringReturnsNil() {
     let value = DatabaseValue.String("2015-04-15")
-    let date = value.dateValue
+    let date = value.foundationDateValue
     XCTAssertNil(date)
   }
   
@@ -110,7 +110,7 @@ class DatabaseValueTests: TailorTestCase {
   
   func testDescriptionWithDateGetsFormattedDate() {
     let date = NSDate()
-    let value = DatabaseValue.Date(date)
+    let value = DatabaseValue.FoundationDate(date)
     assert(value.description, equals: date.format("db")!)
   }
   
@@ -186,14 +186,14 @@ class DatabaseValueTests: TailorTestCase {
   }
   
   func testComparisonWithEqualDatesAreEqual() {
-    let value1 = DatabaseValue.Date(NSDate(timeIntervalSince1970: 1234512345))
-    let value2 = DatabaseValue.Date(NSDate(timeIntervalSince1970: 1234512345))
+    let value1 = DatabaseValue.FoundationDate(NSDate(timeIntervalSince1970: 1234512345))
+    let value2 = DatabaseValue.FoundationDate(NSDate(timeIntervalSince1970: 1234512345))
     assert(value1, equals: value2)
   }
   
   func testComparisonWithUnequalDatesAreNotEqual() {
-    let value1 = DatabaseValue.Date(NSDate(timeIntervalSince1970: 1234512345))
-    let value2 = DatabaseValue.Date(NSDate(timeIntervalSince1970: 1234512346))
+    let value1 = DatabaseValue.FoundationDate(NSDate(timeIntervalSince1970: 1234512345))
+    let value2 = DatabaseValue.FoundationDate(NSDate(timeIntervalSince1970: 1234512346))
     XCTAssertNotEqual(value1, value2)
   }
   

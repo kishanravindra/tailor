@@ -26,7 +26,7 @@ public enum DatabaseValue: Equatable, Printable {
   case Double(Swift.Double)
   
   /** Any date or time type. */
-  case Date(NSDate)
+  case FoundationDate(NSDate)
   
   //MARK: - Casting
   
@@ -93,9 +93,9 @@ public enum DatabaseValue: Equatable, Printable {
   /**
     This method attempts to extract a date value from this value's contents.
     */
-  public var dateValue: NSDate? {
+  public var foundationDateValue: NSDate? {
     switch(self) {
-    case let .Date(date):
+    case let .FoundationDate(date):
       return date
     default:
       return nil
@@ -117,7 +117,7 @@ public enum DatabaseValue: Equatable, Printable {
       return Swift.String(int)
     case let .Double(double):
       return double.description
-    case let .Date(date):
+    case let .FoundationDate(date):
       return date.format("db") ?? "NULL"
     case .Null:
       return "NULL"
@@ -148,7 +148,7 @@ public func ==(lhs: DatabaseValue, rhs: DatabaseValue) -> Bool {
     return double1 == double2
   case (let .Data(data1), let .Data(data2)):
     return data1 == data2
-  case (let .Date(date1), let .Date(date2)):
+  case (let .FoundationDate(date1), let .FoundationDate(date2)):
     return date1 == date2
   case (.Null, .Null):
     return true
@@ -221,7 +221,7 @@ extension Double: DatabaseValueConvertible {
   */
 extension NSDate: DatabaseValueConvertible {
   /** The wrapped database value. */
-  public var databaseValue: DatabaseValue { return DatabaseValue.Date(self) }
+  public var databaseValue: DatabaseValue { return DatabaseValue.FoundationDate(self) }
 }
 
 /**

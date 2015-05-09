@@ -81,6 +81,20 @@ class CookieJarTests: TailorTestCase {
     assert(headerString, equals: "Set-Cookie: \(cookie2.headerString)\nSet-Cookie: \(cookie3.headerString)\n", message: "header string combines header strings for changed cookies")
   }
   
+  func testHeaderStringWithOneChangeHasNewline() {
+    cookieJar.addHeaderString("key1=value1; key2=value2")
+    cookieJar.setCookie("key2", "value4", path: "/path")
+    let cookie2 = cookieJar.cookies[1]
+    let headerString = cookieJar.headerStringForChanges
+    assert(headerString, equals: "Set-Cookie: \(cookie2.headerString)\n", message: "header string has header string for changed cookie with newline")
+  }
+  
+  func testHeaderStringWithNoChangeIsEmpty() {
+    cookieJar.addHeaderString("key1=value1; key2=value2")
+    let headerString = cookieJar.headerStringForChanges
+    assert(headerString, equals: "")
+  }
+  
   //MARK: Formatting
   
   func testCookieDateFormatterUsesCookieFormat() {

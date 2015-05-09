@@ -106,8 +106,8 @@ struct Hat : Persistable {
           shelfId: databaseRow["id"]?.intValue,
           id: databaseRow["id"]?.intValue
         )
-        createdAt = databaseRow["created_at"]?.dateValue
-        updatedAt = databaseRow["updated_at"]?.dateValue
+        createdAt = databaseRow["created_at"]?.foundationDateValue
+        updatedAt = databaseRow["updated_at"]?.foundationDateValue
     }
     else {
       self.init()

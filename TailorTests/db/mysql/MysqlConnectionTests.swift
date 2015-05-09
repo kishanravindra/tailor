@@ -56,7 +56,7 @@ class MysqlConnectionTests: TailorTestCase {
     if results.count == 1 {
       let result = results[0]
       
-      if let date = result.data["updated_at"]?.dateValue {
+      if let date = result.data["updated_at"]?.foundationDateValue {
         let calendar = NSCalendar.currentCalendar()
         let oldTimeZone = calendar.timeZone
         calendar.timeZone = NSTimeZone(name: "UTC")!

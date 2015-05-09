@@ -124,12 +124,12 @@ public class CookieJar {
     */
   public var headerStringForChanges: String {
     get {
-      let filters = self.cookies.filter {
+      let headers = self.cookies.filter {
         $0.changed
       }.map {
-        "Set-Cookie: \($0.headerString)"
+        "Set-Cookie: \($0.headerString)\n"
       }
-      return "\n".join(filters) + "\n"
+      return "".join(headers)
     }
   }
 }
