@@ -323,10 +323,12 @@ public struct Timestamp: Equatable, Comparable {
     let calendar = calendar.inYear(year)
     let secondsPerDay = calendar.hoursPerDay * calendar.minutesPerHour * calendar.secondsPerMinute
     
-    for currentMonth in 1..<month {
-      let days = calendar.daysInMonth(currentMonth)
-      timestamp += Double(days * secondsPerDay)
-      weekDay += days
+    if month > 0 {
+      for currentMonth in 1..<month {
+        let days = calendar.daysInMonth(currentMonth)
+        timestamp += Double(days * secondsPerDay)
+        weekDay += days
+      }
     }
     
     timestamp += Double(secondsPerDay * (day - 1))

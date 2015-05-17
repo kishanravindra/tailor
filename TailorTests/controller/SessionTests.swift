@@ -5,7 +5,7 @@ import TailorTesting
 class SessionTests: TailorTestCase {
   let session: Session! = nil
   
-  func createCookieString(data: [String:String] = [:], flashData: [String:String] = [:], clientAddress: String = "0.0.0.0", expirationDate: Timestamp = Timestamp.now() + 1.hour) -> String {
+  func createCookieString(data: [String:String] = [:], flashData: [String:String] = [:], clientAddress: String = "0.0.0.0", expirationDate: Timestamp = 1.hour.fromNow) -> String {
     var mergedData = data
     
     mergedData["clientAddress"] = clientAddress
@@ -72,7 +72,7 @@ class SessionTests: TailorTestCase {
   func testInitalizationWithExpiredDateLeavesDataEmpty() {
     let string = createCookieString(
       data: ["name": "John", "userId": "5"],
-      expirationDate: Timestamp.now() - 1.hour
+      expirationDate: 1.hour.ago
     )
     let request = Request(cookies: ["_session": string])
     let session = Session(request: request)

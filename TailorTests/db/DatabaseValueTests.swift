@@ -80,6 +80,19 @@ class DatabaseValueTests: TailorTestCase {
     XCTAssertNil(date)
   }
   
+  func testTimestampValueWitTimestampReturnsValue() {
+    let timestamp = Timestamp.now()
+    let value = DatabaseValue.Timestamp(timestamp)
+    let timestamp2 = value.timestampValue
+    assert(timestamp2, equals: timestamp)
+  }
+  
+  func testTimestampValueWithStringReturnsNil() {
+    let value = DatabaseValue.String("2015-04-15")
+    let timestamp = value.timestampValue
+    assert(isNil: timestamp)
+  }
+  
   func testDescriptionWithStringGetsString() {
     let value = DatabaseValue.String("Hello")
     assert(value.description, equals: "Hello")

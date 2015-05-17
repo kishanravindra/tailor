@@ -401,7 +401,7 @@ public enum TimeFormatComponent: TimeFormatter {
     var substring = string.substringToIndex(advance(string.startIndex, length))
     var realStartIndex = -1
     for (index,character) in enumerate(substring.unicodeScalars) {
-      if padding != nil  && String(character) == String(padding!) {
+      if padding != nil && padding! != "0" && String(character) == String(padding!) {
         continue
       }
       if realStartIndex == -1 {

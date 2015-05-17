@@ -49,7 +49,7 @@ public class DatabaseConnection {
   }
   
   /** The time zone that the database is using. */
-  public internal(set) var timeZone: NSTimeZone
+  public internal(set) var timeZone: TimeZone
 
   /**
     This method creates the connection.
@@ -58,7 +58,7 @@ public class DatabaseConnection {
     query execution.
     */
   public required init(config: [String:String]) {
-    self.timeZone = NSTimeZone.systemTimeZone()
+    self.timeZone = TimeZone.defaultTimeZone
   }
   
   /**

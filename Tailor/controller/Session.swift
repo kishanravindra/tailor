@@ -42,7 +42,7 @@ public class Session {
       var cookieData = (NSJSONSerialization.JSONObjectWithData(decryptedData, options: nil, error: nil) as? [String:String]) ?? [:]
       let dateString = cookieData["expirationDate"] ?? ""
       
-      self.expirationDate = TimeFormat.Cookie.parseTime(dateString) ?? (Timestamp.now() + 1.hour)
+      self.expirationDate = TimeFormat.Cookie.parseTime(dateString) ?? 1.hour.fromNow
       
       if cookieData["clientAddress"] == nil {
         return
@@ -70,7 +70,7 @@ public class Session {
       }
     }
     else {
-      self.expirationDate = Timestamp.now() + 1.hour
+      self.expirationDate = 1.hour.fromNow
     }
   }
   

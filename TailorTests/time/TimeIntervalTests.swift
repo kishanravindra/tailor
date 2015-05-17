@@ -71,4 +71,18 @@ class TimeIntervalTests: TailorTestCase {
     assert(1.nanosecond, equals: TimeInterval(nanoseconds: 1))
     assert(1.0.nanoseconds, equals: TimeInterval(nanoseconds: 1))
   }
+  
+  func testFromNowGetsThatIntervalFromCurrentTime() {
+    let timestamp1 = Timestamp.now()
+    let timestamp2 = (1.hour + 30.minutes).fromNow
+    let interval = timestamp2.epochSeconds - timestamp1.epochSeconds
+    assert(interval, within: 1, of: 5400)
+  }
+  
+  func testAgoGetsThatIntervalFromCurrentTime() {
+    let timestamp1 = Timestamp.now()
+    let timestamp2 = 3.hours.ago
+    let interval = timestamp2.epochSeconds - timestamp1.epochSeconds
+    assert(interval, within: 1, of: -10800)
+  }
 }

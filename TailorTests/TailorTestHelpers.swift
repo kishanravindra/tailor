@@ -58,7 +58,7 @@ class TestConnection : DatabaseConnection {
     return temporaryResponse
   }
   
-  class func withTestConnection(block: (TestConnection)->()) {
+  class func withTestConnection(@noescape block: (TestConnection)->()) {
     var dictionary = NSThread.currentThread().threadDictionary
     let oldConnection: AnyObject? = dictionary["databaseConnection"]
     let newConnection = TestConnection(config: [:])
@@ -74,8 +74,8 @@ struct Hat : Persistable {
   var color: String
   var shelfId: Int!
   var owner: String?
-  var createdAt: NSDate?
-  var updatedAt: NSDate?
+  var createdAt: Timestamp?
+  var updatedAt: Timestamp?
   
   
   init(brimSize: Int = 0, color: String = "", shelfId: Int? = nil, owner: String? = nil, id: Int? = nil) {
@@ -106,8 +106,8 @@ struct Hat : Persistable {
           shelfId: databaseRow["id"]?.intValue,
           id: databaseRow["id"]?.intValue
         )
-        createdAt = databaseRow["created_at"]?.foundationDateValue
-        updatedAt = databaseRow["updated_at"]?.foundationDateValue
+        createdAt = databaseRow["created_at"]?.timestampValue
+        updatedAt = databaseRow["updated_at"]?.timestampValue
     }
     else {
       self.init()

@@ -14,11 +14,6 @@ class DatabaseConnectionTests: TailorTestCase {
   
   //MARK: - Initialization
   
-  func testInitializationSetsTimeZone() {
-    let connection = DatabaseConnection(config: [:])
-    assert(connection.timeZone, equals: NSTimeZone.systemTimeZone(), message: "sets time zone to system time zone")
-  }
-
   func testSharedConnectionOpensWithApplication() {
     let application = TestApplication.init()
     application.start()

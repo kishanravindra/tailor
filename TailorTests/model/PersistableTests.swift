@@ -79,26 +79,22 @@ class PersistableTests: TailorTestCase {
     var hat = Hat()
     hat = saveRecord(hat) ?? hat
     
-    XCTAssertNotNil(hat.createdAt, "sets createdAt")
-    if(hat.createdAt != nil) {
-      XCTAssertEqualWithAccuracy(hat.createdAt!.timeIntervalSinceNow, 0, 2, "sets createdAt to current time")
-    }
-    
-    XCTAssertNotNil(hat.updatedAt, "sets updatedAt")
-    if(hat.updatedAt != nil) {
-      XCTAssertEqualWithAccuracy(hat.updatedAt!.timeIntervalSinceNow, 0, 2, "sets updatedAt to current time")
-    }
+    let currentTime = Timestamp.now().epochSeconds
+    assert(hat.createdAt?.epochSeconds, within: 2, of: currentTime, message: "sets createdAt to current time")
+    assert(hat.updatedAt?.epochSeconds, within: 2, of: currentTime, message: "sets updatedAt to current time")
   }
   
   func testSaveSetsTimestampsForUpdatedRecord() {
     var hat = Hat()
-    hat.createdAt = NSDate(timeIntervalSinceNow: -100)
-    hat.updatedAt = NSDate(timeIntervalSinceNow: -100)
+    hat.createdAt = 30.minutes.ago
+    hat.updatedAt = 10.minutes.ago
     hat = saveRecord(hat) ?? hat
     
-    XCTAssertEqualWithAccuracy(hat.createdAt!.timeIntervalSinceNow, -100, 2, "leaves createdAt unchanged")
+    let currentTime = Timestamp.now().epochSeconds
+    assert(hat.createdAt!.epochSeconds, within: 2, of: currentTime-1800, message: "leaves createdAt unchanged")
     
-    XCTAssertEqualWithAccuracy(hat.updatedAt!.timeIntervalSinceNow, 0, 2, "sets updatedAt to current time")
+    
+    assert(hat.updatedAt!.epochSeconds, within: 2, of: currentTime, message: "sets updatedAt to currentTime")
   }
   
   func testSaveInsertsNewRecord() {
@@ -186,18 +182,18 @@ class PersistableTests: TailorTestCase {
         let expectedParameters = [
           10.databaseValue,
           "red".databaseValue,
-          NSDate().databaseValue,
-          NSDate().databaseValue
+          Timestamp.now().databaseValue,
+          Timestamp.now().databaseValue
         ]
         
         self.assert(parameters[0], equals: expectedParameters[0], message: "has the brim size parameter")
         self.assert(parameters[1], equals: expectedParameters[1], message: "has the color parameter")
         
-        let currentTimestamp = NSDate().timeIntervalSince1970
-        let date1 = parameters[2].foundationDateValue?.timeIntervalSince1970 ?? 0
-        let date2 = parameters[3].foundationDateValue?.timeIntervalSince1970 ?? 0
-        XCTAssertEqualWithAccuracy(date1, currentTimestamp, 1)
-        XCTAssertEqualWithAccuracy(date2, currentTimestamp, 1)
+        let currentTimestamp = Timestamp.now().epochSeconds
+        let timestamp1 = parameters[2].timestampValue?.epochSeconds ?? 0
+        let timestamp2 = parameters[3].timestampValue?.epochSeconds ?? 0
+        assert(timestamp1, within:1, of: currentTimestamp)
+        assert(timestamp2, within:1, of: currentTimestamp)
       }
     }
   }

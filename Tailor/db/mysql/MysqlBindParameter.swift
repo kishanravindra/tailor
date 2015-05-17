@@ -143,7 +143,7 @@ public struct MysqlBindParameter {
       return string?.doubleValue.databaseValue ?? DatabaseValue.Null
     case MYSQL_TYPE_TIME.value, MYSQL_TYPE_DATE.value, MYSQL_TYPE_DATETIME.value, MYSQL_TYPE_TIMESTAMP.value:
       let buffer = UnsafePointer<MYSQL_TIME>(self.buffer)
-      return MysqlBindParameter.dateFromTime(buffer.memory)?.databaseValue ?? DatabaseValue.Null
+      return MysqlBindParameter.timestampFromTime(buffer.memory)?.databaseValue ?? DatabaseValue.Null
     case MYSQL_TYPE_TINY_BLOB.value, MYSQL_TYPE_BLOB.value, MYSQL_TYPE_MEDIUM_BLOB.value, MYSQL_TYPE_LONG_BLOB.value:
       if binary {
         return NSData(bytes: self.buffer, length: Int(self.length)).databaseValue
@@ -159,22 +159,21 @@ public struct MysqlBindParameter {
   }
   
   /**
-    This method converts a MySQL time data structure into an NSDate data
-    structure.
+    This method converts a MySQL time data structure into a timestamp.
 
     :param: time    The MySQL time
-    :returns:       The Foundation date
+    :returns:       The timestamp
     */
-  public static func dateFromTime(time: MYSQL_TIME) -> NSDate? {
-    var components = NSDateComponents()
-    components.year = Int(time.year)
-    components.month = Int(time.month)
-    components.day = Int(time.day)
-    components.hour = Int(time.hour)
-    components.minute = Int(time.minute)
-    components.second = Int(time.second)
-    components.timeZone = DatabaseConnection.sharedConnection().timeZone
-    let calendar = NSCalendar.currentCalendar()
-    return calendar.dateFromComponents(components)
+  public static func timestampFromTime(time: MYSQL_TIME) -> Timestamp? {
+    return Timestamp(
+      year: Int(time.year),
+      month: Int(time.month),
+      day: Int(time.day),
+      hour: Int(time.hour),
+      minute: Int(time.minute),
+      second: Int(time.second),
+      nanosecond: 0,
+      timeZone: DatabaseConnection.sharedConnection().timeZone
+    )
   }
 }

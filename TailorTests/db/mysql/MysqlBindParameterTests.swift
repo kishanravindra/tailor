@@ -31,12 +31,6 @@ class MysqlBindParameterTests: TailorTestCase {
     mysql_stmt_close(statement)
   }
   
-  func dateComponents(date: NSDate) -> NSDateComponents {
-    let calendar = NSCalendar(calendarIdentifier: NSCalendar.currentCalendar().calendarIdentifier)!
-    calendar.timeZone = DatabaseConnection.sharedConnection().timeZone
-    return calendar.components(.CalendarUnitYear | .CalendarUnitMonth | .CalendarUnitDay | .CalendarUnitHour | .CalendarUnitMinute | .CalendarUnitSecond, fromDate: date)
-  }
-  
   override func tearDown() {
     super.tearDown()
   }
@@ -267,11 +261,10 @@ class MysqlBindParameterTests: TailorTestCase {
     DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at date")
     connection.executeQuery("INSERT INTO hats (updated_at) VALUES ('2015-03-14')")
     runQuery("SELECT updated_at FROM hats")
-    if let result = parameter.data().foundationDateValue {
-      let components = dateComponents(result)
-      assert(components.year, equals: 2015)
-      assert(components.month, equals: 3)
-      assert(components.day, equals: 14)
+    if let result = parameter.data().timestampValue {
+      assert(result.year, equals: 2015)
+      assert(result.month, equals: 3)
+      assert(result.day, equals: 14)
     }
     else {
       XCTFail()
@@ -284,14 +277,13 @@ class MysqlBindParameterTests: TailorTestCase {
     DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at datetime")
     connection.executeQuery("INSERT INTO hats (updated_at) VALUES ('2015-04-01 09:30:00')")
     runQuery("SELECT updated_at FROM hats")
-    if let result = parameter.data().foundationDateValue {
-      let components = dateComponents(result)
-      assert(components.year, equals: 2015)
-      assert(components.month, equals: 4)
-      assert(components.day, equals: 1)
-      assert(components.hour, equals: 9)
-      assert(components.minute, equals: 30)
-      assert(components.second, equals: 0)
+    if let result = parameter.data().timestampValue {
+      assert(result.year, equals: 2015)
+      assert(result.month, equals: 4)
+      assert(result.day, equals: 1)
+      assert(result.hour, equals: 9)
+      assert(result.minute, equals: 30)
+      assert(result.second, equals: 0)
     }
     else {
       XCTFail()
@@ -302,14 +294,13 @@ class MysqlBindParameterTests: TailorTestCase {
   func testDataWithTimestampReturnsDateWithThatTimestamp() {
     connection.executeQuery("INSERT INTO hats (updated_at) VALUES ('2015-04-01 09:30:00')")
     runQuery("SELECT updated_at FROM hats")
-    if let result = parameter.data().foundationDateValue {
-      let components = dateComponents(result)
-      assert(components.year, equals: 2015)
-      assert(components.month, equals: 4)
-      assert(components.day, equals: 1)
-      assert(components.hour, equals: 9)
-      assert(components.minute, equals: 30)
-      assert(components.second, equals: 0)
+    if let result = parameter.data().timestampValue {
+      assert(result.year, equals: 2015)
+      assert(result.month, equals: 4)
+      assert(result.day, equals: 1)
+      assert(result.hour, equals: 9)
+      assert(result.minute, equals: 30)
+      assert(result.second, equals: 0)
     }
     else {
       XCTFail()
@@ -319,14 +310,13 @@ class MysqlBindParameterTests: TailorTestCase {
   func testDataWithTimestampReturnsDateWithThatTime() {
     connection.executeQuery("INSERT INTO hats (updated_at) VALUES ('2015-04-01 09:30:00')")
     runQuery("SELECT updated_at FROM hats")
-    if let result = parameter.data().foundationDateValue {
-      let components = dateComponents(result)
-      assert(components.year, equals: 2015)
-      assert(components.month, equals: 4)
-      assert(components.day, equals: 1)
-      assert(components.hour, equals: 9)
-      assert(components.minute, equals: 30)
-      assert(components.second, equals: 0)
+    if let result = parameter.data().timestampValue {
+      assert(result.year, equals: 2015)
+      assert(result.month, equals: 4)
+      assert(result.day, equals: 1)
+      assert(result.hour, equals: 9)
+      assert(result.minute, equals: 30)
+      assert(result.second, equals: 0)
     }
     else {
       XCTFail()

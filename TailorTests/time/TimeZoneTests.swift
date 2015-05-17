@@ -17,6 +17,22 @@ class TimeZoneTests: TailorTestCase {
     assert(timeZone.policies, equals: policies)
   }
   
+  func testInitializeWithPositiveOffsetSetsNameAndSinglePolicy() {
+    let timeZone = TimeZone(offset: 18000)
+    assert(timeZone.name, equals: "+18000")
+    assert(timeZone.policies, equals: [
+      TimeZone.Policy(beginningTimestamp: -1 * DBL_MAX, abbreviation: "+18000", offset: 18000, isDaylightTime: false)
+    ])
+  }
+  
+  func testInitializeWithNegativeOffsetSetsNameAndSinglePolicy() {
+    let timeZone = TimeZone(offset: -18000)
+    assert(timeZone.name, equals: "-18000")
+    assert(timeZone.policies, equals: [
+      TimeZone.Policy(beginningTimestamp: -1 * DBL_MAX, abbreviation: "-18000", offset: -18000, isDaylightTime: false)
+      ])
+  }
+  
   func testInitializeWithoutListOfPoliciesReadsPoliciesFromDisk() {
     let timeZone = TimeZone(name: "Asia/Hong_Kong")
     let expectedPolicies = [

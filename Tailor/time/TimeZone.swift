@@ -7,8 +7,6 @@
   timestamp.
   */
 public struct TimeZone: Equatable,Printable {
-  //MARK: - Reading
-  
   //MARK: - Structure
   
   /**
@@ -91,6 +89,20 @@ public struct TimeZone: Equatable,Printable {
     }
   }
   
+  /**
+    This initializer creates a timezone policy with just an offset.
+    
+    The name will be the offset, and the zone will have a single policy that has
+    that offset.
+
+    :param: offset    The offset for the policy.
+    */
+  public init(offset: Int) {
+    let name = offset > 0 ? "+\(offset)" : "\(offset)"
+    self.name = name
+    self.policies = [Policy(beginningTimestamp: -1 * DBL_MAX, abbreviation: name, offset: offset, isDaylightTime: false)]
+  }
+  
   //MARK: - Policy Information
   
   /**
@@ -145,6 +157,9 @@ public struct TimeZone: Equatable,Printable {
     */
   public func policyBeforeTimestamp(timestamp: Timestamp.EpochInterval, startIndex: Int, endIndex: Int) -> Policy? {
     let middleIndex = (startIndex + endIndex) / 2
+    if middleIndex >= count(policies) {
+      return nil
+    }
     let policy = policies[middleIndex]
     if policy.beginningTimestamp <= timestamp {
       if middleIndex == endIndex || policies[middleIndex + 1].beginningTimestamp > timestamp {

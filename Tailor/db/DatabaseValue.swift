@@ -94,9 +94,17 @@ public enum DatabaseValue: Equatable, Printable {
     This method attempts to extract a date value from this value's contents.
     */
   public var foundationDateValue: NSDate? {
+    return self.timestampValue?.foundationDateValue
+  }
+  
+  /**
+    This method attempts to extract a timestamp value from this value's
+    contents.
+    */
+  public var timestampValue: Tailor.Timestamp? {
     switch(self) {
     case let .Timestamp(timestamp):
-      return timestamp.foundationDateValue
+      return timestamp
     default:
       return nil
     }

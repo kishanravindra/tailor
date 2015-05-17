@@ -98,7 +98,6 @@
 		52BD143119E9DA1D006D72B0 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140D19E9DA1D006D72B0 /* Session.swift */; };
 		52BD143219E9DA1D006D72B0 /* DatabaseConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140F19E9DA1D006D72B0 /* DatabaseConnection.swift */; };
 		52BD143519E9DA1D006D72B0 /* MysqlConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD141219E9DA1D006D72B0 /* MysqlConnection.swift */; };
-		52BD143819E9DA1D006D72B0 /* NSDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD141619E9DA1D006D72B0 /* NSDate.swift */; };
 		52BD143919E9DA1D006D72B0 /* NSString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD141719E9DA1D006D72B0 /* NSString.swift */; };
 		52BD143A19E9DA1D006D72B0 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD141819E9DA1D006D72B0 /* String.swift */; };
 		52BD143C19E9DA1D006D72B0 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD141B19E9DA1D006D72B0 /* Model.swift */; };
@@ -113,7 +112,6 @@
 		52E784B81A59F2030065C10D /* AesEncryptorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784B71A59F2030065C10D /* AesEncryptorTests.swift */; };
 		52E784BA1A5A04590065C10D /* PasswordHasherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784B91A5A04590065C10D /* PasswordHasherTests.swift */; };
 		52E784BD1A5B596A0065C10D /* ArrayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784BC1A5B596A0065C10D /* ArrayTests.swift */; };
-		52E784BF1A5B5A950065C10D /* NSDateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784BE1A5B5A950065C10D /* NSDateTests.swift */; };
 		52E784C11A5B64030065C10D /* NSDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784C01A5B64030065C10D /* NSDataTests.swift */; };
 		52E784C31A5B6BFA0065C10D /* NSStringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784C21A5B6BFA0065C10D /* NSStringTests.swift */; };
 		52E784C51A5B6E2D0065C10D /* StringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784C41A5B6E2D0065C10D /* StringTests.swift */; };
@@ -248,7 +246,6 @@
 		52BD140D19E9DA1D006D72B0 /* Session.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
 		52BD140F19E9DA1D006D72B0 /* DatabaseConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseConnection.swift; sourceTree = "<group>"; };
 		52BD141219E9DA1D006D72B0 /* MysqlConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MysqlConnection.swift; sourceTree = "<group>"; };
-		52BD141619E9DA1D006D72B0 /* NSDate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSDate.swift; sourceTree = "<group>"; };
 		52BD141719E9DA1D006D72B0 /* NSString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSString.swift; sourceTree = "<group>"; };
 		52BD141819E9DA1D006D72B0 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		52BD141919E9DA1D006D72B0 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -271,7 +268,6 @@
 		52E784B71A59F2030065C10D /* AesEncryptorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AesEncryptorTests.swift; sourceTree = "<group>"; };
 		52E784B91A5A04590065C10D /* PasswordHasherTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordHasherTests.swift; sourceTree = "<group>"; };
 		52E784BC1A5B596A0065C10D /* ArrayTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArrayTests.swift; sourceTree = "<group>"; };
-		52E784BE1A5B5A950065C10D /* NSDateTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSDateTests.swift; sourceTree = "<group>"; };
 		52E784C01A5B64030065C10D /* NSDataTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSDataTests.swift; sourceTree = "<group>"; };
 		52E784C21A5B6BFA0065C10D /* NSStringTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSStringTests.swift; sourceTree = "<group>"; };
 		52E784C41A5B6E2D0065C10D /* StringTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringTests.swift; sourceTree = "<group>"; };
@@ -601,7 +597,6 @@
 			isa = PBXGroup;
 			children = (
 				522B56C91A18C849009BBE32 /* Array.swift */,
-				52BD141619E9DA1D006D72B0 /* NSDate.swift */,
 				521E87471A0FCEDA00D84B7B /* NSData.swift */,
 				52BD141719E9DA1D006D72B0 /* NSString.swift */,
 				52BD141819E9DA1D006D72B0 /* String.swift */,
@@ -658,7 +653,6 @@
 			isa = PBXGroup;
 			children = (
 				52E784BC1A5B596A0065C10D /* ArrayTests.swift */,
-				52E784BE1A5B5A950065C10D /* NSDateTests.swift */,
 				52E784C01A5B64030065C10D /* NSDataTests.swift */,
 				52E784C21A5B6BFA0065C10D /* NSStringTests.swift */,
 				52E784C41A5B6E2D0065C10D /* StringTests.swift */,
@@ -898,7 +892,6 @@
 				52A5008E1AA34F6A00F3F031 /* MysqlField.swift in Sources */,
 				52BD143519E9DA1D006D72B0 /* MysqlConnection.swift in Sources */,
 				523D655B1A98CBEB000C686B /* DatabaseLocalization.swift in Sources */,
-				52BD143819E9DA1D006D72B0 /* NSDate.swift in Sources */,
 				52C6251A19EE110B0024453F /* AesEncryptor.swift in Sources */,
 				52A500871AA2993C00F3F031 /* MysqlStatement.swift in Sources */,
 				522643231B06C7F40081D04E /* TimeInterval.swift in Sources */,
@@ -951,7 +944,6 @@
 				52E784C31A5B6BFA0065C10D /* NSStringTests.swift in Sources */,
 				52178E671A4F359F001F6D57 /* MysqlConnectionTests.swift in Sources */,
 				52DDCF011A538C5800D3A47E /* QueryTests.swift in Sources */,
-				52E784BF1A5B5A950065C10D /* NSDateTests.swift in Sources */,
 				52135CA51B07FE0D00595794 /* TimeZoneTests.swift in Sources */,
 				523D655F1A98CD3C000C686B /* LocalizationTests.swift in Sources */,
 				52A95E331AE0A3E6001AED1F /* DatabaseValueTests.swift in Sources */,

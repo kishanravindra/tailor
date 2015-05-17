@@ -8,7 +8,7 @@ public class MemoryCacheStore: CacheStore {
   let cache = NSCache()
   
   /** The times when we should clear keys from the cache. */
-  public var expiryTimes = [String:NSDate]()
+  public var expiryTimes = [String:Timestamp]()
 
   /**
     This method reads an entry for the cache store.
@@ -18,7 +18,7 @@ public class MemoryCacheStore: CacheStore {
     */
   public override func read(key: String) -> String? {
     if let time = expiryTimes[key] {
-      if time.timeIntervalSinceNow < 0 {
+      if time < Timestamp.now() {
         expiryTimes.removeValueForKey(key)
         cache.removeObjectForKey(key)
       }
@@ -31,12 +31,12 @@ public class MemoryCacheStore: CacheStore {
 
     :param: key           The key for the cache entry.
     :param: value         The value to store in the cache.
-    :param: expiryTime    The time when the cache entry should expire.
+    :param: expiryTime    The time until the cache entry should expire.
     */
-  public override func write(key: String, value: String, expireIn expiryTime: NSTimeInterval?=nil) {
+  public override func write(key: String, value: String, expireIn expiryTime: TimeInterval?=nil) {
     cache.setObject(value, forKey: key)
     if expiryTime != nil {
-      expiryTimes[key] = NSDate(timeIntervalSinceNow: expiryTime!)
+      expiryTimes[key] = expiryTime!.fromNow
     }
   }
   

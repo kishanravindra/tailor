@@ -5,13 +5,13 @@ import TailorTesting
 class CacheStoreTests: TailorTestCase {
   class TestCacheStore : CacheStore {
     var data = [String:String]()
-    var expiries = [String:NSTimeInterval]()
+    var expiries = [String:TimeInterval]()
     
     override func read(key: String)->String? {
       return data[key]
     }
     
-    override func write(key: String, value: String, expireIn expiryTime: NSTimeInterval? = nil) {
+    override func write(key: String, value: String, expireIn expiryTime: TimeInterval? = nil) {
       data[key] = value
       if expiryTime != nil {
         expiries[key] = expiryTime!
@@ -41,7 +41,7 @@ class CacheStoreTests: TailorTestCase {
     var store = TestCacheStore()
     let result1 = store.fetch("cache.test") { "a" }
     let result2 = store.fetch("cache.test") {
-      XCTFail("Does not call the second generator")
+      assert(false, message: "Does not call the second generator")
       return "a"
     }
     
@@ -62,13 +62,10 @@ class CacheStoreTests: TailorTestCase {
   
   func testFetchWithExpiryTimeGivesExpiryTimeToWriteMethod() {
     var store = TestCacheStore()
-    let result = store.fetch("cache.test", expireIn: 20) { "a" }
+    let result = store.fetch("cache.test", expireIn: 20.seconds) { "a" }
     
     let expiry = store.expiries["cache.test"]
-    XCTAssertNotNil(expiry, "set an expiry time")
-    if expiry != nil {
-      assert(expiry!, equals: 20, message: "sets the expiry time from the call to fetch")
-    }
+    assert(expiry, equals: 20.seconds, message: "sets the expiry time from the call to fetch")
   }
   
   func testSharedCacheStoreReturnsWithNoConfigurationSettingReturnsMemoryCacheStore() {
@@ -89,9 +86,6 @@ class CacheStoreTests: TailorTestCase {
     store1.write("cache.test", value: "test value")
     let store2 = CacheStore.shared()
     let value = store2.read("cache.test")
-    XCTAssertNotNil(value)
-    if value != nil {
-      assert(value!, equals: "test value")
-    }
+    assert(value, equals: "test value")
   }
 }

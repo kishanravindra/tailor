@@ -31,10 +31,10 @@ public class MysqlConnection : DatabaseConnection {
         if components[0] == "-" {
           minutes = minutes * -1
         }
-        self.timeZone = NSTimeZone(forSecondsFromGMT: minutes * 60)
+        self.timeZone = TimeZone(offset: minutes * 60)
       }
-      else if let zone = NSTimeZone(name: timeZoneDescription) {
-        self.timeZone = zone
+      else {
+        self.timeZone = TimeZone(name: timeZoneDescription)
       }
     }
   }

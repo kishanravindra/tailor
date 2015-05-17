@@ -36,7 +36,7 @@ public class CacheStore {
                         nil, the entry will remain for as long as the specific
                         cache store can keep it.
     */
-  public func write(key: String, value: String, expireIn expiryTime: NSTimeInterval? = nil) {
+  public func write(key: String, value: String, expireIn expiryTime: TimeInterval? = nil) {
   }
   
   /**
@@ -67,7 +67,7 @@ public class CacheStore {
     :param: generator   The function to generate a value on a cache miss.
     :returns:           The value provided by the cache or the generator.
     */
-  public func fetch(key: String, generator: ()->String)->String {
+  public func fetch(key: String, @noescape generator: ()->String)->String {
     return self.fetch(key, expireIn: nil, generator: generator)
   }
   
@@ -82,7 +82,7 @@ public class CacheStore {
     :param: generator   The function to generate a value on a cache miss.
     :returns:           The value provided by the cache or the generator.
     */
-  public func fetch(key: String, expireIn expiryTime: NSTimeInterval?, generator: ()->String) -> String {
+  public func fetch(key: String, expireIn expiryTime: TimeInterval?, @noescape generator: ()->String) -> String {
     if let result = self.read(key) {
       return result
     }

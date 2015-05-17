@@ -135,11 +135,11 @@ public func saveRecord<RecordType: Persistable>(record: RecordType) -> RecordTyp
   
   if contains(properties, "created_at") {
     if values["created_at"]! == nil {
-      values["created_at"] = NSDate()
+      values["created_at"] = Timestamp.now()
     }
   }
   if contains(properties, "updated_at") {
-    values["updated_at"] = NSDate()
+    values["updated_at"] = Timestamp.now()
   }
   
   if record.id != nil {

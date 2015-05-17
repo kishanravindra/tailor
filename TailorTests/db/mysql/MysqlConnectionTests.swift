@@ -17,15 +17,17 @@ class MysqlConnectionTests: TailorTestCase {
     
     connection.executeQuery("SET GLOBAL time_zone='UTC'")
     DatabaseConnection.openSharedConnection()
-    assert(connection.timeZone.secondsFromGMT, equals: 0, message: "gets a time zone of UTC from the database")
+    assert(connection.timeZone.name, equals: "UTC", message: "gets a time zone of UTC from the database")
 
     connection.executeQuery("SET GLOBAL time_zone='America/Recife'")
     DatabaseConnection.openSharedConnection()
-    assert(connection.timeZone.secondsFromGMT, equals: -10800, message: "gets a named time zone from the database")
+    assert(connection.timeZone.name, equals: "America/Recife", message: "gets a named time zone from the database")
+    assert(connection.timeZone.policies.count > 0)
     
     connection.executeQuery("SET GLOBAL time_zone='+05:00'")
     DatabaseConnection.openSharedConnection()
-    assert(connection.timeZone.secondsFromGMT, equals: 18000, message: "gets a time zone with an offset from the database")
+    assert(connection.timeZone.name, equals: "+18000", message: "gets a time zone with an offset from the database")
+    assert(connection.timeZone.policies.count, equals: 1)
 
     connection.executeQuery("SET GLOBAL time_zone=?", initialZone)
     DatabaseConnection.openSharedConnection()

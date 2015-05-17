@@ -69,6 +69,12 @@ public struct TimeInterval: Equatable,Printable {
     )
   }
   
+  /** This method gets a time that is in the future by this time interval. */
+  public var fromNow: Timestamp { return Timestamp.now() + self }
+  
+  /* This method gets a time that is in the past by this time interval. */
+  public var ago: Timestamp { return Timestamp.now() - self }
+  
   /**
     This method gets a human readable description for a time interval.
     */
