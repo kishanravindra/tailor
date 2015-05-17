@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		5209E2891A50920C0044EE70 /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5209E2881A50920C0044EE70 /* ModelTests.swift */; };
 		520BD5021AA90E2600CBC3DC /* PropertyListLocalizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784C91A5CC1A40065C10D /* PropertyListLocalizationTests.swift */; };
+		52135CA51B07FE0D00595794 /* TimeZoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52135CA41B07FE0D00595794 /* TimeZoneTests.swift */; };
 		5214B5D21AA38B0800624E9D /* ValidationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5214B5D11AA38B0800624E9D /* ValidationError.swift */; };
 		5214B5D51AA3903800624E9D /* ValidationErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5214B5D41AA3903800624E9D /* ValidationErrorTests.swift */; };
 		52178E671A4F359F001F6D57 /* MysqlConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52178E661A4F359F001F6D57 /* MysqlConnectionTests.swift */; };
@@ -19,6 +20,14 @@
 		5218B9C81AB95F580036ED34 /* Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5218B9C71AB95F580036ED34 /* Controller.swift */; };
 		5218B9CA1AB966ED0036ED34 /* TemplateTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5218B9C91AB966ED0036ED34 /* TemplateTestCase.swift */; };
 		521E87481A0FCEDA00D84B7B /* NSData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 521E87471A0FCEDA00D84B7B /* NSData.swift */; };
+		522643211B06C7F40081D04E /* Calendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5226431A1B06C7F40081D04E /* Calendar.swift */; };
+		522643221B06C7F40081D04E /* TimeFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5226431B1B06C7F40081D04E /* TimeFormat.swift */; };
+		522643231B06C7F40081D04E /* TimeInterval.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5226431C1B06C7F40081D04E /* TimeInterval.swift */; };
+		522643241B06C7F40081D04E /* Timestamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5226431D1B06C7F40081D04E /* Timestamp.swift */; };
+		522643251B06C7F40081D04E /* Timestamp+Foundation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5226431E1B06C7F40081D04E /* Timestamp+Foundation.swift */; };
+		522643261B06C7F40081D04E /* TimeZone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5226431F1B06C7F40081D04E /* TimeZone.swift */; };
+		522643271B06C7F40081D04E /* TimeZoneReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522643201B06C7F40081D04E /* TimeZoneReader.swift */; };
+		5226432A1B06C8CB0081D04E /* CalendarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522643291B06C8CB0081D04E /* CalendarTests.swift */; };
 		522B56CA1A18C849009BBE32 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522B56C91A18C849009BBE32 /* Array.swift */; };
 		523D655B1A98CBEB000C686B /* DatabaseLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523D655A1A98CBEB000C686B /* DatabaseLocalization.swift */; };
 		523D655D1A98CC1B000C686B /* PropertyListLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523D655C1A98CC1B000C686B /* PropertyListLocalization.swift */; };
@@ -46,6 +55,9 @@
 		5262EEC11AD1713E006F864D /* MysqlBindParameterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5262EEC01AD1713E006F864D /* MysqlBindParameterTests.swift */; };
 		5262EEF61AD19897006F864D /* MysqlBindParameterSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5262EEF51AD19897006F864D /* MysqlBindParameterSet.swift */; };
 		5262EEF81AD19B18006F864D /* MysqlBindParameter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5262EEF71AD19B18006F864D /* MysqlBindParameter.swift */; };
+		526ACD801B07922900CE0CC0 /* TimeFormatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526ACD7F1B07922900CE0CC0 /* TimeFormatTests.swift */; };
+		526ACD821B07A9FD00CE0CC0 /* TimeIntervalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526ACD811B07A9FD00CE0CC0 /* TimeIntervalTests.swift */; };
+		526ACD841B07B8FC00CE0CC0 /* TimestampTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526ACD831B07B8FC00CE0CC0 /* TimestampTests.swift */; };
 		528D183F1A8FDD4A00A6E116 /* TailorTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D183E1A8FDD4A00A6E116 /* TailorTestHelpers.swift */; };
 		528D18411A8FE15D00A6E116 /* Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D18401A8FE15D00A6E116 /* Layout.swift */; };
 		528D6FA51A562D5900783BE5 /* FormBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D6FA41A562D5900783BE5 /* FormBuilderTests.swift */; };
@@ -142,6 +154,7 @@
 		520526E91AF69DCC00B02CCF /* Model.xctemplate */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Model.xctemplate; sourceTree = "<group>"; };
 		5205278E1AF6A3C400B02CCF /* Controller.xctemplate */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Controller.xctemplate; path = Tailor/ext/xcode_templates/Controller.xctemplate; sourceTree = SOURCE_ROOT; };
 		5209E2881A50920C0044EE70 /* ModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelTests.swift; sourceTree = "<group>"; };
+		52135CA41B07FE0D00595794 /* TimeZoneTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeZoneTests.swift; sourceTree = "<group>"; };
 		5214B5D11AA38B0800624E9D /* ValidationError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidationError.swift; sourceTree = "<group>"; };
 		5214B5D41AA3903800624E9D /* ValidationErrorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidationErrorTests.swift; sourceTree = "<group>"; };
 		52178E661A4F359F001F6D57 /* MysqlConnectionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MysqlConnectionTests.swift; sourceTree = "<group>"; };
@@ -154,6 +167,14 @@
 		5218B9C71AB95F580036ED34 /* Controller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Controller.swift; sourceTree = "<group>"; };
 		5218B9C91AB966ED0036ED34 /* TemplateTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateTestCase.swift; sourceTree = "<group>"; };
 		521E87471A0FCEDA00D84B7B /* NSData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSData.swift; sourceTree = "<group>"; };
+		5226431A1B06C7F40081D04E /* Calendar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Calendar.swift; sourceTree = "<group>"; };
+		5226431B1B06C7F40081D04E /* TimeFormat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeFormat.swift; sourceTree = "<group>"; };
+		5226431C1B06C7F40081D04E /* TimeInterval.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeInterval.swift; sourceTree = "<group>"; };
+		5226431D1B06C7F40081D04E /* Timestamp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Timestamp.swift; sourceTree = "<group>"; };
+		5226431E1B06C7F40081D04E /* Timestamp+Foundation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Timestamp+Foundation.swift"; sourceTree = "<group>"; };
+		5226431F1B06C7F40081D04E /* TimeZone.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeZone.swift; sourceTree = "<group>"; };
+		522643201B06C7F40081D04E /* TimeZoneReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeZoneReader.swift; sourceTree = "<group>"; };
+		522643291B06C8CB0081D04E /* CalendarTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarTests.swift; sourceTree = "<group>"; };
 		522B56C91A18C849009BBE32 /* Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
 		523D655A1A98CBEB000C686B /* DatabaseLocalization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DatabaseLocalization.swift; path = localization/DatabaseLocalization.swift; sourceTree = "<group>"; };
 		523D655C1A98CC1B000C686B /* PropertyListLocalization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PropertyListLocalization.swift; path = localization/PropertyListLocalization.swift; sourceTree = "<group>"; };
@@ -181,6 +202,9 @@
 		5262EEC01AD1713E006F864D /* MysqlBindParameterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MysqlBindParameterTests.swift; sourceTree = "<group>"; };
 		5262EEF51AD19897006F864D /* MysqlBindParameterSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MysqlBindParameterSet.swift; sourceTree = "<group>"; };
 		5262EEF71AD19B18006F864D /* MysqlBindParameter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MysqlBindParameter.swift; sourceTree = "<group>"; };
+		526ACD7F1B07922900CE0CC0 /* TimeFormatTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeFormatTests.swift; sourceTree = "<group>"; };
+		526ACD811B07A9FD00CE0CC0 /* TimeIntervalTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeIntervalTests.swift; sourceTree = "<group>"; };
+		526ACD831B07B8FC00CE0CC0 /* TimestampTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimestampTests.swift; sourceTree = "<group>"; };
 		528D183E1A8FDD4A00A6E116 /* TailorTestHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TailorTestHelpers.swift; sourceTree = "<group>"; };
 		528D18401A8FE15D00A6E116 /* Layout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Layout.swift; sourceTree = "<group>"; };
 		528D6FA41A562D5900783BE5 /* FormBuilderTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FormBuilderTests.swift; path = TailorTests/view/FormBuilderTests.swift; sourceTree = SOURCE_ROOT; };
@@ -318,6 +342,32 @@
 				5218B9C71AB95F580036ED34 /* Controller.swift */,
 			);
 			path = TailorTesting;
+			sourceTree = "<group>";
+		};
+		522643191B06C7E10081D04E /* time */ = {
+			isa = PBXGroup;
+			children = (
+				5226431A1B06C7F40081D04E /* Calendar.swift */,
+				5226431B1B06C7F40081D04E /* TimeFormat.swift */,
+				5226431C1B06C7F40081D04E /* TimeInterval.swift */,
+				5226431D1B06C7F40081D04E /* Timestamp.swift */,
+				5226431E1B06C7F40081D04E /* Timestamp+Foundation.swift */,
+				5226431F1B06C7F40081D04E /* TimeZone.swift */,
+				522643201B06C7F40081D04E /* TimeZoneReader.swift */,
+			);
+			path = time;
+			sourceTree = "<group>";
+		};
+		522643281B06C8B10081D04E /* time */ = {
+			isa = PBXGroup;
+			children = (
+				522643291B06C8CB0081D04E /* CalendarTests.swift */,
+				526ACD7F1B07922900CE0CC0 /* TimeFormatTests.swift */,
+				526ACD811B07A9FD00CE0CC0 /* TimeIntervalTests.swift */,
+				526ACD831B07B8FC00CE0CC0 /* TimestampTests.swift */,
+				52135CA41B07FE0D00595794 /* TimeZoneTests.swift */,
+			);
+			path = time;
 			sourceTree = "<group>";
 		};
 		523F293C1A584F4E00C1BBC0 /* controller */ = {
@@ -476,6 +526,7 @@
 				52C6251819EE110B0024453F /* crypt */,
 				52BD141519E9DA1D006D72B0 /* ext */,
 				52EF127219F0A54A00B61DF4 /* localization */,
+				522643191B06C7E10081D04E /* time */,
 				52B2B6A519F2B1430086261B /* tasks */,
 				52BD13A219E9D7E4006D72B0 /* Tailor.h */,
 			);
@@ -496,6 +547,7 @@
 				52E784BB1A5B593B0065C10D /* ext */,
 				52E784C81A5CC1900065C10D /* localization */,
 				52E784CB1A5CC5750065C10D /* tasks */,
+				522643281B06C8B10081D04E /* time */,
 				52BD13AD19E9D7E4006D72B0 /* Supporting Files */,
 			);
 			path = TailorTests;
@@ -816,14 +868,17 @@
 				52B2B6B219F2DAD30086261B /* Alteration.swift in Sources */,
 				522B56CA1A18C849009BBE32 /* Array.swift in Sources */,
 				523D65621A98D36D000C686B /* ConfigurationSetting.swift in Sources */,
+				522643251B06C7F40081D04E /* Timestamp+Foundation.swift in Sources */,
 				52BD144219E9DA1D006D72B0 /* Validation.swift in Sources */,
 				52BD144419E9DA1D006D72B0 /* Template.swift in Sources */,
 				526254371AABC9C800D63024 /* MemoryCacheStore.swift in Sources */,
+				522643221B06C7F40081D04E /* TimeFormat.swift in Sources */,
 				52BD142619E9DA1D006D72B0 /* Application.swift in Sources */,
 				52BD142919E9DA1D006D72B0 /* CookieJar.swift in Sources */,
 				52EF126419EF545000B61DF4 /* User.swift in Sources */,
 				52BD142A19E9DA1D006D72B0 /* Request.swift in Sources */,
 				52A5008C1AA34DF800F3F031 /* MysqlResultSet.swift in Sources */,
+				522643211B06C7F40081D04E /* Calendar.swift in Sources */,
 				52C6252019EE12810024453F /* PasswordHasher.swift in Sources */,
 				52BD142F19E9DA1D006D72B0 /* Controller.swift in Sources */,
 				52BD142819E9DA1D006D72B0 /* Cookie.swift in Sources */,
@@ -833,9 +888,11 @@
 				52BD143119E9DA1D006D72B0 /* Session.swift in Sources */,
 				52B2B6AB19F2B2590086261B /* ServerTask.swift in Sources */,
 				52BD142B19E9DA1D006D72B0 /* Response.swift in Sources */,
+				522643241B06C7F40081D04E /* Timestamp.swift in Sources */,
 				52BD144319E9DA1D006D72B0 /* FormBuilder.swift in Sources */,
 				5292303E1A3CFB93006DD6EB /* ExitTask.swift in Sources */,
 				52BD143919E9DA1D006D72B0 /* NSString.swift in Sources */,
+				522643271B06C7F40081D04E /* TimeZoneReader.swift in Sources */,
 				528D18411A8FE15D00A6E116 /* Layout.swift in Sources */,
 				52BD143C19E9DA1D006D72B0 /* Model.swift in Sources */,
 				52A5008E1AA34F6A00F3F031 /* MysqlField.swift in Sources */,
@@ -844,10 +901,12 @@
 				52BD143819E9DA1D006D72B0 /* NSDate.swift in Sources */,
 				52C6251A19EE110B0024453F /* AesEncryptor.swift in Sources */,
 				52A500871AA2993C00F3F031 /* MysqlStatement.swift in Sources */,
+				522643231B06C7F40081D04E /* TimeInterval.swift in Sources */,
 				52A95E371AE318C6001AED1F /* Persistable.swift in Sources */,
 				523D655D1A98CC1B000C686B /* PropertyListLocalization.swift in Sources */,
 				5262EEF61AD19897006F864D /* MysqlBindParameterSet.swift in Sources */,
 				5262EEF81AD19B18006F864D /* MysqlBindParameter.swift in Sources */,
+				522643261B06C7F40081D04E /* TimeZone.swift in Sources */,
 				52B2B6A919F2B1D00086261B /* Task.swift in Sources */,
 				52BD142719E9DA1D006D72B0 /* Connection.swift in Sources */,
 				521E87481A0FCEDA00D84B7B /* NSData.swift in Sources */,
@@ -867,9 +926,11 @@
 				5214B5D51AA3903800624E9D /* ValidationErrorTests.swift in Sources */,
 				52E784C51A5B6E2D0065C10D /* StringTests.swift in Sources */,
 				52E784CD1A5CC5A60065C10D /* TaskTests.swift in Sources */,
+				526ACD841B07B8FC00CE0CC0 /* TimestampTests.swift in Sources */,
 				52E784B81A59F2030065C10D /* AesEncryptorTests.swift in Sources */,
 				528D6FA71A56354400783BE5 /* TemplateTests.swift in Sources */,
 				52A95E391AE321C9001AED1F /* PersistableTests.swift in Sources */,
+				526ACD801B07922900CE0CC0 /* TimeFormatTests.swift in Sources */,
 				52E784BD1A5B596A0065C10D /* ArrayTests.swift in Sources */,
 				5209E2891A50920C0044EE70 /* ModelTests.swift in Sources */,
 				52A684541A3EFB1000F4AA47 /* CookieTests.swift in Sources */,
@@ -879,6 +940,7 @@
 				523F293E1A584F7A00C1BBC0 /* ControllerTests.swift in Sources */,
 				5262EE7B1AD0AC9B006F864D /* DictionaryTests.swift in Sources */,
 				520BD5021AA90E2600CBC3DC /* PropertyListLocalizationTests.swift in Sources */,
+				526ACD821B07A9FD00CE0CC0 /* TimeIntervalTests.swift in Sources */,
 				523F29351A583EEB00C1BBC0 /* SanitizerTests.swift in Sources */,
 				52ACAC781A56059200E875D9 /* UserTests.swift in Sources */,
 				52A684561A3FC14D00F4AA47 /* CookieJarTests.swift in Sources */,
@@ -890,6 +952,7 @@
 				52178E671A4F359F001F6D57 /* MysqlConnectionTests.swift in Sources */,
 				52DDCF011A538C5800D3A47E /* QueryTests.swift in Sources */,
 				52E784BF1A5B5A950065C10D /* NSDateTests.swift in Sources */,
+				52135CA51B07FE0D00595794 /* TimeZoneTests.swift in Sources */,
 				523D655F1A98CD3C000C686B /* LocalizationTests.swift in Sources */,
 				52A95E331AE0A3E6001AED1F /* DatabaseValueTests.swift in Sources */,
 				529230061A3CF4E4006DD6EB /* ApplicationTests.swift in Sources */,
@@ -901,6 +964,7 @@
 				52E784C11A5B64030065C10D /* NSDataTests.swift in Sources */,
 				52A95E351AE27537001AED1F /* ValidationTests.swift in Sources */,
 				526254321AABC46300D63024 /* CacheStoreTests.swift in Sources */,
+				5226432A1B06C8CB0081D04E /* CalendarTests.swift in Sources */,
 				52E784B51A59C12D0065C10D /* SessionTests.swift in Sources */,
 				5262EE7A1AD0AC9B006F864D /* RequestTests.swift in Sources */,
 				52A500901AA356BE00F3F031 /* MysqlField.swift in Sources */,

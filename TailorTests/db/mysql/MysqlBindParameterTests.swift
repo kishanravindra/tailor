@@ -125,10 +125,9 @@ class MysqlBindParameterTests: TailorTestCase {
   
   func testInitializeWithDateValueCreatesStringBufferWithFormattedString() {
     // 2009-02-18 11:07:14
-    let date = NSDate(timeIntervalSince1970: 1234973234)
-    NSLog("Date is %@", date.format("db")!)
-      let bindParameter = MysqlBindParameter(value: date.databaseValue)
-    self.assert(bindParameter.parameter.buffer_length, equals: 19)
+    let date = Timestamp(epochSeconds: 1234973234)
+    let bindParameter = MysqlBindParameter(value: date.databaseValue)
+    self.assert(bindParameter.parameter.buffer_length, equals: 25)
     self.assert(bindParameter.parameter.buffer_type.value, equals: MYSQL_TYPE_STRING.value)
     
     let buffer = UnsafeMutablePointer<CChar>(bindParameter.parameter.buffer)
@@ -151,6 +150,12 @@ class MysqlBindParameterTests: TailorTestCase {
     assert(buffer[16], equals: 58)
     assert(buffer[17], equals: 49)
     assert(buffer[18], equals: 52)
+    assert(buffer[19], equals: 32)
+    assert(buffer[20], equals: 43)
+    assert(buffer[21], equals: 48)
+    assert(buffer[22], equals: 48)
+    assert(buffer[23], equals: 48)
+    assert(buffer[24], equals: 48)
   }
   
   //MARK: - Field Information

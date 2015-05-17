@@ -79,8 +79,8 @@ public struct MysqlBindParameter {
       data = "\(double)".dataUsingEncoding(NSUTF8StringEncoding) ?? NSData()
     case let .Data(wrappedData):
       data = wrappedData
-    case let .FoundationDate(date):
-      let string = date.format("db", timeZone: DatabaseConnection.sharedConnection().timeZone) ?? ""
+    case let .Timestamp(timestamp):
+      let string = timestamp.format(TimeFormat.Database)
       data = string.dataUsingEncoding(NSUTF8StringEncoding) ?? NSData()
     default:
       data = NSData()

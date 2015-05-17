@@ -67,11 +67,11 @@ class DatabaseValueTests: TailorTestCase {
     XCTAssertNil(double)
   }
   
-  func testDateValueWithDateReturnsValue() {
-    let date1 = NSDate()
-    let value = DatabaseValue.FoundationDate(date1)
-    let date2 = value.foundationDateValue
-    assert(date2, equals: date1)
+  func testDateValueWitTimestampReturnsValue() {
+    let timestamp = Timestamp.now()
+    let value = DatabaseValue.Timestamp(timestamp)
+    let date = value.foundationDateValue
+    assert(date, equals: timestamp.foundationDateValue)
   }
   
   func testDateValueWithStringReturnsNil() {
@@ -108,10 +108,10 @@ class DatabaseValueTests: TailorTestCase {
     assert(value.description, equals: "35.5")
   }
   
-  func testDescriptionWithDateGetsFormattedDate() {
-    let date = NSDate()
-    let value = DatabaseValue.FoundationDate(date)
-    assert(value.description, equals: date.format("db")!)
+  func testDescriptionWithTimestampGetsFormattedDate() {
+    let timestamp = Timestamp.now()
+    let value = DatabaseValue.Timestamp(timestamp)
+    assert(value.description, equals: timestamp.format(TimeFormat.Database))
   }
   
   func testDescriptionWithNullGetsNull() {
@@ -185,15 +185,15 @@ class DatabaseValueTests: TailorTestCase {
     XCTAssertNotEqual(value1, value2)
   }
   
-  func testComparisonWithEqualDatesAreEqual() {
-    let value1 = DatabaseValue.FoundationDate(NSDate(timeIntervalSince1970: 1234512345))
-    let value2 = DatabaseValue.FoundationDate(NSDate(timeIntervalSince1970: 1234512345))
+  func testComparisonWithEqualTimestampsAreEqual() {
+    let value1 = DatabaseValue.Timestamp(Timestamp(epochSeconds: 1234512345))
+    let value2 = DatabaseValue.Timestamp(Timestamp(epochSeconds: 1234512345))
     assert(value1, equals: value2)
   }
   
   func testComparisonWithUnequalDatesAreNotEqual() {
-    let value1 = DatabaseValue.FoundationDate(NSDate(timeIntervalSince1970: 1234512345))
-    let value2 = DatabaseValue.FoundationDate(NSDate(timeIntervalSince1970: 1234512346))
+    let value1 = DatabaseValue.Timestamp(Timestamp(epochSeconds: 1234512345))
+    let value2 = DatabaseValue.Timestamp(Timestamp(epochSeconds: 1234512346))
     XCTAssertNotEqual(value1, value2)
   }
   

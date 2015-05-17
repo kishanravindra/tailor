@@ -26,7 +26,7 @@ public enum DatabaseValue: Equatable, Printable {
   case Double(Swift.Double)
   
   /** Any date or time type. */
-  case FoundationDate(NSDate)
+  case Timestamp(Tailor.Timestamp)
   
   //MARK: - Casting
   
@@ -95,8 +95,8 @@ public enum DatabaseValue: Equatable, Printable {
     */
   public var foundationDateValue: NSDate? {
     switch(self) {
-    case let .FoundationDate(date):
-      return date
+    case let .Timestamp(timestamp):
+      return timestamp.foundationDateValue
     default:
       return nil
     }
@@ -117,8 +117,8 @@ public enum DatabaseValue: Equatable, Printable {
       return Swift.String(int)
     case let .Double(double):
       return double.description
-    case let .FoundationDate(date):
-      return date.format("db") ?? "NULL"
+    case let .Timestamp(timestamp):
+      return timestamp.format(TimeFormat.Database)
     case .Null:
       return "NULL"
     }
@@ -148,8 +148,8 @@ public func ==(lhs: DatabaseValue, rhs: DatabaseValue) -> Bool {
     return double1 == double2
   case (let .Data(data1), let .Data(data2)):
     return data1 == data2
-  case (let .FoundationDate(date1), let .FoundationDate(date2)):
-    return date1 == date2
+  case (let .Timestamp(timestamp1), let .Timestamp(timestamp2)):
+    return timestamp1 == timestamp2
   case (.Null, .Null):
     return true
   default:
@@ -221,7 +221,16 @@ extension Double: DatabaseValueConvertible {
   */
 extension NSDate: DatabaseValueConvertible {
   /** The wrapped database value. */
-  public var databaseValue: DatabaseValue { return DatabaseValue.FoundationDate(self) }
+  public var databaseValue: DatabaseValue { return DatabaseValue.Timestamp(Timestamp(foundationDate: self)) }
+}
+
+/**
+  This extension provides a helper for converting a timestamp into a wrapped
+  database value.
+  */
+extension Timestamp: DatabaseValueConvertible {
+  /** The wrapped database value. */
+  public var databaseValue: DatabaseValue { return DatabaseValue.Timestamp(self) }
 }
 
 /**
