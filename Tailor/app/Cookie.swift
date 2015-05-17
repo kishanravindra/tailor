@@ -48,9 +48,9 @@ public struct Cookie {
   public var domain: String? = nil
   
   /**
-    The date when the cookie will expire.
+    The time when the cookie will expire.
     */
-  public var expiresAt: NSDate? = nil
+  public var expiresAt: Timestamp? = nil
   
   /**
     The number of seconds from now when the cookie will expire.
@@ -77,7 +77,7 @@ public struct Cookie {
     get {
       var string = "\(self.key)=\(self.value)"
       
-      let expirationString : String? = ((expiresAt == nil) ? nil : COOKIE_DATE_FORMATTER.stringFromDate(expiresAt!))
+      let expirationString : String? = expiresAt?.format(TimeFormat.Cookie)
       
       let pairs : [(String,String?)] = [
         ("Path", self.path),

@@ -17,7 +17,7 @@ public class Session {
   private let clientAddress: String
   
   /** The date when the session will expire. */
-  private let expirationDate: NSDate
+  private let expirationDate: Timestamp
   
   /** The flash data for the current page. */
   private var currentFlash: [String:String] = [:]
@@ -42,7 +42,7 @@ public class Session {
       var cookieData = (NSJSONSerialization.JSONObjectWithData(decryptedData, options: nil, error: nil) as? [String:String]) ?? [:]
       let dateString = cookieData["expirationDate"] ?? ""
       
-      self.expirationDate = COOKIE_DATE_FORMATTER.dateFromString(dateString) ?? NSDate(timeIntervalSinceNow: 3600)
+      self.expirationDate = TimeFormat.Cookie.parseTime(dateString) ?? (Timestamp.now() + 1.hour)
       
       if cookieData["clientAddress"] == nil {
         return
@@ -53,7 +53,7 @@ public class Session {
       if cookieData["expirationDate"] == nil {
         return
       }
-      if self.expirationDate.compare(NSDate()) == NSComparisonResult.OrderedAscending {
+      if self.expirationDate < Timestamp.now() {
         return
       }
       self.data = cookieData
@@ -70,7 +70,7 @@ public class Session {
       }
     }
     else {
-      self.expirationDate = NSDate(timeIntervalSinceNow: 3600)
+      self.expirationDate = Timestamp.now() + 1.hour
     }
   }
   
@@ -104,7 +104,7 @@ public class Session {
   public func cookieString() -> String {
     var mergedData = self.data
     mergedData["clientAddress"] = clientAddress
-    mergedData["expirationDate"] = COOKIE_DATE_FORMATTER.stringFromDate(self.expirationDate)
+    mergedData["expirationDate"] = self.expirationDate.format(TimeFormat.Cookie)
     
     for (key, value) in self.nextFlash {
       mergedData["_flash_\(key)"] = value

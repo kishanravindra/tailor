@@ -1,7 +1,7 @@
 /**
   This struct encapsulates a moment in time.
   */
-public struct Timestamp: Equatable {
+public struct Timestamp: Equatable, Comparable {
   /**
     The type that represents the interval between a timestamp and the Unix
     epoch.
@@ -59,6 +59,11 @@ public struct Timestamp: Equatable {
   public let nanosecond: Double
   
   /**
+    The day of the week when this timestamp.
+    */
+  public let weekDay: Int
+  
+  /**
     This method creates a timestamp around a Unix epoch timestamp.
   
     :param: epochSeconds  The number of seconds since the Unix epoch for the
@@ -83,6 +88,7 @@ public struct Timestamp: Equatable {
     self.minute = localTime.minute
     self.second = localTime.second
     self.nanosecond = localTime.nanosecond
+    self.weekDay = localTime.weekDay
   }
   
   /**
@@ -108,7 +114,7 @@ public struct Timestamp: Equatable {
     self.second = second
     self.nanosecond = nanosecond
     
-    self.epochSeconds = Timestamp.timestampForLocalTime(
+    let (epochSeconds,weekDay) = Timestamp.timestampForLocalTime(
       year: year,
       month: month,
       day: day,
@@ -119,6 +125,8 @@ public struct Timestamp: Equatable {
       timeZone: timeZone,
       calendar: calendar
     )
+    self.epochSeconds = epochSeconds
+    self.weekDay = weekDay
   }
   
   //MARK: - Transformations
@@ -218,14 +226,14 @@ public struct Timestamp: Equatable {
                             should be expressed in.
     :returns:               The local time information.
     */
-  internal static func localTime(epochSeconds: EpochInterval, timeZone: TimeZone, calendar: Calendar) -> (year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int, nanosecond: Double) {
+  internal static func localTime(epochSeconds: EpochInterval, timeZone: TimeZone, calendar: Calendar) -> (year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int, nanosecond: Double, weekDay: Int) {
     
-    let (epochYear, epochOffset) = calendar.unixEpochTime
+    let (epochYear, epochOffset, epochWeekDay) = calendar.unixEpochTime
     var offsetTimestamp = epochSeconds + epochOffset + Double(timeZone.policy(timestamp: epochSeconds).offset)
     var secondsRemaining = Int(offsetTimestamp)
     let nanosecond = (offsetTimestamp - Double(secondsRemaining)) * 1000000000
     var year = epochYear
-    
+    var weekDay = epochWeekDay
     while secondsRemaining < 0 {
       year -= 1
       let currentCalendar = calendar.inYear(year)
@@ -233,7 +241,7 @@ public struct Timestamp: Equatable {
       let secondsPerDay = secondsPerHour * currentCalendar.hoursPerDay
       let secondsInYear = secondsPerDay * currentCalendar.days
       secondsRemaining += secondsInYear
-      
+      weekDay = weekDay - currentCalendar.days
     }
     
     while secondsRemaining > 0 {
@@ -245,6 +253,7 @@ public struct Timestamp: Equatable {
       
       if secondsInYear < secondsRemaining {
         secondsRemaining -= secondsInYear
+        weekDay += currentCalendar.days
         year += 1
         continue
       }
@@ -255,6 +264,7 @@ public struct Timestamp: Equatable {
         
         if secondsInMonth < secondsRemaining {
           secondsRemaining -= secondsInMonth
+          weekDay += daysInMonth
           continue
         }
         
@@ -267,11 +277,17 @@ public struct Timestamp: Equatable {
         let minute = (secondsRemaining / calendar.secondsPerMinute)
         let second = secondsRemaining % calendar.secondsPerMinute
         
-        return (year: year, month: month, day: day, hour: hour, minute: minute, second: second, nanosecond: nanosecond)
+        weekDay += day - 1
+        weekDay = weekDay % calendar.daysInWeek
+        if weekDay < 1 {
+          weekDay += calendar.daysInWeek
+        }
+        
+        return (year: year, month: month, day: day, hour: hour, minute: minute, second: second, nanosecond: nanosecond, weekDay: weekDay)
       }
     }
     
-    return (year: year, month: 0, day: 0, hour: 0, minute: 0, second: 0, nanosecond: nanosecond)
+    return (year: year, month: 0, day: 0, hour: 0, minute: 0, second: 0, nanosecond: nanosecond, weekDay: 0)
   }
   
   /**
@@ -281,22 +297,26 @@ public struct Timestamp: Equatable {
     :param: timeZone    The time zone that the local time is expressed in.
     :param: calendar    The calendar that the local time is expressed in.
     :returns:           The number of seconds between the Unix epoch and the
-                        specified time.
+                        specified time. It will also return the day of the
+                        week for the date.
     */
-  internal static func timestampForLocalTime(# year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int, nanosecond: Double, timeZone: TimeZone, calendar: Calendar) -> EpochInterval {
-    let (epochYear, epochOffset) = calendar.unixEpochTime
+  internal static func timestampForLocalTime(# year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int, nanosecond: Double, timeZone: TimeZone, calendar: Calendar) -> (EpochInterval,Int) {
+    let (epochYear, epochOffset, epochWeekDay) = calendar.unixEpochTime
     var timestamp = -1 * epochOffset
+    var weekDay = epochWeekDay
     
     if year < epochYear {
       for currentYear in year..<epochYear {
         let currentCalendar = calendar.inYear(currentYear)
         timestamp -= Double(currentCalendar.days * currentCalendar.hoursPerDay * currentCalendar.minutesPerHour * currentCalendar.secondsPerMinute)
+        weekDay -= currentCalendar.days
       }
     }
     else {
       for currentYear in epochYear..<year {
         let currentCalendar = calendar.inYear(currentYear)
         timestamp += Double(currentCalendar.days * currentCalendar.hoursPerDay * currentCalendar.minutesPerHour * currentCalendar.secondsPerMinute)
+        weekDay += currentCalendar.days
       }
     }
     
@@ -304,7 +324,9 @@ public struct Timestamp: Equatable {
     let secondsPerDay = calendar.hoursPerDay * calendar.minutesPerHour * calendar.secondsPerMinute
     
     for currentMonth in 1..<month {
-      timestamp += Double(calendar.daysInMonth(currentMonth) * secondsPerDay)
+      let days = calendar.daysInMonth(currentMonth)
+      timestamp += Double(days * secondsPerDay)
+      weekDay += days
     }
     
     timestamp += Double(secondsPerDay * (day - 1))
@@ -312,6 +334,12 @@ public struct Timestamp: Equatable {
     timestamp += Double(calendar.secondsPerMinute * minute)
     timestamp += Double(second)
     timestamp += nanosecond / 1000000000.0
+    weekDay += (day - 1)
+    
+    weekDay = weekDay % calendar.daysInWeek
+    if weekDay < 1 {
+      weekDay = calendar.daysInWeek
+    }
     
     let originalOffset = timeZone.policy(timestamp: timestamp).offset
     timestamp -= Double(originalOffset)
@@ -323,7 +351,7 @@ public struct Timestamp: Equatable {
       timestamp -= newOffset
     }
     
-    return timestamp
+    return (timestamp,weekDay)
   }
   
   //MARK: - Formatting
@@ -348,4 +376,17 @@ public func ==(lhs: Timestamp, rhs: Timestamp) -> Bool {
   return lhs.epochSeconds == rhs.epochSeconds &&
     lhs.timeZone == rhs.timeZone &&
     lhs.calendar == rhs.calendar
+}
+
+/**
+  This method determines if one timestamp is before another.
+
+  This only considers the time interval since the epoch.
+
+  :param: lhs   The first timestamp
+  :param: rhs   The second timestamp
+  :returns:     Whether the first timestamp is before the second.
+  */
+public func <(lhs: Timestamp, rhs: Timestamp) -> Bool {
+  return lhs.epochSeconds < rhs.epochSeconds
 }

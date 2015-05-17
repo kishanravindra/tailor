@@ -12,20 +12,22 @@ class TimestampTests: TailorTestCase {
     assert(timestamp.minute, equals: 14)
     assert(timestamp.second, equals: 32)
     assert(timestamp.nanosecond, equals: 500000000)
+    assert(timestamp.weekDay, equals: 2)
     assert(timestamp.timeZone.name, equals: "America/Sao_Paulo")
     assert(timestamp.calendar is GregorianCalendar)
   }
   
   func testInitializationWithNegativeSecondsSetsLocalComponents() {
-    let timestamp = Timestamp(epochSeconds: -1127542174, timeZone: TimeZone(name: "Europe/Rome"))
-    assert(timestamp.epochSeconds, equals: -1127542174)
+    let timestamp = Timestamp(epochSeconds: -1127455774, timeZone: TimeZone(name: "Europe/Rome"))
+    assert(timestamp.epochSeconds, equals: -1127455774)
     assert(timestamp.year, equals: 1934)
     assert(timestamp.month, equals: 4)
-    assert(timestamp.day, equals: 9)
+    assert(timestamp.day, equals: 10)
     assert(timestamp.hour, equals: 18)
     assert(timestamp.minute, equals: 50)
     assert(timestamp.second, equals: 26)
     assert(timestamp.nanosecond, equals: 0)
+    assert(timestamp.weekDay, equals: 3)
     assert(timestamp.timeZone.name, equals: "Europe/Rome")
     assert(timestamp.calendar is GregorianCalendar)
   }
@@ -47,6 +49,7 @@ class TimestampTests: TailorTestCase {
     assert(timestamp.hour, equals: 1)
     assert(timestamp.minute, equals: 54)
     assert(timestamp.second, equals: 51)
+    assert(timestamp.weekDay, equals: 4)
     assert(timestamp.timeZone.name, equals: "Asia/Baku")
     assert(timestamp.epochSeconds, equals: 715384491)
     assert(timestamp.calendar is GregorianCalendar)
@@ -56,7 +59,7 @@ class TimestampTests: TailorTestCase {
     let timestamp = Timestamp(
       year: 1952,
       month: 4,
-      day: 30,
+      day: 27,
       hour: 1,
       minute: 49,
       second: 24,
@@ -65,12 +68,13 @@ class TimestampTests: TailorTestCase {
     )
     assert(timestamp.year, equals: 1952)
     assert(timestamp.month, equals: 4)
-    assert(timestamp.day, equals: 30)
+    assert(timestamp.day, equals: 27)
     assert(timestamp.hour, equals: 1)
     assert(timestamp.minute, equals: 49)
     assert(timestamp.second, equals: 24)
+    assert(timestamp.weekDay, equals: 7)
     assert(timestamp.timeZone.name, equals: "Europe/Moscow")
-    assert(timestamp.epochSeconds, equals: -557716236)
+    assert(timestamp.epochSeconds, equals: -557975436)
     assert(timestamp.calendar is GregorianCalendar)
   }
   
@@ -100,7 +104,7 @@ class TimestampTests: TailorTestCase {
     assert(timestamp2.second, equals: 53)
   }
   
-  func testAddingIntervalcanAddSimpleInterval() {
+  func testAddingIntervalCanAddSimpleInterval() {
     let timestamp1 = Timestamp(year: 2014, month: 3, day: 16, hour: 12, minute: 34, second: 10, nanosecond: 11.5, timeZone: TimeZone(name: "UTC"))
     let timestamp2 = timestamp1.byAddingInterval(TimeInterval(years: 1, months: 2, days: 1, hours: 2, minutes: 1, seconds: 2, nanoseconds: 1))
     assert(timestamp2.year, equals: 2015)
@@ -110,6 +114,7 @@ class TimestampTests: TailorTestCase {
     assert(timestamp2.minute, equals: 35)
     assert(timestamp2.second, equals: 12)
     assert(timestamp2.nanosecond, equals: 12.5)
+    assert(timestamp2.weekDay, equals: 1)
     assert(timestamp2.epochSeconds, equals: 1431873312.0000000125)
   }
   

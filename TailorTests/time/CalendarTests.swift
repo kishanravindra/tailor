@@ -11,17 +11,18 @@ class CalendarTests: TailorTestCase {
     
     for timestamp in timestamps {
       let foundationDate = NSDate(timeIntervalSince1970: Double(timestamp))
-      let foundationDateComponents = foundationCalendar.components(.CalendarUnitYear | .CalendarUnitMonth | .CalendarUnitDay | .CalendarUnitHour | .CalendarUnitMinute | .CalendarUnitSecond, fromDate: foundationDate)
+      let foundationDateComponents = foundationCalendar.components(.CalendarUnitYear | .CalendarUnitMonth | .CalendarUnitDay | .CalendarUnitHour | .CalendarUnitMinute | .CalendarUnitSecond | .CalendarUnitWeekday, fromDate: foundationDate)
       let timestamp = Timestamp(epochSeconds: timestamp, timeZone: timeZone, calendar: calendar)
       if timestamp.year != foundationDateComponents.year ||
         timestamp.month != foundationDateComponents.month ||
         timestamp.day != foundationDateComponents.day ||
         timestamp.hour != foundationDateComponents.hour ||
         timestamp.minute != foundationDateComponents.minute ||
-        timestamp.second != foundationDateComponents.second {
-          let foundationDescription = NSString(format: "%04i-%02i-%02i %02i:%02i:%02i", foundationDateComponents.year, foundationDateComponents.month, foundationDateComponents.day, foundationDateComponents.hour, foundationDateComponents.hour, foundationDateComponents.minute)
+        timestamp.second != foundationDateComponents.second ||
+        timestamp.weekDay != foundationDateComponents.weekday {
+          let foundationDescription = NSString(format: "%04i-%02i-%02i %02i:%02i:%02i (%02i)", foundationDateComponents.year, foundationDateComponents.month, foundationDateComponents.day, foundationDateComponents.hour, foundationDateComponents.hour, foundationDateComponents.minute, foundationDateComponents.weekday)
           var description = "Incorrect date for timestamp \(timestamp): "
-          description += "Expected \(foundationDescription), but got \(timestamp.format(TimeFormat.Database))"
+          description += "Expected \(foundationDescription), but got \(timestamp.format(TimeFormat.Database)) \(timestamp.weekDay)"
           self.recordFailureWithDescription(description, inFile: file, atLine: line, expected: true)
       }
     }

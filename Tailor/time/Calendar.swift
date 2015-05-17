@@ -16,6 +16,9 @@ public protocol Calendar {
     */
   func inYear(year: Int) -> Calendar
   
+  /** An identifier for the calendar for use in localizing parts of a date. */
+  var identifier: String { get }
+  
   /** The year on the calendar. */
   var year: Int { get }
   
@@ -33,6 +36,11 @@ public protocol Calendar {
   func daysInMonth(month: Int) -> Int
   
   /**
+    The number of days in a week.
+    */
+  var daysInWeek: Int { get }
+  
+  /**
     This method describes how the Unix epoch is represented in this calendar.
 
     The Unix epoch is midnight UTC on 1 January, 1970, on the Gregorian
@@ -42,10 +50,11 @@ public protocol Calendar {
 
     1. The year on this calendar when the Unix epoch occurs.
     2. The number of seconds between the start of that year and the Unix epoch.
+    3. The day of the week of the first day in that year.
   
     The return value of this method must be the same in every year.
     */
-  var unixEpochTime: (Int, Timestamp.EpochInterval) { get }
+  var unixEpochTime: (Int, Timestamp.EpochInterval, Int) { get }
   
   /** The number of hours in a day in this calendar. */
   var hoursPerDay: Int { get }
@@ -69,6 +78,12 @@ public struct GregorianCalendar: Calendar {
   
   /** The number of months in this year. */
   public let months: Int = 12
+  
+  /** The number of days in a week. */
+  public let daysInWeek = 7
+  
+  /** The identifier for the calendar in translations. */
+  public let identifier = "gregorian"
   
   /**
     This initializer creates a calendar for year 0.
@@ -117,9 +132,10 @@ public struct GregorianCalendar: Calendar {
   /**
     This method describes how the Unix epoch is represented on this calendar.
 
-    The Unix epoch is in the year 1970, and is 0 seconds into the year.
+    The Unix epoch is in the year 1970, and is 0 seconds into the year. That
+    year begins on a Thursday.
     */
-  public let unixEpochTime = (1970,0.0)
+  public let unixEpochTime = (1970,0.0,5)
   
   /**
     This method gets the number of days in a month on this calendar.
@@ -168,6 +184,12 @@ public struct IslamicCalendar: Calendar {
   
   /** The number of months in this year. */
   public let months: Int = 12
+  
+  /** The number of days in a week. */
+  public let daysInWeek = 7
+  
+  /** The identifier for the calendar in translations. */
+  public let identifier = "islamic"
   
   /**
     This initializer creates a calendar for year 0.
@@ -221,7 +243,7 @@ public struct IslamicCalendar: Calendar {
     
     The Unix epoch is in the year 1389, and is 24883200 seconds into the year.
     */
-  public let unixEpochTime = (1389,24883200.0)
+  public let unixEpochTime = (1389,24883200.0,4)
   
   /**
     This method gets the number of days in a month on this calendar.
@@ -265,8 +287,7 @@ public struct IslamicCalendar: Calendar {
   */
 public func ==(lhs: Calendar, rhs: Calendar) -> Bool {
   return lhs.year == rhs.year &&
-    lhs.unixEpochTime.0 == rhs.unixEpochTime.0 &&
-    lhs.unixEpochTime.1 == rhs.unixEpochTime.1
+    lhs.identifier == rhs.identifier
 }
 
 /*

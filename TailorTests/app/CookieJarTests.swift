@@ -94,15 +94,4 @@ class CookieJarTests: TailorTestCase {
     let headerString = cookieJar.headerStringForChanges
     assert(headerString, equals: "")
   }
-  
-  //MARK: Formatting
-  
-  func testCookieDateFormatterUsesCookieFormat() {
-    let oldTimeZone = COOKIE_DATE_FORMATTER.timeZone
-    COOKIE_DATE_FORMATTER.timeZone = NSTimeZone(name: "UTC")
-    let date = NSDate(timeIntervalSince1970: 1418729233)
-    let formatted = COOKIE_DATE_FORMATTER.stringFromDate(date)
-    assert(formatted, equals: "Tue, 16 Dec 2014 11:27:13 GMT", message: "formats string using cookie date format")
-    COOKIE_DATE_FORMATTER.timeZone = oldTimeZone
-  }
 }

@@ -37,7 +37,7 @@ public class CookieJar {
                             HTTP/HTTPS requests.
     */
   public func setCookie(key: String, _ value: String, path: String = "/",
-    expiresAt: NSDate? = nil, maxAge: Int? = nil, domain: String? = nil,
+    expiresAt: Timestamp? = nil, maxAge: Int? = nil, domain: String? = nil,
     secureOnly: Bool = false, httpOnly: Bool = false) {
       var cookie = Cookie(key: key, value: value)
       cookie.value = value
@@ -133,11 +133,3 @@ public class CookieJar {
     }
   }
 }
-
-/** A formatter for dates in cookies. */
-public let COOKIE_DATE_FORMATTER = {
-  ()->NSDateFormatter in
-  var formatter = NSDateFormatter()
-  formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"
-  return formatter
-}()

@@ -11,9 +11,9 @@ class CookieTests: TailorTestCase {
   }
   
   func testGetsHeaderStringForCookieWithExpirationDate() {
-    cookie.expiresAt = NSDate(timeIntervalSinceNow: 1600)
+    cookie.expiresAt = Timestamp.now() + 1600.seconds
     cookie.maxAge = 120
-    let dateDescription = COOKIE_DATE_FORMATTER.stringFromDate(cookie.expiresAt!)
+    let dateDescription = cookie.expiresAt!.format(TimeFormat.Cookie)
     assert(cookie.headerString, equals: "testCookie=27; Path=/; Expires=" + dateDescription + "; Max-Age=120", message: "has the cookie's expiration date and age")
   }
   
