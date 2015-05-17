@@ -7,7 +7,7 @@ extension Timestamp {
     :returns:   The new timestamp.
   */
   public static func now() -> Timestamp {
-    return self.init(epochSeconds: Double(time(nil)))
+    return self.init(epochSeconds: Double(Foundation.time(nil)))
   }
   
   //MARK: - Foundation Bridging

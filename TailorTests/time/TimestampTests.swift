@@ -180,6 +180,23 @@ class TimestampTests: TailorTestCase {
     let foundationDate = timestamp.foundationDateValue
     assert(foundationDate.timeIntervalSince1970, equals: seconds)
   }
+  
+  func testDateCreatesDateWithDateInformation() {
+    let timestamp = Timestamp(epochSeconds: 696737986, timeZone: TimeZone(name: "US/Eastern"))
+    let date = timestamp.date
+    assert(date.year, equals: 1992)
+    assert(date.month, equals: 1)
+    assert(date.day, equals: 29)
+  }
+  
+  func testTimeCreatesTimeWithTimeInformation() {
+    let timestamp = Timestamp(epochSeconds: 864808163, timeZone: TimeZone(name: "UTC"))
+    let time = timestamp.time
+    assert(time.hour, equals: 8)
+    assert(time.minute, equals: 29)
+    assert(time.second, equals: 23)
+    assert(time.timeZone.name, equals: "UTC")
+  }
 
   func testTimestampsAreEqualWithSameInfo() {
     let timestamp1 = Timestamp(epochSeconds: 1018431395, timeZone: TimeZone(name: "US/Pacific"), calendar: GregorianCalendar())

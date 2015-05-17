@@ -63,6 +63,12 @@ public struct Timestamp: Equatable, Comparable {
     */
   public let weekDay: Int
   
+  /** The date components of this timestamp. */
+  public var date: Date { return Date(year: year, month: month, day: day, calendar: calendar) }
+  
+  /** The time components of this timestamp. */
+  public var time: Time { return Time(hour: hour, minute: minute, second: second, nanosecond: nanosecond, timeZone: timeZone) }
+  
   /**
     This method creates a timestamp around a Unix epoch timestamp.
   
