@@ -117,33 +117,97 @@ class MysqlBindParameterTests: TailorTestCase {
     assert(buffer[3], equals: 193)
   }
   
-  func testInitializeWithDateValueCreatesStringBufferWithFormattedString() {
-    // 2009-02-18 11:07:14
-    let date = Timestamp(epochSeconds: 1234973234)
-    let bindParameter = MysqlBindParameter(value: date.databaseValue)
-    self.assert(bindParameter.parameter.buffer_length, equals: 19)
-    self.assert(bindParameter.parameter.buffer_type.value, equals: MYSQL_TYPE_STRING.value)
+  func testInitializeWithTimestampValueCreatesStringBufferWithFormattedString() {
+    let timestamp = Timestamp(
+      year: 2009,
+      month: 2,
+      day: 18,
+      hour: 11,
+      minute: 7,
+      second: 14,
+      nanosecond: 123456789.5,
+      timeZone: DatabaseConnection.sharedConnection().timeZone
+    )
+    let bindParameter = MysqlBindParameter(value: timestamp.databaseValue)
+    self.assert(bindParameter.parameter.buffer_length, equals: 1)
+    self.assert(bindParameter.parameter.buffer_type.value, equals: MYSQL_TYPE_TIMESTAMP.value)
     
-    let buffer = UnsafeMutablePointer<CChar>(bindParameter.parameter.buffer)
-    assert(buffer[0], equals: 50)
-    assert(buffer[1], equals: 48)
-    assert(buffer[2], equals: 48)
-    assert(buffer[3], equals: 57)
-    assert(buffer[4], equals: 45)
-    assert(buffer[5], equals: 48)
-    assert(buffer[6], equals: 50)
-    assert(buffer[7], equals: 45)
-    assert(buffer[8], equals: 49)
-    assert(buffer[9], equals: 56)
-    assert(buffer[10], equals: 32)
-    assert(buffer[11], equals: 49)
-    assert(buffer[12], equals: 54)
-    assert(buffer[13], equals: 58)
-    assert(buffer[14], equals: 48)
-    assert(buffer[15], equals: 55)
-    assert(buffer[16], equals: 58)
-    assert(buffer[17], equals: 49)
-    assert(buffer[18], equals: 52)
+    let data = UnsafeMutablePointer<MYSQL_TIME>(bindParameter.parameter.buffer).memory
+    assert(data.year, equals: 2009)
+    assert(data.month, equals: 2)
+    assert(data.day, equals: 18)
+    assert(data.hour, equals: 11)
+    assert(data.minute, equals: 7)
+    assert(data.second, equals: 14)
+    assert(data.second_part, equals: 123456)
+    assert(data.neg, equals: 0)
+    assert(data.time_type.value, equals: MYSQL_TIMESTAMP_DATETIME.value)
+  }
+  
+  func testInitializeWithTimestampValueInOtherTimeZoneConvertsTimeZone() {
+    let timestamp1 = Timestamp(
+      year: 2009,
+      month: 2,
+      day: 18,
+      hour: 11,
+      minute: 7,
+      second: 14,
+      nanosecond: 123456789.5,
+      timeZone: DatabaseConnection.sharedConnection().timeZone
+    )
+    let policy = timestamp1.timeZone.policy(timestamp: timestamp1.epochSeconds)
+    let timeZone2 = TimeZone(offset: policy.offset + 3600)
+    let timestamp2 = timestamp1.inTimeZone(timeZone2)
+    let bindParameter = MysqlBindParameter(value: timestamp2.databaseValue)
+    self.assert(bindParameter.parameter.buffer_length, equals: 1)
+    self.assert(bindParameter.parameter.buffer_type.value, equals: MYSQL_TYPE_TIMESTAMP.value)
+    
+    let data = UnsafeMutablePointer<MYSQL_TIME>(bindParameter.parameter.buffer).memory
+    assert(data.year, equals: 2009)
+    assert(data.month, equals: 2)
+    assert(data.day, equals: 18)
+    assert(data.hour, equals: 11)
+    assert(data.minute, equals: 7)
+    assert(data.second, equals: 14)
+    assert(data.second_part, equals: 123456)
+    assert(data.neg, equals: 0)
+    assert(data.time_type.value, equals: MYSQL_TIMESTAMP_DATETIME.value)
+  }
+  
+  func testInitializeWithDateValueCreatesMysqlTimeBufferWithDateInfo() {
+    let date = Date(year: 1998, month: 7, day: 11)
+    let bindParameter = MysqlBindParameter(value: date.databaseValue)
+    self.assert(bindParameter.parameter.buffer_length, equals: 1)
+    self.assert(bindParameter.parameter.buffer_type.value, equals: MYSQL_TYPE_DATE.value)
+    
+    let data = UnsafeMutablePointer<MYSQL_TIME>(bindParameter.parameter.buffer).memory
+    assert(data.year, equals: 1998)
+    assert(data.month, equals: 7)
+    assert(data.day, equals: 11)
+    assert(data.hour, equals: 0)
+    assert(data.minute, equals: 0)
+    assert(data.second, equals: 0)
+    assert(data.second_part, equals: 0)
+    assert(data.neg, equals: 0)
+    assert(data.time_type.value, equals: MYSQL_TIMESTAMP_DATE.value)
+  }
+  
+  func testInitializeWithTimeValueCreatesMysqlTimeBufferWithTimeInfo() {
+    let time = Time(hour: 13, minute: 44, second: 23, nanosecond: 123456789.5)
+    let bindParameter = MysqlBindParameter(value: time.databaseValue)
+    self.assert(bindParameter.parameter.buffer_length, equals: 1)
+    self.assert(bindParameter.parameter.buffer_type.value, equals: MYSQL_TYPE_TIME.value)
+    
+    let data = UnsafeMutablePointer<MYSQL_TIME>(bindParameter.parameter.buffer).memory
+    assert(data.year, equals: 0)
+    assert(data.month, equals: 0)
+    assert(data.day, equals: 0)
+    assert(data.hour, equals: 13)
+    assert(data.minute, equals: 44)
+    assert(data.second, equals: 23)
+    assert(data.second_part, equals: 123456)
+    assert(data.neg, equals: 0)
+    assert(data.time_type.value, equals: MYSQL_TIMESTAMP_TIME.value)
   }
   
   //MARK: - Field Information
@@ -257,11 +321,17 @@ class MysqlBindParameterTests: TailorTestCase {
     
   }
   
-  func testDataWithTimeReturnsDateWithThatDate() {
+  func testDataWithDateReturnsDate() {
     DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at date")
     connection.executeQuery("INSERT INTO hats (updated_at) VALUES ('2015-03-14')")
     runQuery("SELECT updated_at FROM hats")
-    if let result = parameter.data().timestampValue {
+    switch(parameter.data()) {
+    case .Date:
+      break
+    default:
+      assert(false, message: "should be date value")
+    }
+    if let result = parameter.data().dateValue {
       assert(result.year, equals: 2015)
       assert(result.month, equals: 3)
       assert(result.day, equals: 14)
@@ -273,10 +343,40 @@ class MysqlBindParameterTests: TailorTestCase {
     
   }
   
-  func testDataWithDateTimeReturnsDateWithThatDateTime() {
+  func testDataWithTimeReturnsTime() {
+    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at time")
+    connection.executeQuery("INSERT INTO hats (updated_at) VALUES ('09:30:15')")
+    runQuery("SELECT updated_at FROM hats")
+    switch(parameter.data()) {
+    case .Time:
+      break
+    default:
+      assert(false, message: "should be time value")
+    }
+    if let result = parameter.data().timeValue {
+      assert(result.hour, equals: 9)
+      assert(result.minute, equals: 30)
+      assert(result.second, equals: 15)
+      assert(result.timeZone, equals: DatabaseConnection.sharedConnection().timeZone)
+    }
+    else {
+      XCTFail()
+    }
+    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at timestamp")
+    
+  }
+  
+  func testDataWithDatetimeReturnsTimestamp() {
     DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at datetime")
     connection.executeQuery("INSERT INTO hats (updated_at) VALUES ('2015-04-01 09:30:00')")
     runQuery("SELECT updated_at FROM hats")
+    
+    switch(parameter.data()) {
+    case .Timestamp:
+      break
+    default:
+      assert(false, message: "should be timestamp value")
+    }
     if let result = parameter.data().timestampValue {
       assert(result.year, equals: 2015)
       assert(result.month, equals: 4)
@@ -291,9 +391,16 @@ class MysqlBindParameterTests: TailorTestCase {
     DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at timestamp")
   }
   
-  func testDataWithTimestampReturnsDateWithThatTimestamp() {
+  func testDataWithTimestampReturnsTimestamp() {
     connection.executeQuery("INSERT INTO hats (updated_at) VALUES ('2015-04-01 09:30:00')")
     runQuery("SELECT updated_at FROM hats")
+    
+    switch(parameter.data()) {
+    case .Timestamp:
+      break
+    default:
+      assert(false, message: "should be timestamp value")
+    }
     if let result = parameter.data().timestampValue {
       assert(result.year, equals: 2015)
       assert(result.month, equals: 4)
@@ -307,22 +414,6 @@ class MysqlBindParameterTests: TailorTestCase {
     }
   }
   
-  func testDataWithTimestampReturnsDateWithThatTime() {
-    connection.executeQuery("INSERT INTO hats (updated_at) VALUES ('2015-04-01 09:30:00')")
-    runQuery("SELECT updated_at FROM hats")
-    if let result = parameter.data().timestampValue {
-      assert(result.year, equals: 2015)
-      assert(result.month, equals: 4)
-      assert(result.day, equals: 1)
-      assert(result.hour, equals: 9)
-      assert(result.minute, equals: 30)
-      assert(result.second, equals: 0)
-    }
-    else {
-      XCTFail()
-    }
-  }
-
   func testDataWithBlobReturnsValue() {
     DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN color color blob")
     var bytes = [1,2,3,4,5]
@@ -345,5 +436,51 @@ class MysqlBindParameterTests: TailorTestCase {
     assert(result, equals: "red")
     DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN color color varchar(255)")
     
+  }
+  
+  func testCanSendAndReceiveTimestamp() {
+    let timestamp = 20.minutes.ago.inTimeZone(DatabaseConnection.sharedConnection().timeZone)
+    let connection = DatabaseConnection.sharedConnection()
+    connection.executeQuery("INSERT INTO `hats` (`updated_at`) VALUES (?)", timestamp)
+    let rows = connection.executeQuery("SELECT * FROM `hats`")
+    if rows.count > 0 {
+      let result = rows[0].data["updated_at"]?.timestampValue
+      assert(result, equals: timestamp)
+    }
+    else {
+      assert(false)
+    }
+  }
+  
+  func testCanSendAndReceiveTime() {
+    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at time")
+    let time = 45.minutes.ago.inTimeZone(DatabaseConnection.sharedConnection().timeZone).time
+    let connection = DatabaseConnection.sharedConnection()
+    connection.executeQuery("INSERT INTO `hats` (`updated_at`) VALUES (?)", time)
+    let rows = connection.executeQuery("SELECT * FROM `hats`")
+    if rows.count > 0 {
+      let result = rows[0].data["updated_at"]?.timeValue
+      assert(result, equals: time)
+    }
+    else {
+      assert(false)
+    }
+    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at timestamp")
+  }
+  
+  func testCanSendAndReceiveDate() {
+    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at date")
+    let date = 3.months.ago.date
+    let connection = DatabaseConnection.sharedConnection()
+    connection.executeQuery("INSERT INTO `hats` (`updated_at`) VALUES (?)", date)
+    let rows = connection.executeQuery("SELECT * FROM `hats`")
+    if rows.count > 0 {
+      let result = rows[0].data["updated_at"]?.dateValue
+      assert(result, equals: date)
+    }
+    else {
+      assert(false)
+    }
+    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at timestamp")
   }
 }

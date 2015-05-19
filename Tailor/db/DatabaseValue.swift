@@ -25,8 +25,14 @@ public enum DatabaseValue: Equatable, Printable {
   /** Any floating-point type. */
   case Double(Swift.Double)
   
-  /** Any date or time type. */
+  /** A full timestamp type */
   case Timestamp(Tailor.Timestamp)
+  
+  /** A standalone date. */
+  case Date(Tailor.Date)
+  
+  /** A standalone time. */
+  case Time(Tailor.Time)
   
   //MARK: - Casting
   
@@ -91,7 +97,8 @@ public enum DatabaseValue: Equatable, Printable {
   }
   
   /**
-    This method attempts to extract a date value from this value's contents.
+    This method attempts to extract a foundation date value from this value's 
+    contents.
     */
   public var foundationDateValue: NSDate? {
     return self.timestampValue?.foundationDateValue
@@ -105,6 +112,34 @@ public enum DatabaseValue: Equatable, Printable {
     switch(self) {
     case let .Timestamp(timestamp):
       return timestamp
+    default:
+      return nil
+    }
+  }
+  
+  /**
+    This method attempts to extract a date value from this value's contents.
+    */
+  public var dateValue: Tailor.Date? {
+    switch(self) {
+    case let .Date(date):
+      return date
+    case let .Timestamp(timestamp):
+      return timestamp.date
+    default:
+      return nil
+    }
+  }
+  
+  /**
+    This method attempts to extract a time value from this value's contents.
+    */
+  public var timeValue: Tailor.Time? {
+    switch(self) {
+    case let .Time(time):
+      return time
+    case let .Timestamp(timestamp):
+      return timestamp.time
     default:
       return nil
     }
@@ -127,6 +162,10 @@ public enum DatabaseValue: Equatable, Printable {
       return double.description
     case let .Timestamp(timestamp):
       return timestamp.format(TimeFormat.Database)
+    case let .Date(date):
+      return date.description
+    case let .Time(time):
+      return time.description
     case .Null:
       return "NULL"
     }
@@ -239,6 +278,25 @@ extension NSDate: DatabaseValueConvertible {
 extension Timestamp: DatabaseValueConvertible {
   /** The wrapped database value. */
   public var databaseValue: DatabaseValue { return DatabaseValue.Timestamp(self) }
+}
+
+
+/**
+  This extension provides a helper for converting a timestamp into a wrapped
+  database value.
+  */
+extension Time: DatabaseValueConvertible {
+  /** The wrapped database value. */
+  public var databaseValue: DatabaseValue { return DatabaseValue.Time(self) }
+}
+
+/**
+  This extension provides a helper for converting a date into a wrapped
+  database value.
+  */
+extension Date: DatabaseValueConvertible {
+  /** The wrapped database value. */
+  public var databaseValue: DatabaseValue { return DatabaseValue.Date(self) }
 }
 
 /**

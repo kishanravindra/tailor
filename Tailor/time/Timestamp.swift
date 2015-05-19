@@ -111,7 +111,6 @@ public struct Timestamp: Equatable, Comparable {
     */
   public init(year: Int = 1970, month: Int = 1, day: Int = 1, hour: Int = 0, minute: Int = 0, second: Int = 0, nanosecond: Double = 0, timeZone: TimeZone = TimeZone.defaultTimeZone, calendar: Calendar = GregorianCalendar()) {
     self.timeZone = timeZone
-    self.calendar = calendar
     self.year = year
     self.month = month
     self.day = day
@@ -119,6 +118,7 @@ public struct Timestamp: Equatable, Comparable {
     self.minute = minute
     self.second = second
     self.nanosecond = nanosecond
+    self.calendar = calendar.inYear(year)
     
     let (epochSeconds,weekDay) = Timestamp.timestampForLocalTime(
       year: year,

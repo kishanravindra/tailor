@@ -67,14 +67,14 @@ class DatabaseValueTests: TailorTestCase {
     XCTAssertNil(double)
   }
   
-  func testDateValueWitTimestampReturnsValue() {
+  func testFoundationDateValueWitTimestampReturnsValue() {
     let timestamp = Timestamp.now()
     let value = DatabaseValue.Timestamp(timestamp)
     let date = value.foundationDateValue
     assert(date, equals: timestamp.foundationDateValue)
   }
   
-  func testDateValueWithStringReturnsNil() {
+  func testFoundationDateValueWithStringReturnsNil() {
     let value = DatabaseValue.String("2015-04-15")
     let date = value.foundationDateValue
     XCTAssertNil(date)
@@ -91,6 +91,51 @@ class DatabaseValueTests: TailorTestCase {
     let value = DatabaseValue.String("2015-04-15")
     let timestamp = value.timestampValue
     assert(isNil: timestamp)
+  }
+  
+  func testDateValueWithDateReturnsDate() {
+    let date = Date(year: 1995, month: 12, day: 1)
+    let value = DatabaseValue.Date(date)
+    assert(value.dateValue, equals: date)
+  }
+  
+  func testDateValueWithTimestampReturnsDateFromTimestamp() {
+    let timestamp = Timestamp(year: 2007, month: 3, day: 25, hour: 12, minute: 7, second: 44, nanosecond: 0)
+    let value = DatabaseValue.Timestamp(timestamp)
+    assert(value.dateValue, equals: timestamp.date)
+  }
+  
+  func testDateValueWithTimeReturnsNil() {
+    let value = DatabaseValue.Time(Time(hour: 11, minute: 30, second: 0, nanosecond: 0))
+    assert(isNil: value.dateValue)
+  }
+  
+  func testDateValueWithStringReturnsNil() {
+    let value = DatabaseValue.String("2015-10-02")
+    assert(isNil: value.dateValue)
+  }
+  
+  func testTimeValueWithTimeReturnsTime() {
+    let time = Time(hour: 11, minute: 30, second: 0, nanosecond: 0)
+    let value = DatabaseValue.Time(time)
+    assert(value.timeValue, equals: time)
+  }
+  
+  func testTimeValueWithTimestampReturnsTimeFromTimestamp() {
+    let timestamp = Timestamp(year: 2007, month: 3, day: 25, hour: 12, minute: 7, second: 44, nanosecond: 0)
+    let value = DatabaseValue.Timestamp(timestamp)
+    assert(value.timeValue, equals: timestamp.time)
+  }
+  
+  func testTimeValueWithDateReturnsNil() {
+    let date = Date(year: 1995, month: 12, day: 1)
+    let value = DatabaseValue.Date(date)
+    assert(isNil: value.timeValue)
+  }
+  
+  func testTimeValueWithStringReturnsNil() {
+    let value = DatabaseValue.String("07:00")
+    assert(isNil: value.timeValue)
   }
   
   func testDescriptionWithStringGetsString() {
@@ -125,6 +170,18 @@ class DatabaseValueTests: TailorTestCase {
     let timestamp = Timestamp.now()
     let value = DatabaseValue.Timestamp(timestamp)
     assert(value.description, equals: timestamp.format(TimeFormat.Database))
+  }
+  
+  func testDescriptionWithDateUsesDateDescription() {
+    let date = Date(year: 1999, month: 7, day: 12)
+    let value = DatabaseValue.Date(date)
+    assert(value.description, equals: date.description)
+  }
+  
+  func testDescriptionWithTimeUsesTimeDescription() {
+    let time = Time(hour: 15, minute: 7, second: 11, nanosecond: 0, timeZone: TimeZone(name: "US/Pacific"))
+    let value = DatabaseValue.Time(time)
+    assert(value.description, equals: time.description)
   }
   
   func testDescriptionWithNullGetsNull() {

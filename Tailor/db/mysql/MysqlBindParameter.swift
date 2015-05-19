@@ -65,7 +65,8 @@ public struct MysqlBindParameter {
   public init(value: DatabaseValue) {
     var parameter = MYSQL_BIND()
     
-    let data: NSData
+    var data: NSData? = nil
+    var mysqlTime: MYSQL_TIME? = nil
     
     switch(value) {
     case let .String(string):
@@ -80,15 +81,68 @@ public struct MysqlBindParameter {
     case let .Data(wrappedData):
       data = wrappedData
     case let .Timestamp(timestamp):
-      let string = timestamp.format(TimeFormat.Database)
-      data = string.dataUsingEncoding(NSUTF8StringEncoding) ?? NSData()
-    default:
+      let timestamp = timestamp.inTimeZone(DatabaseConnection.sharedConnection().timeZone)
+      mysqlTime = MYSQL_TIME(
+        year: UInt32(timestamp.year),
+        month: UInt32(timestamp.month),
+        day: UInt32(timestamp.day),
+        hour: UInt32(timestamp.hour),
+        minute: UInt32(timestamp.minute),
+        second: UInt32(timestamp.second),
+        second_part: UInt(timestamp.nanosecond / 1000),
+        neg: 0,
+        time_type: MYSQL_TIMESTAMP_DATETIME
+      )
+    case let .Time(time):
+      mysqlTime = MYSQL_TIME(
+        year: 0,
+        month: 0,
+        day: 0,
+        hour: UInt32(time.hour),
+        minute: UInt32(time.minute),
+        second: UInt32(time.second),
+        second_part: UInt(time.nanosecond / 1000),
+        neg: 0,
+        time_type: MYSQL_TIMESTAMP_TIME
+      )
+    case let .Date(date):
+      mysqlTime = MYSQL_TIME(
+        year: UInt32(date.year),
+        month: UInt32(date.month),
+        day: UInt32(date.day),
+        hour: 0,
+        minute: 0,
+        second: 0,
+        second_part: 0,
+        neg: 0,
+        time_type: MYSQL_TIMESTAMP_DATE
+      )
+    case .Null:
       data = NSData()
     }
-    parameter.buffer = malloc(data.length)
-    memcpy(parameter.buffer, data.bytes, data.length)
-    parameter.buffer_length = UInt(data.length);
-    parameter.buffer_type = MYSQL_TYPE_STRING;
+    if let data = data {
+      parameter.buffer = malloc(data.length)
+      memcpy(parameter.buffer, data.bytes, data.length)
+      parameter.buffer_length = UInt(data.length)
+      parameter.buffer_type = MYSQL_TYPE_STRING
+    }
+    if let time = mysqlTime {
+      
+      var buffer = UnsafeMutablePointer<MYSQL_TIME>(calloc(sizeof(MYSQL_TIME), 1))
+      buffer.memory = time
+      parameter.buffer = UnsafeMutablePointer<Void>(buffer)
+      parameter.buffer_length = 1
+      switch(time.time_type.value) {
+      case MYSQL_TIMESTAMP_TIME.value:
+        parameter.buffer_type = MYSQL_TYPE_TIME
+      case MYSQL_TIMESTAMP_DATE.value:
+        parameter.buffer_type = MYSQL_TYPE_DATE
+      case MYSQL_TIMESTAMP_DATETIME.value:
+        parameter.buffer_type = MYSQL_TYPE_TIMESTAMP
+      default:
+        parameter.buffer_type = MYSQL_TYPE_TIMESTAMP
+      }
+    }
     self.parameter = parameter
     self.binary = false
   }
@@ -141,9 +195,15 @@ public struct MysqlBindParameter {
       let buffer = UnsafePointer<CChar>(self.buffer)
       let string = NSString(bytes: buffer, length: Int(self.length), encoding: NSUTF8StringEncoding)
       return string?.doubleValue.databaseValue ?? DatabaseValue.Null
-    case MYSQL_TYPE_TIME.value, MYSQL_TYPE_DATE.value, MYSQL_TYPE_DATETIME.value, MYSQL_TYPE_TIMESTAMP.value:
+    case MYSQL_TYPE_TIME.value:
       let buffer = UnsafePointer<MYSQL_TIME>(self.buffer)
-      return MysqlBindParameter.timestampFromTime(buffer.memory)?.databaseValue ?? DatabaseValue.Null
+      return  MysqlBindParameter.timestampFromTime(buffer.memory).time.databaseValue ?? DatabaseValue.Null
+    case MYSQL_TYPE_DATE.value:
+      let buffer = UnsafePointer<MYSQL_TIME>(self.buffer)
+      return MysqlBindParameter.timestampFromTime(buffer.memory).date.databaseValue ?? DatabaseValue.Null
+    case MYSQL_TYPE_DATETIME.value, MYSQL_TYPE_TIMESTAMP.value:
+      let buffer = UnsafePointer<MYSQL_TIME>(self.buffer)
+      return MysqlBindParameter.timestampFromTime(buffer.memory).databaseValue ?? DatabaseValue.Null
     case MYSQL_TYPE_TINY_BLOB.value, MYSQL_TYPE_BLOB.value, MYSQL_TYPE_MEDIUM_BLOB.value, MYSQL_TYPE_LONG_BLOB.value:
       if binary {
         return NSData(bytes: self.buffer, length: Int(self.length)).databaseValue
@@ -164,7 +224,7 @@ public struct MysqlBindParameter {
     :param: time    The MySQL time
     :returns:       The timestamp
     */
-  public static func timestampFromTime(time: MYSQL_TIME) -> Timestamp? {
+  public static func timestampFromTime(time: MYSQL_TIME) -> Timestamp {
     return Timestamp(
       year: Int(time.year),
       month: Int(time.month),
