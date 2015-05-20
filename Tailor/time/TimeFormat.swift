@@ -66,19 +66,19 @@ public struct TimeFormat: TimeFormatter {
       if inEscape {
         let newComponents: [TimeFormatComponent]
         switch(character) {
-        case "A": newComponents = [] // Full weekday name
-        case "a": newComponents = [] // Abbreviated weekday name
-        case "B": newComponents = [] // Full month name
-        case "b": newComponents = [] // Abbreviated month name
+        case "A": newComponents = [.WeekDayName(abbreviate: false)]
+        case "a": newComponents = [.WeekDayName(abbreviate: true)]
+        case "B": newComponents = [.MonthName(abbreviate: false)]
+        case "b": newComponents = [.MonthName(abbreviate: true)]
         case "C": newComponents = [] // Decimal of year / 100
         case "D": newComponents = [.Month, "/", .Day, "/", .YearWith(padding: "0", length: 2, truncate: true)]
         case "d": newComponents = [.Day]
         case "e": newComponents = [.DayWith(padding: " ")]
         case "F": newComponents = [.Year, "-", .Month, "-", .Day]
-        case "G": newComponents = [] // Decimal number with century
-        case "g": newComponents = [] // Decimal number without century
+        case "G": newComponents = [.Year]
+        case "g": newComponents = [.YearWith(padding: "0", length: 2, truncate: true)]
         case "H": newComponents = [.Hour]
-        case "h": newComponents = [] // Abbreviated month name
+        case "h": newComponents = [.MonthName(abbreviate: true)]
         case "I": newComponents = [.HourWith(twelveHour: true, padding: "0")]
         case "j": newComponents = [] // Day of year
         case "k": newComponents = [.HourWith(twelveHour: false, padding: " ")]
@@ -88,15 +88,15 @@ public struct TimeFormat: TimeFormatter {
         case "n": newComponents = ["\n"]
         case "p": newComponents = [.Meridian]
         case "R": newComponents = [.Hour, ":", .Minute]
-        case "r": newComponents = [] // %I:%M:%S %p
+        case "r": newComponents = [.HourWith(twelveHour: true, padding: "0"), ":", .Minute, ":", .Seconds, " ", .Meridian]
         case "S": newComponents = [.Seconds]
         case "s": newComponents = [.EpochSeconds]
         case "T": newComponents = [.Hour, ":", .Minute, ":", .Seconds]
         case "t": newComponents = ["\t"]
         case "U": newComponents = [] // Week number of the year
-        case "u": newComponents = [] // Weekday as number, starting from 1
+        case "u": newComponents = [] // Week day - Monday = 1, Sunday = 7
         case "V": newComponents = [] // Week number of the year, starting from 1
-        case "v": newComponents = [] // %e-%b-%Y
+        case "v": newComponents = [.DayWith(padding: " "), "-", .MonthName(abbreviate: true), "-", .Year]
         case "W": newComponents = [] // Week number of the year, starting with 0
         case "w": newComponents = [] // Weekday as number, starting with 0
         case "X": newComponents = [] // Local time format
@@ -606,4 +606,38 @@ public extension TimeFormat {
   
   /** This formats a time for a cookie. */
   public static let Cookie = TimeFormat(.WeekDayName(abbreviate: true), ", ", .Day, " ", .MonthName(abbreviate: true), " ", .Year, " ", .Hour, ":", .Minute, ":", .Seconds, " ", .TimeZone)
+  
+  /**
+    This gets a full description of a timestamp with all the date and time
+    components in a human-readable format.
+    */
+  public static let Full = TimeFormat(.DayWith(padding: nil), " ", .MonthName(abbreviate: false), ", ", .Year, ", ", .HourWith(twelveHour: false, padding: nil), ":", .Minute, ":", .Seconds, " ", .TimeZone)
+  
+  /**
+    This gets a full description of a timestamp with all the date and time
+    components in a human-readable format, based on US date and time formats.
+    */
+  public static let FullUS = TimeFormat(.MonthName(abbreviate: false), " ", .DayWith(padding: nil), ", ", .Year, ", ", .HourWith(twelveHour: true, padding: nil), ":", .Minute, ":", .Seconds, " ", .Meridian, " ", .TimeZone)
+  
+  /**
+    This gets a full description of a date in a human-readable format.
+    */
+  public static let FullDate = TimeFormat(.DayWith(padding: nil), " ", .MonthName(abbreviate: false), ", ", .Year)
+  
+  /**
+    This gets a full description of a date in a human-readable format using the
+    US date and time formats.
+    */
+  public static let FullDateUS = TimeFormat(.MonthName(abbreviate: false), " ", .DayWith(padding: nil), ", ", .Year)
+
+  /**
+    This gets a full description of a time in a human-readable format.
+    */
+  public static let FullTime = TimeFormat(.HourWith(twelveHour: false, padding: nil), ":", .Minute, ":", .Seconds, " ", .TimeZone)
+  
+  /**
+    This gets a full description of a time in a human-readable format, based on
+    US date and time formats.
+    */
+  public static let FullTimeUS = TimeFormat(.HourWith(twelveHour: true, padding: nil), ":", .Minute, ":", .Seconds, " ", .Meridian, " ", .TimeZone)
 }

@@ -178,12 +178,48 @@ class TimeFormatTests: TailorTestCase {
     assert(formatted, equals: "Tue, 16 Dec 2014 11:27:13 UTC", message: "formats string using cookie date format")
   }
   
+  func testFormatWithFullFormatGetsHumanReadableDateAndTime() {
+    let timestamp = Timestamp(epochSeconds: 1157469107, timeZone: TimeZone(name: "UTC"))
+    let formatted = TimeFormat.Full.formatTime(timestamp)
+    assert(formatted, equals: "5 September, 2006, 15:11:47 UTC")
+  }
+  
+  func testFormatWithFullUsGetsHumanReadableDateAndTime() {
+    let timestamp = Timestamp(epochSeconds: 1684782968, timeZone: TimeZone(name: "UTC"))
+    let formatted = TimeFormat.FullUS.formatTime(timestamp)
+    assert(formatted, equals: "May 22, 2023, 7:16:08 PM UTC")
+  }
+  
+  func testFormatWithFullDateGetsHumanReadableDate() {
+    let timestamp = Timestamp(epochSeconds: 1383010760, timeZone: TimeZone(name: "UTC"))
+    let formatted = TimeFormat.FullDate.formatTime(timestamp)
+    assert(formatted, equals: "29 October, 2013")
+  }
+  
+  func testFormatWithFullDateUsGetsHumanReadableDate() {
+    let timestamp = Timestamp(epochSeconds: 803301470, timeZone: TimeZone(name: "UTC"))
+    let formatted = TimeFormat.FullDateUS.formatTime(timestamp)
+    assert(formatted, equals: "June 16, 1995")
+  }
+  
+  func testFormatWithFullTimeGetsHumanReadableTime() {
+    let timestamp = Timestamp(epochSeconds: 1526472439, timeZone: TimeZone(name: "UTC"))
+    let formatted = TimeFormat.FullTime.formatTime(timestamp)
+    assert(formatted, equals: "12:07:19 UTC")
+  }
+  
+  func testFormatWithFullTimeUsGetsHumanReadableTime() {
+    let timestamp = Timestamp(epochSeconds: 1377257661, timeZone: TimeZone(name: "UTC"))
+    let formatted = TimeFormat.FullTimeUS.formatTime(timestamp)
+    assert(formatted, equals: "11:34:21 AM UTC")
+  }
+  
   func testFormatWithStrftimeUsesStrftimeFormat() {
-    let formats = ["%d", "%D", "%e", "%F", "%H", "%I", "%k", "%l", "%M", "%m", "%n", "%p", "%R", "%s", "%S", "%t", "%T", "%y", "%Y", "%z", "%Z", "%%", "%Y-%m-%d", "%I%n%m"]
+    let formats = ["%A", "%a", "%B", "%b", "%d", "%D", "%e", "%F", "%G", "%g", "%h", "%H", "%I", "%k", "%l", "%M", "%m", "%n", "%p", "%r", "%R", "%s", "%S", "%t", "%T", "%v", "%y", "%Y", "%z", "%Z", "%%", "%Y-%m-%d", "%I%n%m"]
     var cString = [CChar](count: 1024, repeatedValue: 0)
     let timeZone = TimeZone(name: NSTimeZone.systemTimeZone().name)
     
-    for value in [timestampSeconds, timestampSeconds + 3600 * 5] {
+    for value in [timestampSeconds, timestampSeconds + 3600 * 5, timestampSeconds + 3600 * 24 * 180] {
       let localTimestamp = Timestamp(epochSeconds: value, timeZone: timeZone)
       var cTime = Int(value)
       var cLocalTime = localtime(&cTime).memory
@@ -197,6 +233,8 @@ class TimeFormatTests: TailorTestCase {
       }
     }
   }
+  
+  //MARK: - Parsing
   
   var timeComponents = (year: 0, month: 0, day: 0, hour: 0, minute: 0, second: 0, nanosecond: 0.0)
   let calendar = GregorianCalendar()
