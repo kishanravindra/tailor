@@ -78,6 +78,8 @@ class TimestampTests: TailorTestCase {
     assert(timestamp.calendar is GregorianCalendar)
   }
   
+  //MARK: - Transformations
+  
   func testInTimeZoneWithTimeZoneDoesConversion() {
     let timestamp1 = Timestamp(epochSeconds: 498839869, timeZone: TimeZone(name: "US/Eastern"))
     let timestamp2 = timestamp1.inTimeZone(TimeZone(name: "Europe/Lisbon"))
@@ -156,11 +158,81 @@ class TimestampTests: TailorTestCase {
     assert(timestamp2.epochSeconds, equals: 1427459650)
   }
   
+  func testIntervalSinceGetsIntervalSinceEarlierTime() {
+    let timestamp1 = Timestamp(epochSeconds: 1585493070, timeZone: TimeZone(name: "UTC"), calendar: GregorianCalendar())
+    let timestamp2 = Timestamp(epochSeconds: 805937697, timeZone: TimeZone(name: "UTC"), calendar: GregorianCalendar())
+    let interval = timestamp1.intervalSince(timestamp2)
+    assert(interval.years, equals: 24)
+    assert(interval.months, equals: 8)
+    assert(interval.days, equals: 12)
+    assert(interval.hours, equals: 15)
+    assert(interval.minutes, equals: 9)
+    assert(interval.seconds, equals: 33)
+    assert(timestamp2 + interval, equals: timestamp1)
+  }
+  
+  func testIntervalSinceGetsIntervalUntilLaterTime() {
+    let timestamp1 = Timestamp(epochSeconds: 1442736307, timeZone: TimeZone(name: "UTC"), calendar: GregorianCalendar())
+    let timestamp2 = Timestamp(epochSeconds: 1891353078, timeZone: TimeZone(name: "UTC"), calendar: GregorianCalendar())
+    let interval = timestamp1.intervalSince(timestamp2)
+    assert(interval.years, equals: -14)
+    assert(interval.months, equals: -2)
+    assert(interval.days, equals: -17)
+    assert(interval.hours, equals: -7)
+    assert(interval.minutes, equals: -46)
+    assert(interval.seconds, equals: -11)
+    assert(timestamp2 + interval, equals: timestamp1)
+  }
+  
+  func testIntervalSinceWithDifferentTimeZoneCompensatesForTimeZones() {
+    let timestamp1 = Timestamp(epochSeconds: 1664264871, timeZone: TimeZone(name: "UTC"), calendar: GregorianCalendar())
+    let timestamp2 = Timestamp(epochSeconds: 1229410746, timeZone: TimeZone(name: "US/Eastern"), calendar: GregorianCalendar())
+    let interval = timestamp1.intervalSince(timestamp2)
+    assert(interval.years, equals: 13)
+    assert(interval.months, equals: 9)
+    assert(interval.days, equals: 11)
+    assert(interval.hours, equals: 0)
+    assert(interval.minutes, equals: 48)
+    assert(interval.seconds, equals: 45)
+    assert(timestamp2.inTimeZone("UTC") + interval, equals: timestamp1)
+  }
+  
+  func testIntervalSinceWithDifferentCalendarCompensatesForCalendar() {
+    let timestamp1 = Timestamp(epochSeconds: 1507479210, timeZone: TimeZone(name: "UTC"), calendar: GregorianCalendar())
+    let timestamp2 = Timestamp(epochSeconds: 1197994550, timeZone: TimeZone(name: "UTC"), calendar: IslamicCalendar())
+    let interval = timestamp1.intervalSince(timestamp2)
+    assert(interval.years, equals: 9)
+    assert(interval.months, equals: 9)
+    assert(interval.days, equals: 19)
+    assert(interval.hours, equals: 23)
+    assert(interval.minutes, equals: 57)
+    assert(interval.seconds, equals: 40)
+    assert(timestamp2.inCalendar(GregorianCalendar()) + interval, equals: timestamp1)
+  }
+  
+  func testSubtractionGetsIntervalBetweenTimestamps() {
+    let timestamp1 = Timestamp(epochSeconds: 1770009956, timeZone: TimeZone(name: "UTC"), calendar: GregorianCalendar())
+    let timestamp2 = Timestamp(epochSeconds: 1733629141, timeZone: TimeZone(name: "UTC"), calendar: GregorianCalendar())
+    let interval = timestamp1 - timestamp2
+    assert(interval.years, equals: 1)
+    assert(interval.months, equals: 1)
+    assert(interval.days, equals: 25)
+    assert(interval.hours, equals: 1)
+    assert(interval.minutes, equals: 46)
+    assert(interval.seconds, equals: 55)
+    assert(timestamp2 + interval, equals: timestamp1)
+    
+  }
+  
+  //MARK: - Formatting
+  
   func testFormatMethodFormatsTime() {
     let timestamp = Timestamp(epochSeconds: 1427459650)
     let formattedString = timestamp.format(TimeFormat.Database)
     assert(formattedString, equals: TimeFormat.Database.formatTime(timestamp))
   }
+  
+  //MARK: - Foundation Support
   
   func testNowMethodGetsCurrentTime() {
     let timestamp = Timestamp.now()
@@ -181,6 +253,8 @@ class TimestampTests: TailorTestCase {
     assert(foundationDate.timeIntervalSince1970, equals: seconds)
   }
   
+  //MARK: - Components
+  
   func testDateCreatesDateWithDateInformation() {
     let timestamp = Timestamp(epochSeconds: 696737986, timeZone: TimeZone(name: "US/Eastern"))
     let date = timestamp.date
@@ -198,6 +272,8 @@ class TimestampTests: TailorTestCase {
     assert(time.timeZone.name, equals: "UTC")
   }
 
+  //MARK: - Comparison
+  
   func testTimestampsAreEqualWithSameInfo() {
     let timestamp1 = Timestamp(epochSeconds: 1018431395, timeZone: TimeZone(name: "US/Pacific"), calendar: GregorianCalendar())
     let timestamp2 = Timestamp(epochSeconds: 1018431395, timeZone: TimeZone(name: "US/Pacific"), calendar: GregorianCalendar())

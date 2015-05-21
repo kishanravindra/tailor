@@ -1,7 +1,7 @@
 /**
   This struct encapsulates a moment in time.
   */
-public struct Timestamp: Equatable, Comparable {
+public struct Timestamp: Equatable, Comparable, Printable {
   /**
     The type that represents the interval between a timestamp and the Unix
     epoch.
@@ -223,6 +223,55 @@ public struct Timestamp: Equatable, Comparable {
   }
   
   /**
+    This method gets the interval between this timestamp and another timestamp.
+  
+    If the other timestamp is before this one, it will get a postitive 
+    interval. If the other timestamp is after this one, it will get a negative
+    interval.
+
+
+    :param: other   The timestamp that we are getting the interval to.
+    */
+  public func intervalSince(other: Timestamp) -> TimeInterval {
+    let other = Timestamp(epochSeconds: other.epochSeconds, timeZone: self.timeZone, calendar: self.calendar)
+    let sign = self < other ? -1 : 1
+    var years = self.year - other.year
+    var months = self.month - other.month
+    var days = self.day - other.day
+    var hours = self.hour - other.hour
+    var minutes = self.minute - other.minute
+    var seconds = self.second - other.second
+    var nanoseconds = self.nanosecond - other.nanosecond
+    
+    func limit(inout value: Int, toSign sign: Int, inout byIncreasing nextValue: Int, # max: Int) {
+      if value * sign < 0 {
+        value += max * sign
+        nextValue -= sign
+      }
+    }
+    
+    if nanoseconds * Double(sign) < 0 {
+      nanoseconds += 1000000000.0 * Double(sign)
+      seconds -= sign
+    }
+    limit(&seconds, toSign: sign, byIncreasing: &minutes, max: self.calendar.secondsPerMinute)
+    limit(&minutes, toSign: sign, byIncreasing: &hours, max: self.calendar.minutesPerHour)
+    limit(&hours, toSign: sign, byIncreasing: &days, max: self.calendar.hoursPerDay)
+    
+    let pastMonth = sign == -1 ? self.month : (self.month == 1 ? self.calendar.months : self.month - 1)
+    limit(&days, toSign: sign, byIncreasing: &months, max: self.calendar.daysInMonth(pastMonth))
+    limit(&months, toSign: sign, byIncreasing: &years, max: self.calendar.months)
+    return TimeInterval(years: years, months: months, days: days, hours: hours, minutes: minutes, seconds: seconds)
+  }
+  
+  /**
+    This method gets a description of a timestamp for debugging.
+    */
+  public var description: String {
+    return self.format(TimeFormat.Database)
+  }
+  
+  /**
     This method gets the local time for a timestamp.
 
     :param: epochSeconds    The number of seconds since the Unix epoch for the
@@ -397,4 +446,16 @@ public func ==(lhs: Timestamp, rhs: Timestamp) -> Bool {
   */
 public func <(lhs: Timestamp, rhs: Timestamp) -> Bool {
   return lhs.epochSeconds < rhs.epochSeconds
+}
+
+/**
+  This method gets the interval between two timestamps.
+
+  :param: lhs   The first timestamp
+  :param: rhs   The second timestamp
+  :returns:     The interval that would have to be added to the second 
+                timestamp to produce the first timestamp
+  */
+public func -(lhs: Timestamp, rhs: Timestamp) -> TimeInterval {
+  return lhs.intervalSince(rhs)
 }
