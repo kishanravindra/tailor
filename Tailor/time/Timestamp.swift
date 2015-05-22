@@ -171,6 +171,35 @@ public struct Timestamp: Equatable, Comparable, Printable {
   }
   
   /**
+    This method gets a new timestamp with some of the local date and time 
+    components changed.
+
+    Any component that is omitted will be filled in with the corresponding 
+    value from this timestamp.
+
+    :param: year        The new year
+    :param: month       The new month
+    :param: day         The new day
+    :param: hour        The new hour
+    :param: minute      The new minute
+    :param: second      The new second
+    :param: nanosecond  The new nanosecond
+    */
+  public func change(year: Int? = nil, month: Int? = nil, day: Int? = nil, hour: Int? = nil, minute: Int? = nil, second: Int? = nil, nanosecond: Double? = nil) -> Timestamp {
+    return Timestamp(
+      year: year ?? self.year,
+      month: month ?? self.month,
+      day: day ?? self.day,
+      hour: hour ?? self.hour,
+      minute: minute ?? self.minute,
+      second: second ?? self.second,
+      nanosecond: nanosecond ?? self.nanosecond,
+      timeZone: self.timeZone,
+      calendar: self.calendar
+    )
+  }
+  
+  /**
     This method adds a time interval to this second.
 
     This will add the local components of the interval to the local components

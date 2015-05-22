@@ -106,6 +106,18 @@ class TimestampTests: TailorTestCase {
     assert(timestamp2.second, equals: 53)
   }
   
+  func testChangeCanChangeTimeComponents() {
+    let timestamp1 = Timestamp(year: 2003, month: 7, day: 19, hour: 12, minute: 13, second: 6, timeZone: TimeZone(name: "UTC"), calendar: GregorianCalendar())
+    let timestamp2 = timestamp1.change(year: 2004, month: 5, minute: 25)
+    assert(timestamp2.year, equals: 2004)
+    assert(timestamp2.month, equals: 5)
+    assert(timestamp2.day, equals: 19)
+    assert(timestamp2.hour, equals: 12)
+    assert(timestamp2.minute, equals: 25)
+    assert(timestamp2.second, equals: 6)
+    assert(timestamp2.epochSeconds, equals: 1084969506)
+  }
+  
   func testAddingIntervalCanAddSimpleInterval() {
     let timestamp1 = Timestamp(year: 2014, month: 3, day: 16, hour: 12, minute: 34, second: 10, nanosecond: 11.5, timeZone: TimeZone(name: "UTC"))
     let timestamp2 = timestamp1.byAddingInterval(TimeInterval(years: 1, months: 2, days: 1, hours: 2, minutes: 1, seconds: 2, nanoseconds: 1))
