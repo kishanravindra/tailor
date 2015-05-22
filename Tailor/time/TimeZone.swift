@@ -106,13 +106,6 @@ public struct TimeZone: Equatable,Printable {
   //MARK: - Policy Information
   
   /**
-    This method gets the default time zone.
-
-    This will be UTC rather than the system time zone, for the time being.
-    */
-  public static var defaultTimeZone: TimeZone { return TimeZone(name: "UTC") }
-  
-  /**
     This method gets a debugging description for this time zone.
     :returns:   The description.
     */

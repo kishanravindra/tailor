@@ -24,7 +24,7 @@
 		522643221B06C7F40081D04E /* TimeFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5226431B1B06C7F40081D04E /* TimeFormat.swift */; };
 		522643231B06C7F40081D04E /* TimeInterval.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5226431C1B06C7F40081D04E /* TimeInterval.swift */; };
 		522643241B06C7F40081D04E /* Timestamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5226431D1B06C7F40081D04E /* Timestamp.swift */; };
-		522643251B06C7F40081D04E /* Timestamp+Foundation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5226431E1B06C7F40081D04E /* Timestamp+Foundation.swift */; };
+		522643251B06C7F40081D04E /* FoundationTimes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5226431E1B06C7F40081D04E /* FoundationTimes.swift */; };
 		522643261B06C7F40081D04E /* TimeZone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5226431F1B06C7F40081D04E /* TimeZone.swift */; };
 		522643271B06C7F40081D04E /* TimeZoneReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522643201B06C7F40081D04E /* TimeZoneReader.swift */; };
 		5226432A1B06C8CB0081D04E /* CalendarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522643291B06C8CB0081D04E /* CalendarTests.swift */; };
@@ -173,7 +173,7 @@
 		5226431B1B06C7F40081D04E /* TimeFormat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeFormat.swift; sourceTree = "<group>"; };
 		5226431C1B06C7F40081D04E /* TimeInterval.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeInterval.swift; sourceTree = "<group>"; };
 		5226431D1B06C7F40081D04E /* Timestamp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Timestamp.swift; sourceTree = "<group>"; };
-		5226431E1B06C7F40081D04E /* Timestamp+Foundation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Timestamp+Foundation.swift"; sourceTree = "<group>"; };
+		5226431E1B06C7F40081D04E /* FoundationTimes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoundationTimes.swift; sourceTree = "<group>"; };
 		5226431F1B06C7F40081D04E /* TimeZone.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeZone.swift; sourceTree = "<group>"; };
 		522643201B06C7F40081D04E /* TimeZoneReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeZoneReader.swift; sourceTree = "<group>"; };
 		522643291B06C8CB0081D04E /* CalendarTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarTests.swift; sourceTree = "<group>"; };
@@ -357,9 +357,9 @@
 				5226431B1B06C7F40081D04E /* TimeFormat.swift */,
 				5226431C1B06C7F40081D04E /* TimeInterval.swift */,
 				5226431D1B06C7F40081D04E /* Timestamp.swift */,
-				5226431E1B06C7F40081D04E /* Timestamp+Foundation.swift */,
 				5226431F1B06C7F40081D04E /* TimeZone.swift */,
 				522643201B06C7F40081D04E /* TimeZoneReader.swift */,
+				5226431E1B06C7F40081D04E /* FoundationTimes.swift */,
 			);
 			path = time;
 			sourceTree = "<group>";
@@ -875,7 +875,7 @@
 				52B2B6B219F2DAD30086261B /* Alteration.swift in Sources */,
 				522B56CA1A18C849009BBE32 /* Array.swift in Sources */,
 				523D65621A98D36D000C686B /* ConfigurationSetting.swift in Sources */,
-				522643251B06C7F40081D04E /* Timestamp+Foundation.swift in Sources */,
+				522643251B06C7F40081D04E /* FoundationTimes.swift in Sources */,
 				52BD144219E9DA1D006D72B0 /* Validation.swift in Sources */,
 				52BD144419E9DA1D006D72B0 /* Template.swift in Sources */,
 				526254371AABC9C800D63024 /* MemoryCacheStore.swift in Sources */,

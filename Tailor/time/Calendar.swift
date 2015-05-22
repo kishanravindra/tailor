@@ -276,7 +276,7 @@ public struct IslamicCalendar: Calendar {
   public let secondsPerMinute = 60
 }
 
-/*
+/**
   This method determines if two calendars are equal.
 
   Calendars are equal when they have the same year and unixEpochTime.
@@ -290,7 +290,7 @@ public func ==(lhs: Calendar, rhs: Calendar) -> Bool {
     lhs.identifier == rhs.identifier
 }
 
-/*
+/**
   This method determines if two calendars are unequal.
 
   Calendars are equal when they have the same year and unixEpochTime.

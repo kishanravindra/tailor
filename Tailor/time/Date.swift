@@ -42,7 +42,7 @@ public struct Date: Comparable,Printable {
     :param: timeZone    The time zone that the resulting time should be in.
     :returns:           A timestamp for the beginning of the day.
     */
-  public func beginningOfDay(_ timeZone: TimeZone = TimeZone.defaultTimeZone) -> Timestamp {
+  public func beginningOfDay(_ timeZone: TimeZone = TimeZone.systemTimeZone()) -> Timestamp {
     return Timestamp(
       year: year,
       month: month,
@@ -64,7 +64,7 @@ public struct Date: Comparable,Printable {
     :param: timeZone    The time zone that the resulting time should be in.
     :returns:           A timestamp for the beginning of the day.
     */
-  public func endOfDay(_ timeZone: TimeZone = TimeZone.defaultTimeZone) -> Timestamp {
+  public func endOfDay(_ timeZone: TimeZone = TimeZone.systemTimeZone()) -> Timestamp {
     return Timestamp(
       year: year,
       month: month,

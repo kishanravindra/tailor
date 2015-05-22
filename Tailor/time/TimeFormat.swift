@@ -175,7 +175,7 @@ public struct TimeFormat: TimeFormatter {
     :returns:         The parsed timestamp. If the string didn't match the
                       expected format, this will return nil.
     */
-  public func parseTime(string: String, timeZone: TimeZone = TimeZone.defaultTimeZone, calendar: Calendar = GregorianCalendar()) -> Timestamp? {
+  public func parseTime(string: String, timeZone: TimeZone = TimeZone.systemTimeZone(), calendar: Calendar = GregorianCalendar()) -> Timestamp? {
     var timeInformation = (year: 0, month: 0, day: 0, hour: 0, minute: 0, second: 0, nanosecond: 0.0)
     let result = parseTime(from: string, into: &timeInformation)
     if result == nil {
@@ -348,6 +348,9 @@ public enum TimeFormatComponent: TimeFormatter {
       let hour: String
       if twelveHour && timestamp.hour > 12 {
         hour = String(timestamp.hour - 12)
+      }
+      else if twelveHour && timestamp.hour == 0 {
+        hour = "12"
       }
       else {
         hour = String(timestamp.hour)

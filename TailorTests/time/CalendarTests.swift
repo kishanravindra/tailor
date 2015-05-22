@@ -219,6 +219,8 @@ class CalendarTests: TailorTestCase {
     self.checkLocalDates(dates, foundationCalendar: NSCalendar(calendarIdentifier: NSCalendarIdentifierIslamicTabular)!, calendar: IslamicCalendar(), zoneName: "UTC")
   }
   
+  //MARK: - Free Functions
+  
   func testIdenticalCalendarsAreEqual() {
     assert(GregorianCalendar() == GregorianCalendar())
     assert(IslamicCalendar() == IslamicCalendar())

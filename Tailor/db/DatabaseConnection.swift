@@ -58,7 +58,7 @@ public class DatabaseConnection {
     query execution.
     */
   public required init(config: [String:String]) {
-    self.timeZone = TimeZone.defaultTimeZone
+    self.timeZone = TimeZone.systemTimeZone()
   }
   
   /**

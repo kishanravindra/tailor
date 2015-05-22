@@ -107,6 +107,12 @@ class TimeFormatTests: TailorTestCase {
     assert(formatted, equals: "02")
   }
   
+  func testFormatComponentWithHourWithTwelveHourTimeWithZeroUses12() {
+    timestampSeconds -= 3600 * 14
+    formatter = TimeFormatComponent.HourWith(twelveHour: true, padding: "0")
+    assert(formatted, equals: "12")
+  }
+  
   func testFormatComponentWithHourWithNilPaddingDoesNotPad() {
     formatter = TimeFormatComponent.HourWith(twelveHour: true, padding: nil)
     assert(formatted, equals: "2")
@@ -776,7 +782,7 @@ class TimeFormatTests: TailorTestCase {
   
   func testParseTimeWithDatabaseFormatCanParseValidTime() {
     let formatter = TimeFormat.Database
-    let result = formatter.parseTime("1996-11-12 05:26:09")
+    let result = formatter.parseTime("1996-11-12 05:26:09", timeZone: TimeZone(name: "UTC"))
     assert(result?.epochSeconds, equals: 847776369)
     assert(result?.year, equals: 1996)
     assert(result?.month, equals: 11)
@@ -788,7 +794,8 @@ class TimeFormatTests: TailorTestCase {
   
   func testParseTimeWithCookieFormatCanParseValidTime() {
     let formatter = TimeFormat.Cookie
-    let result = formatter.parseTime("Fri, 21 Dec 2001 23:11:51 GMT")
+    let result = formatter.parseTime("Fri, 21 Dec 2001 23:11:51 GMT", timeZone:
+      TimeZone(name: "UTC"))
     assert(result?.epochSeconds, equals: 1008976311)
     assert(result?.year, equals: 2001)
     assert(result?.month, equals: 12)

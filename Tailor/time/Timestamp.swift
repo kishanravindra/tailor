@@ -81,7 +81,7 @@ public struct Timestamp: Equatable, Comparable, Printable {
                           type.
 
   */
-  public init(epochSeconds: EpochInterval, timeZone: TimeZone = TimeZone.defaultTimeZone, calendar: Calendar = GregorianCalendar()) {
+  public init(epochSeconds: EpochInterval, timeZone: TimeZone = TimeZone.systemTimeZone(), calendar: Calendar = GregorianCalendar()) {
     self.epochSeconds = epochSeconds
     self.timeZone = timeZone
     
@@ -109,7 +109,7 @@ public struct Timestamp: Equatable, Comparable, Printable {
     :param: nanosecond    The nanoseconds in the second
     :param: timeZone      The time zone this is specified in
     */
-  public init(year: Int = 1970, month: Int = 1, day: Int = 1, hour: Int = 0, minute: Int = 0, second: Int = 0, nanosecond: Double = 0, timeZone: TimeZone = TimeZone.defaultTimeZone, calendar: Calendar = GregorianCalendar()) {
+  public init(year: Int = 1970, month: Int = 1, day: Int = 1, hour: Int = 0, minute: Int = 0, second: Int = 0, nanosecond: Double = 0, timeZone: TimeZone = TimeZone.systemTimeZone(), calendar: Calendar = GregorianCalendar()) {
     self.timeZone = timeZone
     self.year = year
     self.month = month

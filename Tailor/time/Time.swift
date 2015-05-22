@@ -27,7 +27,7 @@ public struct Time: Comparable, Printable {
     :param: nanosecond    The nanosecond
     :param: timeZone      The time zone that this time is expressed in.
     */
-  public init(hour: Int, minute: Int, second: Int, nanosecond: Double, timeZone: TimeZone = TimeZone.defaultTimeZone) {
+  public init(hour: Int, minute: Int, second: Int, nanosecond: Double, timeZone: TimeZone = TimeZone.systemTimeZone()) {
     self.hour = hour
     self.minute = minute
     self.second = second
