@@ -2,7 +2,7 @@
   This structure represents a time in a day, independent of the day it occurs
   on.
   */
-public struct Time: Comparable, Printable {
+public struct Time: Comparable, CustomStringConvertible {
   /** The hour, in 24 hour time. */
   public let hour: Int
   
@@ -21,11 +21,11 @@ public struct Time: Comparable, Printable {
   /**
     This initializer creates a time.
 
-    :param: hour          The hour
-    :param: minute        The minute
-    :param: second        The second
-    :param: nanosecond    The nanosecond
-    :param: timeZone      The time zone that this time is expressed in.
+    - parameter hour:          The hour
+    - parameter minute:        The minute
+    - parameter second:        The second
+    - parameter nanosecond:    The nanosecond
+    - parameter timeZone:      The time zone that this time is expressed in.
     */
   public init(hour: Int, minute: Int, second: Int, nanosecond: Double, timeZone: TimeZone = TimeZone.systemTimeZone()) {
     self.hour = hour
@@ -49,9 +49,9 @@ public struct Time: Comparable, Printable {
   Two times are equal when they have the same hour, minute, second, nanosecond,
   and time zone.
 
-  :param: lhs   The first time.
-  :param: rhs   The second time.
-  :returns:     Whether the two times are equal.
+  - parameter lhs:   The first time.
+  - parameter rhs:   The second time.
+  - returns:     Whether the two times are equal.
   */
 public func ==(lhs: Time, rhs: Time) -> Bool {
   return lhs.hour == rhs.hour &&
@@ -64,9 +64,9 @@ public func ==(lhs: Time, rhs: Time) -> Bool {
 /**
   This method determines if one time is before another.
   
-  :param: lhs   The first time.
-  :param: lhs   The second time.
-  :returns:     Whether the first time is before the second time.
+  - parameter lhs:   The first time.
+  - parameter lhs:   The second time.
+  - returns:     Whether the first time is before the second time.
   */
 public func <(lhs: Time, rhs: Time) -> Bool {
   return lhs.hour < rhs.hour ||

@@ -21,9 +21,9 @@ public class DatabaseLocalization: Localization {
     /**
       This initializer creates a database localization.
 
-      :param: translationKey    The key for the translation
-      :param: locale            The locale for the translation.
-      :param: translatedText    The text for the translation.
+      - parameter translationKey:    The key for the translation
+      - parameter locale:            The locale for the translation.
+      - parameter translatedText:    The text for the translation.
       */
     public init(translationKey: String, locale: String, translatedText: String) {
       self.translationKey = translationKey
@@ -59,7 +59,7 @@ public class DatabaseLocalization: Localization {
       The row must have fields for translation_key, locale, translated_text, and
       id. If these fields are not present, this initializer will return nil.
 
-      :param: databaseRow     The fields from the database.
+      - parameter databaseRow:     The fields from the database.
       */
     public init?(databaseRow: [String:DatabaseValue]) {
       if let translationKey = databaseRow["translation_key"]?.stringValue,
@@ -84,9 +84,9 @@ public class DatabaseLocalization: Localization {
   /**
     This method fetches localized text from the database.
 
-    :param: key       The key for the localization
-    :param: locale    The locale for the localization
-    :returns:         The localized text, if we could find it.
+    - parameter key:       The key for the localization
+    - parameter locale:    The locale for the localization
+    - returns:         The localized text, if we could find it.
     */
   public override func fetch(key: String, inLocale locale: String) -> String? {
     let translation = Query<Translation>().filter(["locale": locale, "translation_key": key]).first()

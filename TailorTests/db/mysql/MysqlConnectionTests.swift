@@ -62,7 +62,7 @@ class MysqlConnectionTests: TailorTestCase {
         let calendar = NSCalendar.currentCalendar()
         let oldTimeZone = calendar.timeZone
         calendar.timeZone = NSTimeZone(name: "UTC")!
-        let components = calendar.components(.CalendarUnitYear | .CalendarUnitMonth | .CalendarUnitDay | .CalendarUnitHour | .CalendarUnitMinute | .CalendarUnitSecond,
+        let components = calendar.components([.Year, .Month, .Day, .Hour, .Minute, .Second],
           fromDate: date)
         assert(components.year, equals: 2014, message: "gets the year from the date")
         assert(components.month, equals: 10, message: "gets the month from the date")

@@ -6,14 +6,14 @@
   offset from UTC for times in that the time zone has, starting on a reference
   timestamp.
   */
-public struct TimeZone: Equatable,Printable {
+public struct TimeZone: Equatable,CustomStringConvertible {
   //MARK: - Structure
   
   /**
     This structure represents a policy that a time zone observes at a particular
     time.
     */
-  public struct Policy: Equatable, Printable {
+  public struct Policy: Equatable, CustomStringConvertible {
     /**
       The number of seconds after the Unix epoch when this policy goes into
       effect.
@@ -39,11 +39,11 @@ public struct TimeZone: Equatable,Printable {
     /**
       This method initializes a time zone policy.
     
-      :param: beginningTimestamp    The number of seconds after the Unix epoch
+      - parameter beginningTimestamp:    The number of seconds after the Unix epoch
                                     when this policy goes into effect.
-      :param: abbreviation          The short abbreviation for the policy.
-      :param: offset                The offset from UTC, in seconds.
-      :param: isDaylightTime        Whether the time zone is observing daylight
+      - parameter abbreviation:          The short abbreviation for the policy.
+      - parameter offset:                The offset from UTC, in seconds.
+      - parameter isDaylightTime:        Whether the time zone is observing daylight
                                     saving time.
       */
     public init(beginningTimestamp: Timestamp.EpochInterval, abbreviation: String, offset: Int, isDaylightTime: Bool) {
@@ -76,14 +76,14 @@ public struct TimeZone: Equatable,Printable {
     time zone data for that name, this will leave the policies empty, which will
     cause the time zone to behave like UTC.
 
-    :param: name        The canonical identifier for the time zone.
-    :param: policies    The policies that the time zone observes at different
+    - parameter name:        The canonical identifier for the time zone.
+    - parameter policies:    The policies that the time zone observes at different
                         times.
     */
   public init(name: String, policies: [Policy]? = nil) {
     self.name = name
     let policies = policies ?? TimeZoneReader(name: name).read()
-    self.policies = sorted(policies) {
+    self.policies = policies.sort {
       (left,right) -> Bool in
       return left.beginningTimestamp < right.beginningTimestamp
     }
@@ -95,7 +95,7 @@ public struct TimeZone: Equatable,Printable {
     The name will be the offset, and the zone will have a single policy that has
     that offset.
 
-    :param: offset    The offset for the policy.
+    - parameter offset:    The offset for the policy.
     */
   public init(offset: Int) {
     let name = offset > 0 ? "+\(offset)" : "\(offset)"
@@ -107,10 +107,10 @@ public struct TimeZone: Equatable,Printable {
   
   /**
     This method gets a debugging description for this time zone.
-    :returns:   The description.
+    - returns:   The description.
     */
   public var description: String {
-    let policyDescription = join(", ", policies.map { $0.description })
+    let policyDescription = ", ".join(policies.map { $0.description })
     return "\(name): (\(policyDescription))"
   }
   
@@ -118,12 +118,12 @@ public struct TimeZone: Equatable,Printable {
     This method gets the policy that is observed in this time zone at a given
     time.
   
-    :param: timestamp   The Unix epoch timestamp. This will always be
+    - parameter timestamp:   The Unix epoch timestamp. This will always be
                         interpreted as UTC.
-    :returns:           The policy observed at that time.
+    - returns:           The policy observed at that time.
     */
-  public func policy(# timestamp: Timestamp.EpochInterval) -> Policy {
-    if let policy = policyBeforeTimestamp(timestamp, startIndex: 0, endIndex: count(policies) - 1) {
+  public func policy(timestamp  timestamp: Timestamp.EpochInterval) -> Policy {
+    if let policy = policyBeforeTimestamp(timestamp, startIndex: 0, endIndex: policies.count - 1) {
       return policy
     }
     else if policies.isEmpty {
@@ -143,14 +143,14 @@ public struct TimeZone: Equatable,Printable {
     This method searches for the last policy that starts before a given
     timestamp.
 
-    :param: timestamp   The timestamp that we want the policy for.
-    :param: startIndex  The beginning of the range where we are searching.
-    :param: endIndex    The end of the range where we are searching. This index
+    - parameter timestamp:   The timestamp that we want the policy for.
+    - parameter startIndex:  The beginning of the range where we are searching.
+    - parameter endIndex:    The end of the range where we are searching. This index
                         is included as a candidate in the search.
     */
   public func policyBeforeTimestamp(timestamp: Timestamp.EpochInterval, startIndex: Int, endIndex: Int) -> Policy? {
     let middleIndex = (startIndex + endIndex) / 2
-    if middleIndex >= count(policies) {
+    if middleIndex >= policies.count {
       return nil
     }
     let policy = policies[middleIndex]
@@ -173,9 +173,9 @@ public struct TimeZone: Equatable,Printable {
 /**
   This method determines if two time zone policies are equal.
 
-  :param: lhs   The first policy.
-  :param: rhs   The second policy.
-  :returns:     Whether the two policies are equal.
+  - parameter lhs:   The first policy.
+  - parameter rhs:   The second policy.
+  - returns:     Whether the two policies are equal.
   */
 public func ==(lhs: TimeZone.Policy, rhs: TimeZone.Policy) -> Bool {
   return lhs.beginningTimestamp == rhs.beginningTimestamp &&
@@ -189,9 +189,9 @@ public func ==(lhs: TimeZone.Policy, rhs: TimeZone.Policy) -> Bool {
 
   Two time zones are equal if they have the same name and policies.
 
-  :param: lhs   The first time zone.
-  :param: rhs   The second time zone.
-  :returns:     Whether they are equal.
+  - parameter lhs:   The first time zone.
+  - parameter rhs:   The second time zone.
+  - returns:     Whether they are equal.
   */
 public func ==(lhs: TimeZone, rhs: TimeZone) -> Bool {
   return lhs.name == rhs.name &&

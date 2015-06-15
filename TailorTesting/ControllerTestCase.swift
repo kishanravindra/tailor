@@ -43,16 +43,16 @@ public class ControllerTestCase : TailorTestCase {
     This will check both that the response's HTTP code is 302 and that its
     location header has the provided path.
 
-    :param: response    The response that we are checking.
-    :param: path        The path that it should redirect to. If this is nil, the
+    - parameter response:    The response that we are checking.
+    - parameter path:        The path that it should redirect to. If this is nil, the
                         assertion will always fail, but we allow it to be nil so
                         that you can provide a potentially nil path from
                         pathFor without an additional check.
-    :param: message     The message to show when the assertion fails.
-    :param: file        The file that the assertion is coming from. You should
+    - parameter message:     The message to show when the assertion fails.
+    - parameter file:        The file that the assertion is coming from. You should
                         generally omit this, since it will be provided
                         automatically.
-    :param: line        The line that the assertion is coming from. You should
+    - parameter line:        The line that the assertion is coming from. You should
                         generally omit this, since it will be provided
                         automatically.
     */
@@ -69,13 +69,13 @@ public class ControllerTestCase : TailorTestCase {
   /**
     This method asserts that a response contains some text in its body.
 
-    :param: response      The response to check.
-    :param: substring     The text that the response must contain.
-    :param: message       The message to show when the assertion fails.
-    :param: file          The file that the assertion is coming from. You should
+    - parameter response:      The response to check.
+    - parameter substring:     The text that the response must contain.
+    - parameter message:       The message to show when the assertion fails.
+    - parameter file:          The file that the assertion is coming from. You should
                           generally omit this, since it will be provided
                           automatically.
-    :param: line          The line that the assertion is coming from. You should
+    - parameter line:          The line that the assertion is coming from. You should
                           generally omit this, since it will be provided
                           automatically.
     */
@@ -89,16 +89,16 @@ public class ControllerTestCase : TailorTestCase {
   /**
     This method asserts that a controller rendered a template of a given type.
   
-    :param: controller        The controller whose templates we are checking.
-    :param: renderedTemplate  The type of template that we want to examine.
-    :param: message           A message to show if the assertion fails.
-    :param: file              The file that the assertion is coming from. You
+    - parameter controller:        The controller whose templates we are checking.
+    - parameter renderedTemplate:  The type of template that we want to examine.
+    - parameter message:           A message to show if the assertion fails.
+    - parameter file:              The file that the assertion is coming from. You
                               should generally omit this, since it will be
                               provided automatically.
-    :param: line              The line that the assertion is coming from. You
+    - parameter line:              The line that the assertion is coming from. You
                               should generally omit this, since it will be
                               provided automatically.
-    :param: templateChecker   A block that can perform additional checks on the
+    - parameter templateChecker:   A block that can perform additional checks on the
                               template.
     */
   public func assert<TemplateType: Template>(controller: Controller, renderedTemplate: TemplateType.Type, message: String = "", file: String = __FILE__, line: UInt = __LINE__, _ templateChecker: (TemplateType)->() = {_ in}) {
@@ -130,8 +130,8 @@ public class ControllerTestCase : TailorTestCase {
     If it does generate a response, it will be given to the provided callback,
     where you can do any checks you need to do on the response/
 
-    :param: action      The action to call on the controller.
-    :param: callback    A callback to do additional assertions on the results.
+    - parameter action:      The action to call on the controller.
+    - parameter callback:    A callback to do additional assertions on the results.
                         This will receive both the response itself and the
                         controller that produced it.
     */

@@ -28,7 +28,7 @@ public final class MysqlBindParameterSet {
   /**
     This method initializes a parameter set with input parameters.
 
-    :param: values    The values for the input parameters.
+    - parameter values:    The values for the input parameters.
     */
   public init(values: [DatabaseValue]) {
     var parameters = [MysqlBindParameter]()
@@ -47,7 +47,7 @@ public final class MysqlBindParameterSet {
     This method initializes a parameter set to hold the values in a result
     set.
 
-    :param: resultSet   The wrapped result set.
+    - parameter resultSet:   The wrapped result set.
     */
   public init(resultSet: MysqlResultSet) {
     var parameters = [MysqlBindParameter]()
@@ -79,7 +79,7 @@ public final class MysqlBindParameterSet {
   /**
     This method binds these parameters to the input parameters for a query.
 
-    :param: statement   The MySQL data structure for the query.
+    - parameter statement:   The MySQL data structure for the query.
     */
   public func bindToInputOfStatement(statement: UnsafeMutablePointer<MYSQL_STMT>) {
     mysql_stmt_bind_param(statement, &mysqlParameters)
@@ -88,7 +88,7 @@ public final class MysqlBindParameterSet {
   /**
     This method binds these parameterse to the output of a query.
 
-    :param: statement   The MySQL data structure for the query.
+    - parameter statement:   The MySQL data structure for the query.
     */
   public func bindToOutputOfStatement(statement: UnsafeMutablePointer<MYSQL_STMT>) {
     mysql_stmt_bind_result(statement, &mysqlParameters)

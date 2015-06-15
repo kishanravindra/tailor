@@ -98,16 +98,15 @@ class PersistableTests: TailorTestCase {
   }
   
   func testSaveInsertsNewRecord() {
-    let connection = DatabaseConnection.sharedConnection()
+    DatabaseConnection.sharedConnection()
     
     assert(Query<Hat>().count(), equals: 0, message: "starts out with 0 records")
-    var hat = Hat()
+    let hat = Hat()
     saveRecord(hat)
     assert(Query<Hat>().count(), equals: 1, message: "ends with 1 record")
   }
   
   func testSaveUpdatesExistingRecord() {
-    let connection = DatabaseConnection.sharedConnection()
     var hat = Hat(color: "black")
     
     hat = saveRecord(hat)!
@@ -123,7 +122,7 @@ class PersistableTests: TailorTestCase {
   func testSaveInsertConstructsInsertQuery() {
     TestConnection.withTestConnection {
       connection in
-      var store = Store(name: "Little Shop")
+      let store = Store(name: "Little Shop")
       connection.response = [DatabaseConnection.Row(rawData: ["id": 2])]
       saveRecord(store)
       self.assert(connection.queries.count, equals: 1, message: "executes 1 query")
@@ -149,7 +148,7 @@ class PersistableTests: TailorTestCase {
   func testSaveInsertWithIdReturnsRecordWithId() {
     TestConnection.withTestConnection {
       connection in
-      var store = Store(name: "Little Shop")
+      let store = Store(name: "Little Shop")
       connection.response = [DatabaseConnection.Row(rawData: ["id": 2])]
       let result = saveRecord(store)
       self.assert(result?.id, equals: 2)
@@ -159,7 +158,7 @@ class PersistableTests: TailorTestCase {
   func testSaveInsertWithErrorReturnsNil() {
     TestConnection.withTestConnection {
       connection in
-      var store = Store(name: "Little Shop")
+      let store = Store(name: "Little Shop")
       connection.response = [DatabaseConnection.Row(error: "Lost Connection")]
       let result = saveRecord(store)
       XCTAssertTrue(result == nil)

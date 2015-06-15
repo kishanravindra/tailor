@@ -31,14 +31,14 @@ class CacheStoreTests: TailorTestCase {
   }
   
   func testFetchWithEmptyCacheReturnsResultFromGenerator() {
-    var store = TestCacheStore()
+    let store = TestCacheStore()
     let result = store.fetch("cache.test") { "a" }
     
     assert(result, equals: "a", message: "gets the result from the generator")
   }
   
   func testFetchOnlyCallsGeneratorOnce() {
-    var store = TestCacheStore()
+    let store = TestCacheStore()
     let result1 = store.fetch("cache.test") { "a" }
     let result2 = store.fetch("cache.test") {
       assert(false, message: "Does not call the second generator")
@@ -50,7 +50,7 @@ class CacheStoreTests: TailorTestCase {
   }
   
   func testFetchWithCacheHitReturnsCachedValue() {
-    var store = TestCacheStore()
+    let store = TestCacheStore()
     store.write("cache.test", value: "b")
     let result = store.fetch("cache.test") {
       XCTFail("Should not call the generator")
@@ -61,8 +61,8 @@ class CacheStoreTests: TailorTestCase {
   }
   
   func testFetchWithExpiryTimeGivesExpiryTimeToWriteMethod() {
-    var store = TestCacheStore()
-    let result = store.fetch("cache.test", expireIn: 20.seconds) { "a" }
+    let store = TestCacheStore()
+    _ = store.fetch("cache.test", expireIn: 20.seconds) { "a" }
     
     let expiry = store.expiries["cache.test"]
     assert(expiry, equals: 20.seconds, message: "sets the expiry time from the call to fetch")

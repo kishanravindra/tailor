@@ -12,7 +12,7 @@ public class PasswordHasher {
   /**
     This method creates a password hasher.
 
-    :param: salt
+    - parameter salt:
       The binary salt. If this is omitted, this will generate a random salt,
       which is generally preferable if you want to encrypt plaintext.
     */
@@ -30,40 +30,40 @@ public class PasswordHasher {
   /**
     This method encrypts a string with this encryptor's settings.
 
-    :param: input
+    - parameter input:
       The text to encrypt.
 
-    :returns:
+    - returns:
       The encrypted hash with the salt.
     */
   public func encrypt(input: String) -> String {
-    let encodedSalt = salt.base64EncodedStringWithOptions(nil)
+    let encodedSalt = salt.base64EncodedStringWithOptions([])
     let saltedInput = encodedSalt + input
-    var inputBytes = saltedInput.cStringUsingEncoding(NSUTF8StringEncoding) ?? []
+    let inputBytes = saltedInput.cStringUsingEncoding(NSUTF8StringEncoding) ?? []
     
-    var hashBytes = [UInt8](count: 64, repeatedValue: 0)
+    let hashBytes = [UInt8](count: 64, repeatedValue: 0)
     CC_SHA512(UnsafePointer<Void>(inputBytes), UInt32(inputBytes.count), UnsafeMutablePointer<UInt8>(hashBytes))
     
-    let encodedHash = NSData(bytes: hashBytes).base64EncodedStringWithOptions(nil)
-    let countString = NSString(format: "%02i", count(encodedSalt)) as String
+    let encodedHash = NSData(bytes: hashBytes).base64EncodedStringWithOptions([])
+    let countString = NSString(format: "%02i", encodedSalt.characters.count) as String
     return countString + encodedSalt + encodedHash
   }
   /**
     This method determines if a string is a match for an encrypted hash.
   
-    :param: input
+    - parameter input:
       The input to check
   
-    :param: encryptedHash
+    - parameter encryptedHash:
       The hash to compare it against
   
-    :returns:
+    - returns:
       Whether the encrypted hash is a hash of the given input.
     */
   public class func isMatch(input: String, encryptedHash: String) -> Bool {
-    let saltLength = encryptedHash.substringToIndex(advance(encryptedHash.startIndex, 2)).toInt() ?? 0
+    let saltLength = Int(encryptedHash.substringToIndex(advance(encryptedHash.startIndex, 2))) ?? 0
     let encodedSalt = encryptedHash.substringWithRange(Range(start: advance(encryptedHash.startIndex, 2), end: advance(encryptedHash.startIndex, 2 + saltLength)))
-    let salt = NSData(base64EncodedString: encodedSalt, options: nil)
+    let salt = NSData(base64EncodedString: encodedSalt, options: [])
     let hasher = PasswordHasher(salt: salt)
     return hasher.encrypt(input) == encryptedHash
   }

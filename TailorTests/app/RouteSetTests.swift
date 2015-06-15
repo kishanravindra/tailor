@@ -49,7 +49,7 @@ class RouteSetTests: TailorTestCase {
     assert(route.method, equals: "GET", message: "sets method")
     assert(route.description, equals: "test route")
     
-    let regex = NSRegularExpression(pattern: "^/test/route/?$", options: nil, error: nil)!
+    let regex = try! NSRegularExpression(pattern: "^/test/route/?$", options: [])
     assert(route.regex, equals: regex, message: "sets path regex")
   }
   
@@ -59,7 +59,7 @@ class RouteSetTests: TailorTestCase {
     let route = createTestRoute("/test/user/:id")
     assert(route.pathPattern, equals: "/test/user/:id", message: "sets path pattern to unmodified pattern")
     
-    let regex = NSRegularExpression(pattern: "^/test/user/([^/]*)/?$", options: nil, error: nil)!
+    let regex = try! NSRegularExpression(pattern: "^/test/user/([^/]*)/?$", options: [])
     assert(route.regex, equals: regex, message: "sets path regex to pattern with parameter replaces by wildcard")
   }
   
@@ -75,9 +75,9 @@ class RouteSetTests: TailorTestCase {
 
   func testCanHandleRequestThatMatchesRegex() {
     let route = createTestRoute("/test/route/[A-Z]*")
-    XCTAssertTrue(route.canHandleRequest(createTestRequest(path: "/test/route/ABC")), "can handle matching route")
-    XCTAssertFalse(route.canHandleRequest(createTestRequest(path: "/test/route/123")), "cannot handle route that doesn't match regex")
-    XCTAssertFalse(route.canHandleRequest(createTestRequest(path: "/test/other_route")), "cannot handle route that doesn't match base of route")
+    XCTAssertTrue(route.canHandleRequest(createTestRequest("/test/route/ABC")), "can handle matching route")
+    XCTAssertFalse(route.canHandleRequest(createTestRequest("/test/route/123")), "cannot handle route that doesn't match regex")
+    XCTAssertFalse(route.canHandleRequest(createTestRequest("/test/other_route")), "cannot handle route that doesn't match base of route")
   }
   
   func testHandleRequestCallsHandler() {
@@ -86,7 +86,7 @@ class RouteSetTests: TailorTestCase {
       request, responseHandler in
       expectation.fulfill()
       }, description: "test route")
-    route.handleRequest(createTestRequest(path: "/test/route")) {
+    route.handleRequest(createTestRequest("/test/route")) {
       response in
     }
     waitForExpectationsWithTimeout(0.01, handler: nil)
@@ -99,7 +99,7 @@ class RouteSetTests: TailorTestCase {
       self.assert(request.requestParameters["id"], equals: "5")
       expectation.fulfill()
       }, description: "test route")
-    route.handleRequest(createTestRequest(path: "/test/route/5")) {
+    route.handleRequest(createTestRequest("/test/route/5")) {
       response in
     }
     waitForExpectationsWithTimeout(0.01, handler: nil)
@@ -239,34 +239,34 @@ class RouteSetTests: TailorTestCase {
     
     routeSet.addRoute("hats", method: "GET") {
       request, callback in
-      var response = Response()
+      let response = Response()
       response.appendString("Request 1")
       callback(response)
     }
     
     routeSet.addRoute("hats/:id", method: "GET") {
       request, callback in
-      var response = Response()
+      let response = Response()
       let id = request.requestParameters["id"]!
       response.appendString("Request 2: \(id)")
       callback(response)
     }
     
-    routeSet.handleRequest(createTestRequest(path: "/hats")) {
+    routeSet.handleRequest(createTestRequest("/hats")) {
       response in
       expectation1.fulfill()
       let body = NSString(data: response.bodyData, encoding: NSUTF8StringEncoding)!
       self.assert(body, equals: "Request 1", message: "calls appropriate request")
     }
     
-    routeSet.handleRequest(createTestRequest(path: "/hats/3")) {
+    routeSet.handleRequest(createTestRequest("/hats/3")) {
       response in
       expectation2.fulfill()
       let body = NSString(data: response.bodyData, encoding: NSUTF8StringEncoding)!
       self.assert(body, equals: "Request 2: 3", message: "calls appropriate request")
     }
     
-    routeSet.handleRequest(createTestRequest(path: "/bad/path")) {
+    routeSet.handleRequest(createTestRequest("/bad/path")) {
       response in
       expectation3.fulfill()
       let body = NSString(data: response.bodyData, encoding: NSUTF8StringEncoding)!

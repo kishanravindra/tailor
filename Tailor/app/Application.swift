@@ -112,8 +112,11 @@ public class Application {
     if application == nil {
       var applicationClass = self
       for bundle in NSBundle.allBundles() {
-        if let bundleClass = bundle.principalClass as? Application.Type {
-          applicationClass = bundleClass
+        for key in ["NSPrincipalClass", "TailorApplicationClass"] {
+          if let className = bundle.infoDictionary?[key] as? String,
+            let bundleClass = NSClassFromString(className) as? Application.Type {
+            applicationClass = bundleClass
+          }
         }
       }
       application = applicationClass()
@@ -166,7 +169,7 @@ public class Application {
     This implementation will return a dummy connection. Subclasses must provide
     their own implementation.
 
-    :returns:   The connection
+    - returns:   The connection
     */
   public func openDatabaseConnection() -> DatabaseConnection {
     return DatabaseConnection(config: [:])
@@ -178,7 +181,7 @@ public class Application {
     This method extracts the command-line arguments to the current executable
     as a list of strings.
 
-    :returns:
+    - returns:
       The arguments.
     */
   public class func commandLineArguments() -> [String] {
@@ -204,7 +207,7 @@ public class Application {
     flags. The flags should have the format key=value. If there is no equal sign
     in an flag, the value will be 1.
     
-    :returns:   The command and the arguments.
+    - returns:   The command and the arguments.
     */
   public class func parseArguments(arguments: [String]) -> (String, [String:String]) {
     var command = ""
@@ -230,18 +233,18 @@ public class Application {
     It will print out the available commands and read a line of input from the
     prompt.
 
-    :returns:   The input from the user.
+    - returns:   The input from the user.
     */
   public func promptForCommand() -> String {
-    print("Please provide a task by name, or from the following list:\n")
+    print("Please provide a task by name, or from the following list")
     
-    let tasks = self.registeredSubclassList(Task.self).sorted {
+    let tasks = self.registeredSubclassList(Task.self).sort {
       task1, task2 in
       task1.command().compare(task2.command()) == NSComparisonResult.OrderedAscending
     }
     
-    for (index,task) in enumerate(tasks) {
-      print("\(index + 1). \(task.command())\n")
+    for (index,task) in tasks.enumerate() {
+      print("\(index + 1). \(task.command())\n", appendNewline: false)
     }
     let keyboard = NSFileHandle.fileHandleWithStandardInput()
     let inputData = keyboard.availableData
@@ -271,13 +274,13 @@ public class Application {
     while (tasks.filter { $0.command() == self.command }).isEmpty {
       let commandLine = self.promptForCommand()
       var inQuotes = false
-      arguments = split(commandLine) {
+      arguments = split(commandLine.characters) {
         (character: Character) -> Bool in
         if character == "\"" {
           inQuotes = !inQuotes
         }
         return character == " " && !inQuotes
-        }.map { $0.stringByReplacingOccurrencesOfString("\"", withString: "") }
+        }.map { String($0) }.map { $0.stringByReplacingOccurrencesOfString("\"", withString: "") }
       (self.command, self.flags) = self.dynamicType.parseArguments(arguments)
     }
 
@@ -313,15 +316,15 @@ public class Application {
 
     The registered subclass list will include the types passed in.
 
-    :param: types   The types to get subclasses of.
+    - parameter types:   The types to get subclasses of.
     */
   public func registerSubclasses(types: AnyClass...) {
-    var classCount = objc_getClassList(nil, 0)
+    let classCount = objc_getClassList(nil, 0)
     var allClasses = UnsafeMutablePointer<AnyClass?>(calloc(sizeof(AnyClass), Int(classCount)))
     
     objc_getClassList(AutoreleasingUnsafeMutablePointer<AnyClass?>(allClasses), classCount)
     
-    for indexOfClass in 0..<classCount {
+    for _ in 0..<classCount {
       let klass : AnyClass! = allClasses.memory
       
       if klass == nil {
@@ -351,8 +354,8 @@ public class Application {
     The type must have previously been passed in to registerSubclasses to load
     the list.
   
-    :param: type  The type to get subclasses of.
-    :returns:     The subclasses of the type.
+    - parameter type:  The type to get subclasses of.
+    - returns:     The subclasses of the type.
     */
   public func registeredSubclassList<ParentType : AnyObject>(type: ParentType.Type) -> [ParentType.Type] {
     let klass : AnyClass = ParentType.self
@@ -378,7 +381,7 @@ public class Application {
     The settings will be put into the configuration with a prefix taken from the
     filename of the path.
   
-    :param: path    The path to the file, relative to the application's root
+    - parameter path:    The path to the file, relative to the application's root
                     path.
     */
   public func loadConfigFromFile(path: String) {
@@ -390,11 +393,11 @@ public class Application {
   /**
     This method constructs a localization based on the configuration settings.
   
-    :param: locale    The locale for the localization
-    :returns:         The localization
+    - parameter locale:    The locale for the localization
+    - returns:         The localization
     */
   public func localization(locale: String) -> Localization {
-    var klass = NSClassFromString(self.configuration["localization.class"] ?? "") as? Localization.Type ?? Localization.self
+    let klass = NSClassFromString(self.configuration["localization.class"] ?? "") as? Localization.Type ?? Localization.self
     return klass(locale: locale)
   }
 }

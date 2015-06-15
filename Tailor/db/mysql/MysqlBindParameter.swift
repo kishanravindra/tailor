@@ -24,7 +24,7 @@ public struct MysqlBindParameter {
   /**
     This method creates a bind parameter wrapping around a raw MySQL parameter.
 
-    :param: parameter   The raw parameter.
+    - parameter parameter:   The raw parameter.
     */
   public init(parameter: MYSQL_BIND) {
     self.parameter = parameter
@@ -35,7 +35,7 @@ public struct MysqlBindParameter {
     This method creates a bind parameter for holding an output value for a
     field.
   
-    :param: field   The metadata for the field.
+    - parameter field:   The metadata for the field.
     */
   public init(field: MysqlField) {
     let buffer = calloc(Int(field.bufferLength), Int(field.bufferSize));
@@ -60,7 +60,7 @@ public struct MysqlBindParameter {
   /**
     This method creates a bind parameter for holding an input value.
 
-    :param: value    The input value.
+    - parameter value:    The input value.
     */
   public init(value: DatabaseValue) {
     var parameter = MYSQL_BIND()
@@ -128,16 +128,16 @@ public struct MysqlBindParameter {
     }
     if let time = mysqlTime {
       
-      var buffer = UnsafeMutablePointer<MYSQL_TIME>(calloc(sizeof(MYSQL_TIME), 1))
+      let buffer = UnsafeMutablePointer<MYSQL_TIME>(calloc(sizeof(MYSQL_TIME), 1))
       buffer.memory = time
       parameter.buffer = UnsafeMutablePointer<Void>(buffer)
       parameter.buffer_length = 1
-      switch(time.time_type.value) {
-      case MYSQL_TIMESTAMP_TIME.value:
+      switch(time.time_type.rawValue) {
+      case MYSQL_TIMESTAMP_TIME.rawValue:
         parameter.buffer_type = MYSQL_TYPE_TIME
-      case MYSQL_TIMESTAMP_DATE.value:
+      case MYSQL_TIMESTAMP_DATE.rawValue:
         parameter.buffer_type = MYSQL_TYPE_DATE
-      case MYSQL_TIMESTAMP_DATETIME.value:
+      case MYSQL_TIMESTAMP_DATETIME.rawValue:
         parameter.buffer_type = MYSQL_TYPE_TIMESTAMP
       default:
         parameter.buffer_type = MYSQL_TYPE_TIMESTAMP
@@ -163,48 +163,46 @@ public struct MysqlBindParameter {
 
     The data will be wrapped in our database value enum.
 
-    :returns:   The converted data.
+    - returns:   The converted data.
     */
   public func data() -> DatabaseValue {
-    var stringValue: String? = nil;
-    
     if(self.isNull) {
       return DatabaseValue.Null;
     }
                 
-    switch(self.parameter.buffer_type.value) {
-    case MYSQL_TYPE_TINY.value, MYSQL_TYPE_BIT.value:
+    switch(self.parameter.buffer_type.rawValue) {
+    case MYSQL_TYPE_TINY.rawValue, MYSQL_TYPE_BIT.rawValue:
       let buffer = UnsafePointer<CChar>(self.buffer)
       return Int(buffer.memory).databaseValue
-    case MYSQL_TYPE_SHORT.value:
+    case MYSQL_TYPE_SHORT.rawValue:
       let buffer = UnsafePointer<CShort>(self.buffer)
       return Int(buffer.memory).databaseValue
-    case MYSQL_TYPE_LONG.value, MYSQL_TYPE_INT24.value:
+    case MYSQL_TYPE_LONG.rawValue, MYSQL_TYPE_INT24.rawValue:
       let buffer = UnsafePointer<CInt>(self.buffer)
       return Int(buffer.memory).databaseValue
-    case MYSQL_TYPE_LONGLONG.value:
+    case MYSQL_TYPE_LONGLONG.rawValue:
       let buffer = UnsafePointer<CLongLong>(self.buffer)
       return Int(buffer.memory).databaseValue
-    case MYSQL_TYPE_FLOAT.value:
+    case MYSQL_TYPE_FLOAT.rawValue:
       let buffer = UnsafePointer<CFloat>(self.buffer)
       return Double(buffer.memory).databaseValue
-    case MYSQL_TYPE_DOUBLE.value:
+    case MYSQL_TYPE_DOUBLE.rawValue:
       let buffer = UnsafePointer<CDouble>(self.buffer)
       return Double(buffer.memory).databaseValue
-    case MYSQL_TYPE_NEWDECIMAL.value:
+    case MYSQL_TYPE_NEWDECIMAL.rawValue:
       let buffer = UnsafePointer<CChar>(self.buffer)
       let string = NSString(bytes: buffer, length: Int(self.length), encoding: NSUTF8StringEncoding)
       return string?.doubleValue.databaseValue ?? DatabaseValue.Null
-    case MYSQL_TYPE_TIME.value:
+    case MYSQL_TYPE_TIME.rawValue:
       let buffer = UnsafePointer<MYSQL_TIME>(self.buffer)
       return  MysqlBindParameter.timestampFromTime(buffer.memory).time.databaseValue ?? DatabaseValue.Null
-    case MYSQL_TYPE_DATE.value:
+    case MYSQL_TYPE_DATE.rawValue:
       let buffer = UnsafePointer<MYSQL_TIME>(self.buffer)
       return MysqlBindParameter.timestampFromTime(buffer.memory).date.databaseValue ?? DatabaseValue.Null
-    case MYSQL_TYPE_DATETIME.value, MYSQL_TYPE_TIMESTAMP.value:
+    case MYSQL_TYPE_DATETIME.rawValue, MYSQL_TYPE_TIMESTAMP.rawValue:
       let buffer = UnsafePointer<MYSQL_TIME>(self.buffer)
       return MysqlBindParameter.timestampFromTime(buffer.memory).databaseValue ?? DatabaseValue.Null
-    case MYSQL_TYPE_TINY_BLOB.value, MYSQL_TYPE_BLOB.value, MYSQL_TYPE_MEDIUM_BLOB.value, MYSQL_TYPE_LONG_BLOB.value:
+    case MYSQL_TYPE_TINY_BLOB.rawValue, MYSQL_TYPE_BLOB.rawValue, MYSQL_TYPE_MEDIUM_BLOB.rawValue, MYSQL_TYPE_LONG_BLOB.rawValue:
       if binary {
         return NSData(bytes: self.buffer, length: Int(self.length)).databaseValue
       }
@@ -221,8 +219,8 @@ public struct MysqlBindParameter {
   /**
     This method converts a MySQL time data structure into a timestamp.
 
-    :param: time    The MySQL time
-    :returns:       The timestamp
+    - parameter time:    The MySQL time
+    - returns:       The timestamp
     */
   public static func timestampFromTime(time: MYSQL_TIME) -> Timestamp {
     return Timestamp(

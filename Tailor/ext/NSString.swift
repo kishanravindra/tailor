@@ -4,14 +4,14 @@ public extension String {
   /**
     This method converts a string to camel case.
 
-    :param: capitalize    Whether we should capitalize the first letter.
-    :returns:             The camel-cased string.
+    - parameter capitalize:    Whether we should capitalize the first letter.
+    - returns:             The camel-cased string.
     */
-  public func camelCase(capitalize: Bool = false) -> String {
-    var result = NSMutableString()
+  public func camelCase(capitalize capitalize: Bool = false) -> String {
+    let result = NSMutableString()
     var lastWasUnderscore = false
     
-    for character in self {
+    for character in self.characters {
       var newCharacter = String(character)
       if lastWasUnderscore || result.length == 0 && capitalize {
         newCharacter = newCharacter.capitalizedString
@@ -28,15 +28,15 @@ public extension String {
   /**
     This method converts a string from camel case to snake case.
 
-    :returns: The converted string.
+    - returns: The converted string.
     */
   public func underscored() -> String {
-    var result = NSMutableString()
+    let result = NSMutableString()
     
     let alnumSet = NSCharacterSet.alphanumericCharacterSet()
     var lastWasAlnum = false
-    for (index,character) in enumerate(self) {
-      var newCharacter = String(character)
+    for character in self.characters {
+      let newCharacter = String(character)
       let lowercase = newCharacter.lowercaseString
       if lowercase != newCharacter && lastWasAlnum {
         result.appendString("_")

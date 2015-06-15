@@ -107,7 +107,7 @@ class ValidationTests: TailorTestCase {
   }
   
   func testValidateUniquenessWithTakenFieldHasError() {
-    let hat1 = saveRecord(Hat(color: "red"))!
+    _ = saveRecord(Hat(color: "red"))!
     let hat2 = Hat(color: "red")
     let result = Validation(modelName(Hat.self)).validate(uniquenessOf: ["color": hat2.color], on: hat2)
     assert(result.errors, equals: [
@@ -128,7 +128,7 @@ class ValidationTests: TailorTestCase {
   }
   
   func testValidateUniquenessWithSavedRecordWithTakenFieldHasError() {
-    let hat1 = saveRecord(Hat(color: "red"))!
+    _ = saveRecord(Hat(color: "red"))!
     let hat2 = saveRecord(Hat(color: "red"))!
     let result = Validation(modelName(Hat.self)).validate(uniquenessOf: ["color": hat2.color], on: hat2)
     assert(result.errors, equals: [
@@ -137,7 +137,7 @@ class ValidationTests: TailorTestCase {
   }
   
   func testValidateUniquenessWithMultipleFieldsWithAllTakenHasError() {
-    let hat1 = saveRecord(Hat(color: "red", brimSize: 10))!
+    _ = saveRecord(Hat(color: "red", brimSize: 10))!
     let hat2 = Hat(color: "red", brimSize: 10)
     let result = Validation(modelName(Hat.self)).validate(uniquenessOf: ["color": hat2.color, "brim_size": hat2.brimSize], on: hat2)
     assert(result.errors, equals: [
@@ -146,7 +146,7 @@ class ValidationTests: TailorTestCase {
   }
   
   func testValidateUniquenessWithPartialOverlapHasNoError() {
-    let hat1 = saveRecord(Hat(color: "red", brimSize: 10))!
+    _ = saveRecord(Hat(color: "red", brimSize: 10))!
     let hat2 = saveRecord(Hat(color: "red", brimSize: 15))!
     let hat3 = saveRecord(Hat(color: "brown", brimSize: 10))!
     let result1 = Validation(modelName(Hat.self)).validate(uniquenessOf: ["color": hat2.color, "brim_size": hat2.brimSize], on: hat2)
@@ -156,7 +156,7 @@ class ValidationTests: TailorTestCase {
   }
   
   func testValidateUniquenessWithNilValueWithNullTakenReturnsError() {
-    let shelf1 = saveRecord(Shelf(name: nil))!
+    _ = saveRecord(Shelf(name: nil))!
     let shelf2 = Shelf(name: nil)
     let result = Validation(modelName(Shelf.self)).validate(uniquenessOf: ["name": shelf2.name], on: shelf2)
     assert(result.errors, equals: [
@@ -165,7 +165,7 @@ class ValidationTests: TailorTestCase {
   }
   
   func testValidateUniquenessWIthNilValueWithRealValueTakenReturnsNoError() {
-    let shelf1 = saveRecord(Shelf(name: "Shelf"))!
+    _ = saveRecord(Shelf(name: "Shelf"))!
     let shelf2 = Shelf(name: nil)
     let result = Validation(modelName(Shelf.self)).validate(uniquenessOf: ["name": shelf2.name], on: shelf2)
     assert(result.errors, equals: [])

@@ -28,7 +28,7 @@ public struct Response {
   /**
     This method appends a string to the response.
 
-    :param: string  The string to add
+    - parameter string:  The string to add
     */
   public func appendString(string: String) {
     self.appendData(string.dataUsingEncoding(NSUTF8StringEncoding)!)
@@ -37,7 +37,7 @@ public struct Response {
   /**
     This method appends raw data to the response.
 
-    :param: data  The data to add.
+    - parameter data:  The data to add.
     */
   public func appendData(data: NSData) {
     bodyData.appendData(data)
@@ -53,11 +53,11 @@ public struct Response {
       }
     }
     
-    add(NSString(format: "HTTP/1.1 %d\n", code) as! String)
-    add(NSString(format: "Content-Length: %d\n", bodyData.length) as! String)
+    add(NSString(format: "HTTP/1.1 %d\n", code) as String)
+    add(NSString(format: "Content-Length: %d\n", bodyData.length) as String)
     
     for (key,value) in self.headers {
-      add(NSString(format: "%@: %@\n", key, value) as! String)
+      add(NSString(format: "%@: %@\n", key, value) as String)
     }
     add(cookies.headerStringForChanges)
     add("\n")

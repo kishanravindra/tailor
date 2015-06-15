@@ -44,7 +44,7 @@ class MysqlBindParameterTests: TailorTestCase {
   
   func testInitializeWithFieldSetsBufferInformation() {
     runQuery("SELECT color FROM hats")
-    self.assert(parameter.parameter.buffer_type.value, equals: MYSQL_TYPE_VAR_STRING.value)
+    self.assert(parameter.parameter.buffer_type.rawValue, equals: MYSQL_TYPE_VAR_STRING.rawValue)
     self.assert(parameter.parameter.buffer_length, equals: 1024)
   }
   
@@ -52,7 +52,7 @@ class MysqlBindParameterTests: TailorTestCase {
     let string = "hello"
     let bindParameter = MysqlBindParameter(value: string.databaseValue)
     self.assert(bindParameter.parameter.buffer_length, equals: 5)
-    self.assert(bindParameter.parameter.buffer_type.value, equals: MYSQL_TYPE_STRING.value)
+    self.assert(bindParameter.parameter.buffer_type.rawValue, equals: MYSQL_TYPE_STRING.rawValue)
     
     let buffer = UnsafeMutablePointer<CChar>(bindParameter.parameter.buffer)
     assert(buffer[0], equals: 104)
@@ -65,7 +65,7 @@ class MysqlBindParameterTests: TailorTestCase {
   func testInitializeWithIntegerCreatesStringBuffer() {
     let bindParameter = MysqlBindParameter(value: 5.databaseValue)
     self.assert(bindParameter.parameter.buffer_length, equals: 1)
-    self.assert(bindParameter.parameter.buffer_type.value, equals: MYSQL_TYPE_STRING.value)
+    self.assert(bindParameter.parameter.buffer_type.rawValue, equals: MYSQL_TYPE_STRING.rawValue)
     
     let buffer = UnsafeMutablePointer<CChar>(bindParameter.parameter.buffer)
     assert(buffer[0], equals: 53)
@@ -74,7 +74,7 @@ class MysqlBindParameterTests: TailorTestCase {
   func testInitializeWithBooleanCreatesStringBufferWithIntegerValue() {
     let bindParameter = MysqlBindParameter(value: true.databaseValue)
     self.assert(bindParameter.parameter.buffer_length, equals: 1)
-    self.assert(bindParameter.parameter.buffer_type.value, equals: MYSQL_TYPE_STRING.value)
+    self.assert(bindParameter.parameter.buffer_type.rawValue, equals: MYSQL_TYPE_STRING.rawValue)
     
     let buffer = UnsafeMutablePointer<CChar>(bindParameter.parameter.buffer)
     assert(buffer[0], equals: 49)
@@ -83,7 +83,7 @@ class MysqlBindParameterTests: TailorTestCase {
   func testInitializeWithDoubleCreatesStringBuffer() {
     let bindParameter = MysqlBindParameter(value: 27.8.databaseValue)
     self.assert(bindParameter.parameter.buffer_length, equals: 4)
-    self.assert(bindParameter.parameter.buffer_type.value, equals: MYSQL_TYPE_STRING.value)
+    self.assert(bindParameter.parameter.buffer_type.rawValue, equals: MYSQL_TYPE_STRING.rawValue)
     
     let buffer = UnsafeMutablePointer<CChar>(bindParameter.parameter.buffer)
     assert(buffer[0], equals: 50)
@@ -96,7 +96,7 @@ class MysqlBindParameterTests: TailorTestCase {
   func testInitializeWithNullCreatesEmptyBuffer() {
     let bindParameter = MysqlBindParameter(value: DatabaseValue.Null)
     self.assert(bindParameter.parameter.buffer_length, equals: 0)
-    self.assert(bindParameter.parameter.buffer_type.value, equals: MYSQL_TYPE_STRING.value)
+    self.assert(bindParameter.parameter.buffer_type.rawValue, equals: MYSQL_TYPE_STRING.rawValue)
   }
   
   func testInitializeWithDataCreatesDataBuffer() {
@@ -108,7 +108,7 @@ class MysqlBindParameterTests: TailorTestCase {
     ])
     let bindParameter = MysqlBindParameter(value: data.databaseValue)
     self.assert(bindParameter.parameter.buffer_length, equals: 4)
-    self.assert(bindParameter.parameter.buffer_type.value, equals: MYSQL_TYPE_STRING.value)
+    self.assert(bindParameter.parameter.buffer_type.rawValue, equals: MYSQL_TYPE_STRING.rawValue)
     
     let buffer = UnsafeMutablePointer<UInt8>(bindParameter.parameter.buffer)
     assert(buffer[0], equals: 123)
@@ -130,7 +130,7 @@ class MysqlBindParameterTests: TailorTestCase {
     )
     let bindParameter = MysqlBindParameter(value: timestamp.databaseValue)
     self.assert(bindParameter.parameter.buffer_length, equals: 1)
-    self.assert(bindParameter.parameter.buffer_type.value, equals: MYSQL_TYPE_TIMESTAMP.value)
+    self.assert(bindParameter.parameter.buffer_type.rawValue, equals: MYSQL_TYPE_TIMESTAMP.rawValue)
     
     let data = UnsafeMutablePointer<MYSQL_TIME>(bindParameter.parameter.buffer).memory
     assert(data.year, equals: 2009)
@@ -141,7 +141,7 @@ class MysqlBindParameterTests: TailorTestCase {
     assert(data.second, equals: 14)
     assert(data.second_part, equals: 123456)
     assert(data.neg, equals: 0)
-    assert(data.time_type.value, equals: MYSQL_TIMESTAMP_DATETIME.value)
+    assert(data.time_type.rawValue, equals: MYSQL_TIMESTAMP_DATETIME.rawValue)
   }
   
   func testInitializeWithTimestampValueInOtherTimeZoneConvertsTimeZone() {
@@ -160,7 +160,7 @@ class MysqlBindParameterTests: TailorTestCase {
     let timestamp2 = timestamp1.inTimeZone(timeZone2)
     let bindParameter = MysqlBindParameter(value: timestamp2.databaseValue)
     self.assert(bindParameter.parameter.buffer_length, equals: 1)
-    self.assert(bindParameter.parameter.buffer_type.value, equals: MYSQL_TYPE_TIMESTAMP.value)
+    self.assert(bindParameter.parameter.buffer_type.rawValue, equals: MYSQL_TYPE_TIMESTAMP.rawValue)
     
     let data = UnsafeMutablePointer<MYSQL_TIME>(bindParameter.parameter.buffer).memory
     assert(data.year, equals: 2009)
@@ -171,14 +171,14 @@ class MysqlBindParameterTests: TailorTestCase {
     assert(data.second, equals: 14)
     assert(data.second_part, equals: 123456)
     assert(data.neg, equals: 0)
-    assert(data.time_type.value, equals: MYSQL_TIMESTAMP_DATETIME.value)
+    assert(data.time_type.rawValue, equals: MYSQL_TIMESTAMP_DATETIME.rawValue)
   }
   
   func testInitializeWithDateValueCreatesMysqlTimeBufferWithDateInfo() {
     let date = Date(year: 1998, month: 7, day: 11)
     let bindParameter = MysqlBindParameter(value: date.databaseValue)
     self.assert(bindParameter.parameter.buffer_length, equals: 1)
-    self.assert(bindParameter.parameter.buffer_type.value, equals: MYSQL_TYPE_DATE.value)
+    self.assert(bindParameter.parameter.buffer_type.rawValue, equals: MYSQL_TYPE_DATE.rawValue)
     
     let data = UnsafeMutablePointer<MYSQL_TIME>(bindParameter.parameter.buffer).memory
     assert(data.year, equals: 1998)
@@ -189,14 +189,14 @@ class MysqlBindParameterTests: TailorTestCase {
     assert(data.second, equals: 0)
     assert(data.second_part, equals: 0)
     assert(data.neg, equals: 0)
-    assert(data.time_type.value, equals: MYSQL_TIMESTAMP_DATE.value)
+    assert(data.time_type.rawValue, equals: MYSQL_TIMESTAMP_DATE.rawValue)
   }
   
   func testInitializeWithTimeValueCreatesMysqlTimeBufferWithTimeInfo() {
     let time = Time(hour: 13, minute: 44, second: 23, nanosecond: 123456789.5)
     let bindParameter = MysqlBindParameter(value: time.databaseValue)
     self.assert(bindParameter.parameter.buffer_length, equals: 1)
-    self.assert(bindParameter.parameter.buffer_type.value, equals: MYSQL_TYPE_TIME.value)
+    self.assert(bindParameter.parameter.buffer_type.rawValue, equals: MYSQL_TYPE_TIME.rawValue)
     
     let data = UnsafeMutablePointer<MYSQL_TIME>(bindParameter.parameter.buffer).memory
     assert(data.year, equals: 0)
@@ -207,7 +207,7 @@ class MysqlBindParameterTests: TailorTestCase {
     assert(data.second, equals: 23)
     assert(data.second_part, equals: 123456)
     assert(data.neg, equals: 0)
-    assert(data.time_type.value, equals: MYSQL_TIMESTAMP_TIME.value)
+    assert(data.time_type.rawValue, equals: MYSQL_TIMESTAMP_TIME.rawValue)
   }
   
   //MARK: - Field Information
@@ -283,9 +283,6 @@ class MysqlBindParameterTests: TailorTestCase {
     DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size bigint")
     connection.executeQuery("INSERT INTO hats (brim_size) VALUES (123451234545)")
     runQuery("SELECT brim_size FROM hats")
-    let a = sizeof(CInt)
-    let b = sizeof(CShort)
-    let c = sizeof(CLongLong)
     let result = parameter.data().intValue
     assert(result, equals: 123451234545)
     DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size int(11)")

@@ -4,8 +4,8 @@ import TailorTesting
 
 class PasswordHasherTests: TailorTestCase {
   func testInitWithoutComponentsGeneratesRandomSalt() {
-    var encryptor1 = PasswordHasher()
-    var encryptor2 = PasswordHasher()
+    let encryptor1 = PasswordHasher()
+    let encryptor2 = PasswordHasher()
     let value1 = encryptor1.encrypt("test")
     let value2 = encryptor2.encrypt("test")
     XCTAssertNotEqual(value1, value2, "generates different hashed values")

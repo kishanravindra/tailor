@@ -16,7 +16,7 @@ public class Template {
   /**
     This method initializes a template.
 
-    :param: controller    The controller that is rendering the template.
+    - parameter controller:    The controller that is rendering the template.
     */
   public init(controller: Controller) {
     self.controller = controller
@@ -27,7 +27,7 @@ public class Template {
   /**
     This method generates the body using the template.
     
-    :returns:           The body.
+    - returns:           The body.
     */
   public func generate() -> String {
     self.buffer.setString("")
@@ -67,8 +67,8 @@ public class Template {
     If the key begins with a dot, this will prepend the template's localization
     prefix.
 
-    :param: key   The key to localize.
-    :returns:     The localized text.
+    - parameter key:   The key to localize.
+    - returns:     The localized text.
     */
   public func localize(key: String) -> String? {
     var fullKey = key
@@ -83,8 +83,8 @@ public class Template {
   
     It will HTML-sanitize the text automatically.
 
-    :param: text      The text to add.
-    :param: localize  Whether we should attempt to localize the text.
+    - parameter text:      The text to add.
+    - parameter localize:  Whether we should attempt to localize the text.
     */
   public func text(text: String, localize: Bool = true) {
     let localizedText = localize ? self.localize(text) ?? text : text
@@ -97,7 +97,7 @@ public class Template {
 
     Use this with caution, and only when you are certain the text is safe.
 
-    :param: text    The text to add.
+    - parameter text:    The text to add.
     */
   public func raw(text: String, localize: Bool = true) {
     let localizedText = localize ? self.controller.localize(text) ?? text : text
@@ -110,7 +110,7 @@ public class Template {
     It will check to make sure it is really HTML-sanitized, and sanitize it if
     necessary.
 
-    :param: text    The text to add.
+    - parameter text:    The text to add.
     */
   public func addSanitizedText(text: SanitizedText) {
     let sanitizer = Sanitizer.htmlSanitizer
@@ -125,15 +125,14 @@ public class Template {
   /**
     This method adds an HTML tag.
   
-    :param: name          The name of the element.
-    :param: attributes    Additional attributes for the tag.
-    :param: with          A closure that adds the contents of the tag.
+    - parameter name:          The name of the element.
+    - parameter attributes:    Additional attributes for the tag.
+    - parameter with:          A closure that adds the contents of the tag.
     */
   public func tag(name: String, _ attributes: [String:String], @noescape with contents: ()->() = {}) -> () {
-    var text = ""
     var openingTag = "<\(name)"
     
-    for key in sorted(attributes.keys) {
+    for key in attributes.keys.sort() {
       let value = attributes[key]!
       openingTag += " \(key)=\"\(value)\""
     }
@@ -150,8 +149,8 @@ public class Template {
     using default values for that parameter causes problems with having a
     trailing closure.
 
-    :param: name          The name of the element.
-    :param: contents      A closure that adds the contents of the tag.
+    - parameter name:          The name of the element.
+    - parameter contents:      A closure that adds the contents of the tag.
     */
   public func tag(name: String, @noescape with contents: ()->() = {}) -> () {
     self.tag(name, [:], with: contents)
@@ -160,9 +159,9 @@ public class Template {
   /**
     This method adds an HTML tag.
     
-    :param: name          The name of the element.
-    :param: attributes    Additional attributes for the tag.
-    :param: text          The text for the tag.
+    - parameter name:          The name of the element.
+    - parameter attributes:    Additional attributes for the tag.
+    - parameter text:          The text for the tag.
     */
   public func tag(name: String, text: String, attributes: [String:String] = [:]) -> () {
     self.tag(name, attributes) { self.text(text) }
@@ -171,16 +170,16 @@ public class Template {
   /**
     This method adds a tag for linking to a path.
   
-    :param: controllerName  The controller to link to. This will default to the
+    - parameter controllerName:  The controller to link to. This will default to the
                             current controller.
-    :param: actionName      The action to link to.
-    :param: parameters      Additional parameters for the path.
-    :param: attributes      Additional attributes for the tag.
-    :param: with            A closure that adds the contents of the link.
+    - parameter actionName:      The action to link to.
+    - parameter parameters:      Additional parameters for the path.
+    - parameter attributes:      Additional attributes for the tag.
+    - parameter with:            A closure that adds the contents of the link.
     */
   public func link(controllerName: String? = nil, actionName: String? = nil, parameters: [String:String] = [:], attributes: [String:String] = [:], @noescape with contents: ()->()={}) {
     var mergedAttributes = attributes
-    mergedAttributes["href"] = self.controller.pathFor(controllerName: controllerName,
+    mergedAttributes["href"] = self.controller.pathFor(controllerName,
       actionName: actionName, parameters: parameters) ?? ""
     self.tag("a", mergedAttributes, with: contents)
   }
@@ -188,8 +187,8 @@ public class Template {
   /**
     This method renders another template within the context of this one.
   
-    :param: template    The template to render
-    :param: parameters  The parameters to pass to the other template.
+    - parameter template:    The template to render
+    - parameter parameters:  The parameters to pass to the other template.
   */
   public func renderTemplate(template: Template) {
     self.renderedTemplates.append(template)
@@ -202,8 +201,8 @@ public class Template {
     If the content is already in the cache, the cached version will be put into
     the buffer without re-generating it.
 
-    :param: key     The key where the content will be stored in the cache.
-    :param: block   The block that will generate the content. This should
+    - parameter key:     The key where the content will be stored in the cache.
+    - parameter block:   The block that will generate the content. This should
                     generate the content as you would any other part of the
                     template body, using the normal helper methods.
     */
@@ -234,10 +233,10 @@ public class Template {
   /**
     This method gets a subset of the request parameters from the controller
 
-    :param: keys
+    - parameter keys:
       The keys to extract
 
-    :returns:
+    - returns:
       A hash with the extracted values.
     */
   public func requestParameters(keys: String...) -> [String:String] {
@@ -257,11 +256,11 @@ public class Template {
   /**
     This method gets a localized, capitalized attribute name.
 
-    :param: modelName       The name of the model whose attribute this is.
-    :param: attributeName   The name of the attribute to localize.
-    :returns:               The localized attribute.
+    - parameter modelName:       The name of the model whose attribute this is.
+    - parameter attributeName:   The name of the attribute to localize.
+    - returns:               The localized attribute.
     */
   public func attributeName(modelName: String, _ attributeName: String) -> String {
-    return modelAttributeName(modelName, attributeName, localization: self.localization, capitalize: true)
+    return modelAttributeName(modelName, key: attributeName, localization: self.localization, capitalize: true)
   }
 }

@@ -26,9 +26,9 @@ public struct Connection {
   /**
     This method creates a new connection.
 
-    :param: fileDescriptor    The file descriptor for the socket that we are
+    - parameter fileDescriptor:    The file descriptor for the socket that we are
                               using for the connection.
-    :param: handler           A callback that will handle the request.
+    - parameter handler:           A callback that will handle the request.
     */
   public init(fileDescriptor: Int32, handler: RequestHandler) {
     self.socketDescriptor = fileDescriptor
@@ -74,10 +74,10 @@ public struct Connection {
     It will read the data and process the request synchronosuly, then write the
     response data to the file descriptor and close it.
   
-    :param: connectionDescriptor    The file descriptor for the connection.
+    - parameter connectionDescriptor:    The file descriptor for the connection.
     */
   public mutating func readFromSocket(connectionDescriptor: Int32) {
-    var data = NSMutableData()
+    let data = NSMutableData()
     let bufferLength: UInt = 1024
     var buffer = [UInt8](count: Int(bufferLength), repeatedValue: 0)
     var request: Request!
@@ -103,7 +103,7 @@ public struct Connection {
       data.appendBytes(buffer, length: length)
       if UInt(length) < bufferLength {
         request = Request(clientAddress: clientAddressString, data: data)
-        let headerLength = request.headers["Content-Length"]?.toInt() ?? 0
+        let headerLength = Int(request.headers["Content-Length"] ?? "") ?? 0
         if request.body.length == headerLength {
           break
         }
@@ -124,13 +124,13 @@ public struct Connection {
 
     It will open the connection and then tell the run loop to run indefinitely.
 
-    :param: address   The IP address to listen on.
-    :param: port      The port to listen on.
-    :param: handler   A callback that will be called when a request is ready for
+    - parameter address:   The IP address to listen on.
+    - parameter port:      The port to listen on.
+    - parameter handler:   A callback that will be called when a request is ready for
                       processing. This will be given a request and another
                       callback that it can call with a response.
 
-    :returns:         Whether we were able to open the connection.
+    - returns:         Whether we were able to open the connection.
     */
   public static func startServer(address: (Int,Int,Int,Int), port: Int, handler: RequestHandler) -> Bool {
     let socketDescriptor = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)

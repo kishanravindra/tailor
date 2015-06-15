@@ -6,7 +6,7 @@ import Foundation
   This allows us to pass a database value of an unknown type in a way that still
   puts type constraints on what it can be.
   */
-public enum DatabaseValue: Equatable, Printable {
+public enum DatabaseValue: Equatable, CustomStringConvertible {
   /** A null value */
   case Null
   
@@ -179,9 +179,9 @@ public enum DatabaseValue: Equatable, Printable {
 
   They are equal if they have the same type and their wrapped values are equal.
 
-  :param: lhs   The left-hand of the equality
-  :param: rhs   The right-hand of the equality
-  :returns:     Whether they are equal.
+  - parameter lhs:   The left-hand of the equality
+  - parameter rhs:   The right-hand of the equality
+  - returns:     Whether they are equal.
   */
 public func ==(lhs: DatabaseValue, rhs: DatabaseValue) -> Bool {
   switch(lhs,rhs) {

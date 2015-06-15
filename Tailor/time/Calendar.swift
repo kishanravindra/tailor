@@ -11,7 +11,7 @@ public protocol Calendar {
     It would be an initializer, but there are bugs in creating protocol types
     dynamically.
 
-    :param: year    The numeric indentifier for the year, in the calendar's own
+    - parameter year:    The numeric indentifier for the year, in the calendar's own
                     numbering system.
     */
   func inYear(year: Int) -> Calendar
@@ -31,7 +31,7 @@ public protocol Calendar {
   /**
     The number of days in a particular month.
 
-    :param: month   The month, where 1 is the first month in the year.
+    - parameter month:   The month, where 1 is the first month in the year.
     */
   func daysInMonth(month: Int) -> Int
   
@@ -98,7 +98,7 @@ public struct GregorianCalendar: Calendar {
   /**
     This initializer creates a calendar instance for a year.
 
-    :param: year    The year on the calendar.
+    - parameter year:    The year on the calendar.
     */
   public init(_ year: Int) {
     self.year = year
@@ -108,7 +108,7 @@ public struct GregorianCalendar: Calendar {
   /**
     This method creates a calendar instance for a year.
 
-    :param: year    The year on the calendar.
+    - parameter year:    The year on the calendar.
     */
   public func inYear(year: Int) -> Calendar {
     return GregorianCalendar(year)
@@ -122,8 +122,8 @@ public struct GregorianCalendar: Calendar {
     1. The year is divisible by 4
     2. The year is *not* divisible by 100, or *is* divisible by 400.
 
-    :param: year    The year to check.
-    :returns:       Whether the year is a leap year.
+    - parameter year:    The year to check.
+    - returns:       Whether the year is a leap year.
     */
   public static func isLeapYear(year: Int) -> Bool {
     return year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)
@@ -144,8 +144,8 @@ public struct GregorianCalendar: Calendar {
     Month 2 has 28 days in most years, and 29 days in leap years, as described
     in the isLeapYear function.
 
-    :param: month   The month that we are counting days for.
-    :returns:       The number of days in that month.
+    - parameter month:   The month that we are counting days for.
+    - returns:       The number of days in that month.
     */
   public func daysInMonth(month: Int) -> Int {
     switch(month) {
@@ -204,7 +204,7 @@ public struct IslamicCalendar: Calendar {
   /**
     This initializer creates a calendar instance for a year.
   
-    :param: year    The year on the calendar.
+    - parameter year:    The year on the calendar.
     */
   public init(_ year: Int) {
     self.year = year
@@ -214,7 +214,7 @@ public struct IslamicCalendar: Calendar {
   /**
   This method creates a calendar instance for a year.
   
-  :param: year    The year on the calendar.
+  - parameter year:    The year on the calendar.
   */
   public func inYear(year: Int) -> Calendar {
     return IslamicCalendar(year)
@@ -226,8 +226,8 @@ public struct IslamicCalendar: Calendar {
     We consider any year ending in 2, 5, 7, 10, 13, 16, 18, 21, 24, 26, or 29
     to be a leap year.
 
-    :param: year    The year we are checking.
-    :returns:       Whether the year is a leap year.
+    - parameter year:    The year we are checking.
+    - returns:       Whether the year is a leap year.
     */
   public static func isLeapYear(year: Int) -> Bool {
     switch(year % 30) {
@@ -251,8 +251,8 @@ public struct IslamicCalendar: Calendar {
     Even numbered months have 29 days and odd numbered months have 30 days. In
     leap years, month 12 has 30 days.
   
-    :param: month   The month that we are counting days for.
-    :returns:       The number of days in that month.
+    - parameter month:   The month that we are counting days for.
+    - returns:       The number of days in that month.
     */
   public func daysInMonth(month: Int) -> Int {
     if month % 2 == 1 {
@@ -281,9 +281,9 @@ public struct IslamicCalendar: Calendar {
 
   Calendars are equal when they have the same year and unixEpochTime.
   
-  :param: lhs   The first calendar.
-  :param: rhs   The second calendar.
-  :returns:     Whether the two calendars are equal.
+  - parameter lhs:   The first calendar.
+  - parameter rhs:   The second calendar.
+  - returns:     Whether the two calendars are equal.
   */
 public func ==(lhs: Calendar, rhs: Calendar) -> Bool {
   return lhs.year == rhs.year &&
@@ -295,9 +295,9 @@ public func ==(lhs: Calendar, rhs: Calendar) -> Bool {
 
   Calendars are equal when they have the same year and unixEpochTime.
 
-  :param: lhs   The first calendar.
-  :param: rhs   The second calendar.
-  :returns:     Whether the two calendars are unequal.
+  - parameter lhs:   The first calendar.
+  - parameter rhs:   The second calendar.
+  - returns:     Whether the two calendars are unequal.
 */
 public func !=(lhs: Calendar, rhs: Calendar) -> Bool {
   return !(lhs == rhs)

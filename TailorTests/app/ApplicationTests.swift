@@ -106,8 +106,8 @@ class ApplicationTests : TailorTestCase {
     
     application.registerSubclasses(TestClassWithSubclasses)
     let types = application.registeredSubclassList(TestClassWithSubclasses)
-    var ids = types.map { $0.id() }
-    self.assert(sorted(ids), equals: [1, 2, 3], message: "registers all subclasses of the type given, including the type itself")
+    let ids = types.map { $0.id() }
+    self.assert(ids.sort(), equals: [1, 2, 3], message: "registers all subclasses of the type given, including the type itself")
   }
   
   //MARK: - Configuration

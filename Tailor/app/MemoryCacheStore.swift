@@ -13,8 +13,8 @@ public class MemoryCacheStore: CacheStore {
   /**
     This method reads an entry for the cache store.
 
-    :param: key   The key for the cache entry.
-    :returns:     The fetched value.
+    - parameter key:   The key for the cache entry.
+    - returns:     The fetched value.
     */
   public override func read(key: String) -> String? {
     if let time = expiryTimes[key] {
@@ -29,9 +29,9 @@ public class MemoryCacheStore: CacheStore {
   /**
     This method stores a value in the cache.
 
-    :param: key           The key for the cache entry.
-    :param: value         The value to store in the cache.
-    :param: expiryTime    The time until the cache entry should expire.
+    - parameter key:           The key for the cache entry.
+    - parameter value:         The value to store in the cache.
+    - parameter expiryTime:    The time until the cache entry should expire.
     */
   public override func write(key: String, value: String, expireIn expiryTime: TimeInterval?=nil) {
     cache.setObject(value, forKey: key)
@@ -43,7 +43,7 @@ public class MemoryCacheStore: CacheStore {
   /**
     This method removes an entry from the cache.
 
-    :param: key     The key for the entry to remove.
+    - parameter key:     The key for the entry to remove.
     */
   public override func clear(key: String) {
     cache.removeObjectForKey(key)

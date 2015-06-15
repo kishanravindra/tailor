@@ -2,7 +2,7 @@ import Foundation
 
 /**
   This method gets the name of a model, based on the class.
-  :returns:   The model name.
+  - returns:   The model name.
   */
 public func modelName(klass: Any.Type) -> String {
   var fullName = reflect(klass).summary
@@ -25,11 +25,11 @@ public func modelName(klass: Any.Type) -> String {
   generate a label based on the attribute name. Every capital letter will be
   interpreted as the beginning of a new word.
 
-  :param: modelName     The name of the model that the attribute is on.
-  :param: key           The attribute name.
-  :param: localization  The localization to get the name.
-  :param: capitalize    Whether we should capitalize the name.
-  :returns:             The humanized attribute name.
+  - parameter modelName:     The name of the model that the attribute is on.
+  - parameter key:           The attribute name.
+  - parameter localization:  The localization to get the name.
+  - parameter capitalize:    Whether we should capitalize the name.
+  - returns:             The humanized attribute name.
 */
 public func modelAttributeName(modelName: String, key: String, localization: Localization? = nil, capitalize: Bool = false) -> String {
   
@@ -43,7 +43,7 @@ public func modelAttributeName(modelName: String, key: String, localization: Loc
     }
   }
   
-  for (index, character) in enumerate(key) {
+  for (index, character) in key.characters.enumerate() {
     let string = String(character)
     if index == 0 {
       result += string.capitalizedString

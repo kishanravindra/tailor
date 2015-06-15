@@ -9,7 +9,7 @@ public protocol Persistable: Equatable {
     If the row does not contain enough data to initialize the record, this must
     return nil.
     
-    :param: databaseRow   The row from the database. The keys will be column
+    - parameter databaseRow:   The row from the database. The keys will be column
                           names, and the rows will be wrapped in the database
                           value wrapper.
     */
@@ -20,7 +20,7 @@ public protocol Persistable: Equatable {
   
   /**
     This method provides name of the table that backs this class.
-    :returns: The table name.
+    - returns: The table name.
     */
   static var tableName: String { get }
   
@@ -31,7 +31,7 @@ public protocol Persistable: Equatable {
     The keys in the returned dictionary must be the names of the columns in the
     database.
     
-    :returns:   The values to save.
+    - returns:   The values to save.
     */
   func valuesToPersist() -> [String:DatabaseValueConvertible?]
 }
@@ -41,9 +41,9 @@ public protocol Persistable: Equatable {
 /**
   This method determines if two persistable records are equal.
 
-  :param: lhs   The left-hand record
-  :param: rhs   The right-hand record.
-  :returns:     Whether they are equal.
+  - parameter lhs:   The left-hand record
+  - parameter rhs:   The right-hand record.
+  - returns:     Whether they are equal.
 */
 public func ==<T: Persistable>(lhs: T, rhs: T) -> Bool {
   return  lhs.id != nil &&
@@ -58,7 +58,7 @@ public func ==<T: Persistable>(lhs: T, rhs: T) -> Bool {
   This method get the default name for a foreign key for a record class.
 
   It will be the underscored model name, followed by _id.
-  :returns: The foreign key name.
+  - returns: The foreign key name.
   */
 public func foreignKeyName(klass: Any.Type) -> String {
   return modelName(klass) + "_id"
@@ -70,11 +70,11 @@ public func foreignKeyName(klass: Any.Type) -> String {
   This will look for a field on the other record that contains the id of this
   record.
 
-  :param: source      The record that is on the "one" side of the relationship.
-  :param: foreignKey  The field on the other record type that contains the ids
+  - parameter source:      The record that is on the "one" side of the relationship.
+  - parameter foreignKey:  The field on the other record type that contains the ids
                       of the source record. If this is omitted, we will use the
                       foreign key name specified by the `foriegnKeyName` method.
-  :returns:           The records on the "many" side of the relationship.
+  - returns:           The records on the "many" side of the relationship.
 */
 public func toManyRecords<RecordType: Persistable, OtherRecordType: Persistable>(source: RecordType, foreignKey inputForeignKey: String? = nil) -> Query<OtherRecordType> {
   let foreignKey = inputForeignKey ?? foreignKeyName(RecordType.self)
@@ -88,20 +88,20 @@ public func toManyRecords<RecordType: Persistable, OtherRecordType: Persistable>
   for a foreign key relationship between the intermediary and the final record
   type.
 
-  :param: through           The query that contains the intermediary
+  - parameter through:           The query that contains the intermediary
                             relationship.
-  :param: foreignKey        The attribute on the intermediary record that   
+  - parameter foreignKey:        The attribute on the intermediary record that   
                             contains the id. If this is not provided, it will be 
                             the default foreign key name for the appropriate 
                             model.
-  :param: joinToMany        Whether the join between the intermediary and the
+  - parameter joinToMany:        Whether the join between the intermediary and the
                             final table should join from a foreign key on the
                             final to the id on the intermediate, rather than
                             from a foreign key on the intermediate to the id
                             on the final.
-  :returns:                 The fetched records.
+  - returns:                 The fetched records.
 */
-public func toManyRecords<OtherRecordType : Persistable, IntermediaryRecordType: Persistable>(#through: Query<IntermediaryRecordType>, foreignKey inputForeignKey: String? = nil, joinToMany: Bool = false) -> Query<OtherRecordType> {
+public func toManyRecords<OtherRecordType : Persistable, IntermediaryRecordType: Persistable>(through through: Query<IntermediaryRecordType>, foreignKey inputForeignKey: String? = nil, joinToMany: Bool = false) -> Query<OtherRecordType> {
   var query = Query<OtherRecordType>()
   
   if joinToMany {
@@ -124,8 +124,8 @@ public func toManyRecords<OtherRecordType : Persistable, IntermediaryRecordType:
   It will also set values for the createdAt and updatedAt fields, if they
   are defined in the column mapping for the record type.
 
-  :param: record    The record that we are saving.
-  :returns:         On success, this returns a new record with the latest saved
+  - parameter record:    The record that we are saving.
+  - returns:         On success, this returns a new record with the latest saved
                     information. On failure, this will return nil.
   */
 public func saveRecord<RecordType: Persistable>(record: RecordType) -> RecordType? {
@@ -133,27 +133,27 @@ public func saveRecord<RecordType: Persistable>(record: RecordType) -> RecordTyp
   var values = record.valuesToPersist()
   let properties = values.keys
   
-  if contains(properties, "created_at") {
+  if properties.contains("created_at") {
     if values["created_at"]! == nil {
       values["created_at"] = Timestamp.now()
     }
   }
-  if contains(properties, "updated_at") {
+  if properties.contains("updated_at") {
     values["updated_at"] = Timestamp.now()
   }
   
   if record.id != nil {
-    return updateRecord(record, values)
+    return updateRecord(record, values: values)
   }
   else {
-    return insertRecord(record, values)
+    return insertRecord(record, values: values)
   }
 }
 
 /**
 This method saves the record to the database by inserting it.
 
-:returns:   Whether we were able to save the record.
+- returns:   Whether we were able to save the record.
 */
 private func insertRecord<RecordType: Persistable>(record: RecordType, values: [String:DatabaseValueConvertible?]) -> RecordType? {
   var query = "INSERT INTO \(RecordType.tableName) ("
@@ -163,7 +163,7 @@ private func insertRecord<RecordType: Persistable>(record: RecordType, values: [
   var parameterString = ""
   var mappedValues = [String:DatabaseValue]()
   
-  for key in sorted(values.keys) {
+  for key in values.keys.sort() {
     let value = values[key]!
     
     let databaseValue = value?.databaseValue ?? DatabaseValue.Null
@@ -192,7 +192,7 @@ private func insertRecord<RecordType: Persistable>(record: RecordType, values: [
   if result == nil {
     return nil
   }
-  else if let error = result?.error {
+  else if result?.error != nil {
     return nil
   }
   else {
@@ -208,7 +208,7 @@ private func updateRecord<RecordType: Persistable>(record: RecordType, values: [
   var mappedValues = [String:DatabaseValue]()
   
   var firstParameter = true
-  for key in sorted(values.keys) {
+  for key in values.keys.sort() {
     let value = values[key]!
     let databaseValue = value?.databaseValue ?? DatabaseValue.Null
     mappedValues[key] = databaseValue
@@ -246,7 +246,7 @@ private func updateRecord<RecordType: Persistable>(record: RecordType, values: [
 /**
   This method deletes the record from the database.
 
-  :param: record    The record to delete.
+  - parameter record:    The record to delete.
   */
 public func destroyRecord<RecordType: Persistable>(record: RecordType) {
   if record.id != nil {

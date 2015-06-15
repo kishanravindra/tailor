@@ -14,7 +14,7 @@ class ControllerTests: TailorTestCase {
     ]}
     
     func checkParams() -> Bool {
-      if let param = request.requestParameters["failFilter"] {
+      if request.requestParameters["failFilter"] != nil {
         var response = Response()
         response.code = 419
         self.callback(response)
@@ -40,10 +40,9 @@ class ControllerTests: TailorTestCase {
   override func setUp() {
     super.setUp()
     
-    let function = Controller.respondWith
     user = saveRecord(User(emailAddress: "test@test.com", password: "test"))!
     
-    var routeSet = RouteSet()
+    let routeSet = RouteSet()
     routeSet.addRoute("route1", method: "GET", controller: TestController.self, actionName: "index")
     routeSet.addRoute("route1/:id", method: "GET", controller: TestController.self, actionName: "show")
     routeSet.addRoute("route2", method: "GET", controller: SecondTestController.self, actionName: "index")
@@ -271,7 +270,7 @@ class ControllerTests: TailorTestCase {
   }
   
   func testPathForCanGetFullyQualifiedRoute() {
-    let path = self.controller.pathFor(controllerName: TestController.name, actionName: "index", parameters: ["id": "5"])
+    let path = self.controller.pathFor(TestController.name, actionName: "index", parameters: ["id": "5"])
     assert(path, equals: "/route1?id=5", message: "gets the url for the controller and action")
   }
   
@@ -286,7 +285,7 @@ class ControllerTests: TailorTestCase {
   }
   
   func testPathForCanGetUrlWithDomain() {
-    let path = self.controller.pathFor(controllerName: TestController.name, actionName: "index", parameters: ["id": "5"], domain: "test.com")
+    let path = self.controller.pathFor(TestController.name, actionName: "index", parameters: ["id": "5"], domain: "test.com")
     assert(path, equals: "https://test.com/route1?id=5", message: "gets the url for the controller and action")
   }
   
@@ -303,7 +302,7 @@ class ControllerTests: TailorTestCase {
       self.assert(response.code, equals: 302, message: "gives a 302 response")
       self.assert(response.headers, equals: ["Location": "/route1"], message: "has a location header")
     }
-    self.controller.redirectTo(controllerName: TestController.name, actionName: "index")
+    self.controller.redirectTo(TestController.name, actionName: "index")
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
@@ -417,8 +416,7 @@ class ControllerTests: TailorTestCase {
       expectation.fulfill()
       self.assert(response.bodyString, equals: "Test Response", message: "gets test response")
       
-      if let castController = controller as? TestController {}
-      else { XCTFail("gives a test controller") }
+      if !(controller is TestController) { XCTFail("gives a test controller") }
     }
     
     waitForExpectationsWithTimeout(0.1, handler: nil)

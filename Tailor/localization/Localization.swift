@@ -15,17 +15,17 @@ public class Localization {
     one for the same language (e.g. from es-mx to es), and from a language other
     than English to English (e.g. from es to en).
 
-    :param: locale    The locale that we are supposed to be getting a
+    - parameter locale:    The locale that we are supposed to be getting a
                       translation for.
-    :returns:         The locales to try
+    - returns:         The locales to try
     */
   public class func fallbackLocales(locale: String) -> [String] {
     var locales = [String]()
     if locale == "en" {
       return locales
     }
-    var components = split(locale) { $0 == "-" }
-    if count(components) > 1 {
+    var components = split(locale.characters) { $0 == "-" }.map { String($0) }
+    if components.count > 1 {
       var fallback = ""
       for component in components {
         if !fallback.isEmpty {
@@ -50,7 +50,7 @@ public class Localization {
   /**
     This method creates a content source.
 
-    :param: locale    The locale for the content.
+    - parameter locale:    The locale for the content.
     */
   public required init(locale: String) {
     self.locale = locale
@@ -72,9 +72,9 @@ public class Localization {
     mapped to the value "John", then all occurrences of "\(name)" in the content
     will be replaced with "John".
     
-    :param: key             The key for the content.
-    :param: interpolations  The values to interpolate into the content.
-    :returns:               The content.
+    - parameter key:             The key for the content.
+    - parameter interpolations:  The values to interpolate into the content.
+    - returns:               The content.
     */
   public func fetch(key: String, interpolations: [String:String] = [:]) -> String? {
     var result = self.fetch(key, inLocale: self.locale)
@@ -87,7 +87,7 @@ public class Localization {
       }
     }
     for (key,value) in interpolations {
-      result = result?.stringByReplacingOccurrencesOfString("\\(\(key))", withString: value, options: nil, range: nil)
+      result = result?.stringByReplacingOccurrencesOfString("\\(\(key))", withString: value, options: [], range: nil)
     }
     return result
   }
@@ -100,8 +100,8 @@ public class Localization {
   
     This will fall back to any other locales.
 
-    :param: key   The key for the content
-    :returns:     The content.
+    - parameter key:   The key for the content
+    - returns:     The content.
     */
   public func fetch(key: String, inLocale locale: String) -> String? {
     return nil

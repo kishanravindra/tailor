@@ -5,13 +5,13 @@ import TailorTesting
 class CalendarTests: TailorTestCase {
   
   func checkTimestamps(timestamps: [Double], foundationCalendar: NSCalendar, calendar: Calendar, zoneName: String, file: String = __FILE__, line: UInt = __LINE__) {
-    var foundationCalendar = foundationCalendar
+    let foundationCalendar = foundationCalendar
     foundationCalendar.timeZone = NSTimeZone(name: zoneName)!
     let timeZone = TimeZone(name: zoneName)
     
     for timestamp in timestamps {
       let foundationDate = NSDate(timeIntervalSince1970: Double(timestamp))
-      let foundationDateComponents = foundationCalendar.components(.CalendarUnitYear | .CalendarUnitMonth | .CalendarUnitDay | .CalendarUnitHour | .CalendarUnitMinute | .CalendarUnitSecond | .CalendarUnitWeekday, fromDate: foundationDate)
+      let foundationDateComponents = foundationCalendar.components([.Year, .Month, .Day, .Hour, .Minute, .Second, .Weekday], fromDate: foundationDate)
       let timestamp = Timestamp(epochSeconds: timestamp, timeZone: timeZone, calendar: calendar)
       if timestamp.year != foundationDateComponents.year ||
         timestamp.month != foundationDateComponents.month ||
@@ -30,12 +30,12 @@ class CalendarTests: TailorTestCase {
   
   func checkLocalDates(dates: [(Int,Int,Int,Int,Int,Int)], foundationCalendar: NSCalendar, calendar: Calendar, zoneName: String, file: String = __FILE__, line: UInt = __LINE__) {
     
-    var foundationCalendar = foundationCalendar
+    let foundationCalendar = foundationCalendar
     foundationCalendar.timeZone = NSTimeZone(name: zoneName)!
     let timeZone = TimeZone(name: zoneName)
     
     for date in dates {
-      var foundationDateComponents = NSDateComponents()
+      let foundationDateComponents = NSDateComponents()
       foundationDateComponents.year = date.0
       foundationDateComponents.month = date.1
       foundationDateComponents.day = date.2

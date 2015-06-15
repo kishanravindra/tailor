@@ -16,10 +16,10 @@ public protocol TimeFormatter {
   
     If the string does not match this formatter, the should return nil.
   
-    :param: string      The string to parse.
-    :param: container   The container for the time information.
-    :param: calendar    The calendar that the date is formatted in.
-    :returns:           The remaining string.
+    - parameter string:      The string to parse.
+    - parameter container:   The container for the time information.
+    - parameter calendar:    The calendar that the date is formatted in.
+    - returns:           The remaining string.
     */
   func parseTime(from string: String, inout into container: (year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int, nanosecond: Double), calendar: Calendar) -> String?
 }
@@ -37,7 +37,7 @@ public struct TimeFormat: TimeFormatter {
   /**
     This initializer creates a time format with an array components.
   
-    :param: components    The components of the format.
+    - parameter components:    The components of the format.
     */
   public init(components: [TimeFormatter] = []) {
     self.components = components
@@ -46,7 +46,7 @@ public struct TimeFormat: TimeFormatter {
   /**
     This initializer creates a time format with a series of components.
 
-    :param: components    The components of the format.
+    - parameter components:    The components of the format.
     */
   public init(_ components: TimeFormatComponent...) {
     self.init(components: components.map { $0 as TimeFormatter })
@@ -55,14 +55,14 @@ public struct TimeFormat: TimeFormatter {
   /**
     This initializer creates a time format from a strftime-style format string.
   
-    :param: formatString    The format string.
+    - parameter formatString:    The format string.
     :todo:                  Support more formats.
     */
   public init(strftime formatString: String) {
     var workingString = ""
     var components = [TimeFormatComponent]()
     var inEscape = false
-    for character in formatString {
+    for character in formatString.characters {
       if inEscape {
         let newComponents: [TimeFormatComponent]
         switch(character) {
@@ -133,11 +133,11 @@ public struct TimeFormat: TimeFormatter {
   /**
     This method formats a timestamp using the rules of this time formatter.
 
-    :param: timestamp   The timestamp to format.
-    :returns:           The formatted string.
+    - parameter timestamp:   The timestamp to format.
+    - returns:           The formatted string.
     */
   public func formatTime(timestamp: Timestamp) -> String {
-    return join("", self.components.map { $0.formatTime(timestamp) })
+    return "".join(self.components.map { $0.formatTime(timestamp) })
   }
   
   /**
@@ -149,10 +149,10 @@ public struct TimeFormat: TimeFormatter {
     
     If the string does not match this formatter, the should return nil.
     
-    :param: string      The string to parse.
-    :param: container   The container for the time information.
-    :param: calendar    The calendar that the date is formatted in.
-    :returns:           The remaining string.
+    - parameter string:      The string to parse.
+    - parameter container:   The container for the time information.
+    - parameter calendar:    The calendar that the date is formatted in.
+    - returns:           The remaining string.
   */
   public func parseTime(from string: String, inout into container: (year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int, nanosecond: Double), calendar: Calendar = GregorianCalendar()) -> String? {
     var string: String! = string
@@ -169,10 +169,10 @@ public struct TimeFormat: TimeFormatter {
   /**
     This method parses a timestamp from a string.
 
-    :param: string    The string to parse.
-    :param: timeZone  The time zone to interpret the string with.
-    :param: calendar  The calendar to interpret the string with.
-    :returns:         The parsed timestamp. If the string didn't match the
+    - parameter string:    The string to parse.
+    - parameter timeZone:  The time zone to interpret the string with.
+    - parameter calendar:  The calendar to interpret the string with.
+    - returns:         The parsed timestamp. If the string didn't match the
                       expected format, this will return nil.
     */
   public func parseTime(string: String, timeZone: TimeZone = TimeZone.systemTimeZone(), calendar: Calendar = GregorianCalendar()) -> Timestamp? {
@@ -197,9 +197,9 @@ public enum TimeFormatComponent: TimeFormatter {
   /**
     The calendar year.
 
-    :param: padding   A character to use to pad the year to a minimum length.
-    :param: length    The minimum length of the year.
-    :param: truncate  Whether it should truncate the year if it is longer than
+    - parameter padding:   A character to use to pad the year to a minimum length.
+    - parameter length:    The minimum length of the year.
+    - parameter truncate:  Whether it should truncate the year if it is longer than
                       the minimum. This will include the least-significant
                       digits.
     */
@@ -208,30 +208,30 @@ public enum TimeFormatComponent: TimeFormatter {
   /**
     The month as a number.
   
-    :param: padding   A character to use to pad the month to two digits.
+    - parameter padding:   A character to use to pad the month to two digits.
     */
   case MonthWith(padding: Character?)
   
   /**
     The name as a month.
 
-    :param: abbreviate  Whether we should abbreviate the month name.
+    - parameter abbreviate:  Whether we should abbreviate the month name.
     */
   case MonthName(abbreviate: Bool)
   
   /**
     The day of the month.
   
-    :param: padding   A character to use to pad the day to two digits.
+    - parameter padding:   A character to use to pad the day to two digits.
     */
   case DayWith(padding: Character?)
   
   /**
     The hour in the day.
   
-    :param: twelveHour    Whether we should use twelve-hour time instead of
+    - parameter twelveHour:    Whether we should use twelve-hour time instead of
                           twenty-four hour time.
-    :param: padding       A character to use to pad the hour to two digits.
+    - parameter padding:       A character to use to pad the hour to two digits.
     */
   case HourWith(twelveHour: Bool, padding: Character?)
   
@@ -247,7 +247,7 @@ public enum TimeFormatComponent: TimeFormatter {
   /**
     The name of the day of the week.
   
-    :param: abbreviate    Whether we should abbreviate the name.
+    - parameter abbreviate:    Whether we should abbreviate the name.
     */
   case WeekDayName(abbreviate: Bool)
   
@@ -284,13 +284,13 @@ public enum TimeFormatComponent: TimeFormatter {
   /**
     This method pads a string to a minimum length.
 
-    :param: string    The string to pad.
-    :param: with      The character to pad it with
-    :param: length    The minimum length of the result.
-    :returns:         The padded string.
+    - parameter string:    The string to pad.
+    - parameter with:      The character to pad it with
+    - parameter length:    The minimum length of the result.
+    - returns:         The padded string.
     */
   private func pad(string: String, with pad: Character, length: Int) -> String {
-    let currentLength = count(string)
+    let currentLength = string.characters.count
     if currentLength < length {
       return String(count: length - currentLength, repeatedValue: pad) + string
     }
@@ -302,8 +302,8 @@ public enum TimeFormatComponent: TimeFormatter {
   /**
     This method formats a timestamp based on the rules of this component.
 
-    :param: timestamp   The timestamp to format.
-    :returns:           The formatted string.
+    - parameter timestamp:   The timestamp to format.
+    - returns:           The formatted string.
     */
   public func formatTime(timestamp: Timestamp) -> String {
     switch(self) {
@@ -313,7 +313,7 @@ public enum TimeFormatComponent: TimeFormatter {
       if let padding = padding {
         year = pad(year, with: padding, length: length)
       }
-      let currentLength = count(year)
+      let currentLength = year.characters.count
       if truncate && currentLength > length {
         year = year.substringFromIndex(advance(year.endIndex, length - currentLength))
       }
@@ -361,9 +361,9 @@ public enum TimeFormatComponent: TimeFormatter {
       else {
         return hour
       }
-    case let .Minute: return pad(String(timestamp.minute), with: "0", length: 2)
-    case let .Seconds: return pad(String(timestamp.second), with: "0", length: 2)
-    case let .WeekDay: return String(timestamp.weekDay)
+    case .Minute: return pad(String(timestamp.minute), with: "0", length: 2)
+    case .Seconds: return pad(String(timestamp.second), with: "0", length: 2)
+    case .WeekDay: return String(timestamp.weekDay)
     case let .WeekDayName(abbreviate):
       let localization = Application.sharedApplication().localization("en")
       let key: String
@@ -374,36 +374,36 @@ public enum TimeFormatComponent: TimeFormatter {
         key = "dates.\(timestamp.calendar.identifier).week_day_names.full.\(timestamp.weekDay)"
       }
       return localization.fetch(key) ?? "\(timestamp.weekDay)"
-    case let .EpochSeconds: return String(Int(timestamp.epochSeconds))
-    case let .TimeZone:
+    case .EpochSeconds: return String(Int(timestamp.epochSeconds))
+    case .TimeZone:
       let policy = timestamp.timeZone.policy(timestamp: timestamp.epochSeconds)
       return policy.abbreviation
-    case let .TimeZoneOffset:
+    case .TimeZoneOffset:
       let policy = timestamp.timeZone.policy(timestamp: timestamp.epochSeconds)
       let seconds = policy.offset
       let hour = (abs(seconds) / 3600) % 24
       let minute = (abs(seconds) / 60) % 60
-      var offset = pad(String(hour), with: "0", length: 2) + pad(String(minute), with: "0", length: 2)
+      let offset = pad(String(hour), with: "0", length: 2) + pad(String(minute), with: "0", length: 2)
       return (seconds < 0 ? "-" : "+") + offset
-    case let .Meridian: return timestamp.hour > 12 ? "PM": "AM"
+    case .Meridian: return timestamp.hour > 12 ? "PM": "AM"
     }
   }
   
   /**
     This method parses a number from a string.
 
-    :param: string    The string we are reading.
-    :param: length    The number of digits that we should read.
-    :param: padding   A character that can appear at the start to pad the
+    - parameter string:    The string we are reading.
+    - parameter length:    The number of digits that we should read.
+    - parameter padding:   A character that can appear at the start to pad the
                       string.
-    :returns:         A tuple containing the number and the unconsumed part of
+    - returns:         A tuple containing the number and the unconsumed part of
                       the string. If we cannot read the number, the number will
                       be zero and the string will be nil.
     */
   private func parseNumber(from string: String, length: Int, padding: Character?) -> (Int,String?) {
     var substring = string.substringToIndex(advance(string.startIndex, length))
     var realStartIndex = -1
-    for (index,character) in enumerate(substring.unicodeScalars) {
+    for (index,character) in substring.unicodeScalars.enumerate() {
       if padding != nil && padding! != "0" && String(character) == String(padding!) {
         continue
       }
@@ -412,7 +412,7 @@ public enum TimeFormatComponent: TimeFormatter {
       }
     }
     substring = substring.substringFromIndex(advance(substring.startIndex, realStartIndex))
-    if let value = substring.toInt() {
+    if let value = Int(substring) {
       return (value, string.substringFromIndex(advance(string.startIndex, length)))
     }
     else {
@@ -424,13 +424,13 @@ public enum TimeFormatComponent: TimeFormatter {
     This method extracts a numeric value from a text component at the beginning
     of a string.
 
-    :param: string    The string we are reading.
-    :param: key       The key that identifies this component in the
+    - parameter string:    The string we are reading.
+    - parameter key:       The key that identifies this component in the
                       translations, between the calendar identifier and the
                       index.
-    :param: calendar  The calendar that the date is formatted in.
-    :param: range     The range of valid values for the component.
-    :returns:         A tuple containing the number and the unconsumed part of
+    - parameter calendar:  The calendar that the date is formatted in.
+    - parameter range:     The range of valid values for the component.
+    - returns:         A tuple containing the number and the unconsumed part of
                       the string. If we cannot read the number, the number will
                       be zero and the string will be nil.
     */
@@ -439,7 +439,7 @@ public enum TimeFormatComponent: TimeFormatter {
     for value in range {
       if let textValue = localization.fetch("dates.\(calendar.identifier).\(key).\(value)") {
         if string.hasPrefix(textValue) {
-          return (value,string.substringFromIndex(advance(string.startIndex, count(textValue))))
+          return (value,string.substringFromIndex(advance(string.startIndex, textValue.characters.count)))
         }
       }
     }
@@ -455,23 +455,22 @@ public enum TimeFormatComponent: TimeFormatter {
     
     If the string does not match this formatter, the should return nil.
     
-    :param: string      The string to parse.
-    :param: container   The container for the time information.
-    :param: calendar    The calendar that the date is formatted in.
-    :returns:           The remaining string.
+    - parameter string:      The string to parse.
+    - parameter container:   The container for the time information.
+    - parameter calendar:    The calendar that the date is formatted in.
+    - returns:           The remaining string.
     :todo:              Parsing more types of components.
     */
   public func parseTime(from string: String, inout into container: (year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int, nanosecond: Double), calendar: Calendar = GregorianCalendar()) -> String? {
-    var modifiedContainer = container
     switch(self) {
     case let .Literal(literal):
       if string.hasPrefix(literal) {
-        return string.substringFromIndex(advance(string.startIndex, count(literal)))
+        return string.substringFromIndex(advance(string.startIndex, literal.characters.count))
       }
       else {
         return nil
       }
-    case let .YearWith(padding,length,truncate):
+    case let .YearWith(padding,length,_):
       let (year,result) = parseNumber(from: string, length: length, padding: padding)
       if result != nil {
         container.year = year
@@ -496,7 +495,7 @@ public enum TimeFormatComponent: TimeFormatter {
         container.day = day
       }
       return result
-    case let .HourWith(twelveHour, padding):
+    case let .HourWith(_, padding):
       let (hour,result) = parseNumber(from: string, length: 2, padding: padding)
       if result != nil {
         container.hour = hour
@@ -517,36 +516,36 @@ public enum TimeFormatComponent: TimeFormatter {
       }
       return result
     case .WeekDay:
-      let (weekDay, result) = parseNumber(from: string, length: 1, padding: nil)
+      let (_, result) = parseNumber(from: string, length: 1, padding: nil)
       return result
     case let .WeekDayName(abbreviate):
       let key = abbreviate ? "week_day_names.abbreviated" : "week_day_names.full"
-      let (weekDay, result) = parseText(from: string, key: key, calendar: calendar, range: 1...calendar.daysInWeek)
+      let (_, result) = parseText(from: string, key: key, calendar: calendar, range: 1...calendar.daysInWeek)
       return result
     case .EpochSeconds:
       return nil
     case .TimeZone:
-      if count(string) > 3 {
+      if string.characters.count > 3 {
         return string.substringFromIndex(advance(string.startIndex, 3))
       }
       else {
         return ""
       }
     case .TimeZoneOffset:
-      if count(string) < 6 {
+      if string.characters.count < 6 {
         return nil
       }
       if (string[string.startIndex] != "+" && string[string.startIndex] != "-") || string[advance(string.startIndex, 3)] != ":" {
         return nil
       }
-      let hours = string.substringWithRange(advance(string.startIndex, 1)...advance(string.startIndex, 2)).toInt()
-      let minutes = string.substringWithRange(advance(string.startIndex, 4)...advance(string.startIndex, 5)).toInt()
+      let hours = Int(string.substringWithRange(advance(string.startIndex, 1)...advance(string.startIndex, 2)))
+      let minutes = Int(string.substringWithRange(advance(string.startIndex, 4)...advance(string.startIndex, 5)))
       if hours == nil || minutes == nil {
         return nil
       }
       return string.substringFromIndex(advance(string.startIndex, 6))
     case .Meridian:
-      if count(string) < 2 {
+      if string.characters.count < 2 {
         return nil
       }
       let index = advance(string.startIndex, 2)
@@ -575,7 +574,7 @@ extension TimeFormatComponent: StringLiteralConvertible {
   /**
     This method initializes a time format component with a string literal.
     
-    :param: value   The string literal.
+    - parameter value:   The string literal.
     */
   public init(stringLiteral value: StringLiteralType) {
     self = .Literal(value)
@@ -584,7 +583,7 @@ extension TimeFormatComponent: StringLiteralConvertible {
   /**
     This method initializes a time format component with a string literal.
   
-    :param: value   The string literal.
+    - parameter value:   The string literal.
   */
   public init(unicodeScalarLiteral value: StringLiteralType) {
     self = .Literal(value)
@@ -593,7 +592,7 @@ extension TimeFormatComponent: StringLiteralConvertible {
   /**
     This method initializes a time format component with a string literal.
   
-    :param: value   The string literal.
+    - parameter value:   The string literal.
   */
   public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
     self = .Literal(value)

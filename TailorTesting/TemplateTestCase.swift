@@ -23,16 +23,16 @@ public class TemplateTestCase: TailorTestCase {
   /**
     The contents of the template after rendering.
     */
-  public var contents: String { get { return (template?.buffer as? String) ?? "" } }
+  public var contents: String { get { return (template!.buffer as String) ?? "" } }
   
   /**
     This method builds the controller for the template.
 
-    :param: type          The type of controller that will be rendering the 
+    - parameter type:          The type of controller that will be rendering the 
                           template.
-    :param: actionName    The name of the  action on the controller that is
+    - parameter actionName:    The name of the  action on the controller that is
                           being called.
-    :param: user          The user who is signed in to the controller.
+    - parameter user:          The user who is signed in to the controller.
     */
   public func setUpController(type: Controller.Type, actionName: String = "index", user: User! = nil) {
     
@@ -50,15 +50,15 @@ public class TemplateTestCase: TailorTestCase {
     anything other than the template type you need to check, you can add those
     assertions in the block you provide to this method.
     
-    :param: templateType      The type of template that are looking for.
-    :param: message           The message to show if the assertion fails.
-    :param: file              The file that the assertion is coming from. You
+    - parameter templateType:      The type of template that are looking for.
+    - parameter message:           The message to show if the assertion fails.
+    - parameter file:              The file that the assertion is coming from. You
                               should generally omit this, since it will be
                               provided automatically.
-    :param: line              The line that the assertion is coming from. You
+    - parameter line:              The line that the assertion is coming from. You
                               should generally omit this, since it will be
                               provided automatically.
-    :param: templateChecker   A block that can perform additional checks on the
+    - parameter templateChecker:   A block that can perform additional checks on the
                               template.
     */
   public func assertRenderedTemplate<TemplateType: Template>(templateType: TemplateType.Type, message: String = "", file: String = __FILE__, line: UInt = __LINE__, _ templateChecker: (TemplateType)->() = {_ in}) {
@@ -89,15 +89,15 @@ public class TemplateTestCase: TailorTestCase {
     the template at least once with details matching what the block is looking
     for.
   
-    :param: templateType      The type of template that are looking for.
-    :param: message           The message to show if the assertion fails.
-    :param: file              The file that the assertion is coming from. You
+    - parameter templateType:      The type of template that are looking for.
+    - parameter message:           The message to show if the assertion fails.
+    - parameter file:              The file that the assertion is coming from. You
                               should generally omit this, since it will be
                               provided automatically.
-    :param: line              The line that the assertion is coming from. You
+    - parameter line:              The line that the assertion is coming from. You
                               should generally omit this, since it will be
                               provided automatically.
-    :param: templateChecker   A block that determines if the template is the one
+    - parameter templateChecker:   A block that determines if the template is the one
                               we are looking for.
   */
   public func assertRenderedTemplate<TemplateType: Template>(templateType: TemplateType.Type, message: String = "", file: String = __FILE__, line: UInt = __LINE__, _ templateChecker: (TemplateType)->(Bool)) {

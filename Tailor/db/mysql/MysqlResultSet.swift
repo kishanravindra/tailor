@@ -17,7 +17,7 @@ public final class MysqlResultSet {
   /**
     This method initializes a result set.
 
-    :param: statement   The statement whose result set this represents.
+    - parameter statement:   The statement whose result set this represents.
     */
   public init(statement: UnsafeMutablePointer<MYSQL_STMT>) {
     let result = mysql_stmt_result_metadata(statement)

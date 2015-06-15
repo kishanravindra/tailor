@@ -45,8 +45,8 @@ public struct Request {
   /**
     This method initializes a request.
 
-    :param: clientAddress   The client's IP address.
-    :param: data            The full request data.
+    - parameter clientAddress:   The client's IP address.
+    - parameter data:            The full request data.
     */
   public init(clientAddress: String, data: NSData) {
     self.clientAddress = clientAddress
@@ -63,7 +63,7 @@ public struct Request {
     
     let headerString = NSString(data: headerData, encoding: NSUTF8StringEncoding) ?? ""
     
-    var lines = headerString.componentsSeparatedByString("\r\n") as! [String]
+    var lines = headerString.componentsSeparatedByString("\r\n") as [String]
     let introMatches = Request.extractWithPattern(lines[0], pattern: "^([\\S]*) ([\\S]*) HTTP/([\\d.]*)$")
     
     if introMatches.isEmpty {
@@ -191,18 +191,24 @@ public struct Request {
   /**
     This method extracts the matching subparts of a line using a regex.
 
-    :param: line      The line to extract information from.
-    :param: pattern   The pattern to match against.
-    :returns:         The matched subparts, or an empty array if there was no
+    - parameter line:      The line to extract information from.
+    - parameter pattern:   The pattern to match against.
+    - returns:         The matched subparts, or an empty array if there was no
                       match.
     */
   public static func extractWithPattern(line : String, pattern : String) -> [String] {
-    let regex = NSRegularExpression(pattern: pattern, options: nil, error: nil)
+    let regex: NSRegularExpression?
+    do {
+      regex = try NSRegularExpression(pattern: pattern, options: [])
+    } catch _ {
+      regex = nil
+    }
     var sections : [String] = []
     
-    regex?.enumerateMatchesInString(line, options: nil, range: NSMakeRange(0,count(line)), usingBlock: {
-      (result: NSTextCheckingResult!, _, _) in
+    regex?.enumerateMatchesInString(line, options: [], range: NSMakeRange(0,line.characters.count), usingBlock: {
+      (result, _, _) in
       sections = []
+      guard let result = result else { return }
       for index in 1..<result.numberOfRanges {
         let range = result.rangeAtIndex(index)
         let startIndex = advance(line.startIndex, range.location)
@@ -217,12 +223,12 @@ public struct Request {
   /**
     This method decodes a query string into a dictionary of parameters.
 
-    :param: string          The query string.
-    :returns:               The parameters.
+    - parameter string:          The query string.
+    - returns:               The parameters.
     */
   public static func decodeQueryString(string: String) -> [String:String] {
     var params: [String:String] = [:]
-    var simplifiedString = string.stringByReplacingOccurrencesOfString("+", withString: "%20")
+    let simplifiedString = string.stringByReplacingOccurrencesOfString("+", withString: "%20")
     for param in simplifiedString.componentsSeparatedByString("&") {
       let components = param.componentsSeparatedByString("=").map {
         $0.stringByReplacingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
@@ -243,11 +249,11 @@ public struct Request {
     This method crafts a request with desired properties. It is intended for use
     in testing.
 
-    :param: parameters      The request parameters.
-    :param: sessionData     The data for the session.
-    :param: cookies         The cookie data.
-    :param: method          The HTTP method
-    :param: clientAddress   The client's remote IP address.
+    - parameter parameters:      The request parameters.
+    - parameter sessionData:     The data for the session.
+    - parameter cookies:         The cookie data.
+    - parameter method:          The HTTP method
+    - parameter clientAddress:   The client's remote IP address.
     */
   public init(clientAddress: String = "0.0.0.0", method: String = "GET", parameters: [String: String] = [:], sessionData: [String: String] = [:], cookies: [String:String] = [:]) {
     var lines = [
@@ -275,12 +281,12 @@ public struct Request {
       if !queryString.isEmpty {
         queryString += "&"
       }
-      let convertedValue = value.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
-      queryString += key + "=" + value
+      let convertedValue = value.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding) ?? ""
+      queryString += key + "=" + convertedValue
     }
     lines.append(queryString)
-    var stringData = reduce(lines, "") { buffer, element in buffer.isEmpty ? element : buffer + "\r\n" + element }
-    var data = stringData.dataUsingEncoding(NSUTF8StringEncoding)!
+    let stringData = lines.reduce("") { buffer, element in buffer.isEmpty ? element : buffer + "\r\n" + element }
+    let data = stringData.dataUsingEncoding(NSUTF8StringEncoding)!
     self.init(clientAddress: clientAddress, data: data)
   }
 }

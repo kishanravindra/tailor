@@ -29,9 +29,9 @@ public class User : Persistable {
   /**
     This method creates a record for a new user account.
 
-    :param: emailAddress  The new user's email address
+    - parameter emailAddress:  The new user's email address
 
-    :param: password      The new user's password. This will not be stored on
+    - parameter password:      The new user's password. This will not be stored on
                           the record; it will be encrypted immediately and
                           stored in the encryptedPassword.
     */
@@ -52,7 +52,7 @@ public class User : Persistable {
     The row must have a column for email_address, encrypted_password, and id.
     If it does not, this will return nil.
   
-    :param: databaseRow   The information from the database.
+    - parameter databaseRow:   The information from the database.
     */
   public required init?(databaseRow: [String:DatabaseValue]) {
     if let emailAddress = databaseRow["email_address"]?.stringValue,
@@ -88,8 +88,8 @@ public class User : Persistable {
   /**
     This method determines if a password is correct for this user.
 
-    :param: password    The password to check.
-    :returns:           Whether the password is correct.
+    - parameter password:    The password to check.
+    - returns:           Whether the password is correct.
     */
   public func hasPassword(password: String) -> Bool {
     return PasswordHasher.isMatch(password, encryptedHash: self.encryptedPassword)
@@ -101,7 +101,7 @@ public class User : Persistable {
     If the email address does not belong to any user, or the password is
     incorrect, this will return nil.
 
-    :returns: The user
+    - returns: The user
     */
   public class func authenticate(emailAddress: String, password: String) -> User? {
     let users = Query<User>().filter(["email_address": emailAddress]).all()

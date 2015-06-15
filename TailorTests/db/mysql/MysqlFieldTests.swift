@@ -21,7 +21,7 @@ class MysqlFieldTests : TailorTestCase {
   func testInitializationSetsFieldInformation() {
     let field = MysqlField(field: getField("SELECT brim_size FROM hats"))
     self.assert(field.name, equals: "brim_size")
-    self.assert(field.bufferType.value, equals: MYSQL_TYPE_LONG.value)
+    self.assert(field.bufferType.rawValue, equals: MYSQL_TYPE_LONG.rawValue)
     self.assert(field.bufferLength, equals: 1)
     self.assert(field.bufferSize, equals: UInt(sizeof(CInt)))
   }

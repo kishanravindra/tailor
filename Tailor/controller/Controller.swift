@@ -48,9 +48,9 @@ public class Controller {
     /**
       This method creates an action.
 
-      :param: name      The name of the action.
-      :param: body      The body of the action.
-      :param: filters   The filters that should be run before the body is
+      - parameter name:      The name of the action.
+      - parameter body:      The body of the action.
+      - parameter filters:   The filters that should be run before the body is
                         called.
       */
     public init(name: String, body: (Controller)->()->(), filters: [(Controller)->()->Bool] = []) {
@@ -115,8 +115,8 @@ public class Controller {
     the general controller to the specialized type. If the case fails, this will
     return a block that always renders a 404 page.
   
-    :param: block   The block with the specialized controller type.
-    :returns:       The block with the general controller type.
+    - parameter block:   The block with the specialized controller type.
+    - returns:       The block with the general controller type.
     */
   public class func wrap<ControllerType: Controller>(block: (ControllerType)->()->())->(Controller)->()->() {
     return {
@@ -138,8 +138,8 @@ public class Controller {
     the general controller to the specialized type. If the case fails, this will
     return a block that always renders a 404 page.
     
-    :param: block   The block with the specialized controller type.
-    :returns:       The block with the general controller type.
+    - parameter block:   The block with the specialized controller type.
+    - returns:       The block with the general controller type.
     */
   public class func wrap<ControllerType: Controller>(block: (ControllerType)->()->(Bool))->(Controller)->()->(Bool) {
     return {
@@ -161,9 +161,9 @@ public class Controller {
   /**
     This method creates a controller for handling a request.
 
-    :param: request       The request that we are processing
-    :param: actionName    The name of the action that we are executing.
-    :param: callback      The callback to give the response to.
+    - parameter request:       The request that we are processing
+    - parameter actionName:    The name of the action that we are executing.
+    - parameter callback:      The callback to give the response to.
     */
   public required init(request: Request, actionName: String, callback: Connection.ResponseCallback) {
     self.request = request
@@ -176,7 +176,7 @@ public class Controller {
       body: Controller.render404
     )
     
-    if let userId = self.session["userId"]?.toInt() {
+    if let userId = Int(self.session["userId"] ?? "") {
       self.currentUser = Query<User>().find(userId)
     }
   }
@@ -222,7 +222,7 @@ public class Controller {
   /**
     This method generates a response with a template.
   
-    :param: template    The template to use for the request.
+    - parameter template:    The template to use for the request.
     */
   public func respondWith(template: Template) {
     let contents = self.layout(controller: self, template: template).generate()
@@ -236,7 +236,7 @@ public class Controller {
   /**
     This method generates a response with a redirect to a different path.
   
-    :param: path      The path to redirect to.
+    - parameter path:      The path to redirect to.
     */
   public func redirectTo(path: String) {
     self.generateResponse {
@@ -253,15 +253,15 @@ public class Controller {
     any of the current request's parameters into the new path, if they are part
     of that path.
   
-    :param: controllerName  The controller to link to. This will default to the
+    - parameter controllerName:  The controller to link to. This will default to the
                             current controller.
-    :param: actionName      The action to link to.
-    :param: parameters      Additional parameters for the path.
-    :param: domain          The domain to use for the URL. If this is omitted,
+    - parameter actionName:      The action to link to.
+    - parameter parameters:      Additional parameters for the path.
+    - parameter domain:          The domain to use for the URL. If this is omitted,
                             the result will just be the path part of the URL.
-    :param: https           Whether the URL should be https or http. If the
+    - parameter https:           Whether the URL should be https or http. If the
                             domain is omitted, this is ignored.
-    :returns:               The path
+    - returns:               The path
   */
   public func pathFor(controllerName: String? = nil, actionName: String? = nil, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
     var path = Application.sharedApplication().routeSet.pathFor(
@@ -284,13 +284,13 @@ public class Controller {
   /**
     This method generates a response with a redirect to a generated URL.
 
-    :param: controllerName  The controller to link to. This will default to the
+    - parameter controllerName:  The controller to link to. This will default to the
                             current controller.
-    :param: actionName      The action to link to.
-    :param: parameters      Additional parameters for the path.
+    - parameter actionName:      The action to link to.
+    - parameter parameters:      Additional parameters for the path.
     */
   public func redirectTo(controllerName: String? = nil, actionName: String? = nil, parameters: [String:String] = [:]) {
-    let path = self.pathFor(controllerName: controllerName, actionName: actionName, parameters: parameters) ?? "/"
+    let path = self.pathFor(controllerName, actionName: actionName, parameters: parameters) ?? "/"
     self.redirectTo(path)
   }
   
@@ -301,14 +301,14 @@ public class Controller {
     version provides a more concise syntax when redirecting to other
     controllers.
   
-    :param: controllerName  The controller to link to. This will default to the
+    - parameter controllerName:  The controller to link to. This will default to the
             current controller.
-    :param: actionName      The name of the action to link to.
-    :param: parameters      Additional parameters for the path.
+    - parameter actionName:      The name of the action to link to.
+    - parameter parameters:      Additional parameters for the path.
   */
   public func redirectTo(controller: Controller.Type, actionName: String, parameters: [String:String] = [:]) {
     self.redirectTo(
-      controllerName: controller.name,
+      controller.name,
       actionName: actionName,
       parameters: parameters
     )
@@ -333,7 +333,7 @@ public class Controller {
     This will set them in the controller's user field and store their id in the
     session for future requests.
   
-    :param: user    The user to sign in.
+    - parameter user:    The user to sign in.
     */
   public func signIn(user: User) {
     self.currentUser = user
@@ -354,9 +354,9 @@ public class Controller {
   /**
     This method signs in a user by providing their credentials.
     
-    :param: emailAddress  The email address the user has provided.
-    :param: password      The password the user has provided.
-    :returns:             Whether we were able to authenticate the user.
+    - parameter emailAddress:  The email address the user has provided.
+    - parameter password:      The password the user has provided.
+    - returns:             Whether we were able to authenticate the user.
   */
   public func signIn(emailAddress: String, password: String) -> Bool {
     if let user = User.authenticate(emailAddress, password: password) {
@@ -383,11 +383,11 @@ public class Controller {
   /**
     This method localizes text.
 
-    :param: key     The key for the localized text
-    :param: locale  The locale that the localized text should be in. If this is
+    - parameter key:     The key for the localized text
+    - parameter locale:  The locale that the localized text should be in. If this is
                     not provided, it will use the locale from the default
                     localization on this controller.
-    :returns:       The localized text
+    - returns:       The localized text
     */
   public func localize(key: String, locale: String? = nil) -> String? {
     var fullKey = key
@@ -408,9 +408,9 @@ public class Controller {
     This method calls an action manually on a controller. It is intended for use
     in testing.
 
-    :param: actionName  The name of the action to call.
-    :param: request     The request to provide to the controller.
-    :param: callback    The callback to call with the response.
+    - parameter actionName:  The name of the action to call.
+    - parameter request:     The request to provide to the controller.
+    - parameter callback:    The callback to call with the response.
     */
   public class func callAction(actionName: String, _ request: Request, callback: (Response,Controller)->()) {
     var controller: Controller!
@@ -429,8 +429,8 @@ public class Controller {
   
     This will give the controller a request with no parameters.
 
-    :param: action    The name of the action to call.
-    :param: callback  The callback to call with the response.
+    - parameter action:    The name of the action to call.
+    - parameter callback:  The callback to call with the response.
     */
   public class func callAction(action: String, callback: (Response,Controller)->()) {
     self.callAction(action, Request(), callback: callback)
@@ -440,10 +440,10 @@ public class Controller {
     This method calls an action manually on a controller. It is intended for use
     in testing.
     
-    :param: action        The name of the action to call.
-    :param: user          The user for the request.
-    :param: parameters    The request parameters.
-    :param: callback      The callback to call with the response.
+    - parameter action:        The name of the action to call.
+    - parameter user:          The user for the request.
+    - parameter parameters:    The request parameters.
+    - parameter callback:      The callback to call with the response.
   */
   public class func callAction(action: String, user: User?, parameters: [String:String], callback: (Response,Controller)->()) {
     var sessionData = [String:String]()
@@ -460,9 +460,9 @@ public class Controller {
     This method calls an action manually on a controller. It is intended for use
     in testing.
     
-    :param: action        The name of the action to call.
-    :param: parameters    The request parameters.
-    :param: callback      The callback to call with the response.
+    - parameter action:        The name of the action to call.
+    - parameter parameters:    The request parameters.
+    - parameter callback:      The callback to call with the response.
   */
   public class func callAction(action: String, parameters: [String:String], callback: (Response,Controller)->()) {
     self.callAction(action, user: nil, parameters: parameters, callback: callback)
@@ -472,9 +472,9 @@ public class Controller {
     This method calls an action manually on a controller. It is intended for use
     in testing.
     
-    :param: action        The name of the action to call.
-    :param: user          The user for the request.
-    :param: callback      The callback to call with the response.
+    - parameter action:        The name of the action to call.
+    - parameter user:          The user for the request.
+    - parameter callback:      The callback to call with the response.
   */
   public class func callAction(action: String, user: User?, callback: (Response,Controller)->()) {
     self.callAction(action, user: user, parameters: [:], callback: callback)

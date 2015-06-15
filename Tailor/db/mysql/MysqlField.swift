@@ -26,7 +26,7 @@ public struct MysqlField {
   /**
     This method initializes the field.
 
-    :param: field   The raw field data.
+    - parameter field:   The raw field data.
     */
   public init(field: MYSQL_FIELD) {
     self.field = field
@@ -40,10 +40,10 @@ public struct MysqlField {
     
     self.bufferType = field.type
     self.isBinary = (field.charsetnr == 63) && (
-      field.type.value == MYSQL_TYPE_BLOB.value ||
-      field.type.value == MYSQL_TYPE_TINY_BLOB.value ||
-      field.type.value == MYSQL_TYPE_MEDIUM_BLOB.value ||
-      field.type.value == MYSQL_TYPE_LONG_BLOB.value
+      field.type.rawValue == MYSQL_TYPE_BLOB.rawValue ||
+      field.type.rawValue == MYSQL_TYPE_TINY_BLOB.rawValue ||
+      field.type.rawValue == MYSQL_TYPE_MEDIUM_BLOB.rawValue ||
+      field.type.rawValue == MYSQL_TYPE_LONG_BLOB.rawValue
     )
     (self.bufferSize, self.bufferLength) = MysqlField.bufferSize(field.type)
   }
@@ -51,36 +51,36 @@ public struct MysqlField {
   /**
     This method gets the size of a buffer for holding a MySQL field.
 
-    :returns:
+    - returns:
       A tuple holding the size of the itmes in the buffer and the number of
       itmes. in the buffer.
     */
   public static func bufferSize(type: enum_field_types) -> (size: UInt, count: UInt) {
     var size = UInt(sizeof(UInt8))
     var length = UInt(1)
-    switch type.value {
-    case MYSQL_TYPE_TINY.value, MYSQL_TYPE_BIT.value:
+    switch type.rawValue {
+    case MYSQL_TYPE_TINY.rawValue, MYSQL_TYPE_BIT.rawValue:
       size = UInt(sizeof(CChar))
-    case MYSQL_TYPE_SHORT.value:
+    case MYSQL_TYPE_SHORT.rawValue:
       size = UInt(sizeof(CShort))
-    case MYSQL_TYPE_LONG.value, MYSQL_TYPE_INT24.value:
+    case MYSQL_TYPE_LONG.rawValue, MYSQL_TYPE_INT24.rawValue:
       size = UInt(sizeof(CInt))
-    case MYSQL_TYPE_LONGLONG.value:
+    case MYSQL_TYPE_LONGLONG.rawValue:
       size = UInt(sizeof(CLongLong))
-    case MYSQL_TYPE_FLOAT.value:
+    case MYSQL_TYPE_FLOAT.rawValue:
       size = UInt(sizeof(CFloat))
-    case MYSQL_TYPE_DOUBLE.value:
+    case MYSQL_TYPE_DOUBLE.rawValue:
       size = UInt(sizeof(CDouble))
-    case MYSQL_TYPE_TIME.value, MYSQL_TYPE_DATE.value, MYSQL_TYPE_DATETIME.value,  MYSQL_TYPE_TIMESTAMP.value:
+    case MYSQL_TYPE_TIME.rawValue, MYSQL_TYPE_DATE.rawValue, MYSQL_TYPE_DATETIME.rawValue,  MYSQL_TYPE_TIMESTAMP.rawValue:
       size = UInt(sizeof(MYSQL_TIME))
-    case MYSQL_TYPE_TINY_BLOB.value:
+    case MYSQL_TYPE_TINY_BLOB.rawValue:
       length = 1 << 8
-    case MYSQL_TYPE_BLOB.value:
+    case MYSQL_TYPE_BLOB.rawValue:
       length = 1 << 16
-    case MYSQL_TYPE_MEDIUM_BLOB.value:
+    case MYSQL_TYPE_MEDIUM_BLOB.rawValue:
       length = 1 << 24
       break;
-    case MYSQL_TYPE_LONG_BLOB.value:
+    case MYSQL_TYPE_LONG_BLOB.rawValue:
       length = 1 << 31
     default:
       length = 1024

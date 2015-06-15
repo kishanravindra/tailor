@@ -19,7 +19,7 @@ public class DatabaseConnection {
     /**
       This method initializes a row with a hash of data.
     
-      :param: data   The data for the row.
+      - parameter data:   The data for the row.
       */
     public init(data: [String:DatabaseValue]) {
       self.data = data
@@ -29,7 +29,7 @@ public class DatabaseConnection {
       This method initializes a row with a hash of values that can be mapped
       to database values.
 
-      :param: rawData   The unwrapped data.
+      - parameter rawData:   The unwrapped data.
       */
     public convenience init(rawData: [String:DatabaseValueConvertible]) {
       var wrappedData = [String:DatabaseValue]()
@@ -89,8 +89,8 @@ public class DatabaseConnection {
   /**
     This method executes a query and returns a result set.
     
-    :param: query           The text of the query.
-    :param: bindParameters  Parameters to interpolate into the query on the
+    - parameter query:           The text of the query.
+    - parameter bindParameters:  Parameters to interpolate into the query on the
                             database side.
     :returns                The interpreted result set.
     */
@@ -101,8 +101,8 @@ public class DatabaseConnection {
   /**
     This method executes a query and returns a result set.
     
-    :param: query           The text of the query.
-    :param: bindParameters  Parameters to interpolate into the query on the
+    - parameter query:           The text of the query.
+    - parameter bindParameters:  Parameters to interpolate into the query on the
                             database side.
     :returns                The interpreted result set.
   */
@@ -114,8 +114,8 @@ public class DatabaseConnection {
   /**
   This method executes a query and returns a result set.
   
-  :param: query           The text of the query.
-  :param: bindParameters  Parameters to interpolate into the query on the
+  - parameter query:           The text of the query.
+  - parameter bindParameters:  Parameters to interpolate into the query on the
   database side.
   :returns                The interpreted result set.
   */
@@ -127,13 +127,13 @@ public class DatabaseConnection {
     This method sanitizes a column name so that it can be safely interpolated
     into a query.
 
-    :param: columnName    The unsanitized version
-    :returns:             The sanitized version.
+    - parameter columnName:    The unsanitized version
+    - returns:             The sanitized version.
     */
   public class func sanitizeColumnName(columnName: String) -> String {
-    let keyRegex = NSRegularExpression(pattern: "[^A-Za-z_0-9]", options: nil, error: nil)!
-    let range = NSMakeRange(0, count(columnName))
-    let sanitizedColumn = keyRegex.stringByReplacingMatchesInString(columnName, options: nil, range: range, withTemplate: "")
+    let keyRegex = try! NSRegularExpression(pattern: "[^A-Za-z_0-9]", options: [])
+    let range = NSMakeRange(0, columnName.characters.count)
+    let sanitizedColumn = keyRegex.stringByReplacingMatchesInString(columnName, options: [], range: range, withTemplate: "")
     return sanitizedColumn
   }
   
@@ -142,7 +142,7 @@ public class DatabaseConnection {
   /**
     This method executes a block within a transaction on the shared connection.
   
-    :param: block   The block to execute.
+    - parameter block:   The block to execute.
     */
   public class func transaction(block: ()->()) {
     self.sharedConnection().transaction(block)
@@ -151,7 +151,7 @@ public class DatabaseConnection {
   /**
     This method executes a block within a transition.
   
-    :param: block   The block to execute.
+    - parameter block:   The block to execute.
     */
   public func transaction(block: ()->()) {
     executeQuery("START TRANSACTION;")

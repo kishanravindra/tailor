@@ -59,7 +59,7 @@ class TestConnection : DatabaseConnection {
   }
   
   class func withTestConnection(@noescape block: (TestConnection)->()) {
-    var dictionary = NSThread.currentThread().threadDictionary
+    let dictionary = NSThread.currentThread().threadDictionary
     let oldConnection: AnyObject? = dictionary["databaseConnection"]
     let newConnection = TestConnection(config: [:])
     dictionary["databaseConnection"] = newConnection

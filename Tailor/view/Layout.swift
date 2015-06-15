@@ -11,8 +11,8 @@ public class Layout: Template {
   /**
     This method initializes a layout.
 
-    :param: controller  The controller that is rendering the template.
-    :param: template    The template containing the page body.
+    - parameter controller:  The controller that is rendering the template.
+    - parameter template:    The template containing the page body.
     */
   public required init(controller: Controller, template: Template) {
     self.template = template ?? Template(controller: controller)
@@ -25,7 +25,7 @@ public class Layout: Template {
     A layout with no template would not be very useful, but we provide this for
     compatibility with the general template initializers.
 
-    :param: controller  The controller that is rendering the template.
+    - parameter controller:  The controller that is rendering the template.
     */
   public override convenience init(controller: Controller) {
     self.init(controller: controller, template: Template(controller: controller))

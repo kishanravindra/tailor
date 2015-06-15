@@ -243,18 +243,18 @@ class QueryTests: TailorTestCase {
   }
   
   func testAllFetchesRecordsUsingQuery() {
-    let hat1 = saveRecord(Hat(color: "black"))!
+    saveRecord(Hat(color: "black"))!
     let hat2 = saveRecord(Hat(color: "black"))!
-    let hat3 = saveRecord(Hat(color: "red"))!
+    saveRecord(Hat(color: "red"))!
     let hat4 = saveRecord(Hat(color: "black"))!
     let results = Query<Hat>().filter(["color": "black"]).order("id", .OrderedDescending).limit(2).all()
     assert(results, equals: [hat4, hat2], message: "fetches the correct records")
   }
   
   func testFirstGetsFirstMatchingRecord() {
-    let hat1 = saveRecord(Hat(color: "red"))!
+    saveRecord(Hat(color: "red"))!
     let hat2 = saveRecord(Hat(color: "black"))!
-    let hat3 = saveRecord(Hat(color: "black"))!
+    saveRecord(Hat(color: "black"))!
     let query = Query<Hat>().filter(["color": "black"]).order("id", .OrderedAscending)
     if let record = query.first() {
       assert(record, equals: hat2, message: "fetches the correct record")
@@ -265,17 +265,17 @@ class QueryTests: TailorTestCase {
   }
   
   func testFirstReturnsNilWithNoMatch() {
-    let hat1 = saveRecord(Hat(color: "red"))!
-    let hat2 = saveRecord(Hat(color: "black"))!
-    let hat3 = saveRecord(Hat(color: "black"))!
+    saveRecord(Hat(color: "red"))!
+    saveRecord(Hat(color: "black"))!
+    saveRecord(Hat(color: "black"))!
     let query = Query<Hat>().filter(["color": "green"])
     XCTAssertTrue(query.first() == nil, "returns nil")
   }
   
   func testLastGetsLastRecordBasedOnOrdering() {
-    let hat1 = saveRecord(Hat(color: "black"))!
+    saveRecord(Hat(color: "black"))!
     let hat2 = saveRecord(Hat(color: "red"))!
-    let hat3 = saveRecord(Hat(color: "blue"))!
+    saveRecord(Hat(color: "blue"))!
     let query = Query<Hat>().order("color", .OrderedAscending)
     let record = query.last()
     XCTAssertTrue(record != nil, "gets a record")
@@ -285,7 +285,7 @@ class QueryTests: TailorTestCase {
   }
   
   func testFindGetsRecordById() {
-    let hat1 = saveRecord(Hat(color: "red"))!
+    saveRecord(Hat(color: "red"))!
     let hat2 = saveRecord(Hat(color: "black"))!
     
     if let id=hat2.id, let record = Query<Hat>().find(id) {
@@ -297,7 +297,7 @@ class QueryTests: TailorTestCase {
   }
   
   func testFindReturnsNilWithNoMatchingRecord() {
-    let hat1 = saveRecord(Hat(color: "red"))!
+    saveRecord(Hat(color: "red"))!
     let hat2 = saveRecord(Hat(color: "black"))!
     
     XCTAssertTrue(Query<Hat>().find(hat2.id! + 1) == nil, "returns nil with no matching id")
@@ -305,17 +305,17 @@ class QueryTests: TailorTestCase {
   }
   
   func testCountGetsNumberOfMatchingRecords() {
-    let hat1 = saveRecord(Hat(color: "red"))!
-    let hat2 = saveRecord(Hat(color: "black"))!
-    let hat3 = saveRecord(Hat(color: "black"))!
+    _ = saveRecord(Hat(color: "red"))!
+    _ = saveRecord(Hat(color: "black"))!
+    _ = saveRecord(Hat(color: "black"))!
     let count = Query<Hat>().filter(["color": "black"]).count()
     assert(count, equals: 2, message: "finds two records")
   }
   
   func testIsEmptyIsTrueWithMatchingRecords() {
-    let hat1 = saveRecord(Hat(color: "red"))!
-    let hat2 = saveRecord(Hat(color: "black"))!
-    let hat3 = saveRecord(Hat(color: "black"))!
+    _ = saveRecord(Hat(color: "red"))!
+    _ = saveRecord(Hat(color: "black"))!
+    _ = saveRecord(Hat(color: "black"))!
     var query = Query<Hat>().filter(["color": "black"])
     XCTAssertFalse(query.isEmpty(), "is false when there are matches")
     query = Query<Hat>().filter(["color": "green"])
@@ -323,21 +323,21 @@ class QueryTests: TailorTestCase {
   }
   
   func testFetchAllWithCachingOnCachesResults() {
-    let hat1 = saveRecord(Hat(color: "red"))!
-    let hat2 = saveRecord(Hat(color: "black"))!
-    let hat3 = saveRecord(Hat(color: "black"))!
+    _ = saveRecord(Hat(color: "red"))!
+    _ = saveRecord(Hat(color: "black"))!
+    _ = saveRecord(Hat(color: "black"))!
     
     CacheStore.shared().clear()
     let query = Query<Hat>().filter(["color": "black"]).cached()
     let firstResults = query.all()
     assert(firstResults.count, equals: 2, message: "gets two results")
-    let hat4 = saveRecord(Hat(color: "black"))!
+    _ = saveRecord(Hat(color: "black"))!
     let secondResults = query.all()
     assert(secondResults.count, equals: 2, message: "still gets two results after one is created")
   }
   
   func testFetchAllWithCachingOnPreservesOriginalOrder() {
-    let hat1 = saveRecord(Hat(color: "red"))!
+    _ = saveRecord(Hat(color: "red"))!
     let hat2 = saveRecord(Hat(color: "black", brimSize: 10))!
     let hat3 = saveRecord(Hat(color: "black", brimSize: 11))!
     
@@ -351,9 +351,9 @@ class QueryTests: TailorTestCase {
   }
   
   func testFetchAllWithInjectionInCacheDoesNotCacheResults() {
-    let hat1 = saveRecord(Hat(color: "red"))!
-    let hat2 = saveRecord(Hat(color: "black"))!
-    let hat3 = saveRecord(Hat(color: "black"))!
+    _ = saveRecord(Hat(color: "red"))!
+    _ = saveRecord(Hat(color: "black"))!
+    _ = saveRecord(Hat(color: "black"))!
     
     CacheStore.shared().clear()
     let query = Query<Hat>().filter(["color": "black"]).cached()
@@ -363,22 +363,22 @@ class QueryTests: TailorTestCase {
     let cacheKey = "SELECT hats.* FROM hats WHERE hats.color=?(black)"
     XCTAssertNotNil(CacheStore.shared().read(cacheKey))
     CacheStore.shared().write(cacheKey, value: "0); DROP TABLE `hats`; SELECT (0")
-    let hat4 = saveRecord(Hat(color: "black"))!
+    _ = saveRecord(Hat(color: "black"))!
     let secondResults = query.all()
     assert(secondResults.count, equals: 3, message: "gets three results after one is created")
     assert(Query<Hat>().count(), equals: 4, message: "finds four total results")
   }
   
   func testFetchAllWithCachingOffDoesNotCacheResults() {
-    let hat1 = saveRecord(Hat(color: "red"))!
-    let hat2 = saveRecord(Hat(color: "black"))!
-    let hat3 = saveRecord(Hat(color: "black"))!
+    _ = saveRecord(Hat(color: "red"))!
+    _ = saveRecord(Hat(color: "black"))!
+    _ = saveRecord(Hat(color: "black"))!
     
     CacheStore.shared().clear()
     let query = Query<Hat>().filter(["color": "black"])
     let firstResults = query.all()
     assert(firstResults.count, equals: 2, message: "gets two results")
-    let hat4 = saveRecord(Hat(color: "black"))!
+    _ = saveRecord(Hat(color: "black"))!
     let secondResults = query.all()
     assert(secondResults.count, equals: 3, message: "gets three results after one is created")
   }

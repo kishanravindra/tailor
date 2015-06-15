@@ -29,7 +29,7 @@ class MysqlStatementTests: TailorTestCase {
       let result1 = results[0]
       let result2 = results[1]
       
-      let keys1 = sorted(result1.keys.array)
+      let keys1 = result1.keys.array.sort()
       self.assert(keys1, equals: ["id", "name"])
       if let id = result1["id"]?.intValue {
         self.assert(id, equals: 1)
@@ -44,7 +44,7 @@ class MysqlStatementTests: TailorTestCase {
         XCTFail()
       }
       
-      let keys2 = sorted(result2.keys.array)
+      let keys2 = result2.keys.array.sort()
       self.assert(keys2, equals: ["id", "name"])
       if let id = result2["id"]?.intValue {
         self.assert(id, equals: 2)
@@ -84,7 +84,7 @@ class MysqlStatementTests: TailorTestCase {
     if results.count == 1 {
       let result = results[0]
       
-      let keys = sorted(result.keys.array)
+      let keys = result.keys.array.sort()
       self.assert(keys, equals: ["id", "name"])
       if let id = result["id"]?.intValue {
         self.assert(id, equals: 2)
@@ -112,7 +112,7 @@ class MysqlStatementTests: TailorTestCase {
   func testExecuteWithInsertStatementPutsInsertIdOnStatement() {
     let statement = MysqlStatement(connection: connection, query: "INSERT INTO stores (name) VALUES (?)")
     let param = "1".databaseValue
-    let results = statement.execute([param])
+    statement.execute([param])
     assert(statement.insertId, equals: 1, message: "has the ID for the new row as the insertId")
   }
   

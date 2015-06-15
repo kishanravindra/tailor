@@ -29,9 +29,9 @@ public struct ValidationError: Equatable {
   /**
     This method creates a validation error.
 
-    :param: modelName   The name of the model the error is on.
-    :param: key         The field on the model with the error.
-    :param: data        Additional data giving details on the error.
+    - parameter modelName:   The name of the model the error is on.
+    - parameter key:         The field on the model with the error.
+    - parameter data:        Additional data giving details on the error.
     */
   public init(modelName: String, key: String, message: String, data: [String:String] = [:]) {
     self.modelName = modelName
@@ -53,12 +53,12 @@ public struct ValidationError: Equatable {
     If it cannot find content for any of those keys, it will return the raw
     message.
 
-    :param: localization    The localization to use to fetch the content.
-    :returns:               The description
+    - parameter localization:    The localization to use to fetch the content.
+    - returns:               The description
     */
   public func localize(localization: Localization) -> String {
-    var message = self.message.underscored()
-    var key = self.key.underscored()
+    let message = self.message.underscored()
+    let key = self.key.underscored()
     let keys = [
       "\(modelName).errors.\(key).\(message)",
       "\(modelName).errors.\(message)",

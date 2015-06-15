@@ -52,7 +52,7 @@ class TemplateTests: TailorTestCase {
         self.text("Test 2")
       }
     }
-    var template2 = TestTemplate(controller: controller)
+    let template2 = TestTemplate(controller: controller)
     template2.text("Test 1")
     assert(template2.buffer, equals: "Test 1", message: "starts out with hardcoded text")
     template2.generate()
@@ -165,7 +165,7 @@ class TemplateTests: TailorTestCase {
       actionName: controller.action.name,
       callback: controller.callback
     ))
-    template2.link(controllerName: "TestController", actionName: "index", parameters: ["id": "5"], attributes: ["class": "btn"]) {
+    template2.link("TestController", actionName: "index", parameters: ["id": "5"], attributes: ["class": "btn"]) {
       template2.text("Click here")
     }
     assert(template2.buffer, equals: "<a class=\"btn\" href=\"/test/path\">Click here</a>", message: "puts the tag in the buffer")

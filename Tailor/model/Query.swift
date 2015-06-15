@@ -32,18 +32,18 @@ public class Query<RecordType: Persistable> {
   /**
     This method builds a query from its component clause.
 
-    :param: copyFrom        The query that we should use as a baseline for the
+    - parameter copyFrom:        The query that we should use as a baseline for the
                             new query.
-    :param: selectClause    The fields that will be selected.
-    :param: whereClause     The portion of the query for filtering the result
+    - parameter selectClause:    The fields that will be selected.
+    - parameter whereClause:     The portion of the query for filtering the result
                             set.
-    :param: orderClause     The portion of the query specifying the order of the
+    - parameter orderClause:     The portion of the query specifying the order of the
                             returned results.
-    :param: limitClause     The portion of the query specifying how many results
+    - parameter limitClause:     The portion of the query specifying how many results
                             should be returned.
-    :param: joinClause      The portion of the query specifying other tables to
+    - parameter joinClause:      The portion of the query specifying other tables to
                             join to.
-    :param: cacheResults    Whether the query should cache its results.
+    - parameter cacheResults:    Whether the query should cache its results.
     */
   public required init(copyFrom: Query<RecordType>? = nil, selectClause: String? = nil, whereClause: SqlFragment? = nil, orderClause: SqlFragment? = nil, limitClause: SqlFragment? = nil, joinClause: SqlFragment? = nil, cacheResults: Bool? = nil) {
     self.selectClause = selectClause ?? copyFrom?.selectClause ?? "\(RecordType.tableName).*"
@@ -60,9 +60,9 @@ public class Query<RecordType: Persistable> {
     This method adds a filter clause based on raw SQL, and returns a new version
     of the query with the filter added.
 
-    :param: query         The new clause for the query
-    :param: parameters    The new bind parameters
-    :returns:             The new query object.
+    - parameter query:         The new clause for the query
+    - parameter parameters:    The new bind parameters
+    - returns:             The new query object.
     */
   public func filter(query: String, _ parameters: [DatabaseValueConvertible] = []) -> Query<RecordType> {
     var clause = whereClause
@@ -86,10 +86,10 @@ public class Query<RecordType: Persistable> {
     This method adds a filter clause based on a dictionary of conditions, and
     returns a new version of the query with the filter added.
   
-    :param: conditions    The conditions, with keys matching field names on the
+    - parameter conditions:    The conditions, with keys matching field names on the
                           record type and values matching the field types on the
                           record type.
-    :returns:             The new query object.
+    - returns:             The new query object.
     */
   public func filter(conditions: [String: DatabaseValueConvertible?]) -> Query<RecordType> {
     var query = ""
@@ -116,11 +116,11 @@ public class Query<RecordType: Persistable> {
   /**
     This method attaches an ordering to the query, and returns the result.
 
-    :param: fieldName   The name of the field to order by, using the field name
+    - parameter fieldName:   The name of the field to order by, using the field name
                         from the record type.
-    :param: order       Whether to put the results in ascending or descending
+    - parameter order:       Whether to put the results in ascending or descending
                         order.
-    :returns:           The new query.
+    - returns:           The new query.
     */
   public func order(columnName: String, _ order: NSComparisonResult) -> Query<RecordType> {
     var clause = orderClause
@@ -143,12 +143,12 @@ public class Query<RecordType: Persistable> {
     limit, we will use the new limit. If this limit is more than the existing
     limit, we will keep using the existing limit.
 
-    :param: limit     The limit to apply.
-    :returns:         The new query.
+    - parameter limit:     The limit to apply.
+    - returns:         The new query.
     */
   public func limit(limit: Int) -> Query<RecordType> {
     var newLimit = limit
-    if let oldLimit = self.limitClause.query.toInt() {
+    if let oldLimit = Int(self.limitClause.query) {
       if oldLimit < newLimit {
         newLimit = oldLimit
       }
@@ -165,9 +165,9 @@ public class Query<RecordType: Persistable> {
     This method specifies what fields from the database we should select with
     our query.
 
-    :param: selectClause      The SQL for selecting the fields, not including
+    - parameter selectClause:      The SQL for selecting the fields, not including
                               the SELECT keyword.
-    :returns:                 The new query.
+    - returns:                 The new query.
     */
   public func select(selectClause: String) -> Query<RecordType> {
     return self.dynamicType.init(
@@ -179,10 +179,10 @@ public class Query<RecordType: Persistable> {
   /**
     This method adds a join to the query.
 
-    :param: query           The SQL for selecting the fields, including the JOIN
+    - parameter query:           The SQL for selecting the fields, including the JOIN
                             keywords.
-    :param: parameters      The bind parameters to pass to the join statement.
-    :returns:               The new query.
+    - parameter parameters:      The bind parameters to pass to the join statement.
+    - returns:               The new query.
     */
   public func join(query: String, _ parameters: [DatabaseValueConvertible] = []) -> Query<RecordType> {
     var clause = self.joinClause
@@ -201,10 +201,10 @@ public class Query<RecordType: Persistable> {
   /**
     This method adds a join to the query.
   
-    :param: recordType    The target record type for the join.
-    :param: fromColumn    The field on the target record to match for the join.
-    :param: toColumn      The field on this record to match for the join.
-    :returns:             The new query.
+    - parameter recordType:    The target record type for the join.
+    - parameter fromColumn:    The field on the target record to match for the join.
+    - parameter toColumn:      The field on this record to match for the join.
+    - returns:             The new query.
   */
   public func join<OtherRecordType: Persistable>(recordType: OtherRecordType.Type, fromColumn: String, toColumn: String) -> Query<RecordType> {
     let fromTable = recordType.tableName
@@ -218,7 +218,7 @@ public class Query<RecordType: Persistable> {
     If the query has no order clause, it will order the query in descending
     order by id.
 
-    :returns:   The new query.
+    - returns:   The new query.
     */
   public func reverse() -> Query<RecordType> {
     var orderClause = self.orderClause
@@ -226,7 +226,7 @@ public class Query<RecordType: Persistable> {
       orderClause.query = "id DESC"
     }
     else {
-      var components = split(orderClause.query) { $0 == "," }
+      var components = split((orderClause.query).characters) { $0 == "," }.map { String($0) }
       components = components.map {
         component in
         var reversed = component
@@ -251,7 +251,7 @@ public class Query<RecordType: Persistable> {
     parameters. Subsequent attempts to fetch records will get the ids out of
     the cache and fetch the records by id rather than running the query.
 
-    :returns:   The query with caching turned on.
+    - returns:   The query with caching turned on.
     */
   public func cached() -> Query<RecordType> {
     return self.dynamicType.init(copyFrom: self, cacheResults: true)
@@ -262,7 +262,7 @@ public class Query<RecordType: Persistable> {
   /**
     This method gets the full SQL for running this query.
 
-    :returns: The SQL query and bind parameters.
+    - returns: The SQL query and bind parameters.
     */
   public func toSql() -> SqlFragment {
     var query = "SELECT \(selectClause) FROM \(RecordType.tableName)"
@@ -287,7 +287,7 @@ public class Query<RecordType: Persistable> {
   /**
     This method runs the query and creates records from the result set.
 
-    :returns:   The fetched records.
+    - returns:   The fetched records.
     */
   public func all() -> [RecordType] {
     let (query, parameters) = self.toSql()
@@ -307,12 +307,12 @@ public class Query<RecordType: Persistable> {
         return results
       }
       else {
-        let ids = split(idString!) { $0 == "," }.map { ($0 as NSString).integerValue ?? 0 }
+        let ids = idString?.componentsSeparatedByString(",").map { Int($0) ?? 0 } ?? []
         let results = self.dynamicType.init().filter("id IN (\(idString!))").all()
-        return results.sorted {
+        return results.sort {
           (record1, record2) -> Bool in
-          let index1 = Swift.find(ids, record1.id!)
-          let index2 = Swift.find(ids, record2.id!)
+          let index1 = ids.indexOf(record1.id!)
+          let index2 = ids.indexOf(record2.id!)
           return index1 != nil && index2 != nil && index1! < index2!
         }
       }
@@ -326,7 +326,7 @@ public class Query<RecordType: Persistable> {
     This method runs the query, limiting it to 1 result, and returns that
     result.
 
-    :returns:   The fetched record.
+    - returns:   The fetched record.
     */
   public func first() -> RecordType? {
     let results = self.limit(1).all()
@@ -344,7 +344,7 @@ public class Query<RecordType: Persistable> {
 
     This will only pull a single row from the database.
 
-    :returns:   The fetched result.
+    - returns:   The fetched result.
     */
   public func last() -> RecordType? {
     return self.reverse().first()
@@ -353,7 +353,7 @@ public class Query<RecordType: Persistable> {
   /**
     This method finds a record with an id.
 
-    :returns:   The fetched record.
+    - returns:   The fetched record.
     */
   public func find(id: Int) -> RecordType? {
     return self.filter(["id": id]).first()
@@ -362,7 +362,7 @@ public class Query<RecordType: Persistable> {
   /**
     This method gets a count of the records matching the filters in this query.
     
-    :returns:   The count.
+    - returns:   The count.
     */
   public func count() -> Int {
     let (query, parameters) = self.select("count(*) as tailor_record_count").toSql()
@@ -374,7 +374,7 @@ public class Query<RecordType: Persistable> {
   /**
     This method determines if the result set for this query is empty.
 
-    :returns: Whether there are no results.
+    - returns: Whether there are no results.
     */
   public func isEmpty() -> Bool {
     return self.count() == 0

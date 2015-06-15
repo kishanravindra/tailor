@@ -4,7 +4,7 @@ public extension NSData {
   /**
     This method initializes an NSData object from a byte array.
 
-    :param: bytes   The array of bytes.
+    - parameter bytes:   The array of bytes.
     */
   public convenience init(bytes: [UInt8]) {
     self.init(bytes: UnsafePointer(bytes), length: sizeof(UInt8) * bytes.count)
@@ -14,10 +14,10 @@ public extension NSData {
     This method searches for a string in this data and uses it to separate out
     subcomponents of the data.
 
-    :param: separator   The separator between the components
-    :param: limit       The maximum number of components to create. Once this is
+    - parameter separator:   The separator between the components
+    - parameter limit:       The maximum number of components to create. Once this is
                         reached, the rest of the data will be kept as one piece.
-    :returns:           The subcomponents.
+    - returns:           The subcomponents.
     */
   public func componentsSeparatedByString(separator: String, limit: Int? = nil) -> [NSData] {
     var components = [NSData]()
@@ -27,7 +27,7 @@ public extension NSData {
     }
     var searchRange = NSRange(location: 0, length: self.length)
     while(true) {
-      let matchRange = self.rangeOfData(separatorData, options: nil, range: searchRange)
+      let matchRange = self.rangeOfData(separatorData, options: [], range: searchRange)
       if matchRange.location == NSNotFound {
         break
       }

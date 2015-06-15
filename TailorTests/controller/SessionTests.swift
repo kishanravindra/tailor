@@ -14,13 +14,17 @@ class SessionTests: TailorTestCase {
       mergedData["_flash_\(key)"] = value
     }
     
-    let application = Application.sharedApplication()
-    let type = reflect(application).summary
     let key = Application.sharedApplication().configuration["sessions.encryptionKey"] ?? ""
-    let jsonData = NSJSONSerialization.dataWithJSONObject(mergedData, options: nil, error: nil) ?? NSData()
+    let jsonData: NSData
+    do {
+      jsonData = try NSJSONSerialization.dataWithJSONObject(mergedData, options: [])
+    }
+    catch {
+      jsonData = NSData()
+    }
     let encryptor = AesEncryptor(key: key)
     let encryptedData = encryptor.encrypt(jsonData)
-    let encryptedDataString = encryptedData.base64EncodedStringWithOptions(nil)
+    let encryptedDataString = encryptedData.base64EncodedStringWithOptions([])
     return encryptedDataString
   }
   
@@ -32,7 +36,7 @@ class SessionTests: TailorTestCase {
   
   func testInitializationWithValidSessionKeySetsData() {
     let string = createCookieString(
-      data: ["name": "John", "userId": "5"],
+      ["name": "John", "userId": "5"],
       flashData: ["notice": "Success"]
     )
     let request = Request(cookies: ["_session": string])
@@ -61,7 +65,7 @@ class SessionTests: TailorTestCase {
   
   func testInitializationWithWrongClientAddressLeavesDataEmpty() {
     let string = createCookieString(
-      data: ["name": "John", "userId": "5"],
+      ["name": "John", "userId": "5"],
       clientAddress: "1.1.1.1"
     )
     let request = Request(cookies: ["_session": string], clientAddress: "0.0.0.0")
@@ -71,7 +75,7 @@ class SessionTests: TailorTestCase {
   
   func testInitalizationWithExpiredDateLeavesDataEmpty() {
     let string = createCookieString(
-      data: ["name": "John", "userId": "5"],
+      ["name": "John", "userId": "5"],
       expirationDate: 1.hour.ago
     )
     let request = Request(cookies: ["_session": string])
@@ -88,7 +92,7 @@ class SessionTests: TailorTestCase {
   //MARK: - Serialization
   
   func testCookieStringWithNoChangesIsIdempotent() {
-    let string = createCookieString(data: ["name": "John", "userId": "5"])
+    let string = createCookieString(["name": "John", "userId": "5"])
     let request = Request(cookies: ["_session": string])
     let session = Session(request: request)
     let outputString = session.cookieString()
@@ -96,7 +100,7 @@ class SessionTests: TailorTestCase {
   }
   
   func testCookieStringWithDataChangesConveysChanges() {
-    var session = createSession(createCookieString(data: ["name": "Joan"]))
+    let session = createSession(createCookieString(["name": "Joan"]))
     session["name"] = "Jane"
     session["userId"] = "1"
     let session2 = createSession(session.cookieString())
@@ -111,7 +115,7 @@ class SessionTests: TailorTestCase {
   }
   
   func testCookieStringWithFlashParamsConveysOnlyNewParams() {
-    var session = createSession(createCookieString(flashData: ["notice": "Success"]))
+    let session = createSession(createCookieString(flashData: ["notice": "Success"]))
     session.setFlash("notice", "More Success", currentPage: true)
     session.setFlash("error", "Error")
     let session2 = createSession(session.cookieString())
@@ -123,26 +127,30 @@ class SessionTests: TailorTestCase {
   }
   
   func testCookieStringIsAesEncoded() {
-    var session = createSession(createCookieString(data: ["name": "Joan"]))
+    let session = createSession(createCookieString(["name": "Joan"]))
     session.setFlash("notice", "Success")
     let string = session.cookieString()
     let key = Application.sharedApplication().configuration["sessions.encryptionKey"]  ?? ""
     let decryptor = AesEncryptor(key: key)
-    let cookieData = NSData(base64EncodedString: string, options: nil) ?? NSData()
+    let cookieData = NSData(base64EncodedString: string, options: []) ?? NSData()
     XCTAssertNotEqual(cookieData.length, 0, "can base-64 decode the cookie data")
     let decodedData = decryptor.decrypt(cookieData)
     XCTAssertNotEqual(decodedData.length, 0, "can decrypt the cookie data with the application key")
-    let jsonObject = NSJSONSerialization.JSONObjectWithData(decodedData, options: nil, error: nil) as? [String:String]
-    XCTAssertNotNil(jsonObject, "can get JSON object back")
-    if jsonObject != nil {
-      let keys = sorted(jsonObject!.keys)
-      assert(keys, equals: ["_flash_notice", "clientAddress", "expirationDate", "name"], message: "has the expected keys in the flash")
+    let jsonObject : [String:String]
+    do {
+      jsonObject = try NSJSONSerialization.JSONObjectWithData(decodedData, options: []) as? [String : String] ?? [:]
     }
+    catch {
+      jsonObject = [:]
+    }
+    XCTAssertNotNil(jsonObject, "can get JSON object back")
+    let keys = jsonObject.keys.sort()
+    assert(keys, equals: ["_flash_notice", "clientAddress", "expirationDate", "name"], message: "has the expected keys in the flash")
   }
   
   func testStoreInCookiesPutsCookieStringInFlash() {
     let session = createSession(createCookieString())
-    var cookieJar = CookieJar()
+    let cookieJar = CookieJar()
     session.storeInCookies(cookieJar)
     let string = cookieJar["_session"]
     XCTAssertNotNil(string, "sets cookie string")

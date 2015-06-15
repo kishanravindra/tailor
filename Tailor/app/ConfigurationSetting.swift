@@ -16,7 +16,7 @@ public final class ConfigurationSetting: Equatable {
   /**
     This method creates a configuration setting with a value.
   
-    :param: value   The value for the setting.
+    - parameter value:   The value for the setting.
     */
   public init(value: String? = nil) {
     self.value = value
@@ -29,7 +29,7 @@ public final class ConfigurationSetting: Equatable {
     The dictionary can have nested dictionaries inside of it. Any value that
     is not a string or dictionary will be ignored.
 
-    :param: dictionary    The data for the settings.
+    - parameter dictionary:    The data for the settings.
     */
   public convenience init(dictionary: NSDictionary) {
     self.init()
@@ -55,11 +55,17 @@ public final class ConfigurationSetting: Equatable {
     If the file does not exist, or is not a valid property list, this will
     create an empty setting.
   
-    :param: path  The path to the file.
+    - parameter path:  The path to the file.
     */
   public convenience init(contentsOfFile path: String) {
     let data = NSData(contentsOfFile: path) ?? NSData()
-    let propertyList = NSPropertyListSerialization.propertyListWithData(data, options: Int(NSPropertyListMutabilityOptions.Immutable.rawValue), format: nil, error: nil) as? NSDictionary ?? NSDictionary()
+    let propertyList: NSDictionary
+    do {
+      propertyList = try NSPropertyListSerialization.propertyListWithData(data, options: NSPropertyListMutabilityOptions.Immutable, format: nil) as? NSDictionary ?? NSDictionary()
+    }
+    catch {
+      propertyList = NSDictionary()
+    }
     self.init(dictionary: propertyList)
   }
   
@@ -70,12 +76,12 @@ public final class ConfigurationSetting: Equatable {
   
     If the setting does not exist, this will create an empty one.
 
-    :param: keyPath   The key path for the child.
-    :returns:         The configuration setting.
+    - parameter keyPath:   The key path for the child.
+    - returns:         The configuration setting.
     */
   public func child(keyPath: String) -> ConfigurationSetting {
-    let keys = split(keyPath) { $0 == "." }
-    if count(keys) == 1 {
+    let keys = split(keyPath.characters) { $0 == "." }.map { String($0) }
+    if keys.count == 1 {
       if self.children[keyPath] == nil {
         self.children[keyPath] = ConfigurationSetting()
       }
@@ -92,10 +98,10 @@ public final class ConfigurationSetting: Equatable {
     It will iterate through the keys, getting a child for each key from
     the previous child, starting at this node.
 
-    :param: keys    The keys to fetch
-    :returns:       The setting at the end of the path.
+    - parameter keys:    The keys to fetch
+    - returns:       The setting at the end of the path.
     */
-  public func child(# keys: [String]) -> ConfigurationSetting {
+  public func child(keys  keys: [String]) -> ConfigurationSetting {
     var setting = self
     for key in keys {
       setting = setting.child(key)
@@ -115,28 +121,28 @@ public final class ConfigurationSetting: Equatable {
   /**
     This method gets the setting for the node at a key path.
 
-    :param: keyPath   The dot-separated key path.
-    :returns:         The value for the setting.
+    - parameter keyPath:   The dot-separated key path.
+    - returns:         The value for the setting.
     */
   public func fetch(keyPath: String) -> String? {
-    return self.fetch(keys: split(keyPath) { $0 == "." })
+    return self.fetch(keys: split(keyPath.characters) { $0 == "." }.map { String($0) })
   }
   
   /**
     This method gets the setting for the node at a key path.
     
-    :param: keys    The keys in the key path.
-    :returns:       The value for the setting.
+    - parameter keys:    The keys in the key path.
+    - returns:       The value for the setting.
     */
-  public func fetch(# keys: [String]) -> String? {
+  public func fetch(keys  keys: [String]) -> String? {
     return self.child(keys: keys).value
   }
   
   /**
     This method sets the value for a setting.
 
-    :param: keyPath   The dot-separated key path.
-    :param: value     The value to set.
+    - parameter keyPath:   The dot-separated key path.
+    - parameter value:     The value to set.
     */
   public func set(keyPath: String, value: String?) {
     self.child(keyPath).value = value
@@ -145,10 +151,10 @@ public final class ConfigurationSetting: Equatable {
   /**
     This method sets the value for a setting.
 
-    :param: keys    The keys in the key path.
-    :param: value   The value to set.
+    - parameter keys:    The keys in the key path.
+    - parameter value:   The value to set.
     */
-  public func set(# keys: [String], value: String?) {
+  public func set(keys  keys: [String], value: String?) {
     self.child(keys: keys).value = value
   }
   
@@ -167,8 +173,8 @@ public final class ConfigurationSetting: Equatable {
   /**
     This subscript provides access to values by key path.
 
-    :param: keyPath   The key path for the setting.
-    :returns:         The value for that setting.
+    - parameter keyPath:   The key path for the setting.
+    - returns:         The value for that setting.
     */
   public subscript(keyPath: String) -> String? {
     get {
@@ -182,7 +188,7 @@ public final class ConfigurationSetting: Equatable {
   /**
     This method converts this setting to a nested dictionary.
     
-    :returns:   The dictionary
+    - returns:   The dictionary
     */
   public func toDictionary() -> [String:AnyObject] {
     var dictionary = [String:AnyObject]()
@@ -203,7 +209,7 @@ public final class ConfigurationSetting: Equatable {
   /**
     This method adds settings for all the values in a dictionary.
 
-    :param: dictionary    The dictionary of values to add.
+    - parameter dictionary:    The dictionary of values to add.
     */
   public func addDictionary(dictionary: [String:AnyObject]) {
     for (key,value) in dictionary {
@@ -225,7 +231,7 @@ public final class ConfigurationSetting: Equatable {
   Two settings are equal when they have the same value on their node, have all
   the same keys, and have equal children for every key.
 
-  :returns: Whether the two settings are equal.
+  - returns: Whether the two settings are equal.
   */
 public func ==(lhs: ConfigurationSetting, rhs: ConfigurationSetting) -> Bool {
   for (key,value1) in lhs.children {

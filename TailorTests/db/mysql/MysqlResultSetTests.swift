@@ -32,17 +32,17 @@ class MysqlResultSetTests: TailorTestCase {
     
     if fields.count == 6 {
       self.assert(fields[0].name, equals: "id")
-      self.assert(fields[0].bufferType.value, equals: MYSQL_TYPE_LONG.value)
+      self.assert(fields[0].bufferType.rawValue, equals: MYSQL_TYPE_LONG.rawValue)
       self.assert(fields[1].name, equals: "color")
-      self.assert(fields[1].bufferType.value, equals: MYSQL_TYPE_VAR_STRING.value)
+      self.assert(fields[1].bufferType.rawValue, equals: MYSQL_TYPE_VAR_STRING.rawValue)
       self.assert(fields[2].name, equals: "brim_size")
-      self.assert(fields[2].bufferType.value, equals: MYSQL_TYPE_LONG.value)
+      self.assert(fields[2].bufferType.rawValue, equals: MYSQL_TYPE_LONG.rawValue)
       self.assert(fields[3].name, equals: "shelf_id")
-      self.assert(fields[3].bufferType.value, equals: MYSQL_TYPE_LONG.value)
+      self.assert(fields[3].bufferType.rawValue, equals: MYSQL_TYPE_LONG.rawValue)
       self.assert(fields[4].name, equals: "created_at")
-      self.assert(fields[4].bufferType.value, equals: MYSQL_TYPE_TIMESTAMP.value)
+      self.assert(fields[4].bufferType.rawValue, equals: MYSQL_TYPE_TIMESTAMP.rawValue)
       self.assert(fields[5].name, equals: "updated_at")
-      self.assert(fields[5].bufferType.value, equals: MYSQL_TYPE_TIMESTAMP.value)
+      self.assert(fields[5].bufferType.rawValue, equals: MYSQL_TYPE_TIMESTAMP.rawValue)
     }
   }
   

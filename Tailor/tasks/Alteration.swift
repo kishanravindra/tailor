@@ -42,7 +42,7 @@ public class Alteration {
     recorded in the tailor_alterations table. If the table doesn't exist, it
     will create it and return the full list of alterations.
     
-    :returns:
+    - returns:
       The pending alterations.
     */
   public class func pendingAlterations() -> [Alteration.Type] {
@@ -58,7 +58,7 @@ public class Alteration {
         let id = previousAlteration.data["id"]!.stringValue!
         return id == alteration.id()
       }.isEmpty
-    }.sorted {
+    }.sort {
       $0.id().compare($1.id()) == NSComparisonResult.OrderedAscending
     }
   }

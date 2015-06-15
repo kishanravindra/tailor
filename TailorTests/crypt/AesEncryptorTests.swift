@@ -66,9 +66,14 @@ class AesEncryptorTests: TailorTestCase {
   
   func testGenerateKeyGetsHexString() {
     let string = AesEncryptor.generateKey()
-    assert(count(string), equals: 64, message: "is a 64 character string")
-    let regex = NSRegularExpression(pattern: "^[A-F0-9]*$", options: nil, error: nil)
-    let matchCount = regex?.numberOfMatchesInString(string, options: nil, range: NSMakeRange(0, count(string))) ?? 0
+    assert(string.characters.count, equals: 64, message: "is a 64 character string")
+    let regex: NSRegularExpression?
+    do {
+      regex = try NSRegularExpression(pattern: "^[A-F0-9]*$", options: [])
+    } catch _ {
+      regex = nil
+    }
+    let matchCount = regex?.numberOfMatchesInString(string, options: [], range: NSMakeRange(0, string.characters.count)) ?? 0
     assert(matchCount, equals: 1, message: "matches hex regex")
   }
 }

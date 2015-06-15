@@ -31,8 +31,10 @@ public class RouteSet {
     
     /**
       The regex that we apply to determine if the route can handle the path.
+    
+      This is nil when we try to initialize a route with an ill-formatted expression.
       */
-    public let regex: NSRegularExpression
+    public let regex: NSRegularExpression?
     
     /**
       The names of the request parameters that this route extracts from the
@@ -49,9 +51,9 @@ public class RouteSet {
     /**
       This method initializes a route.
 
-      :param: pathPattern   The pattern for the path.
-      :param: handler       The response handler.
-      :param: description   The description for the route.
+      - parameter pathPattern:   The pattern for the path.
+      - parameter handler:       The response handler.
+      - parameter description:   The description for the route.
       */
     public init(pathPattern: String, method: String, handler: Connection.RequestHandler, description: String) {
       self.pathPattern = pathPattern
@@ -59,29 +61,36 @@ public class RouteSet {
       self.description = description
       self.method = method
       
-      let parameterPattern = NSRegularExpression(pattern: ":[\\w]+", options: nil, error: nil)!
+      let parameterPattern = try! NSRegularExpression(pattern: ":[\\w]+", options: [])
       
       var parameterNames : [String] = []
       
-      parameterPattern.enumerateMatchesInString(pathPattern, options: nil, range: NSMakeRange(0, count(pathPattern)), usingBlock: {
+      parameterPattern.enumerateMatchesInString(pathPattern, options: [], range: NSMakeRange(0, pathPattern.characters.count), usingBlock: {
         (match, _, _) in
+        guard let match = match else { return }
         let range = Range<String.Index>(start: advance(pathPattern.startIndex, match.range.location + 1), end: advance(pathPattern.startIndex, match.range.location + match.range.length))
         parameterNames.append(pathPattern.substringWithRange(range))
       })
       
       self.pathParameters = parameterNames
       
-      var filteredPathPattern = NSMutableString(string: pathPattern)
+      let filteredPathPattern = NSMutableString(string: pathPattern)
       
-      parameterPattern.replaceMatchesInString(filteredPathPattern, options: nil, range: NSMakeRange(0, count(pathPattern)), withTemplate: "([^/]*)")
-      self.regex = NSRegularExpression(pattern: "^" + (filteredPathPattern as String) + "/?$", options: nil, error: nil) ?? NSRegularExpression(pattern: "^$", options: nil, error: nil)!
+      parameterPattern.replaceMatchesInString(filteredPathPattern, options: [], range: NSMakeRange(0, pathPattern.characters.count), withTemplate: "([^/]*)")
+      
+      do {
+        try self.regex = NSRegularExpression(pattern: "^" + (filteredPathPattern as String) + "/?$", options: [])
+      }
+      catch {
+        self.regex = nil
+      }
     }
     
     //MARK: - Description
     
     /**
       This method gets a full description of the route for debugging.
-      :returns: The description
+      - returns: The description
       */
     public func fullDescription() -> String {
       return NSString(format: "%@ %@ %@", self.method, self.pathPattern, self.description) as String
@@ -92,30 +101,29 @@ public class RouteSet {
     /**
       This method determines if this route can handle a request.
 
-      :param: request   The request to check.
-      :returns:         Whether the route can handle the request.
+      - parameter request:   The request to check.
+      - returns:         Whether the route can handle the request.
       */
     public func canHandleRequest(request: Request) -> Bool {
       let path = request.path
-      let range = NSRange(location: 0, length: count(path))
-      let match = self.regex.firstMatchInString(path, options: nil, range: range)
+      let range = NSRange(location: 0, length: path.characters.count)
+      let match = self.regex?.firstMatchInString(path, options: [], range: range)
       return match != nil && request.method == self.method
     }
     
     /**
       This method handles a request using the rules in this route.
       
-      :param: request   The request to handle.
-      :param: callback  The callback that the route should give the response to.
+      - parameter request:   The request to handle.
+      - parameter callback:  The callback that the route should give the response to.
       */
     public func handleRequest(request: Request, callback: Connection.ResponseCallback) {
       NSLog("Processing with %@", self.description)
       var requestCopy = request
       let path = request.path
-      let range = NSRange(location: 0, length: count(path))
       
-      let parameterValues = Request.extractWithPattern(path, pattern: self.regex.pattern)
-      for (index, key) in enumerate(self.pathParameters) {
+      let parameterValues = Request.extractWithPattern(path, pattern: self.regex?.pattern ?? "")
+      for (index, key) in self.pathParameters.enumerate() {
         requestCopy.requestParameters[key] = parameterValues[index]
       }
       
@@ -154,8 +162,8 @@ public class RouteSet {
   /**
     This method wraps a block for generating routes.
   
-    :param: pathPrefix    The prefix for the paths of the routes.
-    :param: block         The block that will provide the routes.
+    - parameter pathPrefix:    The prefix for the paths of the routes.
+    - parameter block:         The block that will provide the routes.
     */
   public func withPrefix(pathPrefix: String, block: ()->()) {
     let oldPrefix = self.currentPathPrefix
@@ -167,9 +175,9 @@ public class RouteSet {
   /**
     This method establishes a block for generating routes.
 
-    :param: pathPrefix    The prefix for the paths of the routes.
-    :param: controller    The controller that will handle the routes.
-    :param: block         The block that will provide the routes.
+    - parameter pathPrefix:    The prefix for the paths of the routes.
+    - parameter controller:    The controller that will handle the routes.
+    - parameter block:         The block that will provide the routes.
     */
   public func withPrefix(pathPrefix: String, controller: Controller.Type, block: ()->()) {
     let oldPrefix = self.currentPathPrefix
@@ -184,8 +192,8 @@ public class RouteSet {
   /**
     This method sets up a redirect from one path to the other.
 
-    :param: pathPattern   The regular expression for the incoming path.
-    :param: toPath        The full path to redirect to.
+    - parameter pathPattern:   The regular expression for the incoming path.
+    - parameter toPath:        The full path to redirect to.
     */
   public func addRedirect(pathPattern: String, toPath: String) {
     self.addRoute(pathPattern, method: "GET", handler: {
@@ -201,11 +209,11 @@ public class RouteSet {
   /**
     This method adds a route with a block.
 
-    :param: pathPattern   The pattern for the route.
-    :param: handler       The block that will handle the request.
-    :param: description   The description of the route implementation.
-    :param: controller    The controller that will handle the request.
-    :param: actionName    The name of the action that will handle the request.
+    - parameter pathPattern:   The pattern for the route.
+    - parameter handler:       The block that will handle the request.
+    - parameter description:   The description of the route implementation.
+    - parameter controller:    The controller that will handle the request.
+    - parameter actionName:    The name of the action that will handle the request.
     */
   public func addRoute(pathPattern: String, method: String, handler: Connection.RequestHandler, description: String, controller: Controller.Type? = nil, actionName: String? = nil) {
     var fullPattern = self.currentPathPrefix
@@ -221,9 +229,9 @@ public class RouteSet {
   /**
     This method adds a route with a block.
 
-    :param: pathPattern   The pattern for the route.
-    :param: method        The HTTP method for the route.
-    :param: handler       The block that will handle the request.
+    - parameter pathPattern:   The pattern for the route.
+    - parameter method:        The HTTP method for the route.
+    - parameter handler:       The block that will handle the request.
   */
   public func addRoute(pathPattern: String, method: String, handler: Connection.RequestHandler) {
     self.addRoute(pathPattern, method: method, handler: handler, description: "custom block")
@@ -232,10 +240,10 @@ public class RouteSet {
   /**
     This method adds a route that will be handled by a controller.
 
-    :param: pathPattern   The pattern for the route.
-    :param: method        The HTTP method for the route.
-    :param: controller    The controller that will handle the requests.
-    :param: actionName    The name of the action in the controller.
+    - parameter pathPattern:   The pattern for the route.
+    - parameter method:        The HTTP method for the route.
+    - parameter controller:    The controller that will handle the requests.
+    - parameter actionName:    The name of the action in the controller.
     */
   public func addRoute(pathPattern: String, method: String, controller controllerType: Controller.Type, actionName: String) {
     let description = NSString(format: "%@#%@", controllerType.name, actionName)
@@ -244,15 +252,15 @@ public class RouteSet {
       let controller = controllerType(request: request, actionName: actionName, callback: callback)
       controller.action.run(controller)
     }
-    self.addRoute(pathPattern, method: method, handler: handler, description: description as! String, controller: controllerType, actionName: actionName)
+    self.addRoute(pathPattern, method: method, handler: handler, description: description as String, controller: controllerType, actionName: actionName)
   }
   
   /**
     This method adds a route that will be handled by the current controller.
     
-    :param: pathPattern   The pattern for the route.
-    :param: method        The HTTP method for the route.
-    :param: actionName    The name of the action in the controller.
+    - parameter pathPattern:   The pattern for the route.
+    - parameter method:        The HTTP method for the route.
+    - parameter actionName:    The name of the action in the controller.
     */
   public func addRoute(pathPattern: String, method: String, actionName: String) {
     self.addRoute(pathPattern, method: method, controller: self.currentController, actionName: actionName)
@@ -263,14 +271,15 @@ public class RouteSet {
   
     The restful actions are index, new, create, edit, update, and destroy.
   
-    :param: only    The actions to add. If this is empty, it will all the
+    - parameter only:    The actions to add. If this is empty, it will all the
                     actions.
-    :param: except  The actions to skip.
+    - parameter except:  The actions to skip.
   */
-  public func addRestfulRoutes(only: [String] = [], except: [String] = []) {
+  public func addRestfulRoutes(only only: [String] = [], except: [String] = []) {
     var actions = (only.isEmpty ? ["index", "new", "create", "show", "edit", "update", "destroy"] : only)
+    
     for action in except {
-      if let index = find(actions, action) {
+      if let index = actions.indexOf(action) {
         actions.removeAtIndex(index)
       }
     }
@@ -319,8 +328,8 @@ public class RouteSet {
 
     If there is no matching route, it will give a 404 response.
 
-    :param: request   The request that we should handle.
-    :param: callback  The callback that we should give the response to.
+    - parameter request:   The request that we should handle.
+    - parameter callback:  The callback that we should give the response to.
     */
   public func handleRequest(request: Request, callback: Connection.ResponseCallback) {
     NSLog("Processing %@ %@", request.method, request.path)
@@ -345,12 +354,12 @@ public class RouteSet {
     be relative to the application's root path, which defaults to the directory
     containing the executable.
     
-    :param: prefix        The prefix that we append to all the static asset URLs.
-    :param: localPrefix   The prefix that we append to all of the paths for the
+    - parameter prefix:        The prefix that we append to all the static asset URLs.
+    - parameter localPrefix:   The prefix that we append to all of the paths for the
                           assets on disk.
-    :param: assets        The names of the asset files.
+    - parameter assets:        The names of the asset files.
   */
-  public func staticAssets(#prefix: String, localPrefix: String, assets: [String]) {
+  public func staticAssets(prefix prefix: String, localPrefix: String, assets: [String]) {
     for assetName in assets {
       let path = "\(prefix)/\(assetName)"
       let localPath = "\(localPrefix)/\(assetName)"
@@ -379,14 +388,14 @@ public class RouteSet {
   /**
     This method generates a path using our route set.
 
-    :param: controller    The name of the controller that the link is to.
-    :param: actionName    The name of the action.
-    :param: parameters    The parameters to interpolate into the route.
-    :param: domain        The domain to use for a full URL. If this is omitted,
+    - parameter controller:    The name of the controller that the link is to.
+    - parameter actionName:    The name of the action.
+    - parameter parameters:    The parameters to interpolate into the route.
+    - parameter domain:        The domain to use for a full URL. If this is omitted,
                           this will just give the path rather than a URL.
-    :param: https         Whether the URL should use the https protocol. If the
+    - parameter https:         Whether the URL should use the https protocol. If the
                           domain is omitted, this value will be ignored.
-    :returns:             The path, if we could match it up.
+    - returns:             The path, if we could match it up.
     */
   public func pathFor(controllerName: String, actionName: String, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
     var matchingPath: String? = nil
@@ -396,7 +405,7 @@ public class RouteSet {
         var path = route.pathPattern
         var hasQuery = false
         for (key, value) in parameters {
-          if let range = path.rangeOfString(":" + key, options: nil, range: nil, locale: nil) {
+          if let range = path.rangeOfString(":" + key, options: [], range: nil, locale: nil) {
             path = path.stringByReplacingCharactersInRange(range, withString: value.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding) ?? "")
           }
           else {

@@ -20,8 +20,8 @@ public class CacheStore {
   /**
     This method reads a value from the cache.
 
-    :param: key   The key for the cache entry.
-    :returns:     The value that is stored in the cache.
+    - parameter key:   The key for the cache entry.
+    - returns:     The value that is stored in the cache.
     */
   public func read(key: String) -> String? {
     return nil
@@ -30,9 +30,9 @@ public class CacheStore {
   /**
     This method stores a value in the cache.
 
-    :param: key         The identifier for the cache entry.
-    :param: value       The value to store.
-    :param: expiryTime  The time until the cache entry should expire. If this is
+    - parameter key:         The identifier for the cache entry.
+    - parameter value:       The value to store.
+    - parameter expiryTime:  The time until the cache entry should expire. If this is
                         nil, the entry will remain for as long as the specific
                         cache store can keep it.
     */
@@ -42,7 +42,7 @@ public class CacheStore {
   /**
     This method removes a value from the cache.
 
-    :param: key   The identifier for the cache entry.
+    - parameter key:   The identifier for the cache entry.
     */
   public func clear(key: String) {
     
@@ -63,9 +63,9 @@ public class CacheStore {
     If there is no value in the cache, the generator function will be run to
     get it.
     
-    :param: key         The identifier for the cache entry.
-    :param: generator   The function to generate a value on a cache miss.
-    :returns:           The value provided by the cache or the generator.
+    - parameter key:         The identifier for the cache entry.
+    - parameter generator:   The function to generate a value on a cache miss.
+    - returns:           The value provided by the cache or the generator.
     */
   public func fetch(key: String, @noescape generator: ()->String)->String {
     return self.fetch(key, expireIn: nil, generator: generator)
@@ -77,10 +77,10 @@ public class CacheStore {
     If there is no value in the cache, the generator function will be run to
     get it.
 
-    :param: key         The identifier for the cache entry.
-    :param: expiryTime  The time interval until the cache entry should expire.
-    :param: generator   The function to generate a value on a cache miss.
-    :returns:           The value provided by the cache or the generator.
+    - parameter key:         The identifier for the cache entry.
+    - parameter expiryTime:  The time interval until the cache entry should expire.
+    - parameter generator:   The function to generate a value on a cache miss.
+    - returns:           The value provided by the cache or the generator.
     */
   public func fetch(key: String, expireIn expiryTime: TimeInterval?, @noescape generator: ()->String) -> String {
     if let result = self.read(key) {
@@ -105,11 +105,11 @@ public class CacheStore {
     setting. If there is no setting for it, it will fall back to using a
     MemoryCacheStore.
 
-    :returns:   The cache store.
+    - returns:   The cache store.
     */
   public class func shared() -> CacheStore {
     if SHARED_CACHE_STORE == nil {
-      let name = Application.sharedApplication().configuration["cache.class"]
+      let name = Application.sharedApplication().configuration["cache.class"] ?? "MemoryCacheStore"
       let type = NSClassFromString(name) as? CacheStore.Type ?? MemoryCacheStore.self
       SHARED_CACHE_STORE = type.init()
     }

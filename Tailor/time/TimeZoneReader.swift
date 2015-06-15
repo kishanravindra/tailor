@@ -19,7 +19,7 @@ internal struct TimeZoneReader {
     /**
       This initializer creates a data reader from a data object.
       
-      :param: data    The data that we are reading from.
+      - parameter data:    The data that we are reading from.
       */
     init(_ data: NSData) {
       pointer = UnsafePointer<UInt8>(data.bytes)
@@ -34,10 +34,10 @@ internal struct TimeZoneReader {
     /**
       This method reads a single byte and advances the stream by one byte.
       
-      :returns:   The byte.
+      - returns:   The byte.
       */
     mutating func readByte() -> UInt8 {
-      if isEmpty { print("Reading empty byte\n"); return 0 }
+      if isEmpty { print("Reading empty byte\n", appendNewline: false); return 0 }
       let value = pointer.memory
       pointer = advance(pointer, 1)
       remaining -= 1
@@ -49,7 +49,7 @@ internal struct TimeZoneReader {
 
       It can be of any size, and will always be read in big-endian order.
 
-      :returns: The value
+      - returns: The value
       */
     mutating func read<T: ByteReadable>() -> T {
       var value : T = 0
@@ -69,8 +69,8 @@ internal struct TimeZoneReader {
 
       The values can be of any size, and will be in big-endian order.
 
-      :param: count   The number of values to read.
-      :returns:       The values.
+      - parameter count:   The number of values to read.
+      - returns:       The values.
       */
     mutating func readArray<T: ByteReadable>(count: Int) -> [T] {
       var array = [T](count: count, repeatedValue: 0)
@@ -83,7 +83,7 @@ internal struct TimeZoneReader {
     /**
       This method skips a number of bytes in the stream.
 
-      :param: bytes   The number of bytes to skip.
+      - parameter bytes:   The number of bytes to skip.
       */
     mutating func skip(bytes: Int) {
       pointer = advance(pointer, bytes)
@@ -93,7 +93,7 @@ internal struct TimeZoneReader {
   /**
     This method reads time zone policies from the file.
     
-    :returns:   The parsed policies.
+    - returns:   The parsed policies.
     */
   func read() -> [TimeZone.Policy] {
     let fullPath = "/usr/share/zoneinfo/\(name)"
@@ -110,7 +110,7 @@ internal struct TimeZoneReader {
     // Read the counts of the number of elements.
     let utcSourceCount = Int(reader.read() as UInt32)
     let standardSourceCount = Int(reader.read() as UInt32)
-    let leapSecondCount = Int(reader.read() as UInt32)
+    reader.read() as UInt32
     let transitionCount = Int(reader.read() as UInt32)
     let policyCount = Int(reader.read() as UInt32)
     let abbreviationCount = Int(reader.read() as UInt32)
@@ -134,7 +134,7 @@ internal struct TimeZoneReader {
     var characterBuffer = [Int8]()
     var stringStart = 0
     
-    for (index,character) in enumerate(reader.readArray(abbreviationCount) as [Int8]) {
+    for (index,character) in (reader.readArray(abbreviationCount) as [Int8]).enumerate() {
       characterBuffer.append(character)
       if character == 0 {
         abbreviations[stringStart] = String(CString: characterBuffer, encoding: NSASCIIStringEncoding) ?? "???"
@@ -150,8 +150,8 @@ internal struct TimeZoneReader {
     // Read information about whether the timestamps come from standard time or
     // wall time, and whether they come from local time or UTC. We currently do
     // not do anything with this information.
-    let standardSources = reader.readArray(standardSourceCount) as [UInt8]
-    let utcSources = reader.readArray(utcSourceCount) as [UInt8]
+    reader.readArray(standardSourceCount) as [UInt8]
+    reader.readArray(utcSourceCount) as [UInt8]
     
     let policies = (-1..<transitionCount).map {
       transitionIndex -> TimeZone.Policy in
@@ -166,7 +166,7 @@ internal struct TimeZoneReader {
       else {
         timestamp = Timestamp.EpochInterval(transitionTimes[transitionIndex])
         let policyIndex = Int(transitionTypes[transitionIndex])
-        if policyIndex < count(policyData) {
+        if policyIndex < policyData.count {
           policyDataItem = policyData[policyIndex]
         }
         else {

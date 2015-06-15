@@ -7,7 +7,7 @@ class NSDataTests: TailorTestCase {
     let data = NSData(bytes: bytes)
     assert(data.length, equals: 5, message: "gets five bytes")
     if data.length == 5 {
-      var destinationBytes = [UInt8](count: 5, repeatedValue: 0)
+      let destinationBytes = [UInt8](count: 5, repeatedValue: 0)
       data.getBytes(UnsafeMutablePointer(destinationBytes), length: 5)
       assert(destinationBytes, equals: [1,2,3,4,5], message: "gets the 5 input bytes")
     }

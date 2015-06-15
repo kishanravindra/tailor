@@ -8,7 +8,7 @@
   Any component can be positive or negative, and it is valid to have
   combinations of the two, like an interval of 1 month and -10 days.
   */
-public struct TimeInterval: Equatable,Printable {
+public struct TimeInterval: Equatable,CustomStringConvertible {
   /** The number of years in the interval. */
   public let years: Int
   
@@ -33,13 +33,13 @@ public struct TimeInterval: Equatable,Printable {
   /**
     This initializer creates a time interval from its components.
 
-    :param: years         The number of years in the interval.
-    :param: months        The number of months in the interval.
-    :param: days          The number of days in the interval.
-    :param: hours         The number of hours in the interval.
-    :param: minutes       The number of seconds in the interval.
-    :param: seconds       The number of seconds in the interval.
-    :param: nanoseconds   The number of nanoseconds in the interval.
+    - parameter years:         The number of years in the interval.
+    - parameter months:        The number of months in the interval.
+    - parameter days:          The number of days in the interval.
+    - parameter hours:         The number of hours in the interval.
+    - parameter minutes:       The number of seconds in the interval.
+    - parameter seconds:       The number of seconds in the interval.
+    - parameter nanoseconds:   The number of nanoseconds in the interval.
     */
   public init(years: Int = 0, months: Int = 0, days: Int = 0, hours: Int = 0, minutes: Int = 0, seconds: Int = 0, nanoseconds: Double = 0) {
     self.years = years
@@ -55,7 +55,7 @@ public struct TimeInterval: Equatable,Printable {
     This method inverts all the components of the time interval, changing them
     from positive to negative or negative to positive.
 
-    :returns:   The inverted time interval.
+    - returns:   The inverted time interval.
     */
   public func invert() -> TimeInterval {
     return TimeInterval(
@@ -93,7 +93,7 @@ public struct TimeInterval: Equatable,Printable {
         return "\(value) \(text)"
       }
     })
-    var text = join(", ", textComponents)
+    var text = ", ".join(textComponents)
     if nanoseconds != 0 {
       text += String(format: ", %.5f nanoseconds", nanoseconds)
     }
@@ -106,8 +106,8 @@ public struct TimeInterval: Equatable,Printable {
 
   They are equal if all their components are equal.
   
-  :param: lhs   One of the intervals we are checking.
-  :param: rhs   The other interval we are checking.
+  - parameter lhs:   One of the intervals we are checking.
+  - parameter rhs:   The other interval we are checking.
   */
 public func ==(lhs: TimeInterval, rhs: TimeInterval) -> Bool {
   let gap = lhs.nanoseconds - rhs.nanoseconds
@@ -123,9 +123,9 @@ public func ==(lhs: TimeInterval, rhs: TimeInterval) -> Bool {
 /**
   This method adds two time intervals.
 
-  :param: lhs   The left-hand side of the addition.
-  :param: rhs   The right-hand side of the addition.
-  :returns:     A time interval with the sum.
+  - parameter lhs:   The left-hand side of the addition.
+  - parameter rhs:   The right-hand side of the addition.
+  - returns:     A time interval with the sum.
   */
 public func +(lhs: TimeInterval, rhs: TimeInterval) -> TimeInterval {
   return TimeInterval(
@@ -141,9 +141,9 @@ public func +(lhs: TimeInterval, rhs: TimeInterval) -> TimeInterval {
 /**
   This method subtracts two time intervals.
 
-  :param: lhs   The left-hand side of the subtraction.
-  :param: rhs   The right-hand side of the subtraction.
-  :returns:     A time interval with the difference
+  - parameter lhs:   The left-hand side of the subtraction.
+  - parameter rhs:   The right-hand side of the subtraction.
+  - returns:     A time interval with the difference
   */
 public func -(lhs: TimeInterval, rhs: TimeInterval) -> TimeInterval {
   return lhs + rhs.invert()
@@ -154,9 +154,9 @@ public func -(lhs: TimeInterval, rhs: TimeInterval) -> TimeInterval {
 
   See Timestamp#byAddingInterval for more details.
 
-  :param: lhs   The timestamp that we are adding to.
-  :param: rhs   The interval we are adding.
-  :returns:     The new timestamp.
+  - parameter lhs:   The timestamp that we are adding to.
+  - parameter rhs:   The interval we are adding.
+  - returns:     The new timestamp.
   */
 public func +(lhs: Timestamp, rhs: TimeInterval) -> Timestamp {
   return lhs.byAddingInterval(rhs)
@@ -167,9 +167,9 @@ public func +(lhs: Timestamp, rhs: TimeInterval) -> Timestamp {
 
   See Timestamp#byAddingInterval for more details.
 
-  :param: lhs   The timestamp that we are subtracting from.
-  :param: rhs   The time interval we are subtracting.
-  :returns:     The new timestamp.
+  - parameter lhs:   The timestamp that we are subtracting from.
+  - parameter rhs:   The time interval we are subtracting.
+  - returns:     The new timestamp.
   */
 public func -(lhs: Timestamp, rhs: TimeInterval) -> Timestamp {
   return lhs.byAddingInterval(rhs.invert())

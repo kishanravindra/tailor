@@ -16,8 +16,8 @@ public struct Cookie {
   /**
   This method initializes a cookie.
   
-  :param: key     The identifier for the cookie.
-  :param: value   The value for the cookie.
+  - parameter key:     The identifier for the cookie.
+  - parameter value:   The value for the cookie.
   */
   public init(key: String, value: String) {
     self.key = key

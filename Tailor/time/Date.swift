@@ -1,7 +1,7 @@
 /**
   This struct encapsulates a date, without any time information.
   */
-public struct Date: Comparable,Printable {
+public struct Date: Comparable,CustomStringConvertible {
   /** The calendar system the date is expressed in. */
   public let calendar: Calendar
   
@@ -17,10 +17,10 @@ public struct Date: Comparable,Printable {
   /**
     This initializer creates a date.
 
-    :param: year      The year
-    :param: month     The month
-    :param: day       The day
-    :param: calendar  The calendar system the date is expressed in.
+    - parameter year:      The year
+    - parameter month:     The month
+    - parameter day:       The day
+    - parameter calendar:  The calendar system the date is expressed in.
     */
   public init(year: Int, month: Int, day: Int, calendar: Calendar = GregorianCalendar()) {
     self.year = year
@@ -39,10 +39,10 @@ public struct Date: Comparable,Printable {
   /**
     This method gets a timestamp at the beginning of the day.
   
-    :param: timeZone    The time zone that the resulting time should be in.
-    :returns:           A timestamp for the beginning of the day.
+    - parameter timeZone:    The time zone that the resulting time should be in.
+    - returns:           A timestamp for the beginning of the day.
     */
-  public func beginningOfDay(_ timeZone: TimeZone = TimeZone.systemTimeZone()) -> Timestamp {
+  public func beginningOfDay(timeZone: TimeZone = TimeZone.systemTimeZone()) -> Timestamp {
     return Timestamp(
       year: year,
       month: month,
@@ -61,10 +61,10 @@ public struct Date: Comparable,Printable {
     This will be on this day, at the last hour, minute, and second. The
     nanosecond will be set to 0.
   
-    :param: timeZone    The time zone that the resulting time should be in.
-    :returns:           A timestamp for the beginning of the day.
+    - parameter timeZone:    The time zone that the resulting time should be in.
+    - returns:           A timestamp for the beginning of the day.
     */
-  public func endOfDay(_ timeZone: TimeZone = TimeZone.systemTimeZone()) -> Timestamp {
+  public func endOfDay(timeZone: TimeZone = TimeZone.systemTimeZone()) -> Timestamp {
     return Timestamp(
       year: year,
       month: month,
@@ -91,9 +91,9 @@ public struct Date: Comparable,Printable {
   Two dates are equal when they have the same components and the same calendar
   system.
 
-  :param: lhs   The first date
-  :param: rhs   The second date
-  :returns:     Whether the two dates are equal.
+  - parameter lhs:   The first date
+  - parameter rhs:   The second date
+  - returns:     Whether the two dates are equal.
   */
 public func ==(lhs: Date, rhs: Date) -> Bool {
   return lhs.year == rhs.year &&
@@ -108,9 +108,9 @@ public func ==(lhs: Date, rhs: Date) -> Bool {
   A date is before another if it is an earlier year, an earlier month in the
   same year, or an earlier day in the same month and year.
 
-  :param: lhs   The first date
-  :param: rhs   The second date
-  :returns:     Whether the first date is before the second.
+  - parameter lhs:   The first date
+  - parameter rhs:   The second date
+  - returns:     Whether the first date is before the second.
   */
 public func <(lhs: Date, rhs: Date) -> Bool {
   return lhs.year < rhs.year ||

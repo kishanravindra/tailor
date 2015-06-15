@@ -12,7 +12,7 @@ public struct Sanitizer {
   /**
     This method initializes a sanitizer.
   
-    :param: mapping   The characters that the sanitizer replaces.
+    - parameter mapping:   The characters that the sanitizer replaces.
     */
   public init(_ mapping: [Character: String]) {
     self.mapping = mapping
@@ -39,12 +39,12 @@ public struct Sanitizer {
     complicated filters.
 
     :params: string   The text to sanitize.
-    :returns:         The sanitized text.
+    - returns:         The sanitized text.
     */
   public func sanitizeString(string: String) -> String {
     var sanitized = ""
-    for character in string {
-      var result = self.mapping[character] ?? String(character)
+    for character in string.characters {
+      let result = self.mapping[character] ?? String(character)
       sanitized += result
     }
     return sanitized
@@ -57,8 +57,8 @@ public struct Sanitizer {
     If the text has already been sanitized with this sanitizer, it will do
     nothing.
 
-    :param: text  The sanitized text wrapper
-    :returns:     The sanitized text wrapper for the new level of sanitization.
+    - parameter text:  The sanitized text wrapper
+    - returns:     The sanitized text wrapper for the new level of sanitization.
     */
   public func sanitize(text: SanitizedText) -> SanitizedText {
     if self.isSanitized(text) {
@@ -74,8 +74,8 @@ public struct Sanitizer {
     Use this method with caution, and only when are absolutely certain of the
     contents of the string.
     
-    :param: string    The string to put in the sanitized text wrapper.
-    :returns:         The sanitized text wrapper.
+    - parameter string:    The string to put in the sanitized text wrapper.
+    - returns:         The sanitized text wrapper.
   */
   public func accept(string: String) -> SanitizedText {
     return SanitizedText(text: string, sanitizers: [self])

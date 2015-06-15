@@ -4,7 +4,7 @@ import Foundation
   This struct provides a wrapper around text that specifies what filters have
   been applied to sanitize it.
   */
-public struct SanitizedText : CVarArgType, StringLiteralConvertible {
+public struct SanitizedText : StringLiteralConvertible {
   public typealias ExtendedGraphemeClusterLiteralType = StringLiteralType
   
   /** The text itself. */
@@ -13,16 +13,11 @@ public struct SanitizedText : CVarArgType, StringLiteralConvertible {
   /** The sanitizers that have been applied to the text. */
   public let sanitizers: [Sanitizer]
   
-  /** Encodes the text for use in logging. */
-  public func encode() -> [Word] {
-    return self.text.encode()
-  }
-  
   /**
     This initializer creates a sanitized text wrapper from the sanitized text.
 
-    :param: text          The sanitized text
-    :param: sanitizers    The sanitizers that have been applied.
+    - parameter text:          The sanitized text
+    - parameter sanitizers:    The sanitizers that have been applied.
     */
   public init(text: String, sanitizers: [Sanitizer]) {
     self.text = text
@@ -31,7 +26,7 @@ public struct SanitizedText : CVarArgType, StringLiteralConvertible {
 
   /**
     This initializer creates sanitized text from a string literal.
-    :param: value   The string literal value.
+    - parameter value:   The string literal value.
     */
   public init(unicodeScalarLiteral value: StringLiteralType) {
     self.init(text: value, sanitizers: [])
@@ -39,7 +34,7 @@ public struct SanitizedText : CVarArgType, StringLiteralConvertible {
   
   /**
     This initializer creates sanitized text from a string literal.
-    :param: value   The string literal value.
+    - parameter value:   The string literal value.
   */
   public init(stringLiteral value: StringLiteralType) {
     self.init(text: value, sanitizers: [])
@@ -47,7 +42,7 @@ public struct SanitizedText : CVarArgType, StringLiteralConvertible {
   
   /**
     This initializer creates sanitized text from a string literal.
-    :param: value   The string literal value.
+    - parameter value:   The string literal value.
   */
   public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
     self.init(text: value, sanitizers: [])

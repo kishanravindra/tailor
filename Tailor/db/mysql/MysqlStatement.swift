@@ -40,7 +40,7 @@ public class MysqlStatement {
   /**
     This method gets the error message that has been set on a MySQL statement.
   
-    :param: statement   The statement that we are working with.
+    - parameter statement:   The statement that we are working with.
   */
   public var error: String? {
     let errorPointer = mysql_stmt_error(self.statement)
@@ -56,8 +56,8 @@ public class MysqlStatement {
   /**
     This method initializes a statement.
 
-    :param: connection    The connection that will execute the statement.
-    :param: query         The query that we will execute.
+    - parameter connection:    The connection that will execute the statement.
+    - parameter query:         The query that we will execute.
     */
   public init(connection: MysqlConnection, query: String) {
     self.statement = mysql_stmt_init(connection.connection)
@@ -81,8 +81,8 @@ public class MysqlStatement {
   /**
     This method executes the statement.
 
-    :param: parameters    The values to pass to the statement.
-    :returns:             The results of executing the statement.
+    - parameter parameters:    The values to pass to the statement.
+    - returns:             The results of executing the statement.
     */
   public func execute(parameters: [DatabaseValue]) -> [[String:DatabaseValue]] {
     let inputParameters = MysqlBindParameterSet(values: parameters)
@@ -107,7 +107,7 @@ public class MysqlStatement {
     
     while mysql_stmt_fetch(self.statement) == 0 {
       var result = [String:DatabaseValue]()
-      for (index,parameter) in enumerate(outputParameters) {
+      for (index,parameter) in outputParameters.enumerate() {
         result[names[index]] = parameter.data()
       }
       results.append(result)

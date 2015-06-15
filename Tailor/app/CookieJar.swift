@@ -18,22 +18,22 @@ public class CookieJar {
   /**
     This method changes a value for a cookie.
   
-    :param: key             The identifier for the cookie.
-    :param: value           The new value for the cookie.
-    :param: path            The path for the pages that can access this cookie.
+    - parameter key:             The identifier for the cookie.
+    - parameter value:           The new value for the cookie.
+    - parameter path:            The path for the pages that can access this cookie.
                             If this is not provided, all pages will be able to
                             access it.
-    :param: expiresAt       The time when the cookie will expire. If this is
+    - parameter expiresAt:       The time when the cookie will expire. If this is
                             not provided, it will expire at the end of the
                             browser session.
-    :param: maxAge          The number of seconds before the cookie should
+    - parameter maxAge:          The number of seconds before the cookie should
                             expire.
-    :param: domain          The domain that can see the cookie. If this is not
+    - parameter domain:          The domain that can see the cookie. If this is not
                             provided, the cookie will be visible to the domain
                             of the request, as well as its subdomains.
-    :param: secureOnly      Whether the cookie should only be sent over secure
+    - parameter secureOnly:      Whether the cookie should only be sent over secure
                             requests.
-    :param: httpOnly        Whether the cookie should only be sent over
+    - parameter httpOnly:        Whether the cookie should only be sent over
                             HTTP/HTTPS requests.
     */
   public func setCookie(key: String, _ value: String, path: String = "/",
@@ -48,7 +48,7 @@ public class CookieJar {
       cookie.secureOnly = secureOnly
       cookie.httpOnly = httpOnly
       cookie.changed = true
-      for (index,existingCookie) in enumerate(self.cookies) {
+      for (index,existingCookie) in self.cookies.enumerate() {
         if existingCookie.key == key {
           self.cookies[index] = cookie
           return
@@ -63,11 +63,11 @@ public class CookieJar {
     This can contain several cookies in the format key=value, separated by a
     semicolon and a space.
     
-    :param: string    The header string with the cookies.
+    - parameter string:    The header string with the cookies.
     */
   public func addHeaderString(string: String) {
     for component in string.componentsSeparatedByString("; ") {
-      let equalSignRange = component.rangeOfString("=", options: nil, range: nil, locale: nil)
+      let equalSignRange = component.rangeOfString("=", options: [], range: nil, locale: nil)
       if equalSignRange != nil {
         let key = component.substringToIndex(equalSignRange!.startIndex)
         let value = component.substringFromIndex(equalSignRange!.endIndex)
@@ -81,7 +81,7 @@ public class CookieJar {
   /**
     This method gets the value for a cookie in this jar.
 
-    :param: key     The identifier for the cookie.
+    - parameter key:     The identifier for the cookie.
     :return:        The value, if we found one.
     */
   public subscript(key: String) -> String? {
@@ -101,7 +101,7 @@ public class CookieJar {
   /**
     This method gets a dictionary mapping cookie keys to values.
 
-    :returns:   The mapping.
+    - returns:   The mapping.
     */
   public func cookieDictionary() -> [String:String] {
     var dictionary = [String:String]()

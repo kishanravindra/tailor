@@ -28,7 +28,7 @@ public extension String {
     ]
     for (suffix, pluralSuffix) in replacements {
       if self.hasSuffix(suffix) {
-        return self.substringToIndex(advance(self.startIndex, count(self) - count(suffix))) + pluralSuffix
+        return self.substringToIndex(advance(self.startIndex, self.characters.count - suffix.characters.count)) + pluralSuffix
       }
     }
     return self + "s"
@@ -42,20 +42,25 @@ public extension String {
   /**
     Whether this string matches a regular expression.
   
-    :param: pattern         The pattern to compare against
-    :param: allowPartial    Whether we should allow partial matches. If this is
+    - parameter pattern:         The pattern to compare against
+    - parameter allowPartial:    Whether we should allow partial matches. If this is
                             false, the pattern will have to match against the
                             entire string.
-    :returns:               Whether this string matches the given pattern.
+    - returns:               Whether this string matches the given pattern.
     */
   public func matches(pattern: String, allowPartial: Bool = false) -> Bool {
-    var fullPattern = allowPartial ? pattern : "^\(pattern)$"
-    let expression = NSRegularExpression(pattern: fullPattern, options: nil, error: nil)
+    let fullPattern = allowPartial ? pattern : "^\(pattern)$"
+    let expression: NSRegularExpression?
+    do {
+      expression = try NSRegularExpression(pattern: fullPattern, options: [])
+    } catch _ {
+      expression = nil
+    }
     if expression == nil {
       return false
     }
-    let range = NSRange(location: 0, length: count(self))
-    let results = expression!.numberOfMatchesInString(self, options: nil, range: range)
+    let range = NSRange(location: 0, length: self.characters.count)
+    let results = expression!.numberOfMatchesInString(self, options: [], range: range)
     return results > 0
   }
 }

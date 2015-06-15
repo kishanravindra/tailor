@@ -1,7 +1,7 @@
 /**
   This struct encapsulates a moment in time.
   */
-public struct Timestamp: Equatable, Comparable, Printable {
+public struct Timestamp: Equatable, Comparable, CustomStringConvertible {
   /**
     The type that represents the interval between a timestamp and the Unix
     epoch.
@@ -72,10 +72,10 @@ public struct Timestamp: Equatable, Comparable, Printable {
   /**
     This method creates a timestamp around a Unix epoch timestamp.
   
-    :param: epochSeconds  The number of seconds since the Unix epoch for the
+    - parameter epochSeconds:  The number of seconds since the Unix epoch for the
                           new timestamp.
-    :param: timeZone      The time zone to use when localizing the timestamp.
-    :param: calendar      An instance of the calendar system to use when
+    - parameter timeZone:      The time zone to use when localizing the timestamp.
+    - parameter calendar:      An instance of the calendar system to use when
                           localizing the timestamp. The year on the calendar
                           does not matter, it only needs to be of the desired
                           type.
@@ -100,14 +100,14 @@ public struct Timestamp: Equatable, Comparable, Printable {
   /**
     This initializer creates a timestamp around the calendar components.
 
-    :param: year          The year
-    :param: month         The month
-    :param: day           The day of the month
-    :param: hour          The hour
-    :param: minute        The minute in the hour
-    :param: second        The second in the minute
-    :param: nanosecond    The nanoseconds in the second
-    :param: timeZone      The time zone this is specified in
+    - parameter year:          The year
+    - parameter month:         The month
+    - parameter day:           The day of the month
+    - parameter hour:          The hour
+    - parameter minute:        The minute in the hour
+    - parameter second:        The second in the minute
+    - parameter nanosecond:    The nanoseconds in the second
+    - parameter timeZone:      The time zone this is specified in
     */
   public init(year: Int = 1970, month: Int = 1, day: Int = 1, hour: Int = 0, minute: Int = 0, second: Int = 0, nanosecond: Double = 0, timeZone: TimeZone = TimeZone.systemTimeZone(), calendar: Calendar = GregorianCalendar()) {
     self.timeZone = timeZone
@@ -140,8 +140,8 @@ public struct Timestamp: Equatable, Comparable, Printable {
   /**
     This method converts this timestamp into one in a different time zone.
 
-    :param: zone    The new time zone
-    :returns:       The new timestamp.
+    - parameter zone:    The new time zone
+    - returns:       The new timestamp.
     */
   public func inTimeZone(zone: TimeZone) -> Timestamp {
     return Timestamp(epochSeconds: self.epochSeconds, timeZone: zone, calendar: self.calendar)
@@ -150,8 +150,8 @@ public struct Timestamp: Equatable, Comparable, Printable {
   /**
     This method converts this timestamp into one in a different time zone.
     
-    :param: zone    The name of the new time zone
-    :returns:       The new timestamp.
+    - parameter zone:    The name of the new time zone
+    - returns:       The new timestamp.
     */
   public func inTimeZone(zoneName: String) -> Timestamp {
     return self.inTimeZone(TimeZone(name: zoneName))
@@ -163,8 +163,8 @@ public struct Timestamp: Equatable, Comparable, Printable {
     The Unix timestamp will remain the same, but all the local components will
     be adjusted based on the calendar system.
 
-    :param: calendar    The new calendar to use.
-    :returns:           The new timestamp.
+    - parameter calendar:    The new calendar to use.
+    - returns:           The new timestamp.
     */
   public func inCalendar(calendar: Calendar) -> Timestamp {
     return Timestamp(epochSeconds: self.epochSeconds, timeZone: self.timeZone, calendar: calendar)
@@ -177,15 +177,15 @@ public struct Timestamp: Equatable, Comparable, Printable {
     Any component that is omitted will be filled in with the corresponding 
     value from this timestamp.
 
-    :param: year        The new year
-    :param: month       The new month
-    :param: day         The new day
-    :param: hour        The new hour
-    :param: minute      The new minute
-    :param: second      The new second
-    :param: nanosecond  The new nanosecond
+    - parameter year:        The new year
+    - parameter month:       The new month
+    - parameter day:         The new day
+    - parameter hour:        The new hour
+    - parameter minute:      The new minute
+    - parameter second:      The new second
+    - parameter nanosecond:  The new nanosecond
     */
-  public func change(year: Int? = nil, month: Int? = nil, day: Int? = nil, hour: Int? = nil, minute: Int? = nil, second: Int? = nil, nanosecond: Double? = nil) -> Timestamp {
+  public func change(year year: Int? = nil, month: Int? = nil, day: Int? = nil, hour: Int? = nil, minute: Int? = nil, second: Int? = nil, nanosecond: Double? = nil) -> Timestamp {
     return Timestamp(
       year: year ?? self.year,
       month: month ?? self.month,
@@ -206,8 +206,8 @@ public struct Timestamp: Equatable, Comparable, Printable {
     of this time, handle any overflows, and then construct a new timestamp from
     those new localized components.
 
-    :param: interval    The time interval to add.
-    :returns:           The new timestamp.
+    - parameter interval:    The time interval to add.
+    - returns:           The new timestamp.
     */
   public func byAddingInterval(interval: TimeInterval) -> Timestamp {
     var year = self.year + interval.years
@@ -259,7 +259,7 @@ public struct Timestamp: Equatable, Comparable, Printable {
     interval.
 
 
-    :param: other   The timestamp that we are getting the interval to.
+    - parameter other:   The timestamp that we are getting the interval to.
     */
   public func intervalSince(other: Timestamp) -> TimeInterval {
     let other = Timestamp(epochSeconds: other.epochSeconds, timeZone: self.timeZone, calendar: self.calendar)
@@ -272,7 +272,7 @@ public struct Timestamp: Equatable, Comparable, Printable {
     var seconds = self.second - other.second
     var nanoseconds = self.nanosecond - other.nanosecond
     
-    func limit(inout value: Int, toSign sign: Int, inout byIncreasing nextValue: Int, # max: Int) {
+    func limit(inout value: Int, toSign sign: Int, inout byIncreasing nextValue: Int, max: Int) {
       if value * sign < 0 {
         value += max * sign
         nextValue -= sign
@@ -303,17 +303,17 @@ public struct Timestamp: Equatable, Comparable, Printable {
   /**
     This method gets the local time for a timestamp.
 
-    :param: epochSeconds    The number of seconds since the Unix epoch for the
+    - parameter epochSeconds:    The number of seconds since the Unix epoch for the
                             timestamp.
-    :param: timeZone        The time zone to express the local time in.
-    :param: calendar        A calendar in the calendar system that the date
+    - parameter timeZone:        The time zone to express the local time in.
+    - parameter calendar:        A calendar in the calendar system that the date
                             should be expressed in.
-    :returns:               The local time information.
+    - returns:               The local time information.
     */
   internal static func localTime(epochSeconds: EpochInterval, timeZone: TimeZone, calendar: Calendar) -> (year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int, nanosecond: Double, weekDay: Int) {
     
     let (epochYear, epochOffset, epochWeekDay) = calendar.unixEpochTime
-    var offsetTimestamp = epochSeconds + epochOffset + Double(timeZone.policy(timestamp: epochSeconds).offset)
+    let offsetTimestamp = epochSeconds + epochOffset + Double(timeZone.policy(timestamp: epochSeconds).offset)
     var secondsRemaining = Int(offsetTimestamp)
     let nanosecond = (offsetTimestamp - Double(secondsRemaining)) * 1000000000
     var year = epochYear
@@ -377,14 +377,14 @@ public struct Timestamp: Equatable, Comparable, Printable {
   /**
     This method gets a timestamp from a local time.
 
-    :param: time        The local time that we are getting the time for.
-    :param: timeZone    The time zone that the local time is expressed in.
-    :param: calendar    The calendar that the local time is expressed in.
-    :returns:           The number of seconds between the Unix epoch and the
+    - parameter time:        The local time that we are getting the time for.
+    - parameter timeZone:    The time zone that the local time is expressed in.
+    - parameter calendar:    The calendar that the local time is expressed in.
+    - returns:           The number of seconds between the Unix epoch and the
                         specified time. It will also return the day of the
                         week for the date.
     */
-  internal static func timestampForLocalTime(# year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int, nanosecond: Double, timeZone: TimeZone, calendar: Calendar) -> (EpochInterval,Int) {
+  internal static func timestampForLocalTime(year  year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int, nanosecond: Double, timeZone: TimeZone, calendar: Calendar) -> (EpochInterval,Int) {
     let (epochYear, epochOffset, epochWeekDay) = calendar.unixEpochTime
     var timestamp = -1 * epochOffset
     var weekDay = epochWeekDay
@@ -445,8 +445,8 @@ public struct Timestamp: Equatable, Comparable, Printable {
   /**
     This method formats the timestamp.
 
-    :param: format    The formatter to use to format the timestamp.
-    :returns:         The formatted string.
+    - parameter format:    The formatter to use to format the timestamp.
+    - returns:         The formatted string.
     */
   public func format(format: TimeFormatter) -> String {
     return format.formatTime(self)
@@ -469,9 +469,9 @@ public func ==(lhs: Timestamp, rhs: Timestamp) -> Bool {
 
   This only considers the time interval since the epoch.
 
-  :param: lhs   The first timestamp
-  :param: rhs   The second timestamp
-  :returns:     Whether the first timestamp is before the second.
+  - parameter lhs:   The first timestamp
+  - parameter rhs:   The second timestamp
+  - returns:     Whether the first timestamp is before the second.
   */
 public func <(lhs: Timestamp, rhs: Timestamp) -> Bool {
   return lhs.epochSeconds < rhs.epochSeconds
@@ -480,9 +480,9 @@ public func <(lhs: Timestamp, rhs: Timestamp) -> Bool {
 /**
   This method gets the interval between two timestamps.
 
-  :param: lhs   The first timestamp
-  :param: rhs   The second timestamp
-  :returns:     The interval that would have to be added to the second 
+  - parameter lhs:   The first timestamp
+  - parameter rhs:   The second timestamp
+  - returns:     The interval that would have to be added to the second 
                 timestamp to produce the first timestamp
   */
 public func -(lhs: Timestamp, rhs: Timestamp) -> TimeInterval {

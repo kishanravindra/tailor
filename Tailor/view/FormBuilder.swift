@@ -7,10 +7,10 @@ public class FormBuilder {
   /**
     A block that can build an input for a model property.
   
-    :param: form        The form that will hold the input.
-    :param: key         The name of the field
-    :param: attributes  The HTML attributes to put on the control.
-    :param: errors      The errors that we should show in the field.
+    - parameter form:        The form that will hold the input.
+    - parameter key:         The name of the field
+    - parameter attributes:  The HTML attributes to put on the control.
+    - parameter errors:      The errors that we should show in the field.
     */
   public typealias InputBuilder = (form: FormBuilder, key: String, value: String, attributes: [String:String], errors: [ValidationError])->()
   
@@ -29,9 +29,9 @@ public class FormBuilder {
   /**
     This method creates a form builder.
 
-    :param: template      The template that we are putting the form in.
-    :param: name          The name used for the model object in the input tags.
-    :param: inputBuilder  A block we can use to build inputs. If this is not
+    - parameter template:      The template that we are putting the form in.
+    - parameter name:          The name used for the model object in the input tags.
+    - parameter inputBuilder:  A block we can use to build inputs. If this is not
                           provided, we will use a simple one with a div
                           containing a label and an input.
     */
@@ -66,10 +66,10 @@ public class FormBuilder {
   /**
     This method generates a form tag.
 
-    :param: path        The path to submit the form to.
-    :param: method      The HTTP method for the form.
-    :param: attributes  Additional attributes for the form tag.
-    :param: contents    A block that will populate the contents of the form.
+    - parameter path:        The path to submit the form to.
+    - parameter method:      The HTTP method for the form.
+    - parameter attributes:  Additional attributes for the form tag.
+    - parameter contents:    A block that will populate the contents of the form.
     */
   public func form(path: String, _ method: String = "POST", attributes: [String:String] = [:], @noescape with contents: ()->()) {
     var mergedAttributes = attributes
@@ -81,9 +81,9 @@ public class FormBuilder {
   /**
     This method generates an input tag.
 
-    :param: key           The name of the property.
-    :param: value         The value to put in the input tag.
-    :param: attributes    Additional attributes to set on the input tag.
+    - parameter key:           The name of the property.
+    - parameter value:         The value to put in the input tag.
+    - parameter attributes:    Additional attributes to set on the input tag.
     */
   public func input(key: String, _ value: String, attributes: [String: String] = [:]) {
     let errors = self.validationErrors.filter { $0.key == key }
@@ -93,11 +93,11 @@ public class FormBuilder {
   /**
     This method generates a select tag.
 
-    :param: key         The name of the property.
-    :param: value       The currently selected value.
-    :param: values      A list of pairs that contain the values and labels for
+    - parameter key:         The name of the property.
+    - parameter value:       The currently selected value.
+    - parameter values:      A list of pairs that contain the values and labels for
                         the options in the dropdown.
-    :param: attributes  Additional attributes to set on the select tag.
+    - parameter attributes:  Additional attributes to set on the select tag.
     */
   public func dropdown(key: String, value selectedValue: String? = nil, values: [(String, String)], attributes: [String:String] = [:]) {
     var mergedAttributes = attributes
@@ -120,11 +120,11 @@ public class FormBuilder {
   /**
     This method generates a select tag.
     
-    :param: key         The name of the property.
-    :param: value       The currently selected value.
-    :param: values      A list of values for the dropdown. The values will also
+    - parameter key:         The name of the property.
+    - parameter value:       The currently selected value.
+    - parameter values:      A list of values for the dropdown. The values will also
                         be the labels for the options.
-    :param: attributes  Additional attributes to set on the select tag.
+    - parameter attributes:  Additional attributes to set on the select tag.
   */
   public func dropdown(key: String, value: String? = nil, values: [String], attributes: [String:String] = [:]) {
     let values = values.map { ($0,$0) }
@@ -139,10 +139,10 @@ public class FormBuilder {
     builders will use that value to construct a label, which will be of the form
     (form name).(key).(value).
   
-    :param: key           The key for the inputs.
-    :param: value         The value that is selected.
-    :param: values        The values for the radio buttons.
-    :param: attributes    The attributes to set on the input tags.
+    - parameter key:           The key for the inputs.
+    - parameter value:         The value that is selected.
+    - parameter values:        The values for the radio buttons.
+    - parameter attributes:    The attributes to set on the input tags.
     */
   public func radioButtons(key: String, value selectedValue: String? = nil, values: [String], attributes: [String:String] = [:]) {
     let mergedAttributes = merge(attributes, ["type": "radio"])

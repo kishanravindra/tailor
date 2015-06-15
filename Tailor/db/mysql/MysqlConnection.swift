@@ -11,7 +11,7 @@ public class MysqlConnection : DatabaseConnection {
   /**
     This method initializes a connection to a MySQL database.
 
-    :param: config  The config for the connection.
+    - parameter config:  The config for the connection.
                     It must provide keys for host, username, password, and
                     database.
     */
@@ -25,8 +25,8 @@ public class MysqlConnection : DatabaseConnection {
       let timeZoneDescription = timeZoneInfo[0].data["timeZone"]!.stringValue!
       let components = Request.extractWithPattern(timeZoneDescription, pattern: "([-+])(\\d\\d):(\\d\\d)")
       if components.count == 3 {
-        let hour = components[1].toInt()!
-        let minute = components[2].toInt()!
+        let hour = Int(components[1])!
+        let minute = Int(components[2])!
         var minutes = hour * 60 + minute
         if components[0] == "-" {
           minutes = minutes * -1
@@ -57,8 +57,8 @@ public class MysqlConnection : DatabaseConnection {
     Otherwise, it will return a row with the last insert ID as the "id"
     column.
   
-    :param: query           The text of the query.
-    :param: bindParameters  Parameters to interpolate into the query on the
+    - parameter query:           The text of the query.
+    - parameter bindParameters:  Parameters to interpolate into the query on the
                             database side.
     :returns                The interpreted result set.
     */
@@ -93,7 +93,7 @@ public class MysqlConnection : DatabaseConnection {
   /**
     This method executes a block inside of a MySQL connection.
 
-    :param: block   The block to execute.
+    - parameter block:   The block to execute.
     */
   public override func transaction(block: ()->()) {
     mysql_query(self.connection, "START TRANSACTION;")
