@@ -16,5 +16,4 @@
 # Swift 2 Updates
 
 * Using Protocol Extensions
-* Check for a better way of doing String splitting
 * Checking documentation

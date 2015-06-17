@@ -280,7 +280,7 @@ public class Application {
           inQuotes = !inQuotes
         }
         return character == " " && !inQuotes
-        }.map { String($0) }.map { $0.stringByReplacingOccurrencesOfString("\"", withString: "") }
+        }.map { String($0).stringByReplacingOccurrencesOfString("\"", withString: "") }
       (self.command, self.flags) = self.dynamicType.parseArguments(arguments)
     }
 

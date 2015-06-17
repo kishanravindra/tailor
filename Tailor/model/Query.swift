@@ -228,7 +228,7 @@ public class Query<RecordType: Persistable> {
       orderClause.query = "id DESC"
     }
     else {
-      var components = split((orderClause.query).characters) { $0 == "," }.map { String($0) }
+      var components = orderClause.query.componentsSeparatedByString(",")
       components = components.map {
         component in
         var reversed = component

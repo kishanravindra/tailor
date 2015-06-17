@@ -24,7 +24,7 @@ public class Localization {
     if locale == "en" {
       return locales
     }
-    var components = split(locale.characters) { $0 == "-" }.map { String($0) }
+    var components = locale.componentsSeparatedByString("-")
     if components.count > 1 {
       var fallback = ""
       for component in components {

@@ -80,7 +80,7 @@ public final class ConfigurationSetting: Equatable {
     - returns:              The configuration setting.
     */
   public func child(keyPath: String) -> ConfigurationSetting {
-    let keys = split(keyPath.characters) { $0 == "." }.map { String($0) }
+    let keys = keyPath.componentsSeparatedByString(".")
     if keys.count == 1 {
       if self.children[keyPath] == nil {
         self.children[keyPath] = ConfigurationSetting()
@@ -125,7 +125,7 @@ public final class ConfigurationSetting: Equatable {
     - returns:              The value for the setting.
     */
   public func fetch(keyPath: String) -> String? {
-    return self.fetch(keys: split(keyPath.characters) { $0 == "." }.map { String($0) })
+    return self.fetch(keys: keyPath.componentsSeparatedByString("."))
   }
   
   /**
