@@ -32,18 +32,18 @@ public class Query<RecordType: Persistable> {
   /**
     This method builds a query from its component clause.
 
-    - parameter copyFrom:        The query that we should use as a baseline for the
-                            new query.
-    - parameter selectClause:    The fields that will be selected.
-    - parameter whereClause:     The portion of the query for filtering the result
-                            set.
-    - parameter orderClause:     The portion of the query specifying the order of the
-                            returned results.
-    - parameter limitClause:     The portion of the query specifying how many results
-                            should be returned.
-    - parameter joinClause:      The portion of the query specifying other tables to
-                            join to.
-    - parameter cacheResults:    Whether the query should cache its results.
+    - parameter copyFrom:         The query that we should use as a baseline for 
+                                  the new query.
+    - parameter selectClause:     The fields that will be selected.
+    - parameter whereClause:      The portion of the query for filtering the
+                                  result set.
+    - parameter orderClause:      The portion of the query specifying the order
+                                  of the returned results.
+    - parameter limitClause:      The portion of the query specifying how many
+                                  results should be returned.
+    - parameter joinClause:       The portion of the query specifying other
+                                  tables to join to.
+    - parameter cacheResults:     Whether the query should cache its results.
     */
   public required init(copyFrom: Query<RecordType>? = nil, selectClause: String? = nil, whereClause: SqlFragment? = nil, orderClause: SqlFragment? = nil, limitClause: SqlFragment? = nil, joinClause: SqlFragment? = nil, cacheResults: Bool? = nil) {
     self.selectClause = selectClause ?? copyFrom?.selectClause ?? "\(RecordType.tableName).*"
@@ -60,9 +60,9 @@ public class Query<RecordType: Persistable> {
     This method adds a filter clause based on raw SQL, and returns a new version
     of the query with the filter added.
 
-    - parameter query:         The new clause for the query
-    - parameter parameters:    The new bind parameters
-    - returns:             The new query object.
+    - parameter query:          The new clause for the query
+    - parameter parameters:     The new bind parameters
+    - returns:                  The new query object.
     */
   public func filter(query: String, _ parameters: [DatabaseValueConvertible] = []) -> Query<RecordType> {
     var clause = whereClause
@@ -86,10 +86,10 @@ public class Query<RecordType: Persistable> {
     This method adds a filter clause based on a dictionary of conditions, and
     returns a new version of the query with the filter added.
   
-    - parameter conditions:    The conditions, with keys matching field names on the
-                          record type and values matching the field types on the
-                          record type.
-    - returns:             The new query object.
+    - parameter conditions:     The conditions, with keys matching field names
+                                on the record type and values matching the field
+                                types on the record type.
+    - returns:                  The new query object.
     */
   public func filter(conditions: [String: DatabaseValueConvertible?]) -> Query<RecordType> {
     var query = ""
@@ -116,11 +116,11 @@ public class Query<RecordType: Persistable> {
   /**
     This method attaches an ordering to the query, and returns the result.
 
-    - parameter fieldName:   The name of the field to order by, using the field name
-                        from the record type.
-    - parameter order:       Whether to put the results in ascending or descending
-                        order.
-    - returns:           The new query.
+    - parameter fieldName:    The name of the field to order by, using the field
+                              name from the record type.
+    - parameter order:        Whether to put the results in ascending or
+                              descending order.
+    - returns:                The new query.
     */
   public func order(columnName: String, _ order: NSComparisonResult) -> Query<RecordType> {
     var clause = orderClause
@@ -143,8 +143,8 @@ public class Query<RecordType: Persistable> {
     limit, we will use the new limit. If this limit is more than the existing
     limit, we will keep using the existing limit.
 
-    - parameter limit:     The limit to apply.
-    - returns:         The new query.
+    - parameter limit:      The limit to apply.
+    - returns:              The new query.
     */
   public func limit(limit: Int) -> Query<RecordType> {
     var newLimit = limit
@@ -165,9 +165,9 @@ public class Query<RecordType: Persistable> {
     This method specifies what fields from the database we should select with
     our query.
 
-    - parameter selectClause:      The SQL for selecting the fields, not including
-                              the SELECT keyword.
-    - returns:                 The new query.
+    - parameter selectClause:     The SQL for selecting the fields, not
+                                  including the SELECT keyword.
+    - returns:                    The new query.
     */
   public func select(selectClause: String) -> Query<RecordType> {
     return self.dynamicType.init(
@@ -179,10 +179,11 @@ public class Query<RecordType: Persistable> {
   /**
     This method adds a join to the query.
 
-    - parameter query:           The SQL for selecting the fields, including the JOIN
-                            keywords.
-    - parameter parameters:      The bind parameters to pass to the join statement.
-    - returns:               The new query.
+    - parameter query:          The SQL for selecting the fields, including the
+                                JOIN keywords.
+    - parameter parameters:     The bind parameters to pass to the join
+                                statement.
+    - returns:                  The new query.
     */
   public func join(query: String, _ parameters: [DatabaseValueConvertible] = []) -> Query<RecordType> {
     var clause = self.joinClause
@@ -201,10 +202,11 @@ public class Query<RecordType: Persistable> {
   /**
     This method adds a join to the query.
   
-    - parameter recordType:    The target record type for the join.
-    - parameter fromColumn:    The field on the target record to match for the join.
-    - parameter toColumn:      The field on this record to match for the join.
-    - returns:             The new query.
+    - parameter recordType:   The target record type for the join.
+    - parameter fromColumn:   The field on the target record to match for the
+                              join.
+    - parameter toColumn:     The field on this record to match for the join.
+    - returns:                The new query.
   */
   public func join<OtherRecordType: Persistable>(recordType: OtherRecordType.Type, fromColumn: String, toColumn: String) -> Query<RecordType> {
     let fromTable = recordType.tableName

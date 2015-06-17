@@ -53,8 +53,8 @@ public struct ValidationError: Equatable {
     If it cannot find content for any of those keys, it will return the raw
     message.
 
-    - parameter localization:    The localization to use to fetch the content.
-    - returns:               The description
+    - parameter localization:     The localization to use to fetch the content.
+    - returns:                    The description
     */
   public func localize(localization: Localization) -> String {
     let message = self.message.underscored()

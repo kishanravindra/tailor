@@ -219,8 +219,8 @@ public struct MysqlBindParameter {
   /**
     This method converts a MySQL time data structure into a timestamp.
 
-    - parameter time:    The MySQL time
-    - returns:       The timestamp
+    - parameter time:     The MySQL time
+    - returns:            The timestamp
     */
   public static func timestampFromTime(time: MYSQL_TIME) -> Timestamp {
     return Timestamp(

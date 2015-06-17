@@ -55,6 +55,7 @@
 		5262EEC11AD1713E006F864D /* MysqlBindParameterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5262EEC01AD1713E006F864D /* MysqlBindParameterTests.swift */; };
 		5262EEF61AD19897006F864D /* MysqlBindParameterSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5262EEF51AD19897006F864D /* MysqlBindParameterSet.swift */; };
 		5262EEF81AD19B18006F864D /* MysqlBindParameter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5262EEF71AD19B18006F864D /* MysqlBindParameter.swift */; };
+		526A23771B30E0A30033A094 /* TestConfig.plist in Resources */ = {isa = PBXBuildFile; fileRef = 526A23761B30E0A30033A094 /* TestConfig.plist */; };
 		526ACD801B07922900CE0CC0 /* TimeFormatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526ACD7F1B07922900CE0CC0 /* TimeFormatTests.swift */; };
 		526ACD821B07A9FD00CE0CC0 /* TimeIntervalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526ACD811B07A9FD00CE0CC0 /* TimeIntervalTests.swift */; };
 		526ACD841B07B8FC00CE0CC0 /* TimestampTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526ACD831B07B8FC00CE0CC0 /* TimestampTests.swift */; };
@@ -205,6 +206,7 @@
 		5262EEC01AD1713E006F864D /* MysqlBindParameterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MysqlBindParameterTests.swift; sourceTree = "<group>"; };
 		5262EEF51AD19897006F864D /* MysqlBindParameterSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MysqlBindParameterSet.swift; sourceTree = "<group>"; };
 		5262EEF71AD19B18006F864D /* MysqlBindParameter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MysqlBindParameter.swift; sourceTree = "<group>"; };
+		526A23761B30E0A30033A094 /* TestConfig.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = TestConfig.plist; sourceTree = "<group>"; };
 		526ACD7F1B07922900CE0CC0 /* TimeFormatTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeFormatTests.swift; sourceTree = "<group>"; };
 		526ACD811B07A9FD00CE0CC0 /* TimeIntervalTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeIntervalTests.swift; sourceTree = "<group>"; };
 		526ACD831B07B8FC00CE0CC0 /* TimestampTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimestampTests.swift; sourceTree = "<group>"; };
@@ -568,6 +570,7 @@
 			isa = PBXGroup;
 			children = (
 				52BD13AE19E9D7E4006D72B0 /* Info.plist */,
+				526A23761B30E0A30033A094 /* TestConfig.plist */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -846,6 +849,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				526A23771B30E0A30033A094 /* TestConfig.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

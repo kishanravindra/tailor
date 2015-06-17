@@ -23,7 +23,6 @@ class ApplicationTests : TailorTestCase {
       , "initalizes IP address to dummy address")
     self.assert(application.port, equals: 8080, message: "initializes port to HTTP Alt")
     self.assert(application.routeSet.routes.count, equals: 0, message: "initializes route set to an empty one")
-    self.assert(application.rootPath(), equals: ".", message: "initalizes root path to the current path")
   }
   
   func testInitializationSetsDateFormatters() {
@@ -113,9 +112,9 @@ class ApplicationTests : TailorTestCase {
   //MARK: - Configuration
   
   func testLoadConfigPutsContentsInConfiguration() {
-    application.loadConfigFromFile("Info.plist")
-    let value = application.configuration["Info.CFBundlePackageType"]
-    self.assert(value, equals: "BNDL", message: "has the setting from the file")
+    application.loadConfigFromFile("TestConfig.plist")
+    let value = application.configuration["TestConfig.test_key"]
+    self.assert(value, equals: "test_value", message: "has the setting from the file")
   }
   
   func testLocalizationBuildsLocalizationFromClassName() {

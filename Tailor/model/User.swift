@@ -26,14 +26,15 @@ public class User : Persistable {
   public var encryptedPassword: String
   
   //MARK: Sign-Up
+  
   /**
     This method creates a record for a new user account.
 
-    - parameter emailAddress:  The new user's email address
+    - parameter emailAddress:   The new user's email address
 
-    - parameter password:      The new user's password. This will not be stored on
-                          the record; it will be encrypted immediately and
-                          stored in the encryptedPassword.
+    - parameter password:       The new user's password. This will not be stored
+                                on the record; it will be encrypted immediately
+                                and stored in the encryptedPassword.
     */
   public init(emailAddress: String, password: String) {
     self.emailAddress = emailAddress
@@ -88,8 +89,8 @@ public class User : Persistable {
   /**
     This method determines if a password is correct for this user.
 
-    - parameter password:    The password to check.
-    - returns:           Whether the password is correct.
+    - parameter password:     The password to check.
+    - returns:                Whether the password is correct.
     */
   public func hasPassword(password: String) -> Bool {
     return PasswordHasher.isMatch(password, encryptedHash: self.encryptedPassword)

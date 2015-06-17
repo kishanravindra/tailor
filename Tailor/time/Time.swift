@@ -49,9 +49,9 @@ public struct Time: Comparable, CustomStringConvertible {
   Two times are equal when they have the same hour, minute, second, nanosecond,
   and time zone.
 
-  - parameter lhs:   The first time.
-  - parameter rhs:   The second time.
-  - returns:     Whether the two times are equal.
+  - parameter lhs:    The first time.
+  - parameter rhs:    The second time.
+  - returns:          Whether the two times are equal.
   */
 public func ==(lhs: Time, rhs: Time) -> Bool {
   return lhs.hour == rhs.hour &&
@@ -64,9 +64,9 @@ public func ==(lhs: Time, rhs: Time) -> Bool {
 /**
   This method determines if one time is before another.
   
-  - parameter lhs:   The first time.
-  - parameter lhs:   The second time.
-  - returns:     Whether the first time is before the second time.
+  - parameter lhs:    The first time.
+  - parameter lhs:    The second time.
+  - returns:          Whether the first time is before the second time.
   */
 public func <(lhs: Time, rhs: Time) -> Bool {
   return lhs.hour < rhs.hour ||

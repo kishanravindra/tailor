@@ -4,8 +4,8 @@ import Foundation
 /**
   This method removes the nil values from an array.
 
-  - parameter array:   The original array
-  - returns:       The array with the nil values removed.
+  - parameter array:    The original array
+  - returns:            The array with the nil values removed.
   */
 public func removeNils<T>(array: Array<T?>) -> Array<T> {
   var results : [T] = []

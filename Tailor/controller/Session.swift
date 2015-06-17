@@ -141,8 +141,8 @@ public class Session {
   /**
     This method gets a value from the flash messages for the current page.
 
-    - parameter key:     The key for the message.
-    - returns:       The message
+    - parameter key:      The key for the message.
+    - returns:            The message
     */
   public func flash(key: String) -> String? {
     return self.currentFlash[key]
@@ -151,10 +151,10 @@ public class Session {
   /**
     This method sets a value in the flash messages.
 
-    - parameter key:             The key for the message.
-    - parameter value:           The message
-    - parameter currentPage:     Whether we should set the message for the current
-                            page or the next page.
+    - parameter key:              The key for the message.
+    - parameter value:            The message
+    - parameter currentPage:      Whether we should set the message for the
+                                  current page or the next page.
     */
   public func setFlash(key: String, _ value: String?, currentPage: Bool = false) {
     if currentPage {

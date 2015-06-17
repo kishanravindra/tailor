@@ -4,8 +4,8 @@ public extension String {
   /**
     This method converts a string to camel case.
 
-    - parameter capitalize:    Whether we should capitalize the first letter.
-    - returns:             The camel-cased string.
+    - parameter capitalize:     Whether we should capitalize the first letter.
+    - returns:                  The camel-cased string.
     */
   public func camelCase(capitalize capitalize: Bool = false) -> String {
     let result = NSMutableString()

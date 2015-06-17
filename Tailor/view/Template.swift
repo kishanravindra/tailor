@@ -170,12 +170,12 @@ public class Template {
   /**
     This method adds a tag for linking to a path.
   
-    - parameter controllerName:  The controller to link to. This will default to the
-                            current controller.
-    - parameter actionName:      The action to link to.
-    - parameter parameters:      Additional parameters for the path.
-    - parameter attributes:      Additional attributes for the tag.
-    - parameter with:            A closure that adds the contents of the link.
+    - parameter controllerName:   The controller to link to. This will default to
+                                  the current controller.
+    - parameter actionName:       The action to link to.
+    - parameter parameters:       Additional parameters for the path.
+    - parameter attributes:       Additional attributes for the tag.
+    - parameter with:             A closure that adds the contents of the link.
     */
   public func link(controllerName: String? = nil, actionName: String? = nil, parameters: [String:String] = [:], attributes: [String:String] = [:], @noescape with contents: ()->()={}) {
     var mergedAttributes = attributes
@@ -201,10 +201,10 @@ public class Template {
     If the content is already in the cache, the cached version will be put into
     the buffer without re-generating it.
 
-    - parameter key:     The key where the content will be stored in the cache.
-    - parameter block:   The block that will generate the content. This should
-                    generate the content as you would any other part of the
-                    template body, using the normal helper methods.
+    - parameter key:      The key where the content will be stored in the cache.
+    - parameter block:    The block that will generate the content. This should
+                          generate the content as you would any other part of
+                          the template body, using the normal helper methods.
     */
   public func cache(key: String, @noescape block: ()->()) {
     let cache = CacheStore.shared()
@@ -233,11 +233,8 @@ public class Template {
   /**
     This method gets a subset of the request parameters from the controller
 
-    - parameter keys:
-      The keys to extract
-
-    - returns:
-      A hash with the extracted values.
+    - parameter keys:   The keys to extract
+    - returns:          A hash with the extracted values.
     */
   public func requestParameters(keys: String...) -> [String:String] {
     let params = self.controller.request.requestParameters
@@ -256,9 +253,9 @@ public class Template {
   /**
     This method gets a localized, capitalized attribute name.
 
-    - parameter modelName:       The name of the model whose attribute this is.
-    - parameter attributeName:   The name of the attribute to localize.
-    - returns:               The localized attribute.
+    - parameter modelName:        The name of the model whose attribute this is.
+    - parameter attributeName:    The name of the attribute to localize.
+    - returns:                    The localized attribute.
     */
   public func attributeName(modelName: String, _ attributeName: String) -> String {
     return modelAttributeName(modelName, key: attributeName, localization: self.localization, capitalize: true)

@@ -120,11 +120,11 @@ public class FormBuilder {
   /**
     This method generates a select tag.
     
-    - parameter key:         The name of the property.
-    - parameter value:       The currently selected value.
-    - parameter values:      A list of values for the dropdown. The values will also
-                        be the labels for the options.
-    - parameter attributes:  Additional attributes to set on the select tag.
+    - parameter key:          The name of the property.
+    - parameter value:        The currently selected value.
+    - parameter values:       A list of values for the dropdown. The values will
+                              also be the labels for the options.
+    - parameter attributes:   Additional attributes to set on the select tag.
   */
   public func dropdown(key: String, value: String? = nil, values: [String], attributes: [String:String] = [:]) {
     let values = values.map { ($0,$0) }

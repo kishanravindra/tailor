@@ -84,9 +84,9 @@ public class DatabaseLocalization: Localization {
   /**
     This method fetches localized text from the database.
 
-    - parameter key:       The key for the localization
-    - parameter locale:    The locale for the localization
-    - returns:         The localized text, if we could find it.
+    - parameter key:        The key for the localization
+    - parameter locale:     The locale for the localization
+    - returns:              The localized text, if we could find it.
     */
   public override func fetch(key: String, inLocale locale: String) -> String? {
     let translation = Query<Translation>().filter(["locale": locale, "translation_key": key]).first()

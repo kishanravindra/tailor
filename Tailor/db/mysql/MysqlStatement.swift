@@ -81,8 +81,8 @@ public class MysqlStatement {
   /**
     This method executes the statement.
 
-    - parameter parameters:    The values to pass to the statement.
-    - returns:             The results of executing the statement.
+    - parameter parameters:     The values to pass to the statement.
+    - returns:                  The results of executing the statement.
     */
   public func execute(parameters: [DatabaseValue]) -> [[String:DatabaseValue]] {
     let inputParameters = MysqlBindParameterSet(values: parameters)

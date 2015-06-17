@@ -25,11 +25,11 @@ public func modelName(klass: Any.Type) -> String {
   generate a label based on the attribute name. Every capital letter will be
   interpreted as the beginning of a new word.
 
-  - parameter modelName:     The name of the model that the attribute is on.
-  - parameter key:           The attribute name.
-  - parameter localization:  The localization to get the name.
-  - parameter capitalize:    Whether we should capitalize the name.
-  - returns:             The humanized attribute name.
+  - parameter modelName:      The name of the model that the attribute is on.
+  - parameter key:            The attribute name.
+  - parameter localization:   The localization to get the name.
+  - parameter capitalize:     Whether we should capitalize the name.
+  - returns:                  The humanized attribute name.
 */
 public func modelAttributeName(modelName: String, key: String, localization: Localization? = nil, capitalize: Bool = false) -> String {
   

@@ -191,10 +191,10 @@ public struct Request {
   /**
     This method extracts the matching subparts of a line using a regex.
 
-    - parameter line:      The line to extract information from.
-    - parameter pattern:   The pattern to match against.
-    - returns:         The matched subparts, or an empty array if there was no
-                      match.
+    - parameter line:       The line to extract information from.
+    - parameter pattern:    The pattern to match against.
+    - returns:              The matched subparts, or an empty array if there
+                            was no match.
     */
   public static func extractWithPattern(line : String, pattern : String) -> [String] {
     let regex: NSRegularExpression?
@@ -223,8 +223,8 @@ public struct Request {
   /**
     This method decodes a query string into a dictionary of parameters.
 
-    - parameter string:          The query string.
-    - returns:               The parameters.
+    - parameter string:     The query string.
+    - returns:              The parameters.
     */
   public static func decodeQueryString(string: String) -> [String:String] {
     var params: [String:String] = [:]

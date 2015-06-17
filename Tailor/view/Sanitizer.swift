@@ -38,8 +38,8 @@ public struct Sanitizer {
     instance variable, but they can also override this method if they need more
     complicated filters.
 
-    :params: string   The text to sanitize.
-    - returns:         The sanitized text.
+    - parameter string:   The text to sanitize.
+    - returns:            The sanitized text.
     */
   public func sanitizeString(string: String) -> String {
     var sanitized = ""
@@ -57,8 +57,9 @@ public struct Sanitizer {
     If the text has already been sanitized with this sanitizer, it will do
     nothing.
 
-    - parameter text:  The sanitized text wrapper
-    - returns:     The sanitized text wrapper for the new level of sanitization.
+    - parameter text:   The sanitized text wrapper
+    - returns:          The sanitized text wrapper for the new level of
+                        sanitization.
     */
   public func sanitize(text: SanitizedText) -> SanitizedText {
     if self.isSanitized(text) {
@@ -74,8 +75,8 @@ public struct Sanitizer {
     Use this method with caution, and only when are absolutely certain of the
     contents of the string.
     
-    - parameter string:    The string to put in the sanitized text wrapper.
-    - returns:         The sanitized text wrapper.
+    - parameter string:     The string to put in the sanitized text wrapper.
+    - returns:              The sanitized text wrapper.
   */
   public func accept(string: String) -> SanitizedText {
     return SanitizedText(text: string, sanitizers: [self])

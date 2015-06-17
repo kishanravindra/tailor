@@ -14,10 +14,11 @@ public extension NSData {
     This method searches for a string in this data and uses it to separate out
     subcomponents of the data.
 
-    - parameter separator:   The separator between the components
-    - parameter limit:       The maximum number of components to create. Once this is
-                        reached, the rest of the data will be kept as one piece.
-    - returns:           The subcomponents.
+    - parameter separator:    The separator between the components
+    - parameter limit:        The maximum number of components to create. Once
+                              this is reached, the rest of the data will be kept
+                              as one piece.
+    - returns:                The subcomponents.
     */
   public func componentsSeparatedByString(separator: String, limit: Int? = nil) -> [NSData] {
     var components = [NSData]()

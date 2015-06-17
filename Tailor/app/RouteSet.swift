@@ -101,8 +101,8 @@ public class RouteSet {
     /**
       This method determines if this route can handle a request.
 
-      - parameter request:   The request to check.
-      - returns:         Whether the route can handle the request.
+      - parameter request:    The request to check.
+      - returns:              Whether the route can handle the request.
       */
     public func canHandleRequest(request: Request) -> Bool {
       let path = request.path
@@ -271,9 +271,9 @@ public class RouteSet {
   
     The restful actions are index, new, create, edit, update, and destroy.
   
-    - parameter only:    The actions to add. If this is empty, it will all the
-                    actions.
-    - parameter except:  The actions to skip.
+    - parameter only:     The actions to add. If this is empty, it will add all
+                          the actions.
+    - parameter except:   The actions to skip.
   */
   public func addRestfulRoutes(only only: [String] = [], except: [String] = []) {
     var actions = (only.isEmpty ? ["index", "new", "create", "show", "edit", "update", "destroy"] : only)
@@ -354,10 +354,11 @@ public class RouteSet {
     be relative to the application's root path, which defaults to the directory
     containing the executable.
     
-    - parameter prefix:        The prefix that we append to all the static asset URLs.
-    - parameter localPrefix:   The prefix that we append to all of the paths for the
-                          assets on disk.
-    - parameter assets:        The names of the asset files.
+    - parameter prefix:         The prefix that we append to all the static asset
+                                URLs.
+    - parameter localPrefix:    The prefix that we append to all of the paths
+                                for the assets on disk.
+    - parameter assets:         The names of the asset files.
   */
   public func staticAssets(prefix prefix: String, localPrefix: String, assets: [String]) {
     for assetName in assets {
@@ -388,14 +389,16 @@ public class RouteSet {
   /**
     This method generates a path using our route set.
 
-    - parameter controller:    The name of the controller that the link is to.
-    - parameter actionName:    The name of the action.
-    - parameter parameters:    The parameters to interpolate into the route.
-    - parameter domain:        The domain to use for a full URL. If this is omitted,
-                          this will just give the path rather than a URL.
-    - parameter https:         Whether the URL should use the https protocol. If the
-                          domain is omitted, this value will be ignored.
-    - returns:             The path, if we could match it up.
+    - parameter controller:     The name of the controller that the link is to.
+    - parameter actionName:     The name of the action.
+    - parameter parameters:     The parameters to interpolate into the route.
+    - parameter domain:         The domain to use for a full URL. If this is
+                                omitted, this will just give the path rather
+                                than a URL.
+    - parameter https:          Whether the URL should use the https protocol.
+                                If the domain is omitted, this value will be
+                                ignored.
+    - returns:                  The path, if we could match it up.
     */
   public func pathFor(controllerName: String, actionName: String, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
     var matchingPath: String? = nil

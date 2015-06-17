@@ -42,11 +42,11 @@ public extension String {
   /**
     Whether this string matches a regular expression.
   
-    - parameter pattern:         The pattern to compare against
-    - parameter allowPartial:    Whether we should allow partial matches. If this is
-                            false, the pattern will have to match against the
-                            entire string.
-    - returns:               Whether this string matches the given pattern.
+    - parameter pattern:          The pattern to compare against
+    - parameter allowPartial:     Whether we should allow partial matches. If
+                                  this is false, the pattern will have to match
+                                  against the entire string.
+    - returns:                    Whether this string matches the given pattern.
     */
   public func matches(pattern: String, allowPartial: Bool = false) -> Bool {
     let fullPattern = allowPartial ? pattern : "^\(pattern)$"

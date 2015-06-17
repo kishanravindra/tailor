@@ -284,10 +284,10 @@ public enum TimeFormatComponent: TimeFormatter {
   /**
     This method pads a string to a minimum length.
 
-    - parameter string:    The string to pad.
-    - parameter with:      The character to pad it with
-    - parameter length:    The minimum length of the result.
-    - returns:         The padded string.
+    - parameter string:     The string to pad.
+    - parameter with:       The character to pad it with
+    - parameter length:     The minimum length of the result.
+    - returns:              The padded string.
     */
   private func pad(string: String, with pad: Character, length: Int) -> String {
     let currentLength = string.characters.count
@@ -302,8 +302,8 @@ public enum TimeFormatComponent: TimeFormatter {
   /**
     This method formats a timestamp based on the rules of this component.
 
-    - parameter timestamp:   The timestamp to format.
-    - returns:           The formatted string.
+    - parameter timestamp:    The timestamp to format.
+    - returns:                The formatted string.
     */
   public func formatTime(timestamp: Timestamp) -> String {
     switch(self) {
@@ -392,13 +392,13 @@ public enum TimeFormatComponent: TimeFormatter {
   /**
     This method parses a number from a string.
 
-    - parameter string:    The string we are reading.
-    - parameter length:    The number of digits that we should read.
-    - parameter padding:   A character that can appear at the start to pad the
-                      string.
-    - returns:         A tuple containing the number and the unconsumed part of
-                      the string. If we cannot read the number, the number will
-                      be zero and the string will be nil.
+    - parameter string:     The string we are reading.
+    - parameter length:     The number of digits that we should read.
+    - parameter padding:    A character that can appear at the start to pad the
+                            string.
+    - returns:              A tuple containing the number and the unconsumed
+                            part of the string. If we cannot read the number,
+                            the number will be zero and the string will be nil.
     */
   private func parseNumber(from string: String, length: Int, padding: Character?) -> (Int,String?) {
     var substring = string.substringToIndex(advance(string.startIndex, length))
@@ -424,15 +424,15 @@ public enum TimeFormatComponent: TimeFormatter {
     This method extracts a numeric value from a text component at the beginning
     of a string.
 
-    - parameter string:    The string we are reading.
-    - parameter key:       The key that identifies this component in the
-                      translations, between the calendar identifier and the
-                      index.
-    - parameter calendar:  The calendar that the date is formatted in.
-    - parameter range:     The range of valid values for the component.
-    - returns:         A tuple containing the number and the unconsumed part of
-                      the string. If we cannot read the number, the number will
-                      be zero and the string will be nil.
+    - parameter string:     The string we are reading.
+    - parameter key:        The key that identifies this component in the
+                            translations, between the calendar identifier and
+                            the index.
+    - parameter calendar:   The calendar that the date is formatted in.
+    - parameter range:      The range of valid values for the component.
+    - returns:              A tuple containing the number and the unconsumed
+                            part of the string. If we cannot read the number,
+                            the number will be zero and the string will be nil.
     */
   private func parseText(from string: String, key: String, calendar: Calendar, range: Range<Int>) -> (Int,String?) {
     let localization = Application.sharedApplication().localization("en")
@@ -455,11 +455,12 @@ public enum TimeFormatComponent: TimeFormatter {
     
     If the string does not match this formatter, the should return nil.
     
-    - parameter string:      The string to parse.
-    - parameter container:   The container for the time information.
-    - parameter calendar:    The calendar that the date is formatted in.
-    - returns:           The remaining string.
-    :todo:              Parsing more types of components.
+    - parameter string:       The string to parse.
+    - parameter container:    The container for the time information.
+    - parameter calendar:     The calendar that the date is formatted in.
+    - returns:                The remaining string.
+  
+    **TODO:** Parsing more types of components.
     */
   public func parseTime(from string: String, inout into container: (year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int, nanosecond: Double), calendar: Calendar = GregorianCalendar()) -> String? {
     switch(self) {

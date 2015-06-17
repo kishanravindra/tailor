@@ -69,8 +69,8 @@ internal struct TimeZoneReader {
 
       The values can be of any size, and will be in big-endian order.
 
-      - parameter count:   The number of values to read.
-      - returns:       The values.
+      - parameter count:    The number of values to read.
+      - returns:            The values.
       */
     mutating func readArray<T: ByteReadable>(count: Int) -> [T] {
       var array = [T](count: count, repeatedValue: 0)

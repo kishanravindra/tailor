@@ -12,9 +12,9 @@ public class PasswordHasher {
   /**
     This method creates a password hasher.
 
-    - parameter salt:
-      The binary salt. If this is omitted, this will generate a random salt,
-      which is generally preferable if you want to encrypt plaintext.
+    - parameter salt:   The binary salt. If this is omitted, this will generate a
+                        random salt, which is generally preferable if you want
+                        to encrypt plaintext.
     */
   public init(salt: NSData? = nil) {
     if salt == nil {
@@ -30,11 +30,8 @@ public class PasswordHasher {
   /**
     This method encrypts a string with this encryptor's settings.
 
-    - parameter input:
-      The text to encrypt.
-
-    - returns:
-      The encrypted hash with the salt.
+    - parameter input:  The text to encrypt.
+    - returns:          The encrypted hash with the salt.
     */
   public func encrypt(input: String) -> String {
     let encodedSalt = salt.base64EncodedStringWithOptions([])
@@ -51,14 +48,10 @@ public class PasswordHasher {
   /**
     This method determines if a string is a match for an encrypted hash.
   
-    - parameter input:
-      The input to check
-  
-    - parameter encryptedHash:
-      The hash to compare it against
-  
-    - returns:
-      Whether the encrypted hash is a hash of the given input.
+    - parameter input:            The input to check
+    - parameter encryptedHash:    The hash to compare it against
+    - returns:                    Whether the encrypted hash is a hash of the
+                                  given input.
     */
   public class func isMatch(input: String, encryptedHash: String) -> Bool {
     let saltLength = Int(encryptedHash.substringToIndex(advance(encryptedHash.startIndex, 2))) ?? 0

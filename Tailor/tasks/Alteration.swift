@@ -42,8 +42,7 @@ public class Alteration {
     recorded in the tailor_alterations table. If the table doesn't exist, it
     will create it and return the full list of alterations.
     
-    - returns:
-      The pending alterations.
+    - returns: The pending alterations.
     */
   public class func pendingAlterations() -> [Alteration.Type] {
     var previousAlterations = DatabaseConnection.sharedConnection().executeQuery("SELECT * FROM tailor_alterations")

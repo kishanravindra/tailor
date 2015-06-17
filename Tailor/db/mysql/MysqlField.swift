@@ -51,9 +51,8 @@ public struct MysqlField {
   /**
     This method gets the size of a buffer for holding a MySQL field.
 
-    - returns:
-      A tuple holding the size of the itmes in the buffer and the number of
-      itmes. in the buffer.
+    - returns:  A tuple holding the size of the itmes in the buffer and the
+                number of items in the buffer.
     */
   public static func bufferSize(type: enum_field_types) -> (size: UInt, count: UInt) {
     var size = UInt(sizeof(UInt8))

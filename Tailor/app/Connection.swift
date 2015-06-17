@@ -26,9 +26,9 @@ public struct Connection {
   /**
     This method creates a new connection.
 
-    - parameter fileDescriptor:    The file descriptor for the socket that we are
-                              using for the connection.
-    - parameter handler:           A callback that will handle the request.
+    - parameter fileDescriptor:     The file descriptor for the socket that we
+                                    are using for the connection.
+    - parameter handler:            A callback that will handle the request.
     */
   public init(fileDescriptor: Int32, handler: RequestHandler) {
     self.socketDescriptor = fileDescriptor
@@ -124,13 +124,13 @@ public struct Connection {
 
     It will open the connection and then tell the run loop to run indefinitely.
 
-    - parameter address:   The IP address to listen on.
-    - parameter port:      The port to listen on.
-    - parameter handler:   A callback that will be called when a request is ready for
-                      processing. This will be given a request and another
-                      callback that it can call with a response.
-
-    - returns:         Whether we were able to open the connection.
+    - parameter address:    The IP address to listen on.
+    - parameter port:       The port to listen on.
+    - parameter handler:    A callback that will be called when a request is
+                            ready for processing. This will be given a request
+                            and another callback that it can call with a
+                            response.
+    - returns:              Whether we were able to open the connection.
     */
   public static func startServer(address: (Int,Int,Int,Int), port: Int, handler: RequestHandler) -> Bool {
     let socketDescriptor = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)

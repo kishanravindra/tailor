@@ -76,8 +76,8 @@ public final class ConfigurationSetting: Equatable {
   
     If the setting does not exist, this will create an empty one.
 
-    - parameter keyPath:   The key path for the child.
-    - returns:         The configuration setting.
+    - parameter keyPath:    The key path for the child.
+    - returns:              The configuration setting.
     */
   public func child(keyPath: String) -> ConfigurationSetting {
     let keys = split(keyPath.characters) { $0 == "." }.map { String($0) }
@@ -98,8 +98,8 @@ public final class ConfigurationSetting: Equatable {
     It will iterate through the keys, getting a child for each key from
     the previous child, starting at this node.
 
-    - parameter keys:    The keys to fetch
-    - returns:       The setting at the end of the path.
+    - parameter keys:     The keys to fetch
+    - returns:            The setting at the end of the path.
     */
   public func child(keys  keys: [String]) -> ConfigurationSetting {
     var setting = self
@@ -121,8 +121,8 @@ public final class ConfigurationSetting: Equatable {
   /**
     This method gets the setting for the node at a key path.
 
-    - parameter keyPath:   The dot-separated key path.
-    - returns:         The value for the setting.
+    - parameter keyPath:    The dot-separated key path.
+    - returns:              The value for the setting.
     */
   public func fetch(keyPath: String) -> String? {
     return self.fetch(keys: split(keyPath.characters) { $0 == "." }.map { String($0) })
@@ -131,8 +131,8 @@ public final class ConfigurationSetting: Equatable {
   /**
     This method gets the setting for the node at a key path.
     
-    - parameter keys:    The keys in the key path.
-    - returns:       The value for the setting.
+    - parameter keys:     The keys in the key path.
+    - returns:            The value for the setting.
     */
   public func fetch(keys  keys: [String]) -> String? {
     return self.child(keys: keys).value
@@ -173,8 +173,8 @@ public final class ConfigurationSetting: Equatable {
   /**
     This subscript provides access to values by key path.
 
-    - parameter keyPath:   The key path for the setting.
-    - returns:         The value for that setting.
+    - parameter keyPath:    The key path for the setting.
+    - returns:              The value for that setting.
     */
   public subscript(keyPath: String) -> String? {
     get {

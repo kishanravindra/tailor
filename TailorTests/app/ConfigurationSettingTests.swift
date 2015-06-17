@@ -48,10 +48,12 @@ class ConfigurationSettingTests: TailorTestCase {
   }
   
   func testInitializerWithPathGetsContentsOfFile() {
-    setting = ConfigurationSetting(contentsOfFile: "./TailorTests/Info.plist")
+    let folderPath = NSBundle(forClass: self.dynamicType).resourcePath ?? "."
+    let fullPath = folderPath + "/TestConfig.plist"
+    setting = ConfigurationSetting(contentsOfFile: fullPath)
     
-    let child = setting.child("CFBundlePackageType")
-    assert(child.value, equals: "BNDL", message: "has the value from the file")
+    let child = setting.child("test_key")
+    assert(child.value, equals: "test_value", message: "has the value from the file")
   }
   
   func testInitializerWithBadPathCreatesEmptySetting() {

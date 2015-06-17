@@ -13,8 +13,8 @@ public class MemoryCacheStore: CacheStore {
   /**
     This method reads an entry for the cache store.
 
-    - parameter key:   The key for the cache entry.
-    - returns:     The fetched value.
+    - parameter key:    The key for the cache entry.
+    - returns:          The fetched value.
     */
   public override func read(key: String) -> String? {
     if let time = expiryTimes[key] {

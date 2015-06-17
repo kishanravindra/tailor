@@ -179,9 +179,9 @@ public enum DatabaseValue: Equatable, CustomStringConvertible {
 
   They are equal if they have the same type and their wrapped values are equal.
 
-  - parameter lhs:   The left-hand of the equality
-  - parameter rhs:   The right-hand of the equality
-  - returns:     Whether they are equal.
+  - parameter lhs:    The left-hand of the equality
+  - parameter rhs:    The right-hand of the equality
+  - returns:          Whether they are equal.
   */
 public func ==(lhs: DatabaseValue, rhs: DatabaseValue) -> Bool {
   switch(lhs,rhs) {

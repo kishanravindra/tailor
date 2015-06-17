@@ -12,9 +12,10 @@ public class AesEncryptor {
   /**
     This method converts a byte into a hex string.
   
-    - parameter byte:    The byte to encode
-    - parameter pad:     Whether we should force this to be a two-character string.
-    - returns:       The encoded string.
+    - parameter byte:     The byte to encode
+    - parameter pad:      Whether we should force this to be a two-character
+                          string.
+    - returns:            The encoded string.
     */
   public class func getHexString(byte: UInt8, pad: Bool = true) -> String {
     if pad {
@@ -45,7 +46,7 @@ public class AesEncryptor {
     If the string is not a valid hex byte, this will return nil.
 
     - parameter byte:     The string
-    - returns:       The hex byte.
+    - returns:            The hex byte.
     */
   public class func getHex(byte: String) -> UInt8? {
     switch(byte.characters.count) {
@@ -84,8 +85,8 @@ public class AesEncryptor {
   /**
     This method creates a new AES encryptor/decryptor.
 
-    - parameter key:     A string with the hexadecimal encoding of the encryption
-                    key.
+    - parameter key:    A string with the hexadecimal encoding of the
+                        encryption key.
     */
   public init(key hexKey: String) {
     let keyData = NSMutableData()
@@ -117,8 +118,8 @@ public class AesEncryptor {
   /**
     This method encrypts data with our key.
 
-    - parameter data:      The plaintext.
-    - returns:         The encrypted data.
+    - parameter data:     The plaintext.
+    - returns:            The encrypted data.
     */
   public func encrypt(data: NSData) -> NSData {
     let encryptor = SecEncryptTransformCreate(key.takeUnretainedValue(), nil)
@@ -127,10 +128,10 @@ public class AesEncryptor {
   }
   
   /**
-    This method ecrypts data with our key.
+    This method decrypts data with our key.
 
-    - parameter data:    The encrypted data.
-    - returns:       The plaintext.
+    - parameter data:   The encrypted data.
+    - returns:          The plaintext.
     */
   public func decrypt(data: NSData) -> NSData {
     let decryptor = SecDecryptTransformCreate(key.takeUnretainedValue(), nil)

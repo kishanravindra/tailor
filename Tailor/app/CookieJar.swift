@@ -18,23 +18,24 @@ public class CookieJar {
   /**
     This method changes a value for a cookie.
   
-    - parameter key:             The identifier for the cookie.
-    - parameter value:           The new value for the cookie.
-    - parameter path:            The path for the pages that can access this cookie.
-                            If this is not provided, all pages will be able to
-                            access it.
-    - parameter expiresAt:       The time when the cookie will expire. If this is
-                            not provided, it will expire at the end of the
-                            browser session.
-    - parameter maxAge:          The number of seconds before the cookie should
-                            expire.
-    - parameter domain:          The domain that can see the cookie. If this is not
-                            provided, the cookie will be visible to the domain
-                            of the request, as well as its subdomains.
-    - parameter secureOnly:      Whether the cookie should only be sent over secure
-                            requests.
-    - parameter httpOnly:        Whether the cookie should only be sent over
-                            HTTP/HTTPS requests.
+    - parameter key:              The identifier for the cookie.
+    - parameter value:            The new value for the cookie.
+    - parameter path:             The path for the pages that can access this
+                                  cookie. If this is not provided, all pages
+                                  will be able to access it.
+    - parameter expiresAt:        The time when the cookie will expire. If this
+                                  is not provided, it will expire at the end of
+                                  the browser session.
+    - parameter maxAge:           The number of seconds before the cookie should
+                                  expire.
+    - parameter domain:           The domain that can see the cookie. If this is
+                                  not provided, the cookie will be visible to
+                                  the domain of the request, as well as its
+                                  subdomains.
+    - parameter secureOnly:       Whether the cookie should only be sent over
+                                  secure requests.
+    - parameter httpOnly:         Whether the cookie should only be sent over
+                                  HTTP/HTTPS requests.
     */
   public func setCookie(key: String, _ value: String, path: String = "/",
     expiresAt: Timestamp? = nil, maxAge: Int? = nil, domain: String? = nil,
@@ -82,7 +83,7 @@ public class CookieJar {
     This method gets the value for a cookie in this jar.
 
     - parameter key:     The identifier for the cookie.
-    :return:        The value, if we found one.
+    - returns:           The value, if we found one.
     */
   public subscript(key: String) -> String? {
     get {

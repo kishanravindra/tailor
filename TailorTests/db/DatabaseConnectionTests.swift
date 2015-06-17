@@ -35,7 +35,7 @@ class DatabaseConnectionTests: TailorTestCase {
       DatabaseConnection.sharedConnection()
       self.assert(application.connectionCount, equals: 2, message: "creates two connections")
     }
-    waitForExpectationsWithTimeout(0.01, handler: nil)
+    waitForExpectationsWithTimeout(0.1, handler: nil)
   }
   
   func testRowInitializationWithConvertibleValuesWrapsValues() {

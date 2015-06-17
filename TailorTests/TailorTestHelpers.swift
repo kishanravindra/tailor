@@ -22,10 +22,6 @@ class TestApplication: Tailor.Application {
     return MysqlConnection(config: config)
   }
   
-  override func rootPath() -> String {
-    return "TailorTests"
-  }
-  
   override func start() {
     super.start()
     DatabaseConnection.sharedConnection().executeQuery("DROP TABLE IF EXISTS `hats`")

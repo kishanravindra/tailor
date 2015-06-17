@@ -15,9 +15,9 @@ public class Localization {
     one for the same language (e.g. from es-mx to es), and from a language other
     than English to English (e.g. from es to en).
 
-    - parameter locale:    The locale that we are supposed to be getting a
-                      translation for.
-    - returns:         The locales to try
+    - parameter locale:     The locale that we are supposed to be getting a
+                            translation for.
+    - returns:              The locales to try
     */
   public class func fallbackLocales(locale: String) -> [String] {
     var locales = [String]()
@@ -72,9 +72,9 @@ public class Localization {
     mapped to the value "John", then all occurrences of "\(name)" in the content
     will be replaced with "John".
     
-    - parameter key:             The key for the content.
-    - parameter interpolations:  The values to interpolate into the content.
-    - returns:               The content.
+    - parameter key:              The key for the content.
+    - parameter interpolations:   The values to interpolate into the content.
+    - returns:                    The content.
     */
   public func fetch(key: String, interpolations: [String:String] = [:]) -> String? {
     var result = self.fetch(key, inLocale: self.locale)
@@ -100,8 +100,8 @@ public class Localization {
   
     This will fall back to any other locales.
 
-    - parameter key:   The key for the content
-    - returns:     The content.
+    - parameter key:    The key for the content
+    - returns:          The content.
     */
   public func fetch(key: String, inLocale locale: String) -> String? {
     return nil

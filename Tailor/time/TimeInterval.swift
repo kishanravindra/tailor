@@ -123,9 +123,9 @@ public func ==(lhs: TimeInterval, rhs: TimeInterval) -> Bool {
 /**
   This method adds two time intervals.
 
-  - parameter lhs:   The left-hand side of the addition.
-  - parameter rhs:   The right-hand side of the addition.
-  - returns:     A time interval with the sum.
+  - parameter lhs:    The left-hand side of the addition.
+  - parameter rhs:    The right-hand side of the addition.
+  - returns:          A time interval with the sum.
   */
 public func +(lhs: TimeInterval, rhs: TimeInterval) -> TimeInterval {
   return TimeInterval(
@@ -141,9 +141,9 @@ public func +(lhs: TimeInterval, rhs: TimeInterval) -> TimeInterval {
 /**
   This method subtracts two time intervals.
 
-  - parameter lhs:   The left-hand side of the subtraction.
-  - parameter rhs:   The right-hand side of the subtraction.
-  - returns:     A time interval with the difference
+  - parameter lhs:    The left-hand side of the subtraction.
+  - parameter rhs:    The right-hand side of the subtraction.
+  - returns:          A time interval with the difference
   */
 public func -(lhs: TimeInterval, rhs: TimeInterval) -> TimeInterval {
   return lhs + rhs.invert()
@@ -154,9 +154,9 @@ public func -(lhs: TimeInterval, rhs: TimeInterval) -> TimeInterval {
 
   See Timestamp#byAddingInterval for more details.
 
-  - parameter lhs:   The timestamp that we are adding to.
-  - parameter rhs:   The interval we are adding.
-  - returns:     The new timestamp.
+  - parameter lhs:    The timestamp that we are adding to.
+  - parameter rhs:    The interval we are adding.
+  - returns:          The new timestamp.
   */
 public func +(lhs: Timestamp, rhs: TimeInterval) -> Timestamp {
   return lhs.byAddingInterval(rhs)
@@ -167,9 +167,9 @@ public func +(lhs: Timestamp, rhs: TimeInterval) -> Timestamp {
 
   See Timestamp#byAddingInterval for more details.
 
-  - parameter lhs:   The timestamp that we are subtracting from.
-  - parameter rhs:   The time interval we are subtracting.
-  - returns:     The new timestamp.
+  - parameter lhs:    The timestamp that we are subtracting from.
+  - parameter rhs:    The time interval we are subtracting.
+  - returns:          The new timestamp.
   */
 public func -(lhs: Timestamp, rhs: TimeInterval) -> Timestamp {
   return lhs.byAddingInterval(rhs.invert())

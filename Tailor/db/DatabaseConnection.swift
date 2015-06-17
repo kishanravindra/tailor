@@ -89,10 +89,10 @@ public class DatabaseConnection {
   /**
     This method executes a query and returns a result set.
     
-    - parameter query:           The text of the query.
-    - parameter bindParameters:  Parameters to interpolate into the query on the
-                            database side.
-    :returns                The interpreted result set.
+    - parameter query:            The text of the query.
+    - parameter bindParameters:   Parameters to interpolate into the query on
+                                  the database side.
+    :returns                      The interpreted result set.
     */
   public func executeQuery(query: String, _ bindParameters: DatabaseValueConvertible...) -> [Row] {
     return self.executeQuery(query, parameterValues: bindParameters)
@@ -101,10 +101,10 @@ public class DatabaseConnection {
   /**
     This method executes a query and returns a result set.
     
-    - parameter query:           The text of the query.
-    - parameter bindParameters:  Parameters to interpolate into the query on the
-                            database side.
-    :returns                The interpreted result set.
+    - parameter query:            The text of the query.
+    - parameter bindParameters:   Parameters to interpolate into the query on
+                                  the database side.
+    - returns:                    The interpreted result set.
   */
   public func executeQuery(query: String, parameterValues bindParameters: [DatabaseValueConvertible]) -> [Row] {
     let wrappedParameters = bindParameters.map { $0.databaseValue }
@@ -114,10 +114,10 @@ public class DatabaseConnection {
   /**
   This method executes a query and returns a result set.
   
-  - parameter query:           The text of the query.
-  - parameter bindParameters:  Parameters to interpolate into the query on the
-  database side.
-  :returns                The interpreted result set.
+  - parameter query:            The text of the query.
+  - parameter bindParameters:   Parameters to interpolate into the query on the
+                                database side.
+  - returns:                    The interpreted result set.
   */
   public func executeQuery(query: String, parameters bindParameters: [DatabaseValue]) -> [Row] {
     return []
@@ -127,8 +127,8 @@ public class DatabaseConnection {
     This method sanitizes a column name so that it can be safely interpolated
     into a query.
 
-    - parameter columnName:    The unsanitized version
-    - returns:             The sanitized version.
+    - parameter columnName:     The unsanitized version
+    - returns:                  The sanitized version.
     */
   public class func sanitizeColumnName(columnName: String) -> String {
     let keyRegex = try! NSRegularExpression(pattern: "[^A-Za-z_0-9]", options: [])

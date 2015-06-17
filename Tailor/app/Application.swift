@@ -354,8 +354,8 @@ public class Application {
     The type must have previously been passed in to registerSubclasses to load
     the list.
   
-    - parameter type:  The type to get subclasses of.
-    - returns:     The subclasses of the type.
+    - parameter type:   The type to get subclasses of.
+    - returns:          The subclasses of the type.
     */
   public func registeredSubclassList<ParentType : AnyObject>(type: ParentType.Type) -> [ParentType.Type] {
     let klass : AnyClass = ParentType.self
@@ -372,7 +372,7 @@ public class Application {
     This defaults to the path of the executable
     */
   public func rootPath() -> String {
-    return "."
+    return NSBundle(forClass: self.dynamicType).resourcePath ?? "."
   }
   
   /**
@@ -381,8 +381,8 @@ public class Application {
     The settings will be put into the configuration with a prefix taken from the
     filename of the path.
   
-    - parameter path:    The path to the file, relative to the application's root
-                    path.
+    - parameter path:     The path to the file, relative to the application's
+                          root path.
     */
   public func loadConfigFromFile(path: String) {
     let name = path.lastPathComponent.stringByDeletingPathExtension
@@ -393,8 +393,8 @@ public class Application {
   /**
     This method constructs a localization based on the configuration settings.
   
-    - parameter locale:    The locale for the localization
-    - returns:         The localization
+    - parameter locale:     The locale for the localization
+    - returns:              The localization
     */
   public func localization(locale: String) -> Localization {
     let klass = NSClassFromString(self.configuration["localization.class"] ?? "") as? Localization.Type ?? Localization.self

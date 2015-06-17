@@ -34,10 +34,11 @@ public struct Validation {
     This method builds a new validation that has all the errors from this
     validation's list, with a single error added.
 
-    - parameter key:       The key for the field that has the error
-    - parameter message:   The message describing the error
-    - parameter data:      The data to interpolate in the localized error message
-    - returns:         The validation with this new error
+    - parameter key:        The key for the field that has the error
+    - parameter message:    The message describing the error
+    - parameter data:       The data to interpolate in the localized error
+                            message
+    - returns:              The validation with this new error
     */
   public func withError(key: String, _ message: String, data: [String:String] = [:]) -> Validation {
     return Validation(modelName, errors: self.errors + [ValidationError(
@@ -51,9 +52,9 @@ public struct Validation {
   /**
     This method validates that a value is present on the model.
 
-    - parameter key:   The name of the field
-    :param value  The value for the field.
-    - returns:     The new validation with the error added.
+    - parameter key:    The name of the field
+    - parameter value:  The value for the field.
+    - returns:          The new validation with the error added.
     */
   public func validate(presenceOf key: String, _ value: Any?) -> Validation {
     if value == nil {
@@ -72,10 +73,10 @@ public struct Validation {
   /**
     This method validates that a value is in an interval.
 
-    - parameter key:     The name of the field.
-    - parameter value:   The value of the field
-    - parameter bounds:  The interval that the value must be within
-    :returns        The new validation with the error added.
+    - parameter key:      The name of the field.
+    - parameter value:    The value of the field
+    - parameter bounds:   The interval that the value must be within
+    - returns:            The new validation with the error added.
     */
   public func validate<T: IntervalType where T.Bound : CustomStringConvertible>(key: String, _ value: T.Bound, inBounds bounds: T) -> Validation {
     if !bounds.contains(value) {
@@ -98,8 +99,8 @@ public struct Validation {
     * The error message
     * A dictionary of additional data to give to the validation error
   
-    - parameter block:   The block that will run the checks
-    - returns:       The new validation with the errors added.
+    - parameter block:    The block that will run the checks
+    - returns:            The new validation with the errors added.
     */
   public func validate(block: ()->[(String,String,[String:String])]) -> Validation {
     let newErrors = block().map {
@@ -126,9 +127,9 @@ public struct Validation {
     id is provided, this will ignore any duplicates with that record's id, to
     keep the record itself from coming up as a duplicate.
 
-    - parameter fields:    The fields that must be unique.
-    - parameter record:    The record that we are checking uniqueness on.
-    - returns:         The new validation with the error added.
+    - parameter fields:     The fields that must be unique.
+    - parameter record:     The record that we are checking uniqueness on.
+    - returns:              The new validation with the error added.
     */
   public func validate<RecordType: Persistable>(uniquenessOf fields: [String: DatabaseValueConvertible?], on record: RecordType) -> Validation {
     
@@ -177,8 +178,8 @@ public struct Validation {
   /**
     This method gets the validation errors on a given key.
 
-    - parameter key:   The key for the validation errors
-    - returns:     The validation errors that occurred on that key.
+    - parameter key:    The key for the validation errors
+    - returns:          The validation errors that occurred on that key.
     */
   public subscript(key: String)->[ValidationError] {
     return self.errors.filter { $0.key == key }

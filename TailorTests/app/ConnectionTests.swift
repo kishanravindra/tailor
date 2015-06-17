@@ -7,11 +7,13 @@ class ConnectionTests: TailorTestCase {
     (request, callback) in
   }
   var connection : Connection!
-  var path = "./connection_test.txt"
+  var path = "connection_test.txt"
   var fileContents = "GET / HTTP/1.1\r\nHeader: Value\r\nContent-Length: 12\r\n\r\nRequest Body"
   var connectionHandle = NSFileHandle()
   
   func setUpConnection() {
+    path = Application.sharedApplication().rootPath() + "/" + path
+    NSLog("Full path is %@", path)
     connection = Connection(fileDescriptor: 0, handler: self.handler)
     fileContents.dataUsingEncoding(NSUTF8StringEncoding)?.writeToFile(path, atomically: true)
     guard let connectionHandle = NSFileHandle(forUpdatingAtPath: path) else { NSLog("Handle failed"); return }
@@ -52,12 +54,14 @@ class ConnectionTests: TailorTestCase {
     let dataExpectation = expectationWithDescription("wrote data to file")
     handler = {
       (request, callback) in
-      self.connectionHandle.truncateFileAtOffset(0)
       let response = Response()
       response.appendString("My Response")
       callback(response)
       let writtenData = NSData(contentsOfFile: self.path)!
-      if writtenData == response.data {
+      let combinedData = NSMutableData()
+      combinedData.appendData(request.data)
+      combinedData.appendData(response.data)
+      if writtenData == combinedData {
         dataExpectation.fulfill()
       }
     }

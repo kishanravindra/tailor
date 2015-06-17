@@ -48,10 +48,10 @@ public class Controller {
     /**
       This method creates an action.
 
-      - parameter name:      The name of the action.
-      - parameter body:      The body of the action.
-      - parameter filters:   The filters that should be run before the body is
-                        called.
+      - parameter name:       The name of the action.
+      - parameter body:       The body of the action.
+      - parameter filters:    The filters that should be run before the body is
+                              called.
       */
     public init(name: String, body: (Controller)->()->(), filters: [(Controller)->()->Bool] = []) {
       self.name = name
@@ -115,8 +115,8 @@ public class Controller {
     the general controller to the specialized type. If the case fails, this will
     return a block that always renders a 404 page.
   
-    - parameter block:   The block with the specialized controller type.
-    - returns:       The block with the general controller type.
+    - parameter block:    The block with the specialized controller type.
+    - returns:            The block with the general controller type.
     */
   public class func wrap<ControllerType: Controller>(block: (ControllerType)->()->())->(Controller)->()->() {
     return {
@@ -138,8 +138,8 @@ public class Controller {
     the general controller to the specialized type. If the case fails, this will
     return a block that always renders a 404 page.
     
-    - parameter block:   The block with the specialized controller type.
-    - returns:       The block with the general controller type.
+    - parameter block:    The block with the specialized controller type.
+    - returns:            The block with the general controller type.
     */
   public class func wrap<ControllerType: Controller>(block: (ControllerType)->()->(Bool))->(Controller)->()->(Bool) {
     return {
@@ -253,15 +253,16 @@ public class Controller {
     any of the current request's parameters into the new path, if they are part
     of that path.
   
-    - parameter controllerName:  The controller to link to. This will default to the
-                            current controller.
-    - parameter actionName:      The action to link to.
-    - parameter parameters:      Additional parameters for the path.
-    - parameter domain:          The domain to use for the URL. If this is omitted,
-                            the result will just be the path part of the URL.
-    - parameter https:           Whether the URL should be https or http. If the
-                            domain is omitted, this is ignored.
-    - returns:               The path
+    - parameter controllerName:   The controller to link to. This will default
+                                  to the current controller.
+    - parameter actionName:       The action to link to.
+    - parameter parameters:       Additional parameters for the path.
+    - parameter domain:           The domain to use for the URL. If this is
+                                  omitted, the result will just be the path part
+                                  of the URL.
+    - parameter https:            Whether the URL should be https or http. If
+                                  the domain is omitted, this is ignored.
+    - returns:                    The path
   */
   public func pathFor(controllerName: String? = nil, actionName: String? = nil, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
     var path = Application.sharedApplication().routeSet.pathFor(
@@ -284,10 +285,10 @@ public class Controller {
   /**
     This method generates a response with a redirect to a generated URL.
 
-    - parameter controllerName:  The controller to link to. This will default to the
-                            current controller.
-    - parameter actionName:      The action to link to.
-    - parameter parameters:      Additional parameters for the path.
+    - parameter controllerName:   The controller to link to. This will default to
+                                  the current controller.
+    - parameter actionName:       The action to link to.
+    - parameter parameters:       Additional parameters for the path.
     */
   public func redirectTo(controllerName: String? = nil, actionName: String? = nil, parameters: [String:String] = [:]) {
     let path = self.pathFor(controllerName, actionName: actionName, parameters: parameters) ?? "/"
@@ -301,10 +302,10 @@ public class Controller {
     version provides a more concise syntax when redirecting to other
     controllers.
   
-    - parameter controllerName:  The controller to link to. This will default to the
-            current controller.
-    - parameter actionName:      The name of the action to link to.
-    - parameter parameters:      Additional parameters for the path.
+    - parameter controllerName:   The controller to link to. This will default
+                                  to the current controller.
+    - parameter actionName:       The name of the action to link to.
+    - parameter parameters:       Additional parameters for the path.
   */
   public func redirectTo(controller: Controller.Type, actionName: String, parameters: [String:String] = [:]) {
     self.redirectTo(
@@ -354,9 +355,9 @@ public class Controller {
   /**
     This method signs in a user by providing their credentials.
     
-    - parameter emailAddress:  The email address the user has provided.
-    - parameter password:      The password the user has provided.
-    - returns:             Whether we were able to authenticate the user.
+    - parameter emailAddress:   The email address the user has provided.
+    - parameter password:       The password the user has provided.
+    - returns:                  Whether we were able to authenticate the user.
   */
   public func signIn(emailAddress: String, password: String) -> Bool {
     if let user = User.authenticate(emailAddress, password: password) {
@@ -383,11 +384,11 @@ public class Controller {
   /**
     This method localizes text.
 
-    - parameter key:     The key for the localized text
-    - parameter locale:  The locale that the localized text should be in. If this is
-                    not provided, it will use the locale from the default
-                    localization on this controller.
-    - returns:       The localized text
+    - parameter key:      The key for the localized text
+    - parameter locale:   The locale that the localized text should be in. If
+                          this is not provided, it will use the locale from the
+                          default localization on this controller.
+    - returns:            The localized text
     */
   public func localize(key: String, locale: String? = nil) -> String? {
     var fullKey = key

@@ -11,9 +11,9 @@ public class MysqlConnection : DatabaseConnection {
   /**
     This method initializes a connection to a MySQL database.
 
-    - parameter config:  The config for the connection.
-                    It must provide keys for host, username, password, and
-                    database.
+    - parameter config:   The config for the connection.
+                          It must provide keys for host, username, password, and
+                          database.
     */
   public required init(config: [String:String]) {
     self.connection = mysql_init(nil)
@@ -57,10 +57,10 @@ public class MysqlConnection : DatabaseConnection {
     Otherwise, it will return a row with the last insert ID as the "id"
     column.
   
-    - parameter query:           The text of the query.
-    - parameter bindParameters:  Parameters to interpolate into the query on the
-                            database side.
-    :returns                The interpreted result set.
+    - parameter query:            The text of the query.
+    - parameter bindParameters:   Parameters to interpolate into the query on the
+                                  database side.
+    - returns:                    The interpreted result set.
     */
   public override func executeQuery(query: String, parameters bindParameters: [DatabaseValue]) -> [DatabaseConnection.Row] {
     
