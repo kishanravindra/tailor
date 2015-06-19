@@ -16,8 +16,8 @@ class MysqlStatementTests: TailorTestCase {
   }
   
   func testExecuteWithGoodQueryCanMapResultsToDictionary() {
-    saveRecord(Store(name: "Store 1"))
-    saveRecord(Store(name: "Store 2"))
+    Store(name: "Store 1").save()
+    Store(name: "Store 2").save()
     
     let statement = MysqlStatement(connection: connection, query: "SELECT * FROM stores")
     let results = statement.execute([])
@@ -62,7 +62,7 @@ class MysqlStatementTests: TailorTestCase {
   }
   
   func testExecuteWithBadQueryReturnsEmptyRows() {
-    saveRecord(Store(name: "Store 1"))
+    Store(name: "Store 1").save()
     let statement = MysqlStatement(connection: connection, query: "INSERT INTO stores VALUES (?,?)")
     let param1 = "1".databaseValue
     let param2 = "Store 1".databaseValue
@@ -71,8 +71,8 @@ class MysqlStatementTests: TailorTestCase {
   }
   
   func testExecuteWithParametersAppliesParametersInQuery() {
-    saveRecord(Store(name: "Store 1"))
-    saveRecord(Store(name: "Store 2"))
+    Store(name: "Store 1").save()
+    Store(name: "Store 2").save()
     
     let statement = MysqlStatement(connection: connection, query: "SELECT * FROM stores WHERE id = ?")
     let param = "2".databaseValue
@@ -117,7 +117,7 @@ class MysqlStatementTests: TailorTestCase {
   }
   
   func testExecuteWithBadQueryPutsErrorOnStatement() {
-    saveRecord(Store(name: "Store 1"))
+    Store(name: "Store 1").save()
     let statement = MysqlStatement(connection: connection, query: "INSERT INTO stores VALUES (?,?)")
     let param1 = "1".databaseValue
     let param2 = "Store 1".databaseValue

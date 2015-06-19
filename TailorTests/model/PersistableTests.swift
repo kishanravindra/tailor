@@ -30,25 +30,25 @@ class PersistableTests: TailorTestCase {
   }
   
   func testToManyFetchesRecordsByForeignKey() {
-    let shelf = saveRecord(Shelf(name: ""))!
-    let query : Query<Hat> = toManyRecords(shelf)
+    let shelf = Shelf(name: "").save()!
+    let query : Query<Hat> = shelf.toMany()
     let clause = query.whereClause
     assert(clause.query, equals: "hats.shelf_id=?", message: "has the shelf ID in the query")
     assert(clause.parameters, equals: [DatabaseValue.Integer(shelf.id!)], message: "has the id as the parameter")
   }
   
   func testToManyWithSpecificForeignKeyUsesThatForeignKey() {
-    let shelf = saveRecord(Shelf(name: ""))!
-    let query : Query<Hat> = toManyRecords(shelf, foreignKey: "shelfId")
+    let shelf = Shelf(name: "").save()!
+    let query : Query<Hat> = shelf.toMany(foreignKey: "shelfId")
     let clause = query.whereClause
     assert(clause.query, equals: "hats.shelfId=?", message: "has the shelf ID in the query")
     assert(clause.parameters, equals: [shelf.id!.databaseValue], message: "has the id as the parameter")
   }
   
   func testToManyThroughFetchesManyRecordsByForeignKey() {
-    let store = saveRecord(Store(name: "New Store"))!
-    let shelfQuery : Query<Shelf> = toManyRecords(store)
-    let query : Query<Hat> = toManyRecords(through: shelfQuery, joinToMany: true)
+    let store = Store(name: "New Store").save()!
+    let shelfQuery : Query<Shelf> = store.toMany()
+    let query : Query<Hat> = store.toMany(through: shelfQuery, joinToMany: true)
     
     let whereClause = query.whereClause
     assert(whereClause.query, equals: "shelfs.store_id=?")
@@ -60,9 +60,9 @@ class PersistableTests: TailorTestCase {
   }
   
   func testToManyThroughFetchesOneRecordsByForeignKey() {
-    let hat = saveRecord(Hat(shelfId: 1))!
+    let hat = Hat(shelfId: 1).save()!
     let shelfQuery = Query<Shelf>().filter(["id": hat.shelfId])
-    let query : Query<Store> = toManyRecords(through: shelfQuery, joinToMany: false)
+    let query : Query<Store> = hat.toMany(through: shelfQuery, joinToMany: false)
     
     let whereClause = query.whereClause
     assert(whereClause.query, equals: "shelfs.id=?")
@@ -77,7 +77,7 @@ class PersistableTests: TailorTestCase {
   
   func testSaveSetsTimestampsForNewRecord() {
     var hat = Hat()
-    hat = saveRecord(hat) ?? hat
+    hat = hat.save() ?? hat
     
     let currentTime = Timestamp.now().epochSeconds
     assert(hat.createdAt?.epochSeconds, within: 2, of: currentTime, message: "sets createdAt to current time")
@@ -88,7 +88,7 @@ class PersistableTests: TailorTestCase {
     var hat = Hat()
     hat.createdAt = 30.minutes.ago
     hat.updatedAt = 10.minutes.ago
-    hat = saveRecord(hat) ?? hat
+    hat = hat.save() ?? hat
     
     let currentTime = Timestamp.now().epochSeconds
     assert(hat.createdAt!.epochSeconds, within: 2, of: currentTime-1800, message: "leaves createdAt unchanged")
@@ -102,18 +102,18 @@ class PersistableTests: TailorTestCase {
     
     assert(Query<Hat>().count(), equals: 0, message: "starts out with 0 records")
     let hat = Hat()
-    saveRecord(hat)
+    hat.save()
     assert(Query<Hat>().count(), equals: 1, message: "ends with 1 record")
   }
   
   func testSaveUpdatesExistingRecord() {
     var hat = Hat(color: "black")
     
-    hat = saveRecord(hat)!
+    hat = hat.save()!
     assert(Query<Hat>().count(), equals: 1, message: "starts out with 1 record")
     assert(Query<Hat>().first()?.color, equals: "black", message: "starts out with a black hat")
     hat.color = "tan"
-    hat = saveRecord(hat)!
+    hat = hat.save()!
     
     assert(Query<Hat>().count(), equals: 1, message: "ends with 1 record")
     assert(Query<Hat>().first()?.color, equals: "tan", message: "ends with a tan hat")
@@ -124,7 +124,7 @@ class PersistableTests: TailorTestCase {
       connection in
       let store = Store(name: "Little Shop")
       connection.response = [DatabaseConnection.Row(rawData: ["id": 2])]
-      saveRecord(store)
+      store.save()
       self.assert(connection.queries.count, equals: 1, message: "executes 1 query")
       if connection.queries.count > 0 {
         let (query, parameters) = connection.queries[0]
@@ -140,7 +140,7 @@ class PersistableTests: TailorTestCase {
       connection in
       var store = Store(name: "Little Shop")
       connection.response = [DatabaseConnection.Row(rawData: ["id": 2])]
-      store = saveRecord(store) ?? store
+      store = store.save() ?? store
       self.assert(store.id, equals: NSNumber(int: 2), message: "sets the id based on the database response")
     }
   }
@@ -150,7 +150,7 @@ class PersistableTests: TailorTestCase {
       connection in
       let store = Store(name: "Little Shop")
       connection.response = [DatabaseConnection.Row(rawData: ["id": 2])]
-      let result = saveRecord(store)
+      let result = store.save()
       self.assert(result?.id, equals: 2)
     }
   }
@@ -160,7 +160,7 @@ class PersistableTests: TailorTestCase {
       connection in
       let store = Store(name: "Little Shop")
       connection.response = [DatabaseConnection.Row(error: "Lost Connection")]
-      let result = saveRecord(store)
+      let result = store.save()
       XCTAssertTrue(result == nil)
     }
   }
@@ -172,7 +172,7 @@ class PersistableTests: TailorTestCase {
       connection.response = [DatabaseConnection.Row(rawData: ["id": 2])]
       var hat = Hat(brimSize: 10, color: "red")
       hat.shelfId = nil
-      saveRecord(hat)
+      hat.save()
       self.assert(connection.queries.count, equals: 1, message: "executes one query")
       if connection.queries.count > 0 {
         let (query, parameters) = connection.queries[0]
@@ -199,12 +199,12 @@ class PersistableTests: TailorTestCase {
   
   func testSaveUpdateCreatesUpdateQuery() {
     var shelf = Shelf(name: "Top Shelf", storeId: 1)
-    shelf = saveRecord(shelf) ?? shelf
+    shelf = shelf.save() ?? shelf
     TestConnection.withTestConnection {
       connection in
       shelf.name = "Bottom Shelf"
       shelf.storeId = 2
-      shelf = saveRecord(shelf) ?? shelf
+      shelf = shelf.save() ?? shelf
       self.assert(connection.queries.count, equals: 1, message: "executes one query")
       if connection.queries.count > 0 {
         let (query, parameters) = connection.queries[0]
@@ -222,11 +222,11 @@ class PersistableTests: TailorTestCase {
   
   func testSaveUpdateCanCreateUpdateQueryWithNull() {
     var shelf = Shelf(name: "Top Shelf", storeId: 1)
-    shelf = saveRecord(shelf) ?? shelf
+    shelf = shelf.save() ?? shelf
     TestConnection.withTestConnection {
       connection in
       shelf.name = nil
-      shelf = saveRecord(shelf) ?? shelf
+      shelf = shelf.save() ?? shelf
       self.assert(connection.queries.count, equals: 1, message: "executes one query")
       if connection.queries.count > 0 {
         let (query, parameters) = connection.queries[0]
@@ -242,21 +242,21 @@ class PersistableTests: TailorTestCase {
   }
   
   func testSaveUpdateWithDatabaseErrorReturnsNil() {
-    var shelf = saveRecord(Shelf(name: "Top Shelf", storeId: 1))!
+    var shelf = Shelf(name: "Top Shelf", storeId: 1).save()!
     TestConnection.withTestConnection {
       connection in
       shelf.name = nil
       connection.response = [DatabaseConnection.Row(error: "Connection Error")]
-      let result = saveRecord(shelf)
+      let result = shelf.save()
       XCTAssertTrue(result == nil)
     }
   }
   
   func testDestroyExecutesDeleteQuery() {
-    let shelf = saveRecord(Shelf(name: "Shelf"))!
+    let shelf = Shelf(name: "Shelf").save()!
     TestConnection.withTestConnection {
       connection in
-      destroyRecord(shelf)
+      shelf.destroy()
       self.assert(connection.queries.count, equals: 1, message: "executes one query")
       if connection.queries.count == 1 {
         let (query, parameters) = connection.queries[0]

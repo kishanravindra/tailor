@@ -252,12 +252,26 @@ public class Template {
   
   /**
     This method gets a localized, capitalized attribute name.
+    
+    - parameter modelName:        The name of the model whose attribute this is.
+    - parameter attributeName:    The name of the attribute to localize.
+    - returns:                    The localized attribute.
+    */
+  public func attributeName(modelType: ModelType.Type, _ attributeName: String) -> String {
+    return modelType.attributeName(attributeName, localization: self.localization, capitalize: true)
+  }
+  
+  /**
+    This method gets a localized, capitalized attribute name.
+  
+    This method is deprecated. You should use the version that has a model
+    type.
 
     - parameter modelName:        The name of the model whose attribute this is.
     - parameter attributeName:    The name of the attribute to localize.
     - returns:                    The localized attribute.
     */
-  public func attributeName(modelName: String, _ attributeName: String) -> String {
+  @available(*, deprecated, message="Use the version with a model type instead") public func attributeName(modelName: String, _ attributeName: String) -> String {
     return modelAttributeName(modelName, key: attributeName, localization: self.localization, capitalize: true)
   }
 }

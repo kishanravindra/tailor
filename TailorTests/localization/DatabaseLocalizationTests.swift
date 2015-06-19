@@ -9,11 +9,11 @@ class DatabaseLocalizationTests: TailorTestCase {
     Application.start()
     DatabaseConnection.sharedConnection().executeQuery("TRUNCATE TABLE `tailor_translations`")
     localization = DatabaseLocalization(locale: "en")
-    saveRecord(DatabaseLocalization.Translation(translationKey: "database.message", locale: "en", translatedText: "Hello"))
+    DatabaseLocalization.Translation(translationKey: "database.message", locale: "en", translatedText: "Hello").save()
   }
   
   func testFetchInLocaleGetsValueFromTranslation() {
-    saveRecord(DatabaseLocalization.Translation(translationKey: "database.message", locale: "es", translatedText: "Hola"))
+    DatabaseLocalization.Translation(translationKey: "database.message", locale: "es", translatedText: "Hola").save()
     let value = localization.fetch("database.message", inLocale: "es")
     assert(value, equals: "Hola", message: "gets the value for that locale")
   }

@@ -62,7 +62,7 @@ class CacheStoreTests: TailorTestCase {
   
   func testFetchWithExpiryTimeGivesExpiryTimeToWriteMethod() {
     let store = TestCacheStore()
-    _ = store.fetch("cache.test", expireIn: 20.seconds) { "a" }
+    store.fetch("cache.test", expireIn: 20.seconds) { "a" }
     
     let expiry = store.expiries["cache.test"]
     assert(expiry, equals: 20.seconds, message: "sets the expiry time from the call to fetch")

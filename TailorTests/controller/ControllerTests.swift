@@ -40,7 +40,7 @@ class ControllerTests: TailorTestCase {
   override func setUp() {
     super.setUp()
     
-    user = saveRecord(User(emailAddress: "test@test.com", password: "test"))!
+    user = User(emailAddress: "test@test.com", password: "test").save()!
     
     let routeSet = RouteSet()
     routeSet.addRoute("route1", method: "GET", controller: TestController.self, actionName: "index")
@@ -332,7 +332,7 @@ class ControllerTests: TailorTestCase {
   //MARK: - Authentication
   
   func testSignInSetsCurrentUserAndStoresIdInSession() {
-    let user2 = saveRecord(User(emailAddress: "test2@test.com", password: "test"))!
+    let user2 = User(emailAddress: "test2@test.com", password: "test").save()!
     self.controller.signIn(user2)
     
     assert(self.controller.currentUser, equals: user2, message: "sets user")
@@ -444,7 +444,7 @@ class ControllerTests: TailorTestCase {
   
   func testCallActionCanCallActionWithUserAndParameters() {
     let expectation = expectationWithDescription("respond method called")
-    let user = saveRecord(User(emailAddress: "test@test.com", password: "test"))!
+    let user = User(emailAddress: "test@test.com", password: "test").save()!
     TestController.callAction("index", user: user, parameters: ["id": "5"]) {
       response, controller in
       expectation.fulfill()
@@ -458,7 +458,7 @@ class ControllerTests: TailorTestCase {
   
   func testCallActionCanCallActionWithUser() {
     let expectation = expectationWithDescription("respond method called")
-    let user = saveRecord(User(emailAddress: "test@test.com", password: "test"))!
+    let user = User(emailAddress: "test@test.com", password: "test").save()!
     TestController.callAction("index", user: user) {
       response, controller in
       expectation.fulfill()

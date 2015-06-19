@@ -28,6 +28,21 @@ public struct Validation {
     self.errors = errors
   }
   
+  /**
+    This method initializes a validation with a list of validation errors.
+    
+    You will generally want to initialize your validations with no errors, and
+    then use the validate methods to collect them.
+  
+    - parameter modelType:    The type of the model that we are working with.
+                              For now, we only use this to get the model name.
+    - parameter errors:       The validation errors that we are collecting.
+  */
+  public init(_ modelType: ModelType.Type, errors: [ValidationError] = []) {
+    self.modelName = modelType.modelName()
+    self.errors = errors
+  }
+  
   //MARK: - Running Validations
   
   /**

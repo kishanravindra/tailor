@@ -7,7 +7,7 @@ class UserTests: TailorTestCase {
   
   override func setUp() {
     super.setUp()
-    user = saveRecord(User(emailAddress: "test@test.com", password: "Monkey"))
+    user = User(emailAddress: "test@test.com", password: "Monkey").save()
   }
   
   //MARK: - Sign Up

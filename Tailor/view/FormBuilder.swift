@@ -20,6 +20,9 @@ public class FormBuilder {
   /** The name of the model. */
   public let name: String
   
+  /** The type of the model. */
+  public let modelType: ModelType.Type?
+  
   /** The validation errors for the model object. */
   public let validationErrors: [ValidationError]
   
@@ -28,16 +31,23 @@ public class FormBuilder {
   
   /**
     This method creates a form builder.
+  
+    The `name` and `modelType` parameters are both optional, but you must
+    provide one of them.
 
-    - parameter template:      The template that we are putting the form in.
-    - parameter name:          The name used for the model object in the input tags.
-    - parameter inputBuilder:  A block we can use to build inputs. If this is not
-                          provided, we will use a simple one with a div
-                          containing a label and an input.
+    - parameter template:       The template that we are putting the form in.
+    - parameter name:           The name used for the model object in the input
+                                tags.
+    - parameter modelType:      The type of model that the form is for. This can
+                                be provided instead of the model name.
+    - parameter inputBuilder:   A block we can use to build inputs. If this is
+                                not provided, we will use a simple one with a
+                                div containing a label and an input.
     */
-  public init(template: Template, name: String, validationErrors: [ValidationError] = [], inputBuilder: InputBuilder? = nil) {
+  public init(template: Template, name: String? = nil, modelType: ModelType.Type? = nil, validationErrors: [ValidationError] = [], inputBuilder: InputBuilder? = nil) {
     self.template = template
-    self.name = name
+    self.name = modelType?.modelName() ?? name ?? "model"
+    self.modelType = modelType
     self.validationErrors = validationErrors
     
     if inputBuilder == nil {
