@@ -12,8 +12,4 @@
 # Workarounds to Revisit
 
 * Getting rid of connection parameter for MysqlStatement class
-
-# Swift 2 Updates
-
-* Using Protocol Extensions
-* Checking documentation
+* Finding better way of switching on MySQL type enum

@@ -53,10 +53,7 @@ public extension String {
     let expression: NSRegularExpression?
     do {
       expression = try NSRegularExpression(pattern: fullPattern, options: [])
-    } catch _ {
-      expression = nil
-    }
-    if expression == nil {
+    } catch {
       return false
     }
     let range = NSRange(location: 0, length: self.characters.count)
