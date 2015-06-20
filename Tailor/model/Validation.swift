@@ -7,7 +7,7 @@
   new validation will have a new error in its collection, as well as all the
   errors from the previous validation.
   */
-public struct Validation {
+public struct Validation: Equatable {
   /** The name of the model that we are working with. */
   public let modelName: String
   
@@ -206,4 +206,17 @@ public struct Validation {
   public var valid: Bool {
     return self.errors.isEmpty
   }
+}
+
+/**
+  This method determines if two validations are equal.
+
+  Validations are equal when they have the same model name and errors.
+
+  - parameter lhs:    The left hand side of the operator
+  - parameter rhs:    The right hand side of the operator
+  - returns:          Whether the two bind parameters are equal.
+  */
+public func ==(lhs: Validation, rhs: Validation) -> Bool {
+  return lhs.modelName == rhs.modelName && lhs.errors == rhs.errors
 }

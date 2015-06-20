@@ -4,7 +4,7 @@ import Foundation
 /**
   This class provides a wrapper around the MySQL field data structure.
   */
-public struct MysqlField {
+public struct MysqlField: Equatable {
   /** The raw field data. */
   private let field: MYSQL_FIELD
   
@@ -86,4 +86,20 @@ public struct MysqlField {
     }
     return (size,length)
   }
+}
+
+/**
+  This method determines if two MySQL fields are equal.
+
+  Two fields will be equal if they have the same name, buffer type, and
+
+  - parameter lhs:    The left-hand side of the operator.
+  - parameter rhs:    The right-hand side of the operator.
+  - returns:          Whether the two fields are equal.
+  */
+public func ==(lhs: MysqlField, rhs: MysqlField) -> Bool {
+  return lhs.name == rhs.name &&
+    lhs.bufferType == rhs.bufferType &&
+    lhs.isBinary == rhs.isBinary
+  
 }

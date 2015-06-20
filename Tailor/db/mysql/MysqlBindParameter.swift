@@ -4,7 +4,7 @@ import mysql
   This class wraps around a MySQL bind parameter to provide easier access to
   metadata and field values.
   */
-public struct MysqlBindParameter {
+public struct MysqlBindParameter: Equatable {
   /** The raw MySQL bind parameter. */
   public let parameter: MYSQL_BIND
   
@@ -158,6 +158,9 @@ public struct MysqlBindParameter {
   /** The length of the buffer. */
   public var length: UInt { return parameter.length.memory }
   
+  /** The type of the parameter. */
+  public var type: enum_field_types { return parameter.buffer_type }
+  
   /**
     This method returns the data from the parameter.
 
@@ -170,7 +173,7 @@ public struct MysqlBindParameter {
       return DatabaseValue.Null;
     }
                 
-    switch(self.parameter.buffer_type.rawValue) {
+    switch(self.type.rawValue) {
     case MYSQL_TYPE_TINY.rawValue, MYSQL_TYPE_BIT.rawValue:
       let buffer = UnsafePointer<CChar>(self.buffer)
       return Int(buffer.memory).databaseValue
@@ -234,4 +237,20 @@ public struct MysqlBindParameter {
       timeZone: DatabaseConnection.sharedConnection().timeZone
     )
   }
+}
+
+/**
+  This method determines if two bind parameters are equal.
+
+  Bind parameters are equal if they have the same buffer, length, and buffer
+  type.
+
+  - parameter lhs:    The left hand side of the operator
+  - parameter rhs:    The right hand side of the operator
+  - returns:          Whether the two bind parameters are equal.
+  */
+public func ==(lhs: MysqlBindParameter, rhs: MysqlBindParameter) -> Bool {
+  return lhs.buffer == rhs.buffer &&
+    lhs.length == rhs.length &&
+    lhs.type == rhs.type
 }

@@ -197,4 +197,48 @@ class ValidationTests: TailorTestCase {
     ])
     XCTAssertFalse(validation.valid)
   }
+  
+  //MARK: - Comparisons
+  
+  func testValidationsAreEqualWithSameInfo() {
+    let validation1 = Validation(Hat.self, errors: [
+      ValidationError(modelName: Hat.modelName(), key: "color", message: "blank"),
+      ValidationError(modelName: Hat.modelName(), key: "brimSize", message: "blank"),
+      ValidationError(modelName: Hat.modelName(), key: "color", message: "tooShort"),
+      ])
+    let validation2 = Validation(Hat.self, errors: [
+      ValidationError(modelName: Hat.modelName(), key: "color", message: "blank"),
+      ValidationError(modelName: Hat.modelName(), key: "brimSize", message: "blank"),
+      ValidationError(modelName: Hat.modelName(), key: "color", message: "tooShort"),
+    ])
+    assert(validation1, equals: validation2)
+  }
+  
+  func testValidationsAreUnequalWithDifferentModels() {
+    let validation1 = Validation(Hat.self, errors: [
+      ValidationError(modelName: Hat.modelName(), key: "color", message: "blank"),
+      ValidationError(modelName: Hat.modelName(), key: "brimSize", message: "blank"),
+      ValidationError(modelName: Hat.modelName(), key: "color", message: "tooShort"),
+      ])
+    let validation2 = Validation(Store.self, errors: [
+      ValidationError(modelName: Hat.modelName(), key: "color", message: "blank"),
+      ValidationError(modelName: Hat.modelName(), key: "brimSize", message: "blank"),
+      ValidationError(modelName: Hat.modelName(), key: "color", message: "tooShort"),
+      ])
+    assert(validation1, doesNotEqual: validation2)
+  }
+  
+  func testValidationsAreUnequalWithDifferentErrors() {
+    let validation1 = Validation(Hat.self, errors: [
+      ValidationError(modelName: Hat.modelName(), key: "color", message: "blank"),
+      ValidationError(modelName: Hat.modelName(), key: "brimSize", message: "blank"),
+      ValidationError(modelName: Hat.modelName(), key: "color", message: "tooShort"),
+      ])
+    let validation2 = Validation(Hat.self, errors: [
+      ValidationError(modelName: Hat.modelName(), key: "color", message: "blank"),
+      ValidationError(modelName: Hat.modelName(), key: "brimSize", message: "blank"),
+      ValidationError(modelName: Hat.modelName(), key: "color", message: "tooLong"),
+      ])
+    assert(validation1, doesNotEqual: validation2)
+  }
 }

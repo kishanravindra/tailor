@@ -145,4 +145,58 @@ class MysqlFieldTests : TailorTestCase {
     assert(result.0, equals: 1)
     assert(result.1, equals: 2147483648)
   }
+  
+  //MARK: - Comparison
+  
+  func generateField(name name: String, type: enum_field_types, binary: Bool) -> MYSQL_FIELD {
+    var field = MYSQL_FIELD()
+    let nameData = name.dataUsingEncoding(NSASCIIStringEncoding)!
+    let nameBytes = UnsafeMutablePointer<Int8>(malloc(nameData.length))
+    nameData.getBytes(nameBytes, length: nameData.length)
+    field.name = nameBytes
+    field.name_length = UInt32(name.lengthOfBytesUsingEncoding(NSASCIIStringEncoding))
+    field.type = type
+    field.charsetnr = binary ? 63 : 0
+    return field
+  }
+  
+  func testFieldsAreEqualWithSameField() {
+    let rawField1 = generateField(name: "color", type: MYSQL_TYPE_STRING, binary: false)
+    let rawField2 = generateField(name: "color", type: MYSQL_TYPE_STRING, binary: false)
+    let field1 = MysqlField(field: rawField1)
+    let field2 = MysqlField(field: rawField2)
+    assert(field1, equals: field2)
+    free(rawField1.name)
+    free(rawField2.name)
+  }
+  
+  func testFieldsAreUnequalWithDifferentTypes() {
+    let rawField1 = generateField(name: "color", type: MYSQL_TYPE_STRING, binary: false)
+    let rawField2 = generateField(name: "color", type: MYSQL_TYPE_VARCHAR, binary: false)
+    let field1 = MysqlField(field: rawField1)
+    let field2 = MysqlField(field: rawField2)
+    assert(field1, doesNotEqual: field2)
+    free(rawField1.name)
+    free(rawField2.name)
+  }
+  
+  func testFieldsAreUnequalWithDifferentNames() {
+    let rawField1 = generateField(name: "color", type: MYSQL_TYPE_STRING, binary: false)
+    let rawField2 = generateField(name: "name", type: MYSQL_TYPE_STRING, binary: false)
+    let field1 = MysqlField(field: rawField1)
+    let field2 = MysqlField(field: rawField2)
+    assert(field1, doesNotEqual: field2)
+    free(rawField1.name)
+    free(rawField2.name)
+  }
+  
+  func testFieldsAreUnequalWithDifferentBinarySettings() {
+    let rawField1 = generateField(name: "image", type: MYSQL_TYPE_BLOB, binary: false)
+    let rawField2 = generateField(name: "image", type: MYSQL_TYPE_BLOB, binary: true)
+    let field1 = MysqlField(field: rawField1)
+    let field2 = MysqlField(field: rawField2)
+    assert(field1, doesNotEqual: field2)
+    free(rawField1.name)
+    free(rawField2.name)
+  }
 }

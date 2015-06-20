@@ -480,4 +480,57 @@ class MysqlBindParameterTests: TailorTestCase {
     }
     DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at timestamp")
   }
+  
+  //MARK: - Comparison
+  
+  func generateParameter(buffer buffer: UnsafeMutablePointer<Void>, length: UInt, type: enum_field_types) -> MYSQL_BIND {
+    var parameter = MYSQL_BIND()
+    parameter.buffer = buffer
+    parameter.length = UnsafeMutablePointer<UInt>(calloc(1, sizeof(UInt)))
+    parameter.length.memory = length
+    parameter.buffer_type = type
+    return parameter
+  }
+  
+  func testBindParametersAreEqualWithSameInformation() {
+    let buffer = malloc(10)
+    let field1 = MysqlBindParameter(parameter: generateParameter(buffer: buffer, length: 10, type: MYSQL_TYPE_VARCHAR))
+    let field2 = MysqlBindParameter(parameter: generateParameter(buffer: buffer, length: 10, type: MYSQL_TYPE_VARCHAR))
+    assert(field1, equals: field2)
+    free(buffer)
+    free(field1.parameter.length)
+    free(field2.parameter.length)
+  }
+  
+  func testBindParametersAreUnequalWitDifferentBuffers() {
+    let buffer1 = malloc(10)
+    let buffer2 = malloc(10)
+    let field1 = MysqlBindParameter(parameter: generateParameter(buffer: buffer1, length: 10, type: MYSQL_TYPE_VARCHAR))
+    let field2 = MysqlBindParameter(parameter: generateParameter(buffer: buffer2, length: 10, type: MYSQL_TYPE_VARCHAR))
+    assert(field1, doesNotEqual: field2)
+    free(buffer1)
+    free(buffer2)
+    free(field1.parameter.length)
+    free(field2.parameter.length)
+  }
+  
+  func testBindParametersAreUnequalWithDifferentLengths() {
+    let buffer = malloc(10)
+    let field1 = MysqlBindParameter(parameter: generateParameter(buffer: buffer, length: 10, type: MYSQL_TYPE_VARCHAR))
+    let field2 = MysqlBindParameter(parameter: generateParameter(buffer: buffer, length: 9, type: MYSQL_TYPE_VARCHAR))
+    assert(field1, doesNotEqual: field2)
+    free(buffer)
+    free(field1.parameter.length)
+    free(field2.parameter.length)
+  }
+  
+  func testBindParametersAreUnequalWithDifferentTypes() {
+    let buffer = malloc(10)
+    let field1 = MysqlBindParameter(parameter: generateParameter(buffer: buffer, length: 10, type: MYSQL_TYPE_VARCHAR))
+    let field2 = MysqlBindParameter(parameter: generateParameter(buffer: buffer, length: 10, type: MYSQL_TYPE_STRING))
+    assert(field1, doesNotEqual: field2)
+    free(buffer)
+    free(field1.parameter.length)
+    free(field2.parameter.length)
+  }
 }
