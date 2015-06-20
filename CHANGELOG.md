@@ -12,3 +12,5 @@
   NSRegularExpression initializer
 * The Application class now uses the active bundle to get the root path, which
   should reduce the need to override the rootPath method.
+* Several global functions for working with model objects have been deprecated,
+  in favor of new methods in protocol extensions.

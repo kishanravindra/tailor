@@ -26,7 +26,7 @@ class PersistableTests: TailorTestCase {
   //MARK: - Association
   
   func testForeignKeyNameIsModelNamePlusId() {
-    assert(foreignKeyName(Hat.self), equals: "hat_id")
+    assert(Hat.foreignKeyName(), equals: "hat_id")
   }
   
   func testToManyFetchesRecordsByForeignKey() {

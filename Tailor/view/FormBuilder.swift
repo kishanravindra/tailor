@@ -38,16 +38,16 @@ public class FormBuilder {
     - parameter template:       The template that we are putting the form in.
     - parameter name:           The name used for the model object in the input
                                 tags.
-    - parameter modelType:      The type of model that the form is for. This can
+    - parameter type:           The type of model that the form is for. This can
                                 be provided instead of the model name.
     - parameter inputBuilder:   A block we can use to build inputs. If this is
                                 not provided, we will use a simple one with a
                                 div containing a label and an input.
     */
-  public init(template: Template, name: String? = nil, modelType: ModelType.Type? = nil, validationErrors: [ValidationError] = [], inputBuilder: InputBuilder? = nil) {
+  public init(template: Template, name: String? = nil, type: ModelType.Type? = nil, validationErrors: [ValidationError] = [], inputBuilder: InputBuilder? = nil) {
     self.template = template
-    self.name = modelType?.modelName() ?? name ?? "model"
-    self.modelType = modelType
+    self.name = type?.modelName() ?? name ?? "model"
+    self.modelType = type
     self.validationErrors = validationErrors
     
     if inputBuilder == nil {
