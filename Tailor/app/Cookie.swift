@@ -4,7 +4,7 @@ import Foundation
   This struct represents a cookie that is stored in and retrieved from the
   client.
   */
-public struct Cookie {
+public struct Cookie: Equatable {
   //MARK: - Reading Cookies
   
   /** The identifier for the cookie. */
@@ -101,4 +101,25 @@ public struct Cookie {
       return string
     }
   }
+}
+
+/**
+  This method determines if two cookies are equal.
+
+  Cookies are equal when all of their fields are equal.
+
+  - parameter lhs:    The left-hand side of the operator
+  - parameter rhs:    The right-hand side of the operator
+  - returns:          Whether the two cookies are equal.
+  */
+public func ==(lhs: Cookie, rhs: Cookie) -> Bool {
+  return lhs.key == rhs.key &&
+    lhs.value == rhs.value &&
+    lhs.changed == rhs.changed &&
+    lhs.domain == rhs.domain &&
+    lhs.expiresAt == rhs.expiresAt &&
+    lhs.httpOnly == rhs.httpOnly &&
+    lhs.maxAge == rhs.maxAge &&
+    lhs.path == rhs.path &&
+    lhs.secureOnly == rhs.secureOnly
 }

@@ -274,4 +274,17 @@ class RequestTests: TailorTestCase {
     XCTAssertNotNil(cookieValue)
     if cookieValue != nil { assert(cookieValue!, equals: "test.com", message: "sets cookie value") }
   }
+  
+  //MARK: - Equality
+  
+  func testRequestsAreEqualWithSameData() {
+    let request1 = Request(parameters: ["a": "b"])
+    let request2 = Request(parameters: ["a": "b"])
+    assert(request1, equals: request2)
+  }
+  func testRequestsAreUnequalWithDifferentData() {
+    let request1 = Request(parameters: ["a": "b"])
+    let request2 = Request(parameters: ["a": "c"])
+    assert(request1, doesNotEqual: request2)
+  }
 }

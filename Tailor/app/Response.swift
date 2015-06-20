@@ -3,7 +3,7 @@ import Foundation
 /**
   This class represents a response to a request.
   */
-public struct Response {
+public struct Response: Equatable {
   /** The HTTP response code. */
   public var code = 200
   
@@ -69,4 +69,22 @@ public struct Response {
   public var bodyString: String! { get {
     return NSString(data: self.bodyData, encoding: NSUTF8StringEncoding) as! String
   } }
+}
+
+
+/**
+  This method determines if two responses are equal.
+
+  Responses are equal if they have the same code, headers, body data, and
+  cookies.
+
+  - parameter lhs:    The left-hand side of the operator
+  - parameter rhs:    The right-hand side of the operator
+  - returns:          Whether the two responses are equal.
+  */
+public func ==(lhs: Response, rhs: Response) -> Bool {
+  return lhs.code == rhs.code &&
+    lhs.headers == rhs.headers &&
+    lhs.bodyData == rhs.bodyData &&
+    lhs.cookies == rhs.cookies
 }

@@ -20,17 +20,17 @@ public class TailorTestCase: XCTestCase {
   /**
     This method asserts that two things are equal.
 
-    - parameter lhs:       The left-hand side of the equality comparison. If this is
-                      nil, then it will be judged as not equal.
-    - parameter rhs:       The right-hand side of the equality comparison. This
-                      cannot be nil.
-    - parameter message:   The message to show if the assertion fails.
-    - parameter file:      The name of the file where the assertion is coming from.
-                      You should generally omit this, since it will be provided
-                      automatically.
-    - parameter line:      The line of the file where the assertion is coming from.
-                      You should generally omit this, since it will be provided
-                      automatically.
+    - parameter lhs:        The left-hand side of the equality comparison. If
+                            this is nil, then it will be judged as not equal.
+    - parameter rhs:        The right-hand side of the equality comparison. This
+                            cannot be nil.
+    - parameter message:    The message to show if the assertion fails.
+    - parameter file:       The name of the file where the assertion is coming
+                            from. You should generally omit this, since it will
+                            be provided automatically.
+    - parameter line:       The line of the file where the assertion is coming
+                            from. You should generally omit this, since it will
+                            be provided automatically.
     */
   public func assert<T : Equatable>(lhs: T!, equals rhs: T, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
     let message = (message.isEmpty ? message: " - " + message)
@@ -43,8 +43,30 @@ public class TailorTestCase: XCTestCase {
   }
   
   /**
+    This method asserts that two things are unequal.
+  
+    - parameter lhs:        The left-hand side of the equality comparison. If
+                            this is nil, then it will be judged as not equal.
+    - parameter rhs:        The right-hand side of the equality comparison. This
+                            cannot be nil.
+    - parameter message:    The message to show if the assertion fails.
+    - parameter file:       The name of the file where the assertion is coming
+                            from. You should generally omit this, since it will
+                            be provided automatically.
+    - parameter line:       The line of the file where the assertion is coming
+                            from. You should generally omit this, since it will
+                            be provided automatically.
+    */
+  public func assert<T : Equatable>(lhs: T!, doesNotEqual rhs: T, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+    let message = (message.isEmpty ? message: " - " + message)
+    if lhs != nil && lhs == rhs {
+      self.recordFailureWithDescription("\(lhs) == \(rhs)\(message)", inFile: file, atLine: line, expected: true)
+    }
+  }
+  
+  /**
     This method asserts that two arrays are equal.
-    
+  
     - parameter lhs:       The left-hand side of the equality comparison.
     - parameter rhs:       The right-hand side of the equality comparison.
     - parameter message:   The message to show if the assertion fails.

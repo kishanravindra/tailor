@@ -65,4 +65,77 @@ class ResponseTests: TailorTestCase {
     let string = response.bodyString
     assert(string, equals: "You are being redirected. TestBody", message: "has the full body")
   }
+  
+  //MARK: - Comparisons
+  
+  func testResponsesAreEqualWithSameInformation() {
+    var response1 = Response()
+    var response2 = Response()
+    response1.code = 200
+    response2.code = 200
+    response1.headers = ["Content-Type": "text/plain"]
+    response2.headers = ["Content-Type": "text/plain"]
+    response1.bodyData.appendData(NSData(bytes: [1,2,3,4]))
+    response2.bodyData.appendData(NSData(bytes: [1,2,3,4]))
+    response1.cookies.setCookie("test", "hello")
+    response2.cookies.setCookie("test", "hello")
+    assert(response1, equals: response2)
+  }
+  
+  func testResponsesAreUnequalWithDifferentCodes() {
+    var response1 = Response()
+    var response2 = Response()
+    response1.code = 200
+    response2.code = 302
+    response1.headers = ["Content-Type": "text/plain"]
+    response2.headers = ["Content-Type": "text/plain"]
+    response1.bodyData.appendData(NSData(bytes: [1,2,3,4]))
+    response2.bodyData.appendData(NSData(bytes: [1,2,3,4]))
+    response1.cookies.setCookie("test", "hello")
+    response2.cookies.setCookie("test", "hello")
+    assert(response1, doesNotEqual: response2)
+  }
+  
+  
+  func testResponsesAreUnequalWithDifferentHeaders() {
+    var response1 = Response()
+    var response2 = Response()
+    response1.code = 200
+    response2.code = 200
+    response1.headers = ["Content-Type": "text/plain"]
+    response2.headers = ["Content-Type": "text/xml"]
+    response1.bodyData.appendData(NSData(bytes: [1,2,3,4]))
+    response2.bodyData.appendData(NSData(bytes: [1,2,3,4]))
+    response1.cookies.setCookie("test", "hello")
+    response2.cookies.setCookie("test", "hello")
+    assert(response1, doesNotEqual: response2)
+  }
+  
+  func testResponsesAreUnequalDifferentBodyData() {
+    var response1 = Response()
+    var response2 = Response()
+    response1.code = 200
+    response2.code = 200
+    response1.headers = ["Content-Type": "text/plain"]
+    response2.headers = ["Content-Type": "text/plain"]
+    response1.bodyData.appendData(NSData(bytes: [1,2,3,4]))
+    response2.bodyData.appendData(NSData(bytes: [1,2,3,5]))
+    response1.cookies.setCookie("test", "hello")
+    response2.cookies.setCookie("test", "hello")
+    assert(response1, doesNotEqual: response2)
+  }
+  
+  func testResponsesAreUnequalWithDifferentCookies() {
+    var response1 = Response()
+    var response2 = Response()
+    response1.code = 200
+    response2.code = 200
+    response1.headers = ["Content-Type": "text/plain"]
+    response2.headers = ["Content-Type": "text/plain"]
+    response1.bodyData.appendData(NSData(bytes: [1,2,3,4]))
+    response2.bodyData.appendData(NSData(bytes: [1,2,3,4]))
+    response1.cookies.setCookie("test", "goodbye")
+    response2.cookies.setCookie("test", "hello")
+    assert(response1, doesNotEqual: response2)
+  }
 }

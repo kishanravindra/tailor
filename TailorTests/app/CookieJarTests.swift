@@ -94,4 +94,33 @@ class CookieJarTests: TailorTestCase {
     let headerString = cookieJar.headerStringForChanges
     assert(headerString, equals: "")
   }
+  
+  //MARK: - Comparison
+  
+  func testCookieJarsAreEqualWithSameCookies() {
+    let cookieJar2 = CookieJar()
+    cookieJar.setCookie("test1", "value1")
+    cookieJar.setCookie("test2", "value2")
+    cookieJar2.setCookie("test1", "value1")
+    cookieJar2.setCookie("test2", "value2")
+    assert(cookieJar, equals: cookieJar2)
+  }
+  
+  func testCookieJarsAreUnequalWithDifferentCookieValues() {
+    let cookieJar2 = CookieJar()
+    cookieJar.setCookie("test1", "value1")
+    cookieJar.setCookie("test2", "value2")
+    cookieJar2.setCookie("test1", "value2")
+    cookieJar2.setCookie("test2", "value3")
+    assert(cookieJar, doesNotEqual: cookieJar2)
+  }
+  
+  func testCookieJarsAreEqualWithSameCookiesInDifferentOrder() {
+    let cookieJar2 = CookieJar()
+    cookieJar.setCookie("test1", "value1")
+    cookieJar.setCookie("test2", "value2")
+    cookieJar2.setCookie("test2", "value2")
+    cookieJar2.setCookie("test1", "value1")
+    assert(cookieJar, equals: cookieJar2)
+  }
 }

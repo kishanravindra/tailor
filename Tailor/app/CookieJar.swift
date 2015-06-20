@@ -3,7 +3,7 @@ import Foundation
 /**
   This class stories a set of cookies for a request.
   */
-public class CookieJar {
+public class CookieJar: Equatable {
   /** The cookies in the jar. */
   public private(set) var cookies: [Cookie] = []
   
@@ -133,4 +133,21 @@ public class CookieJar {
       return "".join(headers)
     }
   }
+}
+
+/**
+  This method determines if two cookie jars are equal.
+
+  Two cookie jars are equal when all their cookies are equal.
+
+  - parameter lhs:    The left-hand side of the operator
+  - parameter rhs:    The right-hand side of the operator
+  - returns:          Whether the two cookie jars are equal.
+  */
+public func ==(lhs: CookieJar, rhs: CookieJar) -> Bool {
+  let sorter = {
+    (lhs: Cookie, rhs: Cookie) -> Bool in
+    return lhs.key < rhs.key
+  }
+  return lhs.cookies.sort(sorter) == rhs.cookies.sort(sorter)
 }

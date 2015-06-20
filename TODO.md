@@ -13,3 +13,4 @@
 
 * Getting rid of connection parameter for MysqlStatement class
 * Finding better way of switching on MySQL type enum
+* Initializing calendars in different years

@@ -3,7 +3,7 @@ import Foundation
 /**
   This class represents a request from the client.
   */
-public struct Request {
+public struct Request: Equatable {
   /** The client's IP address. */
   public let clientAddress: String
   
@@ -289,4 +289,17 @@ public struct Request {
     let data = stringData.dataUsingEncoding(NSUTF8StringEncoding)!
     self.init(clientAddress: clientAddress, data: data)
   }
+}
+
+/**
+  This method determines if two requests are equal.
+
+  Requests are equal when they have the same request data.
+
+  - parameter lhs:    The left-hand side of the operator
+  - parameter rhs:    The right-hand side of the operator
+  - returns:          Whether the two requests are equal.
+  */
+public func ==(lhs: Request, rhs: Request) -> Bool {
+  return lhs.data == rhs.data
 }
