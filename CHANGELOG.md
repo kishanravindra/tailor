@@ -14,3 +14,4 @@
   should reduce the need to override the rootPath method.
 * Several global functions for working with model objects have been deprecated,
   in favor of new methods in protocol extensions.
+* More value types now conform to the Equatable protocol.

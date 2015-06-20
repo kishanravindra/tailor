@@ -11,8 +11,9 @@ public protocol Calendar {
     It would be an initializer, but there are bugs in creating protocol types
     dynamically.
 
-    - parameter year:    The numeric indentifier for the year, in the calendar's own
-                    numbering system.
+    - parameter year:   The numeric indentifier for the year, in the calendar's
+                        own numbering system.
+    - returns:          The new calendar
     */
   func inYear(year: Int) -> Calendar
   
@@ -279,7 +280,7 @@ public struct IslamicCalendar: Calendar {
 /**
   This method determines if two calendars are equal.
 
-  Calendars are equal when they have the same year and unixEpochTime.
+  Calendars are equal when they have the same year and identifier.
   
   - parameter lhs:    The first calendar.
   - parameter rhs:    The second calendar.
@@ -293,7 +294,7 @@ public func ==(lhs: Calendar, rhs: Calendar) -> Bool {
 /**
   This method determines if two calendars are unequal.
 
-  Calendars are equal when they have the same year and unixEpochTime.
+  Calendars are equal when they have the same year and identifier.
 
   - parameter lhs:    The first calendar.
   - parameter rhs:    The second calendar.
@@ -302,3 +303,19 @@ public func ==(lhs: Calendar, rhs: Calendar) -> Bool {
 public func !=(lhs: Calendar, rhs: Calendar) -> Bool {
   return !(lhs == rhs)
 }
+
+/**
+  This method determines if two calendars are equal.
+
+  Calendars are equal when they have the same year and unixEpochTime.
+
+  - parameter lhs:    The first calendar.
+  - parameter rhs:    The second calendar.
+  - returns:          Whether the two calendars are equal.
+  */
+public func ==<T: Calendar>(rhs: T, lhs: T) -> Bool {
+  return lhs.year == rhs.year
+}
+
+extension GregorianCalendar: Equatable {}
+extension IslamicCalendar: Equatable {}

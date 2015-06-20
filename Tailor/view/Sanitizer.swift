@@ -3,7 +3,7 @@ import Foundation
 /**
   This class represents a filter for sanitizing text.
   */
-public struct Sanitizer {
+public struct Sanitizer: Equatable {
   /**
     The characters that the sanitizer replaces.
     */
@@ -107,6 +107,10 @@ public struct Sanitizer {
   This function determines if two sanitizers are equal.
 
   The sanitizers will be equal if they have the same mapping.
+
+  - parameter lhs:    The left hand side of the operator
+  - parameter rhs:    The right hand side of the operator
+  - returns:          Whether the two sanitizers are equal.
   */
 public func ==(lhs: Sanitizer, rhs: Sanitizer) -> Bool {
   return lhs.mapping == rhs.mapping

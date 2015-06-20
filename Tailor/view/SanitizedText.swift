@@ -4,7 +4,7 @@ import Foundation
   This struct provides a wrapper around text that specifies what filters have
   been applied to sanitize it.
   */
-public struct SanitizedText : StringLiteralConvertible {
+public struct SanitizedText : StringLiteralConvertible, Equatable {
   public typealias ExtendedGraphemeClusterLiteralType = StringLiteralType
   
   /** The text itself. */
@@ -47,4 +47,18 @@ public struct SanitizedText : StringLiteralConvertible {
   public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
     self.init(text: value, sanitizers: [])
   }
+}
+
+/**
+  This function determines if two sanitized text strings are equal.
+
+  The sanitizers will be equal if they have the same text and sanitizer list.
+
+  - parameter lhs:    The left hand side of the operator
+  - parameter rhs:    The right hand side of the operator
+  - returns:          Whether the two strings are equal.
+  */
+public func ==(lhs: SanitizedText, rhs: SanitizedText) -> Bool {
+  return lhs.text == rhs.text &&
+    lhs.sanitizers == rhs.sanitizers
 }

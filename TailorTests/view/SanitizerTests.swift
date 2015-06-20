@@ -40,5 +40,18 @@ class SanitizerTests: TailorTestCase {
     let result = Sanitizer.sqlSanitizer.sanitizeString("BOBBY '; DROP TABLE \\ students\"")
     assert(result, equals: "BOBBY \\'; DROP TABLE \\\\ students\\\"", message: "sanitizes all escape characters")
   }
-
+  
+  //MARK: - Comparison
+  
+  func testSanitizersAreEqualWithSameMapping() {
+    let sanitizer1 = Sanitizer(["<": "&lt;", ">": "gt;"])
+    let sanitizer2 = Sanitizer(["<": "&lt;", ">": "gt;"])
+    assert(sanitizer1, equals: sanitizer2)
+  }
+  
+  func testSanitizersAreEqualWithDifferentMapping() {
+    let sanitizer1 = Sanitizer(["<": "&lt;", ">": "gt;"])
+    let sanitizer2 = Sanitizer(["<": "&lt;", ">": "gt;", "&": "&amp;"])
+    assert(sanitizer1, doesNotEqual: sanitizer2)
+  }
 }
