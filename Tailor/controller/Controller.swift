@@ -206,7 +206,7 @@ public class Controller {
     and after the block is done it will give the response to the controller's
     handler.
     */
-  public func generateResponse(contents: (inout Response)->()) {
+  public func generateResponse(@noescape contents: (inout Response)->()) {
     if self.responded {
       NSLog("Error: Controller attempted to respond twice for %@:%@. Subsequent responses will be ignored.", self.dynamicType.name, self.action.name)
       return

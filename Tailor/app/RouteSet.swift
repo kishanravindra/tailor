@@ -165,7 +165,7 @@ public class RouteSet {
     - parameter pathPrefix:    The prefix for the paths of the routes.
     - parameter block:         The block that will provide the routes.
     */
-  public func withPrefix(pathPrefix: String, block: ()->()) {
+  public func withPrefix(pathPrefix: String, @noescape block: ()->()) {
     let oldPrefix = self.currentPathPrefix
     self.currentPathPrefix += "/" + pathPrefix
     block()
@@ -179,7 +179,7 @@ public class RouteSet {
     - parameter controller:    The controller that will handle the routes.
     - parameter block:         The block that will provide the routes.
     */
-  public func withPrefix(pathPrefix: String, controller: Controller.Type, block: ()->()) {
+  public func withPrefix(pathPrefix: String, controller: Controller.Type, @noescape block: ()->()) {
     let oldPrefix = self.currentPathPrefix
     let oldController = self.currentController
     self.currentPathPrefix += "/" + pathPrefix
