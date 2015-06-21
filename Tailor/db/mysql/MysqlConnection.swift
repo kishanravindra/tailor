@@ -16,7 +16,9 @@ public class MysqlConnection : DatabaseConnection {
                           database.
     */
   public required init(config: [String:String]) {
+    CONNECTION_INITIALIZATION_LOCK.lock()
     self.connection = mysql_init(nil)
+    CONNECTION_INITIALIZATION_LOCK.unlock()
     super.init(config: config)
     mysql_real_connect(self.connection, config["host"]!, config["username"]!, config["password"]!, config["database"]!,   0, nil, 0)
     
@@ -101,3 +103,5 @@ public class MysqlConnection : DatabaseConnection {
     mysql_query(self.connection, "COMMIT;")
   }
 }
+
+private let CONNECTION_INITIALIZATION_LOCK = NSLock()

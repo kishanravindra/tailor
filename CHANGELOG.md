@@ -15,3 +15,6 @@
 * Several global functions for working with model objects have been deprecated,
   in favor of new methods in protocol extensions.
 * More value types now conform to the Equatable protocol.
+* Requests are now put onto a single dispatch queue, with no limit on the number
+  of simultaneous connections.
+* The current time now uses NSDate to get an accurate nanosecond count.

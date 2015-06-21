@@ -442,7 +442,7 @@ class MysqlBindParameterTests: TailorTestCase {
     let rows = connection.executeQuery("SELECT * FROM `hats`")
     if rows.count > 0 {
       let result = rows[0].data["updated_at"]?.timestampValue
-      assert(result, equals: timestamp)
+      assert(result?.epochSeconds, within: 0.5, of: timestamp.epochSeconds)
     }
     else {
       assert(false)
@@ -451,7 +451,7 @@ class MysqlBindParameterTests: TailorTestCase {
   
   func testCanSendAndReceiveTime() {
     DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at time")
-    let time = 45.minutes.ago.inTimeZone(DatabaseConnection.sharedConnection().timeZone).time
+    let time = 45.minutes.ago.inTimeZone(DatabaseConnection.sharedConnection().timeZone).change(nanosecond: 0).time
     let connection = DatabaseConnection.sharedConnection()
     connection.executeQuery("INSERT INTO `hats` (`updated_at`) VALUES (?)", time)
     let rows = connection.executeQuery("SELECT * FROM `hats`")

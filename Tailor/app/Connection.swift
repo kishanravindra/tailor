@@ -17,11 +17,8 @@ public struct Connection {
   /** A callback to the code to provide the request. */
   let handler: RequestHandler
   
-  /** The maximum number of connections to process at once. */
-  let simultaneousConnectionLimit = 10
-  
-  /** The number of connections that we are currently processing. */
-  var activeConnections = 0
+  /** The queue that we put requests on. */
+  public static let dispatchQueue = dispatch_queue_create(nil, DISPATCH_QUEUE_CONCURRENT)
   
   /**
     This method creates a new connection.
@@ -33,7 +30,6 @@ public struct Connection {
   public init(fileDescriptor: Int32, handler: RequestHandler) {
     self.socketDescriptor = fileDescriptor
     self.handler = handler
-    
     self.listenToSocket()
   }
   
@@ -57,11 +53,7 @@ public struct Connection {
         return
       }
       
-      NSOperationQueue().addOperationWithBlock {
-        while(self.activeConnections >= self.simultaneousConnectionLimit) {
-          NSThread.sleepForTimeInterval(1)
-        }
-        
+      dispatch_async(Connection.dispatchQueue) {
         self.readFromSocket(connectionDescriptor)
       }
       self.listenToSocket()
@@ -81,8 +73,7 @@ public struct Connection {
     let bufferLength: UInt = 1024
     var buffer = [UInt8](count: Int(bufferLength), repeatedValue: 0)
     var request: Request!
-    
-    self.activeConnections += 1
+    let startTime = Timestamp.now()
     
     var clientAddress = sockaddr(
       sa_len: 0,
@@ -114,8 +105,8 @@ public struct Connection {
       let responseData = $0.data
       write(connectionDescriptor, responseData.bytes, responseData.length)
       close(connectionDescriptor)
-      self.activeConnections -= 1
-      NSLog("Finished processing %@", request.path)
+      let interval = Timestamp.now().epochSeconds - startTime.epochSeconds
+      NSLog("Finished processing %@ in %lf seconds", request.path, interval)
     }
   }
 

@@ -7,7 +7,7 @@ extension Timestamp {
     - returns:   The new timestamp.
   */
   public static func now() -> Timestamp {
-    return self.init(epochSeconds: Double(Foundation.time(nil)))
+    return self.init(epochSeconds: NSDate().timeIntervalSince1970)
   }
   
   //MARK: - Foundation Bridging
