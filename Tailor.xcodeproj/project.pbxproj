@@ -37,7 +37,6 @@
 		523D65681A99521E000C686B /* DatabaseLocalizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523D65671A99521E000C686B /* DatabaseLocalizationTests.swift */; };
 		523F29351A583EEB00C1BBC0 /* SanitizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523F29341A583EEB00C1BBC0 /* SanitizerTests.swift */; };
 		523F29391A58459200C1BBC0 /* SanitizedTextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523F29381A58459200C1BBC0 /* SanitizedTextTests.swift */; };
-		523F293E1A584F7A00C1BBC0 /* ControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523F293D1A584F7A00C1BBC0 /* ControllerTests.swift */; };
 		5258989F1A4F289800DD853D /* DatabaseConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5258989E1A4F289800DD853D /* DatabaseConnectionTests.swift */; };
 		525C80851A1C1B4900E7035F /* Query.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525C80841A1C1B4900E7035F /* Query.swift */; };
 		526254301AABC37900D63024 /* CacheStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5262542F1AABC37900D63024 /* CacheStore.swift */; };
@@ -59,6 +58,8 @@
 		526ACD801B07922900CE0CC0 /* TimeFormatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526ACD7F1B07922900CE0CC0 /* TimeFormatTests.swift */; };
 		526ACD821B07A9FD00CE0CC0 /* TimeIntervalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526ACD811B07A9FD00CE0CC0 /* TimeIntervalTests.swift */; };
 		526ACD841B07B8FC00CE0CC0 /* TimestampTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526ACD831B07B8FC00CE0CC0 /* TimestampTests.swift */; };
+		526E8DE31B3783400040CA35 /* OldController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526E8DE21B3783400040CA35 /* OldController.swift */; };
+		526E8DE51B379C320040CA35 /* ControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526E8DE41B379C320040CA35 /* ControllerTests.swift */; };
 		5289AD151B2239CD0016CA40 /* CHANGELOG.md in Resources */ = {isa = PBXBuildFile; fileRef = 5289AD141B2239CD0016CA40 /* CHANGELOG.md */; };
 		528D183F1A8FDD4A00A6E116 /* TailorTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D183E1A8FDD4A00A6E116 /* TailorTestHelpers.swift */; };
 		528D18411A8FE15D00A6E116 /* Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D18401A8FE15D00A6E116 /* Layout.swift */; };
@@ -188,7 +189,6 @@
 		523D65671A99521E000C686B /* DatabaseLocalizationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseLocalizationTests.swift; sourceTree = "<group>"; };
 		523F29341A583EEB00C1BBC0 /* SanitizerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SanitizerTests.swift; sourceTree = "<group>"; };
 		523F29381A58459200C1BBC0 /* SanitizedTextTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SanitizedTextTests.swift; sourceTree = "<group>"; };
-		523F293D1A584F7A00C1BBC0 /* ControllerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControllerTests.swift; sourceTree = "<group>"; };
 		5242C35519F4466F00E605D2 /* TemplateInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = TemplateInfo.plist; sourceTree = "<group>"; };
 		5247FF9E19F4629700C08156 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		5247FF9F19F462C200C08156 /* ___PACKAGENAME___Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "___PACKAGENAME___Application.swift"; sourceTree = "<group>"; };
@@ -210,6 +210,8 @@
 		526ACD7F1B07922900CE0CC0 /* TimeFormatTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeFormatTests.swift; sourceTree = "<group>"; };
 		526ACD811B07A9FD00CE0CC0 /* TimeIntervalTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeIntervalTests.swift; sourceTree = "<group>"; };
 		526ACD831B07B8FC00CE0CC0 /* TimestampTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimestampTests.swift; sourceTree = "<group>"; };
+		526E8DE21B3783400040CA35 /* OldController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OldController.swift; sourceTree = "<group>"; };
+		526E8DE41B379C320040CA35 /* ControllerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControllerTests.swift; sourceTree = "<group>"; };
 		5289AD141B2239CD0016CA40 /* CHANGELOG.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
 		528D183E1A8FDD4A00A6E116 /* TailorTestHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TailorTestHelpers.swift; sourceTree = "<group>"; };
 		528D18401A8FE15D00A6E116 /* Layout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Layout.swift; sourceTree = "<group>"; };
@@ -385,7 +387,7 @@
 		523F293C1A584F4E00C1BBC0 /* controller */ = {
 			isa = PBXGroup;
 			children = (
-				523F293D1A584F7A00C1BBC0 /* ControllerTests.swift */,
+				526E8DE41B379C320040CA35 /* ControllerTests.swift */,
 				52E784B41A59C12D0065C10D /* SessionTests.swift */,
 			);
 			path = controller;
@@ -596,6 +598,7 @@
 			isa = PBXGroup;
 			children = (
 				52BD140B19E9DA1D006D72B0 /* Controller.swift */,
+				526E8DE21B3783400040CA35 /* OldController.swift */,
 				52BD140D19E9DA1D006D72B0 /* Session.swift */,
 			);
 			path = controller;
@@ -881,6 +884,7 @@
 				52B2B6EE19F3F75C0086261B /* Sanitizer.swift in Sources */,
 				52A95E311AE0A3B9001AED1F /* DatabaseValue.swift in Sources */,
 				52EF127419F0A58400B61DF4 /* Localization.swift in Sources */,
+				526E8DE31B3783400040CA35 /* OldController.swift in Sources */,
 				52B2B6B219F2DAD30086261B /* Alteration.swift in Sources */,
 				522B56CA1A18C849009BBE32 /* Array.swift in Sources */,
 				523D65621A98D36D000C686B /* ConfigurationSetting.swift in Sources */,
@@ -954,7 +958,6 @@
 				523D65681A99521E000C686B /* DatabaseLocalizationTests.swift in Sources */,
 				5262EEBD1AD167A2006F864D /* MysqlResultSetTests.swift in Sources */,
 				5262EEBF1AD16B5F006F864D /* MysqlFieldTests.swift in Sources */,
-				523F293E1A584F7A00C1BBC0 /* ControllerTests.swift in Sources */,
 				5262EE7B1AD0AC9B006F864D /* DictionaryTests.swift in Sources */,
 				520BD5021AA90E2600CBC3DC /* PropertyListLocalizationTests.swift in Sources */,
 				526ACD821B07A9FD00CE0CC0 /* TimeIntervalTests.swift in Sources */,
@@ -965,6 +968,7 @@
 				528D6FA51A562D5900783BE5 /* FormBuilderTests.swift in Sources */,
 				52E784D31A5CCA9F0065C10D /* AlterationTests.swift in Sources */,
 				52E784BA1A5A04590065C10D /* PasswordHasherTests.swift in Sources */,
+				526E8DE51B379C320040CA35 /* ControllerTests.swift in Sources */,
 				52E784C31A5B6BFA0065C10D /* NSStringTests.swift in Sources */,
 				52178E671A4F359F001F6D57 /* MysqlConnectionTests.swift in Sources */,
 				52DDCF011A538C5800D3A47E /* QueryTests.swift in Sources */,

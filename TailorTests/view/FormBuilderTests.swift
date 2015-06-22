@@ -6,9 +6,21 @@ class FormBuilderTests: TailorTestCase {
   var template : Template!
   var builder : FormBuilder!
   
+  struct TestController: ControllerType {
+    var state: ControllerState
+    static func defineRoutes(inout routes: RouteSet) {
+      
+    }
+    
+    init(state: ControllerState) {
+      self.state = state
+    }
+  }
+  
   override func setUp() {
     super.setUp()
-    template = Template(controller: Controller())
+    let controller = TestController(request: Request(), actionName: "index", callback: {response in })
+    template = Template(controller: controller)
     builder = FormBuilder(template: template, name: "hat")
   }
   

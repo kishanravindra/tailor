@@ -14,7 +14,7 @@ public class Layout: Template {
     - parameter controller:  The controller that is rendering the template.
     - parameter template:    The template containing the page body.
     */
-  public required init(controller: Controller, template: Template) {
+  public required init(controller: ControllerType, template: Template) {
     self.template = template ?? Template(controller: controller)
     super.init(controller: controller)
   }
@@ -27,7 +27,7 @@ public class Layout: Template {
 
     - parameter controller:  The controller that is rendering the template.
     */
-  public override convenience init(controller: Controller) {
+  public override convenience init(controller: ControllerType) {
     self.init(controller: controller, template: Template(controller: controller))
   }
   

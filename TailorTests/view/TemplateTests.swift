@@ -2,22 +2,32 @@ import XCTest
 import Tailor
 import TailorTesting
 
+
 class TemplateTests: TailorTestCase {
-  var controller: Controller!
+  var controller: TestController!
   var template: Template!
   
+  struct TestController: ControllerType {
+    var state: ControllerState
+    static let layout = Layout.self
+    static func defineRoutes(inout RouteSet) {}
+    static let name = "TestController"
+    func indexAction() {
+      
+    }
+  }
   override func setUp() {
     super.setUp()
     let request = Request(clientAddress: "1.1.1.1", data: NSData())
     let callback = {
       (response: Response) -> () in
     }
-    self.controller = Controller(
+    self.controller = TestController(
       request: request,
       actionName: "index",
       callback: callback
     )
-    self.controller.localization = PropertyListLocalization(locale: "en")
+    self.controller.state.localization = PropertyListLocalization(locale: "en")
     Application.sharedApplication().configuration.child("localization.content.en").addDictionary([
       "template.test": "Localized Text",
       "template.test_raw": "<b>Hello</b>",
@@ -32,7 +42,7 @@ class TemplateTests: TailorTestCase {
     class TestTemplate: Template {
       let hatColor: String
       
-      init(controller: Controller, hatColor: String = "red") {
+      init(controller: ControllerType, hatColor: String = "red") {
         self.hatColor = hatColor
         super.init(controller: controller)
       }
@@ -150,25 +160,24 @@ class TemplateTests: TailorTestCase {
     template.tag("p", text: "Hello", attributes: ["class": "greeting", "data-hover": "Hi"])
     assert(template.buffer, equals: "<p class=\"greeting\" data-hover=\"Hi\">Hello</p>")
   }
-  
+
   func testLinkPutsLinkTagInBuffer() {
-    class InnerTestController: Controller {
-      override func pathFor(controllerName: String? = nil, actionName: String? = nil, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
-        XCTAssertEqual(controllerName!, "TestController", "has the controller name")
-        XCTAssertEqual(action.name, "index", "has the action")
-        XCTAssertEqual(parameters, ["id": "5"], "has the parameters")
-        return "/test/path"
+    struct InnerTestController: ControllerType {
+      var state: ControllerState
+      static func defineRoutes(inout routes: RouteSet) {
+        
       }
     }
+    Application.sharedApplication().routeSet.addRoute("test/path", method: "GET", actionName: "index", action: TestController.indexAction)
     let template2 = Template(controller: InnerTestController(
       request: controller.request,
-      actionName: controller.action.name,
+      actionName: "show",
       callback: controller.callback
     ))
     template2.link("TestController", actionName: "index", parameters: ["id": "5"], attributes: ["class": "btn"]) {
       template2.text("Click here")
     }
-    assert(template2.buffer, equals: "<a class=\"btn\" href=\"/test/path\">Click here</a>", message: "puts the tag in the buffer")
+    assert(template2.buffer, equals: "<a class=\"btn\" href=\"/test/path?id=5\">Click here</a>", message: "puts the tag in the buffer")
   }
   
   func testRenderTemplatePutsTemplateContentsInBuffer() {
@@ -176,7 +185,7 @@ class TemplateTests: TailorTestCase {
     class TestTemplate: Template {
       let name: String
       
-      init(controller: Controller, name: String = "Anonymous") {
+      init(controller: ControllerType, name: String = "Anonymous") {
         self.name = name
         super.init(controller: controller)
       }
@@ -194,7 +203,7 @@ class TemplateTests: TailorTestCase {
     class TestTemplate: Template {
       let name: String
       
-      init(controller: Controller, name: String = "Anonymous") {
+      init(controller: ControllerType, name: String = "Anonymous") {
         self.name = name
         super.init(controller: controller)
       }
@@ -297,9 +306,9 @@ class TemplateTests: TailorTestCase {
   func testRequestParametersGetsKeysFromRequest() {
     var request = controller.request
     request.requestParameters = ["id": "5", "color": "red", "size": "10"]
-    let template = Template(controller: Controller(
+    let template = Template(controller: TestController(
       request: request,
-      actionName: controller.action.name,
+      actionName: "test",
       callback: controller.callback
     ))
     let parameters = template.requestParameters("id", "color", "shelf")
@@ -309,9 +318,9 @@ class TemplateTests: TailorTestCase {
   func testRequestParameterGetsKeyFromRequest() {
     var request = controller.request
     request.requestParameters = ["id": "5", "color": "red", "size": "10"]
-    let template = Template(controller: Controller(
+    let template = Template(controller: TestController(
       request: request,
-      actionName: controller.action.name,
+      actionName: "test",
       callback: controller.callback
       ))
     if let param1 = template.requestParameter("id") {

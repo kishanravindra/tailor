@@ -19,7 +19,7 @@ public class ControllerTestCase : TailorTestCase {
   /**
     The type of controller that we are testing.
     */
-  public var controllerType: Controller.Type!
+  public var controllerType: ControllerType.Type!
   
   /**
     The user that should be considered logged in for the request we are testing.
@@ -43,18 +43,18 @@ public class ControllerTestCase : TailorTestCase {
     This will check both that the response's HTTP code is 302 and that its
     location header has the provided path.
 
-    - parameter response:    The response that we are checking.
-    - parameter path:        The path that it should redirect to. If this is nil, the
-                        assertion will always fail, but we allow it to be nil so
-                        that you can provide a potentially nil path from
-                        pathFor without an additional check.
-    - parameter message:     The message to show when the assertion fails.
-    - parameter file:        The file that the assertion is coming from. You should
-                        generally omit this, since it will be provided
-                        automatically.
-    - parameter line:        The line that the assertion is coming from. You should
-                        generally omit this, since it will be provided
-                        automatically.
+    - parameter response:     The response that we are checking.
+    - parameter path:         The path that it should redirect to. If this is
+                              nil, the assertion will always fail, but we allow
+                              it to be nil so that you can provide a potentially
+                              nil path from pathFor without an additional check.
+    - parameter message:      The message to show when the assertion fails.
+    - parameter file:         The file that the assertion is coming from. You
+                              should generally omit this, since it will be
+                              provided automatically.
+    - parameter line:         The line that the assertion is coming from. You
+                              should generally omit this, since it will be
+                              provided automatically.
     */
   public func assertResponse(response: Response, redirectsTo path: String?, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
     assert(response.code, equals: 302, message: "gives a redirect response")
@@ -69,15 +69,15 @@ public class ControllerTestCase : TailorTestCase {
   /**
     This method asserts that a response contains some text in its body.
 
-    - parameter response:      The response to check.
-    - parameter substring:     The text that the response must contain.
-    - parameter message:       The message to show when the assertion fails.
-    - parameter file:          The file that the assertion is coming from. You should
-                          generally omit this, since it will be provided
-                          automatically.
-    - parameter line:          The line that the assertion is coming from. You should
-                          generally omit this, since it will be provided
-                          automatically.
+    - parameter response:       The response to check.
+    - parameter substring:      The text that the response must contain.
+    - parameter message:        The message to show when the assertion fails.
+    - parameter file:           The file that the assertion is coming from. You
+                                should generally omit this, since it will be
+                                provided automatically.
+    - parameter line:           The line that the assertion is coming from. You
+                                should generally omit this, since it will be
+                                provided automatically.
     */
   public func assertResponse(response: Response, contains substring: String, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
     let body = response.bodyString
@@ -89,19 +89,21 @@ public class ControllerTestCase : TailorTestCase {
   /**
     This method asserts that a controller rendered a template of a given type.
   
-    - parameter controller:        The controller whose templates we are checking.
-    - parameter renderedTemplate:  The type of template that we want to examine.
-    - parameter message:           A message to show if the assertion fails.
-    - parameter file:              The file that the assertion is coming from. You
-                              should generally omit this, since it will be
-                              provided automatically.
-    - parameter line:              The line that the assertion is coming from. You
-                              should generally omit this, since it will be
-                              provided automatically.
-    - parameter templateChecker:   A block that can perform additional checks on the
-                              template.
+    - parameter controller:         The controller whose templates we are
+                                    checking.
+    - parameter renderedTemplate:   The type of template that we want to examine.
+    - parameter message:            A message to show if the assertion fails.
+    - parameter file:               The file that the assertion is coming from.
+                                    You should generally omit this, since it
+                                    will be provided automatically.
+    - parameter line:               The line that the assertion is coming from.
+                                    You should generally omit this, since it
+                                    will be provided automatically.
+    - parameter templateChecker:    A block that can perform additional checks
+                                    on the
+                                    template.
     */
-  public func assert<TemplateType: Template>(controller: Controller, renderedTemplate: TemplateType.Type, message: String = "", file: String = __FILE__, line: UInt = __LINE__, _ templateChecker: (TemplateType)->() = {_ in}) {
+  @available(*, deprecated) public func assert<TemplateType: Template>(controller: Controller, renderedTemplate: TemplateType.Type, message: String = "", file: String = __FILE__, line: UInt = __LINE__, _ templateChecker: (TemplateType)->() = {_ in}) {
     var found = false
     for template in controller.renderedTemplates {
       if let castTemplate = template as? TemplateType {
@@ -117,36 +119,55 @@ public class ControllerTestCase : TailorTestCase {
       self.recordFailureWithDescription(failureMessage, inFile: file, atLine: line, expected: true)
     }
   }
+  
+  
+  /**
+    This method asserts that a response rendered a template of a given type.
+    
+    - parameter response:           The response whose templates we are
+                                    checking.
+    - parameter renderedTemplate:   The type of template that we want to examine.
+    - parameter message:            A message to show if the assertion fails.
+    - parameter file:               The file that the assertion is coming from.
+                                    You should generally omit this, since it
+                                    will be provided automatically.
+    - parameter line:               The line that the assertion is coming from.
+                                    You should generally omit this, since it
+                                    will be provided automatically.
+    - parameter templateChecker:    A block that can perform additional checks
+                                    on the template.
+    */
+  public func assert<TemplateType: Template>(response: Response, renderedTemplate: TemplateType.Type, message: String = "", file: String = __FILE__, line: UInt = __LINE__, _ templateChecker: (TemplateType)->() = {_ in}) {
+    var found = false
+    for template in response.renderedTemplates {
+      if let castTemplate = template as? TemplateType {
+        found = true
+        templateChecker(castTemplate)
+      }
+    }
+    if(!found) {
+      var failureMessage = "Did not render a matching template"
+      if !message.isEmpty {
+        failureMessage += " - \(message)"
+      }
+      self.recordFailureWithDescription(failureMessage, inFile: file, atLine: line, expected: true)
+    }
+  }
 
   //MARK: - Calling Actions
-
-  /**
-    This method calls an action on the controller.
-
-    It will use the controller type, parameters, and user that have been set on
-    the attributes on the test suite.
   
-    If the controller never finishes its response, this will report a failure.
-    If it does generate a response, it will be given to the provided callback,
-    where you can do any checks you need to do on the response/
-
-    - parameter action:      The action to call on the controller.
-    - parameter callback:    A callback to do additional assertions on the results.
-                        This will receive both the response itself and the
-                        controller that produced it.
-    */
-  public func callAction(action: String, callback: (Response, Controller) -> ()) {
-    let actionParams = params[action] ?? [:]
+  public func callAction<T: ControllerType>(actionName: String, _ action: (T)->(Void->Void), callback: (Response, ControllerType) -> ()) {
+    let actionParams = params[actionName] ?? [:]
     var sessionData = [String:String]()
     if user != nil {
       sessionData["userId"] = String(user.id ?? 0)
     }
     var request = Request(parameters: actionParams, sessionData: sessionData)
-    if let actionFiles = files[action] {
+    if let actionFiles = files[actionName] {
       request.uploadedFiles = actionFiles
     }
     let expectation = expectationWithDescription("response called")
-    controllerType.callAction(action, request) {
+    T.callAction(actionName, action, request) {
       response, controller in
       expectation.fulfill()
       callback(response, controller)

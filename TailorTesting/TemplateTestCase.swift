@@ -11,7 +11,7 @@ public class TemplateTestCase: TailorTestCase {
   
     You should set this in your setUp method.
     */
-  public var controller: Controller!
+  public var controller: ControllerType!
   
   /**
     The template that we are rendering.
@@ -34,7 +34,7 @@ public class TemplateTestCase: TailorTestCase {
                           being called.
     - parameter user:          The user who is signed in to the controller.
     */
-  public func setUpController(type: Controller.Type, actionName: String = "index", user: User! = nil) {
+  public func setUpController(type: ControllerType.Type, actionName: String = "index", user: User! = nil) {
     
     var request = Request()
     if user != nil {

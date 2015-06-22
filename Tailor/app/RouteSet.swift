@@ -43,7 +43,7 @@ public class RouteSet {
     public let pathParameters: [String]
     
     /** The controller that will handle the request. */
-    public private(set) var controller: Controller.Type?
+    public private(set) var controller: ControllerType.Type?
     
     /** The name of the action in the controller. */
     public private(set) var actionName: String?
@@ -141,7 +141,10 @@ public class RouteSet {
   private var currentPathPrefix = ""
   
   /** The controller that will be handling requests in a block. */
-  private var currentController = Controller.self
+  private var currentController: ControllerType.Type?
+  
+  /** The filters that we will apply to the current request. */
+  private var currentFilters: [(ControllerType)->Void->Bool] = []
   
   /**
     This method creates an empty route set.
@@ -162,10 +165,12 @@ public class RouteSet {
   /**
     This method wraps a block for generating routes.
   
+    This method is deprecated. You should use `withScope` instead.
+  
     - parameter pathPrefix:    The prefix for the paths of the routes.
     - parameter block:         The block that will provide the routes.
     */
-  public func withPrefix(pathPrefix: String, @noescape block: ()->()) {
+  @available(*, deprecated, message="Use withScope instead") public func withPrefix(pathPrefix: String, @noescape block: ()->()) {
     let oldPrefix = self.currentPathPrefix
     self.currentPathPrefix += "/" + pathPrefix
     block()
@@ -179,7 +184,7 @@ public class RouteSet {
     - parameter controller:    The controller that will handle the routes.
     - parameter block:         The block that will provide the routes.
     */
-  public func withPrefix(pathPrefix: String, controller: Controller.Type, @noescape block: ()->()) {
+  @available(*, deprecated) public func withPrefix(pathPrefix: String, controller: Controller.Type, @noescape block: ()->()) {
     let oldPrefix = self.currentPathPrefix
     let oldController = self.currentController
     self.currentPathPrefix += "/" + pathPrefix
@@ -187,6 +192,97 @@ public class RouteSet {
     block()
     self.currentController = oldController
     self.currentPathPrefix = oldPrefix
+  }
+  
+  /**
+    This method creates a scope that will apply to several routes.
+
+    - parameter path:     A segment of a path that will be applied to the
+                          beginning of the routes. There will be a slash added
+                          to the beginning of this segment.
+    - parameter block:    A block that will add the specific routes.
+    */
+  public func withScope(path path: String? = nil, @noescape block: Void->Void) {
+    let oldPrefix = self.currentPathPrefix
+    if let path = path {
+      self.currentPathPrefix += "/" + path
+    }
+    block()
+    self.currentPathPrefix = oldPrefix
+  }
+  
+  /**
+    This method creates a scope that will apply to several routes.
+  
+    This allows you to add filters that will be run before the controller
+    action. The filters take in a controller and return a function that will
+    return a boolean. The boolean return value should indicate whether the
+    request passed the filter. Filters can check if a request has all the
+    necessary parameters, or if the parameters are consistent with other parts
+    of the state of the system, or anything else that you want to be a reusable
+    check. 
+  
+    The type signature for filters is designed to work well with Swift's method
+    currying. If you have an instance method called `authenticate` on
+    `MyController` that returns a boolean, you can use it as a filter by passing
+    `MyController.authenticate` in the filter list for this method.
+
+    As soon as one of the filters returns false, we will stop all processing.
+    Any filter that returns false must also generate a response.
+  
+    The filters will only be applied to controller actions.
+
+    - parameter path:       A segment of a path that will be applied to the
+                            beginning of the routes. There will be a slash added
+                            to the beginning of this segment.
+    - parameter filters:    The filters to run.
+    - parameter block:      A block that will add the specific routes.
+    */
+  public func withScope<T: ControllerType>(path path: String? = nil, filters: [(T)->Void->Bool] = [], @noescape block: Void->Void) {
+    let oldPrefix = self.currentPathPrefix
+    if let path = path {
+      self.currentPathPrefix += "/" + path
+    }
+    let oldFilters = self.currentFilters
+    
+    let castFilters = filters.map {
+      filter in
+      return {
+        (controller: ControllerType)->Void->Bool in
+        return {
+          ()->Bool in
+          let castController = controller as? T
+          if castController != nil {
+            return filter(castController!)()
+          }
+          else {
+            controller.render404()
+            return false
+          }
+        }
+      }
+    }
+    let newFilters = currentFilters + castFilters
+    self.currentFilters = newFilters
+    block()
+    self.currentFilters = oldFilters
+    self.currentPathPrefix = oldPrefix
+  }
+  
+  
+  /**
+    This method creates a scope that will apply to several routes.
+  
+    - parameter path:     A segment of a path that will be applied to the
+                          beginning of the routes. There will be a slash added
+                          to the beginning of this segment.
+    - parameter filter:   The filter to run. For more details on how filters
+                          work, see the documentation for the `withScope` method
+                          that accepts multiple filters.
+    - parameter block:    A block that will add the specific routes.
+    */
+  public func withScope<T: ControllerType>(path path: String? = nil, filter: (T)->Void->Bool, @noescape block: Void->Void) {
+    self.withScope(path: path, filters: [filter], block: block)
   }
   
   /**
@@ -215,15 +311,40 @@ public class RouteSet {
     - parameter controller:    The controller that will handle the request.
     - parameter actionName:    The name of the action that will handle the request.
     */
-  public func addRoute(pathPattern: String, method: String, handler: Connection.RequestHandler, description: String, controller: Controller.Type? = nil, actionName: String? = nil) {
+  public func addRoute(pathPattern: String, method: String, handler: Connection.RequestHandler, description: String, controller: ControllerType.Type? = nil, actionName: String? = nil) {
     var fullPattern = self.currentPathPrefix
     if !pathPattern.isEmpty {
       fullPattern += "/" + pathPattern
     }
     var route = Route(pathPattern: fullPattern, method: method, handler: handler, description: description)
-    route.controller = controller
+    route.controller = controller ?? currentController
     route.actionName = actionName
     self.routes.append(route)
+  }
+  
+  /**
+    This method adds a route for a controller action.
+
+    - parameter pathPattern:    The pattern for the route.
+    - parameter method:         The HTTP method for the route.
+    - parameter actionName:     The name of the action, for use in debugging
+                                and looking up routes by name.
+    - parameter action          The body of the action.
+    */
+  public func addRoute<T: ControllerType>(pathPattern: String, method: String, actionName: String, action: (T)->()->()) {
+    let description = NSString(format: "%@#%@", T.name, actionName) as String
+    let filters = self.currentFilters
+    let handler: Connection.RequestHandler = {
+      (request: Request, callback: Connection.ResponseCallback) in
+      let controller = T(request: request, actionName: actionName, callback: callback)
+      for filter in filters {
+        if !filter(controller)() {
+          return
+        }
+      }
+      action(controller)()
+    }
+    addRoute(pathPattern, method: method, handler: handler, description: description, controller: T.self, actionName: actionName)
   }
   
   /**
@@ -245,7 +366,7 @@ public class RouteSet {
     - parameter controller:    The controller that will handle the requests.
     - parameter actionName:    The name of the action in the controller.
     */
-  public func addRoute(pathPattern: String, method: String, controller controllerType: Controller.Type, actionName: String) {
+  @available(*, deprecated) public func addRoute(pathPattern: String, method: String, controller controllerType: Controller.Type, actionName: String) {
     let description = NSString(format: "%@#%@", controllerType.name, actionName)
     let handler = {
       (request: Request, callback: Connection.ResponseCallback) -> () in
@@ -262,8 +383,10 @@ public class RouteSet {
     - parameter method:        The HTTP method for the route.
     - parameter actionName:    The name of the action in the controller.
     */
-  public func addRoute(pathPattern: String, method: String, actionName: String) {
-    self.addRoute(pathPattern, method: method, controller: self.currentController, actionName: actionName)
+  @available(*, deprecated) public func addRoute(pathPattern: String, method: String, actionName: String) {
+    if let type = self.currentController as? Controller.Type {
+      self.addRoute(pathPattern, method: method, controller: type, actionName: actionName)
+    }
   }
   
   /**
@@ -275,7 +398,7 @@ public class RouteSet {
                           the actions.
     - parameter except:   The actions to skip.
   */
-  public func addRestfulRoutes(only only: [String] = [], except: [String] = []) {
+  @available(*, deprecated) public func addRestfulRoutes(only only: [String] = [], except: [String] = []) {
     var actions = (only.isEmpty ? ["index", "new", "create", "show", "edit", "update", "destroy"] : only)
     
     for action in except {

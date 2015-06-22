@@ -8,7 +8,7 @@ public class Template {
   public let buffer = NSMutableString()
   
   /** The controller that is requesting the rendering. */
-  public let controller: Controller
+  public let controller: ControllerType
   
   /** The other templates this template has rendered. */
   public private(set) var renderedTemplates: [Template] = []
@@ -18,7 +18,7 @@ public class Template {
 
     - parameter controller:    The controller that is rendering the template.
     */
-  public init(controller: Controller) {
+  public init(controller: ControllerType) {
     self.controller = controller
   }
   

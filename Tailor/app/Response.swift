@@ -16,6 +16,9 @@ public struct Response: Equatable {
   /** The cookies that should be updated with this response. */
   public var cookies = CookieJar()
   
+  /** The templates that were rendered to produce this response. */
+  public var renderedTemplates: [Template] = []
+  
   /**
     This method initializes an empty response.
     */
@@ -30,7 +33,7 @@ public struct Response: Equatable {
 
     - parameter string:  The string to add
     */
-  public func appendString(string: String) {
+  public mutating func appendString(string: String) {
     self.appendData(string.dataUsingEncoding(NSUTF8StringEncoding)!)
   }
   
@@ -39,7 +42,7 @@ public struct Response: Equatable {
 
     - parameter data:  The data to add.
     */
-  public func appendData(data: NSData) {
+  public mutating func appendData(data: NSData) {
     bodyData.appendData(data)
   }
   

@@ -54,7 +54,7 @@ class ConnectionTests: TailorTestCase {
     let dataExpectation = expectationWithDescription("wrote data to file")
     handler = {
       (request, callback) in
-      let response = Response()
+      var response = Response()
       response.appendString("My Response")
       callback(response)
       let writtenData = NSData(contentsOfFile: self.path)!
