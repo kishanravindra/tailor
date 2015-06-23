@@ -9,7 +9,7 @@ class AlterationsTaskTests: TailorTestCase {
     
     DatabaseConnection.sharedConnection().executeQuery("INSERT INTO tailor_alterations VALUES (?)", "1")
     
-    AlterationsTask().run()
+    AlterationsTask.runTask()
     
     let result = DatabaseConnection.sharedConnection().executeQuery("SHOW FIELDS FROM `hats` LIKE 'materiel'")
     assert(result.count, equals: 1, message: "makes the new column")

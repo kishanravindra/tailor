@@ -1,12 +1,35 @@
 import Foundation
 
 /**
+  This protocol describes a task that can be run when the application starts.
+  */
+public protocol TaskType: class {
+  /**
+    The name of the command.
+
+    The default is the class name, converted to snake case.
+    */
+  static var commandName: String { get }
+  
+  /**
+    This method performs the work for the task.
+    */
+  static func runTask()
+}
+
+extension TaskType {
+  public static var commandName: String {
+    return reflect(self).summary.underscored().componentsSeparatedByString(".").last ?? ""
+  }
+}
+
+/**
   This class models a task that can be run from the command-line.
 
   Tailor comes with a few built-in tasks for running the server and running
   alterations. 
   */
-public class Task {
+@available(*, deprecated, message="Use TaskType instead") public class Task {
   /**
     This method initializes a task.
   
@@ -33,5 +56,10 @@ public class Task {
     Subclasses should override this with their real task behavior.
     */
   public func run() {
+  }
+  
+  public class var commandName: String { return command() }
+  public class func runTask() {
+    self.init().run()
   }
 }

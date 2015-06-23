@@ -3,12 +3,12 @@ import Foundation
 /**
   This class provides a task for starting the server.
   */
-public class ServerTask : Task {
+public final class ServerTask : TaskType {
   /** The command for the task. */
-  public override class func command() -> String { return "server" }
+  public static let commandName = "server"
 
   /** This method starts the server. */
-  public override func run() {
+  public static func runTask() {
     Application.sharedApplication().startServer()
   }
 }

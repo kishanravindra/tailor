@@ -3,29 +3,29 @@ import Tailor
 import TailorTesting
 
 class AlterationTests: TailorTestCase {
-  class FirstAlteration: Alteration {
-    override class func id() -> String { return "1" }
-    override func alter() {
+  class FirstAlteration: AlterationScript {
+    static let identifier = "1"
+    static func run() {
       DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE `hats` ADD COLUMN `brim_size` int(11)")
     }
   }
   
-  class SecondAlteration: Alteration {
-    override class func id() -> String { return "2" }
-    override func alter() {
+  class SecondAlteration: AlterationScript {
+    static let identifier = "2"
+    static func run() {
       DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE `hats` ADD COLUMN `material` varchar(255)")
     }
   }
   
-  class ThirdAlteration: Alteration {
-    override class func id() -> String { return "3" }
-    override func alter() {
+  class ThirdAlteration: AlterationScript {
+    static let identifier = "3"
+    static func run() {
       DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE `hats` CHANGE column `material` `materiel` varchar(250)")
     }
   }
 
   func testDescriptionGetsClassName() {
-    assert(Alteration.description(), equals: "Tailor.Alteration", message: "gets class name")
+    assert(FirstAlteration.name, equals: "TailorTests.AlterationTests.FirstAlteration", message: "gets class name")
   }
   
   func testPendingAlterationsFindsAlterationsThatAreNotInTable() {
@@ -33,8 +33,8 @@ class AlterationTests: TailorTestCase {
     DatabaseConnection.sharedConnection().executeQuery("CREATE TABLE tailor_alterations ( id varchar(255) PRIMARY KEY )")
     DatabaseConnection.sharedConnection().executeQuery("INSERT INTO tailor_alterations values (''), (?)", "1")
     
-    let alterations = Alteration.pendingAlterations()
-    let ids = alterations.map { $0.id() }
+    let alterations = PendingAlterations()
+    let ids = alterations.map { $0.identifier }
     assert(ids, equals: ["2", "3"], message: "gets the ids for the alterations that have not been run")
   }
 }

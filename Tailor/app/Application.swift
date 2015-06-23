@@ -17,7 +17,7 @@ public class Application {
   public var dateFormatters: [String:NSDateFormatter] = [:]
   
   /** The subclasses that we've registered for certain critical base classes. */
-  private var registeredSubclasses: [String:[AnyClass]] = [:]
+  private var registeredSubtypes: [String:[Any.Type]] = [:]
   
   /**
     The command that the application is running, which is provided in the first
@@ -41,12 +41,13 @@ public class Application {
     This method initializes the application.
   
     This implementation parses command-line arguments, loads date formatters,
-    and registers all the subclasses of Task and Alteration for use in
+    and registers all the subclasses of Task and AlterationScript for use in
     running scripts.
     */
   public required init() {
     self.loadDateFormatters()
-    self.registerSubclasses(Task.self, Alteration.self)
+    self.registerSubtypes(TaskType.self) { $0 is TaskType.Type }
+    self.registerSubtypes(AlterationScript.self) { $0 is AlterationScript.Type }
     
     if let arguments = APPLICATION_ARGUMENTS {
       self.command = arguments.0
@@ -138,9 +139,9 @@ public class Application {
   public func start() {
     NSLog("Starting application: %@, %@", command, flags)
     
-    for task in self.registeredSubclassList(Task.self) {
-      if task.command() == command {
-        task().run()
+    for task in self.registeredTasks() {
+      if task.commandName == command {
+        task.runTask()
         return
       }
     }
@@ -238,21 +239,21 @@ public class Application {
   public func promptForCommand() -> String {
     print("Please provide a task by name, or from the following list")
     
-    let tasks = self.registeredSubclassList(Task.self).sort {
+    let tasks = self.registeredTasks().sort {
       task1, task2 in
-      task1.command().compare(task2.command()) == NSComparisonResult.OrderedAscending
+      task1.commandName.compare(task2.commandName) == NSComparisonResult.OrderedAscending
     }
     
     for (index,task) in tasks.enumerate() {
-      print("\(index + 1). \(task.command())\n", appendNewline: false)
+      print("\(index + 1). \(task.commandName)\n", appendNewline: false)
     }
     let keyboard = NSFileHandle.fileHandleWithStandardInput()
     let inputData = keyboard.availableData
     let commandLine = NSString(data: inputData, encoding:NSUTF8StringEncoding)?.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()) ?? ""
     
     let int = Int((commandLine as NSString).intValue)
-    if int > 0 && int < tasks.count {
-      return tasks[int - 1].command()
+    if int > 0 && int <= tasks.count {
+      return tasks[int - 1].commandName
     }
     else {
       return commandLine
@@ -270,8 +271,8 @@ public class Application {
     var arguments = self.dynamicType.commandLineArguments()
     (self.command, self.flags) = self.dynamicType.parseArguments(arguments)
     
-    let tasks = self.registeredSubclassList(Task.self)
-    while (tasks.filter { $0.command() == self.command }).isEmpty {
+    let tasks = self.registeredTasks()
+    while (tasks.filter { $0.commandName == self.command }).isEmpty {
       let commandLine = self.promptForCommand()
       var inQuotes = false
       arguments = split(commandLine.characters) {
@@ -303,11 +304,47 @@ public class Application {
     self.dateFormatters["longDate"]?.dateFormat = "dd MMMM, yyyy"
     
     self.dateFormatters["db"]?.dateFormat = "yyyy-MM-dd HH:mm:ss"
-
   }
   
   /**
-    This method loads all the subclasses the provided classes into the
+    This method loads all the subtypes of the provided type into the
+    application's registered subtype list.
+    
+    The Application initializer uses this to identify all the tasks and
+    alterations, but subclasses can invoke it with other types that they want
+    to dynamically crawl.
+    
+    The registered subtype list will include the types passed in.
+    
+    - parameter types:   The types to get subtypes of.
+    */
+  private func registerSubtypes(parentType: Any.Type, matcher: (AnyClass->Bool)) {
+    let classCount = objc_getClassList(nil, 0)
+    var allClasses = UnsafeMutablePointer<AnyClass?>(calloc(sizeof(AnyClass), Int(classCount)))
+    
+    objc_getClassList(AutoreleasingUnsafeMutablePointer<AnyClass?>(allClasses), classCount)
+    
+    for _ in 0..<classCount {
+      let type : AnyClass! = allClasses.memory
+      
+      if type == nil {
+        continue
+      }
+      
+      allClasses = advance(allClasses, 1)
+      
+      if matcher(type) {
+        let key = reflect(parentType).summary
+        NSLog("Adding %@ to %@", reflect(type).summary, key)
+        var subtypes = self.registeredSubtypes[key] ?? []
+        subtypes.append(type)
+        self.registeredSubtypes[key] = subtypes
+      }
+    }
+  }
+  
+  /**
+    This method loads all the subclasses of the provided classes into the
     application's registered subclass list.
 
     The Application initializer uses this to identify all the tasks and
@@ -319,48 +356,58 @@ public class Application {
     - parameter types:   The types to get subclasses of.
     */
   public func registerSubclasses(types: AnyClass...) {
-    let classCount = objc_getClassList(nil, 0)
-    var allClasses = UnsafeMutablePointer<AnyClass?>(calloc(sizeof(AnyClass), Int(classCount)))
-    
-    objc_getClassList(AutoreleasingUnsafeMutablePointer<AnyClass?>(allClasses), classCount)
-    
-    for _ in 0..<classCount {
-      let klass : AnyClass! = allClasses.memory
-      
-      if klass == nil {
-        continue
-      }
-      allClasses = advance(allClasses, 1)
-
-      let method = class_getClassMethod(klass, Selector("isSubclassOfClass:"))
-      if method == nil  {
-        continue
-      }
-      
-      for type in types {
-        if klass.isSubclassOfClass(type) {
-          let typeKey = NSStringFromClass(type)
-          var subclasses = self.registeredSubclasses[typeKey] ?? []
-          subclasses.append(klass)
-          self.registeredSubclasses[typeKey] = subclasses
-        }
+    for type in types {
+      self.registerSubtypes(type) {
+        return class_getClassMethod($0, Selector("isSubclassOfClass:")) != nil && $0.isSubclassOfClass(type)
       }
     }
   }
   
   /**
-    This method fetches subclasses of a type.
-
-    The type must have previously been passed in to registerSubclasses to load
-    the list.
+    This method fetches types that conform to the AlterationScript protocol.
+    - returns:  The types.
+    */
+  public func registeredAlterations() -> [AlterationScript.Type] {
+    let description = reflect(AlterationScript.self).summary
+    let classes = self.registeredSubtypes[description] ?? []
+    return classes.map { $0 as! AlterationScript.Type }
+  }
   
+  /**
+    This method fetches types that conform to the TaskType protocol.
+    - returns: The types.
+    */
+  public func registeredTasks() -> [TaskType.Type] {
+    let description = reflect(TaskType.self).summary
+    let classes = self.registeredSubtypes[description] ?? []
+    return classes.map { $0 as! TaskType.Type }
+  }
+  
+  /**
+    This method fetches subclasses of a type.
+    
+    The type must have previously been passed in to registerSubtypes to load
+    the list.
+    
     - parameter type:   The type to get subclasses of.
     - returns:          The subclasses of the type.
     */
-  public func registeredSubclassList<ParentType : AnyObject>(type: ParentType.Type) -> [ParentType.Type] {
-    let klass : AnyClass = ParentType.self
-    let description = NSStringFromClass(klass)
-    let classes = self.registeredSubclasses[description] ?? []
+  @available(*, deprecated) public func registeredSubclassList<ParentType>(type: ParentType.Type) -> [ParentType.Type] {
+    return self.registeredSubtypeList(type)
+  }
+  
+  /**
+    This method fetches subtypes of a type.
+    
+    The type must have previously been passed in to registerSubtypes to load
+    the list.
+    
+    - parameter type:   The type to get subclasses of.
+    - returns:          The subclasses of the type.
+  */
+  public func registeredSubtypeList<ParentType>(type: ParentType.Type) -> [ParentType.Type] {
+    let description = reflect(ParentType).summary
+    let classes = self.registeredSubtypes[description] ?? []
     return classes.map { $0 as! ParentType.Type }
   }
   

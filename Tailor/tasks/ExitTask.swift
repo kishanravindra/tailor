@@ -3,7 +3,11 @@ import Foundation
 /**
   This method provides a task for exiting immediately.
 */
-public class ExitTask : Task {
+public final class ExitTask : TaskType {
   /** The command for the task. */
-  public override class func command() -> String { return "tailor.exit" }
+  public static let commandName = "tailor.exit"
+  
+  public static func runTask() {
+    
+  }
 }

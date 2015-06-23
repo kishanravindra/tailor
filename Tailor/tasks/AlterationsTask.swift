@@ -3,9 +3,9 @@ import Foundation
 /**
   This method provides a task for running pending alterations.
   */
-public class AlterationsTask : Task {
+public final class AlterationsTask : TaskType {
   /** The command for the task. */
-  public override class func command() -> String { return "run_alterations" }
+  public static let commandName = "run_alterations"
   
   /**
     This method runs the pending alterations.
@@ -13,13 +13,13 @@ public class AlterationsTask : Task {
     It will pull up the list from the Alteration class, run each one, and put
     its id in the tailor_alterations table.
     */
-  public override func run() {
+  public static func runTask() {
     let connection = DatabaseConnection.sharedConnection()
-    for alteration in Alteration.pendingAlterations() {
-      if alteration.id() != "" {
-        NSLog("Running alteration %@ %@", alteration.id(), alteration.description())
-        alteration().alter()
-        connection.executeQuery("INSERT INTO tailor_alterations VALUES (?)", alteration.id())
+    for alteration in PendingAlterations() {
+      if alteration.identifier != "" {
+        NSLog("Running alteration %@ %@", alteration.identifier, alteration.name)
+        alteration.run()
+        connection.executeQuery("INSERT INTO tailor_alterations VALUES (?)", alteration.identifier)
       }
     }
   }
