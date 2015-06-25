@@ -2,16 +2,15 @@ import Foundation
 
 /**
   This class provides a template for generating a response to a request.
+
+  This has been deprecated in favor of the TemplateType protocol.
   */
-public class Template {
+@available(*, deprecated, message="Use TemplateType instead") public class Template: TemplateType {
+  /** The internal state of the template. */
+  public var state: TemplateState
+  
   /** The buffer that we use to build our result. */
-  public let buffer = NSMutableString()
-  
-  /** The controller that is requesting the rendering. */
-  public let controller: ControllerType
-  
-  /** The other templates this template has rendered. */
-  public private(set) var renderedTemplates: [Template] = []
+  public var buffer: String { return contents }
   
   /**
     This method initializes a template.
@@ -19,21 +18,10 @@ public class Template {
     - parameter controller:    The controller that is rendering the template.
     */
   public init(controller: ControllerType) {
-    self.controller = controller
+    self.state = TemplateState(controller)
   }
   
   //MARK: - Body
-  
-  /**
-    This method generates the body using the template.
-    
-    - returns:           The body.
-    */
-  public func generate() -> String {
-    self.buffer.setString("")
-    self.body()
-    return self.buffer as String
-  }
   
   /**
     This method runs the body.
@@ -45,232 +33,5 @@ public class Template {
     */
   public func body() {
     
-  }
-  
-  //MARK: - Helpers
-  
-  /**
-    This method gets the prefix that is appended to the the keys for
-    localization.
-
-    This is only added to keys that start with a dot.
-    */
-  public var localizationPrefix: String {
-    return reflect(self).summary.underscored()
-  }
-
-  /**
-    This method localizes a key.
-
-    This will use the localization from the template's controller.
-
-    If the key begins with a dot, this will prepend the template's localization
-    prefix.
-
-    - parameter key:   The key to localize.
-    - returns:     The localized text.
-    */
-  public func localize(key: String) -> String? {
-    var fullKey = key
-    if fullKey.hasPrefix(".") {
-      fullKey = self.localizationPrefix + fullKey
-    }
-    return self.controller.localize(fullKey)
-  }
-  
-  /**
-    This method appends text to our buffer.
-  
-    It will HTML-sanitize the text automatically.
-
-    - parameter text:      The text to add.
-    - parameter localize:  Whether we should attempt to localize the text.
-    */
-  public func text(text: String, localize: Bool = true) {
-    let localizedText = localize ? self.localize(text) ?? text : text
-    let sanitizedText = Sanitizer.htmlSanitizer.sanitize(SanitizedText(stringLiteral: localizedText))
-    self.addSanitizedText(sanitizedText)
-  }
-  
-  /**
-    This method appends text to our buffer without HTML-sanitizing it.
-
-    Use this with caution, and only when you are certain the text is safe.
-
-    - parameter text:    The text to add.
-    */
-  public func raw(text: String, localize: Bool = true) {
-    let localizedText = localize ? self.controller.localize(text) ?? text : text
-    self.addSanitizedText(Sanitizer.htmlSanitizer.accept(localizedText))
-  }
-  
-  /**
-    This method adds sanitized text to our buffer.
-
-    It will check to make sure it is really HTML-sanitized, and sanitize it if
-    necessary.
-
-    - parameter text:    The text to add.
-    */
-  public func addSanitizedText(text: SanitizedText) {
-    let sanitizer = Sanitizer.htmlSanitizer
-    if !sanitizer.isSanitized(text) {
-      self.addSanitizedText(sanitizer.sanitize(text))
-    }
-    else {
-      self.buffer.appendString(text.text)
-    }
-  }
-  
-  /**
-    This method adds an HTML tag.
-  
-    - parameter name:          The name of the element.
-    - parameter attributes:    Additional attributes for the tag.
-    - parameter with:          A closure that adds the contents of the tag.
-    */
-  public func tag(name: String, _ attributes: [String:String], @noescape with contents: ()->() = {}) -> () {
-    var openingTag = "<\(name)"
-    
-    for key in attributes.keys.sort() {
-      let value = attributes[key]!
-      openingTag += " \(key)=\"\(value)\""
-    }
-    openingTag += ">"
-    buffer.appendString(openingTag)
-    contents()
-    buffer.appendString("</\(name)>")
-  }
-  
-  /**
-    This method adds an HTML tag.
-  
-    This is just a wrapper around the version with explicit attributes, but
-    using default values for that parameter causes problems with having a
-    trailing closure.
-
-    - parameter name:          The name of the element.
-    - parameter contents:      A closure that adds the contents of the tag.
-    */
-  public func tag(name: String, @noescape with contents: ()->() = {}) -> () {
-    self.tag(name, [:], with: contents)
-  }
-  
-  /**
-    This method adds an HTML tag.
-    
-    - parameter name:          The name of the element.
-    - parameter attributes:    Additional attributes for the tag.
-    - parameter text:          The text for the tag.
-    */
-  public func tag(name: String, text: String, attributes: [String:String] = [:]) -> () {
-    self.tag(name, attributes) { self.text(text) }
-  }
-  
-  /**
-    This method adds a tag for linking to a path.
-  
-    - parameter controllerName:   The controller to link to. This will default to
-                                  the current controller.
-    - parameter actionName:       The action to link to.
-    - parameter parameters:       Additional parameters for the path.
-    - parameter attributes:       Additional attributes for the tag.
-    - parameter with:             A closure that adds the contents of the link.
-    */
-  public func link(controllerName: String? = nil, actionName: String? = nil, parameters: [String:String] = [:], attributes: [String:String] = [:], @noescape with contents: ()->()={}) {
-    var mergedAttributes = attributes
-    mergedAttributes["href"] = self.controller.pathFor(controllerName,
-      actionName: actionName, parameters: parameters) ?? ""
-    self.tag("a", mergedAttributes, with: contents)
-  }
-  
-  /**
-    This method renders another template within the context of this one.
-  
-    - parameter template:    The template to render
-    - parameter parameters:  The parameters to pass to the other template.
-  */
-  public func renderTemplate(template: Template) {
-    self.renderedTemplates.append(template)
-    self.buffer.appendString(template.generate())
-  }
-  
-  /**
-    This method generates content for the template and stores it in the cache.
-
-    If the content is already in the cache, the cached version will be put into
-    the buffer without re-generating it.
-
-    - parameter key:      The key where the content will be stored in the cache.
-    - parameter block:    The block that will generate the content. This should
-                          generate the content as you would any other part of
-                          the template body, using the normal helper methods.
-    */
-  public func cache(key: String, @noescape block: ()->()) {
-    if let cachedContent = Application.cache.read(key) {
-      self.buffer.appendString(cachedContent)
-    }
-    else {
-      let previousLength = self.buffer.length
-      block()
-      let addedContent = self.buffer.substringFromIndex(previousLength)
-      Application.cache.write(key, value: addedContent, expireIn: nil)
-    }
-  }
-  
-
-  //MARK: - Controller Information
-
-  /**
-    This method gets a single request parameter from the controller.
-    */
-  public func requestParameter(key: String) -> String? {
-    let params = self.controller.request.requestParameters
-    return params[key]
-  }
-  
-  /**
-    This method gets a subset of the request parameters from the controller
-
-    - parameter keys:   The keys to extract
-    - returns:          A hash with the extracted values.
-    */
-  public func requestParameters(keys: String...) -> [String:String] {
-    let params = self.controller.request.requestParameters
-    var filteredParams = [String:String]()
-    for key in keys {
-      filteredParams[key] = params[key]
-    }
-    return filteredParams
-  }
-  
-  //MARK: - Localization
-  
-  /** The localization that this template will use by default, if it has one. */
-  public var localization: LocalizationSource { get { return self.controller.localization } }
-  
-  /**
-    This method gets a localized, capitalized attribute name.
-    
-    - parameter modelName:        The name of the model whose attribute this is.
-    - parameter attributeName:    The name of the attribute to localize.
-    - returns:                    The localized attribute.
-    */
-  public func attributeName(modelType: ModelType.Type, _ attributeName: String) -> String {
-    return modelType.attributeName(attributeName, localization: self.localization, capitalize: true)
-  }
-  
-  /**
-    This method gets a localized, capitalized attribute name.
-  
-    This method is deprecated. You should use the version that has a model
-    type.
-
-    - parameter modelName:        The name of the model whose attribute this is.
-    - parameter attributeName:    The name of the attribute to localize.
-    - returns:                    The localized attribute.
-    */
-  @available(*, deprecated, message="Use the version with a model type instead") public func attributeName(modelName: String, _ attributeName: String) -> String {
-    return modelAttributeName(modelName, key: attributeName, localization: self.localization, capitalize: true)
   }
 }

@@ -3,9 +3,13 @@ import Tailor
 import TailorTesting
 
 class FormBuilderTests: TailorTestCase {
-  var template : Template!
+  var template : TemplateType { return builder.template }
   var builder : FormBuilder!
   
+  struct TestTemplate: TemplateType {
+    var state: TemplateState
+    func body() {}
+  }
   struct TestController: ControllerType {
     var state: ControllerState
     static func defineRoutes(inout routes: RouteSet) {
@@ -20,28 +24,20 @@ class FormBuilderTests: TailorTestCase {
   override func setUp() {
     super.setUp()
     let controller = TestController(request: Request(), actionName: "index", callback: {response in })
-    template = Template(controller: controller)
-    builder = FormBuilder(template: template, name: "hat")
+    builder = FormBuilder(template: TestTemplate(state: TemplateState(controller)), name: "hat")
   }
   
   func testFormPutsFormTagInTemplate() {
     builder.form("/test/path", with: {
     })
-    assert(template.buffer, equals: "<form action=\"/test/path\" method=\"POST\"></form>")
+    assert(template.contents, equals: "<form action=\"/test/path\" method=\"POST\"></form>")
   }
   
   func testFormUsesCustomAction() {
     builder.form("/test/path", "GET", with: {
       
     })
-    assert(template.buffer, equals: "<form action=\"/test/path\" method=\"GET\"></form>")
-  }
-  
-  func testFormAddsContentInBlock() {
-    builder.form("/test/path", with: {
-      self.template.text("Form Contents", localize: false)
-    })
-    assert(template.buffer, equals: "<form action=\"/test/path\" method=\"POST\">Form Contents</form>")
+    assert(template.contents, equals: "<form action=\"/test/path\" method=\"GET\"></form>")
   }
   
   func testInputCallsInputBuilder() {
@@ -69,31 +65,31 @@ class FormBuilderTests: TailorTestCase {
   
   func testDefaultInputBuilderAddsLabelAndTextField() {
     builder.input("color", "black", attributes: ["maxLength": "20"])
-    assert(template.buffer, equals: "<div><label>color</label><input maxLength=\"20\" name=\"hat[color]\" value=\"black\"></input></div>", message: "puts label and input in template")
+    assert(template.contents, equals: "<div><label>color</label><input maxLength=\"20\" name=\"hat[color]\" value=\"black\"></input></div>", message: "puts label and input in template")
   }
   
   func testDropdownBuildsSelectTag() {
     builder.dropdown("brimSize", values: [("", "None"), ("10", "Ten"), ("20", "Twenty")], attributes: ["multiple": "multiple"])
-    assert(template.buffer, equals: "<select multiple=\"multiple\" name=\"hat[brimSize]\"><option value=\"\">None</option><option value=\"10\">Ten</option><option value=\"20\">Twenty</option></select>")
+    assert(template.contents, equals: "<select multiple=\"multiple\" name=\"hat[brimSize]\"><option value=\"\">None</option><option value=\"10\">Ten</option><option value=\"20\">Twenty</option></select>")
   }
   
   func testDropdownWithSelectedValueSelectsValue() {
     builder.dropdown("brimSize", value: "10", values: [("", "None"), ("10", "Ten"), ("20", "Twenty")])
-    assert(template.buffer, equals: "<select name=\"hat[brimSize]\"><option value=\"\">None</option><option selected=\"selected\" value=\"10\">Ten</option><option value=\"20\">Twenty</option></select>")
+    assert(template.contents, equals: "<select name=\"hat[brimSize]\"><option value=\"\">None</option><option selected=\"selected\" value=\"10\">Ten</option><option value=\"20\">Twenty</option></select>")
   }
   
   func testDropdownWithSingleValueListBuildsSelectTag() {
     builder.dropdown("brimSize", values: ["", "10", "20"])
-    assert(template.buffer, equals: "<select name=\"hat[brimSize]\"><option value=\"\"></option><option value=\"10\">10</option><option value=\"20\">20</option></select>")
+    assert(template.contents, equals: "<select name=\"hat[brimSize]\"><option value=\"\"></option><option value=\"10\">10</option><option value=\"20\">20</option></select>")
   }
   
   func testRadioButtonsBuildsInputTags() {
     builder.radioButtons("brimSize", values: ["10", "20"], attributes: ["extra-data": "hello"])
-    assert(template.buffer, equals: "<div><label>10</label><input extra-data=\"hello\" name=\"hat[brimSize]\" type=\"radio\" value=\"10\"></input></div><div><label>20</label><input extra-data=\"hello\" name=\"hat[brimSize]\" type=\"radio\" value=\"20\"></input></div>")
+    assert(template.contents, equals: "<div><label>10</label><input extra-data=\"hello\" name=\"hat[brimSize]\" type=\"radio\" value=\"10\"></input></div><div><label>20</label><input extra-data=\"hello\" name=\"hat[brimSize]\" type=\"radio\" value=\"20\"></input></div>")
   }
   
   func testRadioButtonWithSelectedValueSelectsValue() {
     builder.radioButtons("brimSize", value: "10", values: ["10", "20"], attributes: ["extra-data": "hello"])
-    assert(template.buffer, equals: "<div><label>10</label><input checked=\"checked\" extra-data=\"hello\" name=\"hat[brimSize]\" type=\"radio\" value=\"10\"></input></div><div><label>20</label><input extra-data=\"hello\" name=\"hat[brimSize]\" type=\"radio\" value=\"20\"></input></div>")
+    assert(template.contents, equals: "<div><label>10</label><input checked=\"checked\" extra-data=\"hello\" name=\"hat[brimSize]\" type=\"radio\" value=\"10\"></input></div><div><label>20</label><input extra-data=\"hello\" name=\"hat[brimSize]\" type=\"radio\" value=\"20\"></input></div>")
   }
 }

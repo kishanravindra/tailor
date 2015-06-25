@@ -8,7 +8,7 @@ class RouteSetTests: TailorTestCase {
   struct TestController : ControllerType {
     static var name: String { return "TestController" }
     var state: ControllerState
-    static let layout = Layout.self
+    static let layout = EmptyLayout.self
     
     static func defineRoutes(inout routes: RouteSet) {
       routes.withScope(path: "hats") {

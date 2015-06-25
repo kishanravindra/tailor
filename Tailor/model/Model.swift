@@ -108,7 +108,7 @@ public extension ModelType {
   - parameter capitalize:     Whether we should capitalize the name.
   - returns:                  The humanized attribute name.
   */
-@available(*, deprecated, message="Use the ModelType protocol instead") public func modelAttributeName(modelName: String, key: String, localization: Localization? = nil, capitalize: Bool = false) -> String {
+@available(*, deprecated, message="Use the ModelType protocol instead") public func modelAttributeName(modelName: String, key: String, localization: LocalizationSource? = nil, capitalize: Bool = false) -> String {
   
   var result = ""
   

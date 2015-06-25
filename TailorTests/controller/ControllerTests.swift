@@ -37,7 +37,7 @@ class ControllerTests: TailorTestCase {
       self.callback(response)
     }
     
-    static var layout: Layout.Type = Layout.self
+    static var layout: LayoutType.Type = EmptyLayout.self
   }
   
   struct SecondTestController : ControllerType {
@@ -158,13 +158,27 @@ class ControllerTests: TailorTestCase {
   
   func testRespondWithRendersTemplateInLayout() {
     let expectation = expectationWithDescription("callback called")
-    class TestTemplate: Template {
-      override func body() {
+    struct TestTemplate: TemplateType {
+      var state: TemplateState
+
+      init(controller: ControllerType) {
+        self.state = TemplateState(controller)
+      }
+
+      mutating func body() {
         tag("p", text: "Nesting")
       }
     }
-    class TestLayout: Layout {
-      override func body() {
+    struct TestLayout: LayoutType {
+      var state: TemplateState
+      let template: TemplateType
+      
+      init(controller: ControllerType, template: TemplateType) {
+        self.state = TemplateState(controller)
+        self.template = template
+      }
+      
+      mutating func body() {
         self.tag("html") {
           self.tag("body") {
             self.renderTemplate(self.template)
@@ -187,14 +201,16 @@ class ControllerTests: TailorTestCase {
   
   func testRespondWithAddsTemplateToList() {
     let expectation = expectationWithDescription("callback called")
-    class TestTemplate: Template {
+    struct TestTemplate: TemplateType {
+      var state: TemplateState
       let message: String
       
       init(controller: ControllerType, message: String = "") {
+        self.state = TemplateState(controller)
         self.message = message
-        super.init(controller: controller)
       }
-      override func body() {
+      
+      mutating func body() {
         tag("p", text: message)
       }
     }

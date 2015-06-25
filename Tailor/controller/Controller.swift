@@ -33,7 +33,7 @@ public protocol ControllerType {
 
     The default implementation uses an empty layout.
     */
-  static var layout: Layout.Type { get }
+  static var layout: LayoutType.Type { get }
   
   /**
     This method initializes a controller to handle a request.
@@ -185,7 +185,7 @@ extension ControllerType {
     return reflect(self).summary
   }
   
-  public static var layout: Layout.Type { return Layout.self }
+  public static var layout: LayoutType.Type { return EmptyLayout.self }
   
   //MARK: - Responses
   
@@ -209,8 +209,8 @@ extension ControllerType {
     
     - parameter template:    The template to use for the request.
     */
-  public func respondWith(template: Template) {
-    let layout = self.dynamicType.layout.init(controller: self, template: template)
+  public func respondWith(template: TemplateType) {
+    var layout = self.dynamicType.layout.init(controller: self, template: template)
     let contents = layout.generate()
     self.generateResponse {
       (inout response : Response) in

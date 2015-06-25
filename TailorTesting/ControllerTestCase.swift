@@ -137,10 +137,10 @@ public class ControllerTestCase : TailorTestCase {
     - parameter templateChecker:    A block that can perform additional checks
                                     on the template.
     */
-  public func assert<TemplateType: Template>(response: Response, renderedTemplate: TemplateType.Type, message: String = "", file: String = __FILE__, line: UInt = __LINE__, _ templateChecker: (TemplateType)->() = {_ in}) {
+  public func assert<SpecificType: TemplateType>(response: Response, renderedTemplate: SpecificType.Type, message: String = "", file: String = __FILE__, line: UInt = __LINE__, _ templateChecker: (SpecificType)->() = {_ in}) {
     var found = false
     for template in response.renderedTemplates {
-      if let castTemplate = template as? TemplateType {
+      if let castTemplate = template as? SpecificType {
         found = true
         templateChecker(castTemplate)
       }

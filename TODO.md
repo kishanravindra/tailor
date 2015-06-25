@@ -18,3 +18,6 @@
 # Changes as part of Issue 46
 
 * Change the way we specify the database connection type
+* Fix form builders
+* Try to reproduce crazy compiler crashes with classes implementing mutating
+  protocol method.

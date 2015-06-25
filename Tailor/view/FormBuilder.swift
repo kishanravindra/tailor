@@ -15,7 +15,7 @@ public class FormBuilder {
   public typealias InputBuilder = (form: FormBuilder, key: String, value: String, attributes: [String:String], errors: [ValidationError])->()
   
   /** The template that we are putting the form in. */
-  public let template: Template
+  public private(set) var template: TemplateType
   
   /** The name of the model. */
   public let name: String
@@ -44,7 +44,7 @@ public class FormBuilder {
                                 not provided, we will use a simple one with a
                                 div containing a label and an input.
     */
-  public init(template: Template, name: String? = nil, type: ModelType.Type? = nil, validationErrors: [ValidationError] = [], inputBuilder: InputBuilder? = nil) {
+  public init(template: TemplateType, name: String? = nil, type: ModelType.Type? = nil, validationErrors: [ValidationError] = [], inputBuilder: InputBuilder? = nil) {
     self.template = template
     self.name = type?.modelName() ?? name ?? "model"
     self.modelType = type

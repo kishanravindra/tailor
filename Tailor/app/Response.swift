@@ -17,7 +17,7 @@ public struct Response: Equatable {
   public var cookies = CookieJar()
   
   /** The templates that were rendered to produce this response. */
-  public var renderedTemplates: [Template] = []
+  public var renderedTemplates: [TemplateType] = []
   
   /**
     This method initializes an empty response.

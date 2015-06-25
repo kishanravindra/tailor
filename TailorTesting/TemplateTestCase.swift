@@ -18,12 +18,12 @@ public class TemplateTestCase: TailorTestCase {
   
     You should set this in your setUp method.
     */
-  public var template: Template!
+  public var template: TemplateType!
   
   /**
     The contents of the template after rendering.
     */
-  public var contents: String { get { return (template!.buffer as String) ?? "" } }
+  public var contents: String { get { return template.state.contents } }
   
   /**
     This method builds the controller for the template.
@@ -50,21 +50,21 @@ public class TemplateTestCase: TailorTestCase {
     anything other than the template type you need to check, you can add those
     assertions in the block you provide to this method.
     
-    - parameter templateType:      The type of template that are looking for.
-    - parameter message:           The message to show if the assertion fails.
-    - parameter file:              The file that the assertion is coming from. You
-                              should generally omit this, since it will be
-                              provided automatically.
-    - parameter line:              The line that the assertion is coming from. You
-                              should generally omit this, since it will be
-                              provided automatically.
-    - parameter templateChecker:   A block that can perform additional checks on the
-                              template.
+    - parameter templateType:     The type of template that are looking for.
+    - parameter message:          The message to show if the assertion fails.
+    - parameter file:             The file that the assertion is coming from.
+                                  You should generally omit this, since it will
+                                  be provided automatically.
+    - parameter line:             The line that the assertion is coming from.
+                                  You should generally omit this, since it will
+                                  be provided automatically.
+    - parameter templateChecker:  A block that can perform additional checks on
+                                  the template.
     */
-  public func assertRenderedTemplate<TemplateType: Template>(templateType: TemplateType.Type, message: String = "", file: String = __FILE__, line: UInt = __LINE__, _ templateChecker: (TemplateType)->() = {_ in}) {
+  public func assertRenderedTemplate<SpecificType: TemplateType>(templateType: SpecificType.Type, message: String = "", file: String = __FILE__, line: UInt = __LINE__, _ templateChecker: (SpecificType)->() = {_ in}) {
     var found = false
-    for otherTemplate in template.renderedTemplates {
-      if let castTemplate = otherTemplate as? TemplateType {
+    for otherTemplate in template.state.renderedTemplates {
+      if let castTemplate = otherTemplate as? SpecificType {
         templateChecker(castTemplate)
         found = true
         break
@@ -100,10 +100,10 @@ public class TemplateTestCase: TailorTestCase {
     - parameter templateChecker:   A block that determines if the template is the one
                               we are looking for.
   */
-  public func assertRenderedTemplate<TemplateType: Template>(templateType: TemplateType.Type, message: String = "", file: String = __FILE__, line: UInt = __LINE__, _ templateChecker: (TemplateType)->(Bool)) {
+  public func assertRenderedTemplate<SpecificType: TemplateType>(templateType: SpecificType.Type, message: String = "", file: String = __FILE__, line: UInt = __LINE__, _ templateChecker: (SpecificType)->(Bool)) {
     var found = false
-    for otherTemplate in template.renderedTemplates {
-      if let castTemplate = otherTemplate as? TemplateType {
+    for otherTemplate in template.state.renderedTemplates {
+      if let castTemplate = otherTemplate as? SpecificType {
         if templateChecker(castTemplate) {
           found = true
           break

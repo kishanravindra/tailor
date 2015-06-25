@@ -3,10 +3,12 @@
 
   A layout takes in another template and renders the overall page structure
   with the other template's body within it.
+
+  This has been deprecated in favor of the LayoutType protocol.
   */
-public class Layout: Template {
+@available(*, deprecated, message="Use LayoutType instead") public class Layout: Template, LayoutType {
   /** The template that provides the page contents. */
-  public let template: Template
+  public private(set) var template: TemplateType
   
   /**
     This method initializes a layout.
@@ -14,7 +16,7 @@ public class Layout: Template {
     - parameter controller:  The controller that is rendering the template.
     - parameter template:    The template containing the page body.
     */
-  public required init(controller: ControllerType, template: Template) {
+  public required init(controller: ControllerType, template: TemplateType) {
     self.template = template ?? Template(controller: controller)
     super.init(controller: controller)
   }
@@ -39,6 +41,6 @@ public class Layout: Template {
     body.
     */
   public override func body() {
-    self.renderTemplate(self.template)
+    self.state.contents += template.generate()
   }
 }
