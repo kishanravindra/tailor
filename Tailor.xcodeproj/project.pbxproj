@@ -37,9 +37,16 @@
 		523D65681A99521E000C686B /* DatabaseLocalizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523D65671A99521E000C686B /* DatabaseLocalizationTests.swift */; };
 		523F29351A583EEB00C1BBC0 /* SanitizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523F29341A583EEB00C1BBC0 /* SanitizerTests.swift */; };
 		523F29391A58459200C1BBC0 /* SanitizedTextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523F29381A58459200C1BBC0 /* SanitizedTextTests.swift */; };
+		5246AE201B3A34AF005DBF6E /* CacheStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5246AE1F1B3A34AF005DBF6E /* CacheStore.swift */; };
+		5246AE221B3A353D005DBF6E /* AlterationScript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5246AE211B3A353D005DBF6E /* AlterationScript.swift */; };
 		5258989F1A4F289800DD853D /* DatabaseConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5258989E1A4F289800DD853D /* DatabaseConnectionTests.swift */; };
 		525C80851A1C1B4900E7035F /* Query.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525C80841A1C1B4900E7035F /* Query.swift */; };
-		526254301AABC37900D63024 /* CacheStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5262542F1AABC37900D63024 /* CacheStore.swift */; };
+		525F84581B3A41920025CA38 /* TaskType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525F84571B3A41920025CA38 /* TaskType.swift */; };
+		525F845A1B3A44A50025CA38 /* DatabaseDriver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525F84591B3A44A50025CA38 /* DatabaseDriver.swift */; };
+		525F845C1B3A4C830025CA38 /* DatabaseDriverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525F845B1B3A4C830025CA38 /* DatabaseDriverTests.swift */; };
+		525F845E1B3B62620025CA38 /* LocalizationSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525F845D1B3B62620025CA38 /* LocalizationSource.swift */; };
+		525F84601B3B65F40025CA38 /* LocalizationSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525F845F1B3B65F40025CA38 /* LocalizationSourceTests.swift */; };
+		526254301AABC37900D63024 /* CacheImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5262542F1AABC37900D63024 /* CacheImplementation.swift */; };
 		526254321AABC46300D63024 /* CacheStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526254311AABC46300D63024 /* CacheStoreTests.swift */; };
 		526254351AABC9A600D63024 /* MemoryCacheStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526254341AABC9A600D63024 /* MemoryCacheStoreTests.swift */; };
 		526254371AABC9C800D63024 /* MemoryCacheStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526254361AABC9C800D63024 /* MemoryCacheStore.swift */; };
@@ -190,11 +197,18 @@
 		523F29341A583EEB00C1BBC0 /* SanitizerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SanitizerTests.swift; sourceTree = "<group>"; };
 		523F29381A58459200C1BBC0 /* SanitizedTextTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SanitizedTextTests.swift; sourceTree = "<group>"; };
 		5242C35519F4466F00E605D2 /* TemplateInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = TemplateInfo.plist; sourceTree = "<group>"; };
+		5246AE1F1B3A34AF005DBF6E /* CacheStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheStore.swift; sourceTree = "<group>"; };
+		5246AE211B3A353D005DBF6E /* AlterationScript.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlterationScript.swift; sourceTree = "<group>"; };
 		5247FF9E19F4629700C08156 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		5247FF9F19F462C200C08156 /* ___PACKAGENAME___Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "___PACKAGENAME___Application.swift"; sourceTree = "<group>"; };
 		5258989E1A4F289800DD853D /* DatabaseConnectionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseConnectionTests.swift; sourceTree = "<group>"; };
 		525C80841A1C1B4900E7035F /* Query.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Query.swift; sourceTree = "<group>"; };
-		5262542F1AABC37900D63024 /* CacheStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheStore.swift; sourceTree = "<group>"; };
+		525F84571B3A41920025CA38 /* TaskType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskType.swift; sourceTree = "<group>"; };
+		525F84591B3A44A50025CA38 /* DatabaseDriver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseDriver.swift; sourceTree = "<group>"; };
+		525F845B1B3A4C830025CA38 /* DatabaseDriverTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseDriverTests.swift; sourceTree = "<group>"; };
+		525F845D1B3B62620025CA38 /* LocalizationSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalizationSource.swift; sourceTree = "<group>"; };
+		525F845F1B3B65F40025CA38 /* LocalizationSourceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalizationSourceTests.swift; sourceTree = "<group>"; };
+		5262542F1AABC37900D63024 /* CacheImplementation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheImplementation.swift; sourceTree = "<group>"; };
 		526254311AABC46300D63024 /* CacheStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheStoreTests.swift; sourceTree = "<group>"; };
 		526254341AABC9A600D63024 /* MemoryCacheStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemoryCacheStoreTests.swift; sourceTree = "<group>"; };
 		526254361AABC9C800D63024 /* MemoryCacheStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemoryCacheStore.swift; sourceTree = "<group>"; };
@@ -397,6 +411,7 @@
 			isa = PBXGroup;
 			children = (
 				5258989E1A4F289800DD853D /* DatabaseConnectionTests.swift */,
+				525F845B1B3A4C830025CA38 /* DatabaseDriverTests.swift */,
 				52A95E321AE0A3E6001AED1F /* DatabaseValueTests.swift */,
 				5262EEB91AD15C6E006F864D /* mysql */,
 			);
@@ -460,9 +475,11 @@
 			isa = PBXGroup;
 			children = (
 				52B2B6A819F2B1D00086261B /* Task.swift */,
+				525F84571B3A41920025CA38 /* TaskType.swift */,
 				52B2B6AA19F2B2590086261B /* ServerTask.swift */,
 				52B2B6AF19F2D24F0086261B /* AlterationsTask.swift */,
 				52B2B6B119F2DAD30086261B /* Alteration.swift */,
+				5246AE211B3A353D005DBF6E /* AlterationScript.swift */,
 				5292303D1A3CFB93006DD6EB /* ExitTask.swift */,
 			);
 			name = tasks;
@@ -588,7 +605,8 @@
 				52BD140519E9DA1D006D72B0 /* Request.swift */,
 				52BD140619E9DA1D006D72B0 /* Response.swift */,
 				52BD140719E9DA1D006D72B0 /* RouteSet.swift */,
-				5262542F1AABC37900D63024 /* CacheStore.swift */,
+				5262542F1AABC37900D63024 /* CacheImplementation.swift */,
+				5246AE1F1B3A34AF005DBF6E /* CacheStore.swift */,
 				526254361AABC9C800D63024 /* MemoryCacheStore.swift */,
 			);
 			path = app;
@@ -608,6 +626,7 @@
 			isa = PBXGroup;
 			children = (
 				52BD140F19E9DA1D006D72B0 /* DatabaseConnection.swift */,
+				525F84591B3A44A50025CA38 /* DatabaseDriver.swift */,
 				52A95E301AE0A3B9001AED1F /* DatabaseValue.swift */,
 				52A5006C1AA2611400F3F031 /* mysql */,
 			);
@@ -687,6 +706,7 @@
 			children = (
 				52E784C91A5CC1A40065C10D /* PropertyListLocalizationTests.swift */,
 				523D655E1A98CD3C000C686B /* LocalizationTests.swift */,
+				525F845F1B3B65F40025CA38 /* LocalizationSourceTests.swift */,
 				523D65671A99521E000C686B /* DatabaseLocalizationTests.swift */,
 			);
 			path = localization;
@@ -707,6 +727,7 @@
 			isa = PBXGroup;
 			children = (
 				52EF127319F0A58400B61DF4 /* Localization.swift */,
+				525F845D1B3B62620025CA38 /* LocalizationSource.swift */,
 				523D655A1A98CBEB000C686B /* DatabaseLocalization.swift */,
 				523D655C1A98CC1B000C686B /* PropertyListLocalization.swift */,
 			);
@@ -895,6 +916,7 @@
 				522643221B06C7F40081D04E /* TimeFormat.swift in Sources */,
 				52BD142619E9DA1D006D72B0 /* Application.swift in Sources */,
 				52BD142919E9DA1D006D72B0 /* CookieJar.swift in Sources */,
+				525F845A1B3A44A50025CA38 /* DatabaseDriver.swift in Sources */,
 				52EF126419EF545000B61DF4 /* User.swift in Sources */,
 				52BD142A19E9DA1D006D72B0 /* Request.swift in Sources */,
 				52A5008C1AA34DF800F3F031 /* MysqlResultSet.swift in Sources */,
@@ -905,10 +927,12 @@
 				52C10D011B08F4A1005D85D4 /* Date.swift in Sources */,
 				52BD143219E9DA1D006D72B0 /* DatabaseConnection.swift in Sources */,
 				52B2B6B019F2D24F0086261B /* AlterationsTask.swift in Sources */,
-				526254301AABC37900D63024 /* CacheStore.swift in Sources */,
+				526254301AABC37900D63024 /* CacheImplementation.swift in Sources */,
 				52BD143119E9DA1D006D72B0 /* Session.swift in Sources */,
 				52B2B6AB19F2B2590086261B /* ServerTask.swift in Sources */,
 				52BD142B19E9DA1D006D72B0 /* Response.swift in Sources */,
+				5246AE201B3A34AF005DBF6E /* CacheStore.swift in Sources */,
+				5246AE221B3A353D005DBF6E /* AlterationScript.swift in Sources */,
 				522643241B06C7F40081D04E /* Timestamp.swift in Sources */,
 				52BD144319E9DA1D006D72B0 /* FormBuilder.swift in Sources */,
 				5292303E1A3CFB93006DD6EB /* ExitTask.swift in Sources */,
@@ -925,8 +949,10 @@
 				52A95E371AE318C6001AED1F /* Persistable.swift in Sources */,
 				523D655D1A98CC1B000C686B /* PropertyListLocalization.swift in Sources */,
 				5262EEF61AD19897006F864D /* MysqlBindParameterSet.swift in Sources */,
+				525F845E1B3B62620025CA38 /* LocalizationSource.swift in Sources */,
 				5262EEF81AD19B18006F864D /* MysqlBindParameter.swift in Sources */,
 				522643261B06C7F40081D04E /* TimeZone.swift in Sources */,
+				525F84581B3A41920025CA38 /* TaskType.swift in Sources */,
 				52B2B6A919F2B1D00086261B /* Task.swift in Sources */,
 				52BD142719E9DA1D006D72B0 /* Connection.swift in Sources */,
 				521E87481A0FCEDA00D84B7B /* NSData.swift in Sources */,
@@ -948,6 +974,7 @@
 				52E784CD1A5CC5A60065C10D /* TaskTests.swift in Sources */,
 				526ACD841B07B8FC00CE0CC0 /* TimestampTests.swift in Sources */,
 				52E784B81A59F2030065C10D /* AesEncryptorTests.swift in Sources */,
+				525F845C1B3A4C830025CA38 /* DatabaseDriverTests.swift in Sources */,
 				528D6FA71A56354400783BE5 /* TemplateTests.swift in Sources */,
 				52A95E391AE321C9001AED1F /* PersistableTests.swift in Sources */,
 				52C10D071B092838005D85D4 /* TimeTests.swift in Sources */,
@@ -956,6 +983,7 @@
 				5209E2891A50920C0044EE70 /* ModelTests.swift in Sources */,
 				52A684541A3EFB1000F4AA47 /* CookieTests.swift in Sources */,
 				523D65681A99521E000C686B /* DatabaseLocalizationTests.swift in Sources */,
+				525F84601B3B65F40025CA38 /* LocalizationSourceTests.swift in Sources */,
 				5262EEBD1AD167A2006F864D /* MysqlResultSetTests.swift in Sources */,
 				5262EEBF1AD16B5F006F864D /* MysqlFieldTests.swift in Sources */,
 				5262EE7B1AD0AC9B006F864D /* DictionaryTests.swift in Sources */,

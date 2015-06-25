@@ -3,7 +3,7 @@ import Tailor
 import TailorTesting
 
 class MysqlConnectionTests: TailorTestCase {
-  var connection: MysqlConnection { get { return DatabaseConnection.sharedConnection() as! MysqlConnection } }
+  var connection: MysqlConnection { get { return Application.sharedDatabaseConnection() as! MysqlConnection } }
   
   override func setUp() {
     super.setUp()
@@ -16,21 +16,21 @@ class MysqlConnectionTests: TailorTestCase {
     let initialZone = results.isEmpty ? "UTC" : results[0].data["time_zone"]!.stringValue!
     
     connection.executeQuery("SET GLOBAL time_zone='UTC'")
-    DatabaseConnection.openSharedConnection()
+    Application.openSharedDatabaseConnection()
     assert(connection.timeZone.name, equals: "UTC", message: "gets a time zone of UTC from the database")
 
     connection.executeQuery("SET GLOBAL time_zone='America/Recife'")
-    DatabaseConnection.openSharedConnection()
+    Application.openSharedDatabaseConnection()
     assert(connection.timeZone.name, equals: "America/Recife", message: "gets a named time zone from the database")
     assert(connection.timeZone.policies.count > 0)
     
     connection.executeQuery("SET GLOBAL time_zone='+05:00'")
-    DatabaseConnection.openSharedConnection()
+    Application.openSharedDatabaseConnection()
     assert(connection.timeZone.name, equals: "+18000", message: "gets a time zone with an offset from the database")
     assert(connection.timeZone.policies.count, equals: 1)
 
     connection.executeQuery("SET GLOBAL time_zone=?", initialZone)
-    DatabaseConnection.openSharedConnection()
+    Application.openSharedDatabaseConnection()
   }
   
   func testQueryCanGetResults() {

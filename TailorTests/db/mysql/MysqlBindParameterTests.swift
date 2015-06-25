@@ -1,10 +1,10 @@
-import Tailor
+@testable import Tailor
 import TailorTesting
 import XCTest
 import mysql
 
 class MysqlBindParameterTests: TailorTestCase {
-  var connection: MysqlConnection { return DatabaseConnection.sharedConnection() as! MysqlConnection }
+  var connection: MysqlConnection { return Application.sharedDatabaseConnection() as! MysqlConnection }
   var parameterSet: MysqlBindParameterSet!
   var parameter: MysqlBindParameter! {
     if let parameters = parameterSet?.parameters {
@@ -126,7 +126,7 @@ class MysqlBindParameterTests: TailorTestCase {
       minute: 7,
       second: 14,
       nanosecond: 123456789.5,
-      timeZone: DatabaseConnection.sharedConnection().timeZone
+      timeZone: Application.sharedDatabaseConnection().timeZone
     )
     let bindParameter = MysqlBindParameter(value: timestamp.databaseValue)
     self.assert(bindParameter.parameter.buffer_length, equals: 1)
@@ -153,7 +153,7 @@ class MysqlBindParameterTests: TailorTestCase {
       minute: 7,
       second: 14,
       nanosecond: 123456789.5,
-      timeZone: DatabaseConnection.sharedConnection().timeZone
+      timeZone: Application.sharedDatabaseConnection().timeZone
     )
     let policy = timestamp1.timeZone.policy(timestamp: timestamp1.epochSeconds)
     let timeZone2 = TimeZone(offset: policy.offset + 3600)
@@ -251,7 +251,7 @@ class MysqlBindParameterTests: TailorTestCase {
     runQuery("SELECT brim_size FROM hats")
     let result = parameter.data().intValue
     assert(result, equals: 25)
-    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size int(11)")
+    Application.sharedDatabaseConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size int(11)")
   }
   
   func testDataWithBitReturnsNumber() {
@@ -260,16 +260,16 @@ class MysqlBindParameterTests: TailorTestCase {
     runQuery("SELECT brim_size FROM hats")
     let result = parameter.data().intValue
     assert(result, equals: 1)
-    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size int(11)")
+    Application.sharedDatabaseConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size int(11)")
   }
   
   func testDataWithShortIntReturnsNumber() {
-    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size smallint")
+    Application.sharedDatabaseConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size smallint")
     connection.executeQuery("INSERT INTO hats (brim_size) VALUES (500)")
     runQuery("SELECT brim_size FROM hats")
     let result = parameter.data().intValue
     assert(result, equals: 500)
-    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size int(11)")
+    Application.sharedDatabaseConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size int(11)")
   }
   
   func testDataWithIntReturnsNumber() {
@@ -280,46 +280,46 @@ class MysqlBindParameterTests: TailorTestCase {
   }
   
   func testDataWithLongIntReturnsNumber() {
-    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size bigint")
+    Application.sharedDatabaseConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size bigint")
     connection.executeQuery("INSERT INTO hats (brim_size) VALUES (123451234545)")
     runQuery("SELECT brim_size FROM hats")
     let result = parameter.data().intValue
     assert(result, equals: 123451234545)
-    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size int(11)")
+    Application.sharedDatabaseConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size int(11)")
   }
   
   func testDataWithFloatReturnsNumber() {
-    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size float")
+    Application.sharedDatabaseConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size float")
     connection.executeQuery("INSERT INTO hats (brim_size) VALUES (10.5)")
     runQuery("SELECT brim_size FROM hats")
     let result = parameter.data().doubleValue
     assert(result, equals: 10.5)
-    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size int(11)")
+    Application.sharedDatabaseConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size int(11)")
     
   }
   
   func testDataWithDoubleReturnsNumber() {
-    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size double")
+    Application.sharedDatabaseConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size double")
     connection.executeQuery("INSERT INTO hats (brim_size) VALUES (10.5)")
     runQuery("SELECT brim_size FROM hats")
     let result = parameter.data().doubleValue
     assert(result, equals: 10.5)
-    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size int(11)")
+    Application.sharedDatabaseConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size int(11)")
     
   }
   
   func testDataWithDecimalReturnsNumber() {
-    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size decimal(10,2)")
+    Application.sharedDatabaseConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size decimal(10,2)")
     connection.executeQuery("INSERT INTO hats (brim_size) VALUES (123.45)")
     runQuery("SELECT brim_size FROM hats")
     let result = parameter.data().doubleValue
     assert(result, equals: 123.45)
-    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size int(11)")
+    Application.sharedDatabaseConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN brim_size brim_size int(11)")
     
   }
   
   func testDataWithDateReturnsDate() {
-    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at date")
+    Application.sharedDatabaseConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at date")
     connection.executeQuery("INSERT INTO hats (updated_at) VALUES ('2015-03-14')")
     runQuery("SELECT updated_at FROM hats")
     switch(parameter.data()) {
@@ -336,12 +336,12 @@ class MysqlBindParameterTests: TailorTestCase {
     else {
       XCTFail()
     }
-    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at timestamp")
+    Application.sharedDatabaseConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at timestamp")
     
   }
   
   func testDataWithTimeReturnsTime() {
-    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at time")
+    Application.sharedDatabaseConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at time")
     connection.executeQuery("INSERT INTO hats (updated_at) VALUES ('09:30:15')")
     runQuery("SELECT updated_at FROM hats")
     switch(parameter.data()) {
@@ -354,17 +354,17 @@ class MysqlBindParameterTests: TailorTestCase {
       assert(result.hour, equals: 9)
       assert(result.minute, equals: 30)
       assert(result.second, equals: 15)
-      assert(result.timeZone, equals: DatabaseConnection.sharedConnection().timeZone)
+      assert(result.timeZone, equals: Application.sharedDatabaseConnection().timeZone)
     }
     else {
       XCTFail()
     }
-    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at timestamp")
+    Application.sharedDatabaseConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at timestamp")
     
   }
   
   func testDataWithDatetimeReturnsTimestamp() {
-    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at datetime")
+    Application.sharedDatabaseConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at datetime")
     connection.executeQuery("INSERT INTO hats (updated_at) VALUES ('2015-04-01 09:30:00')")
     runQuery("SELECT updated_at FROM hats")
     
@@ -385,7 +385,7 @@ class MysqlBindParameterTests: TailorTestCase {
     else {
       XCTFail()
     }
-    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at timestamp")
+    Application.sharedDatabaseConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at timestamp")
   }
   
   func testDataWithTimestampReturnsTimestamp() {
@@ -412,32 +412,32 @@ class MysqlBindParameterTests: TailorTestCase {
   }
   
   func testDataWithBlobReturnsValue() {
-    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN color color blob")
+    Application.sharedDatabaseConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN color color blob")
     var bytes = [1,2,3,4,5]
     let data = NSData(bytes: &bytes, length: 5)
     connection.executeQuery("INSERT INTO hats (color) VALUES (?)", parameters: [data.databaseValue])
     runQuery("SELECT color FROM hats")
     let result = parameter.data().dataValue
     assert(result, equals: data)
-    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN color color varchar(255)")
+    Application.sharedDatabaseConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN color color varchar(255)")
     
   }
   
   func testDataWithTextReturnsValue() {
-    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN color color text")
+    Application.sharedDatabaseConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN color color text")
     connection.executeQuery("INSERT INTO hats (color) VALUES ('red')")
     runQuery("SELECT color FROM hats")
     let data = NSData(bytes: parameter.buffer, length: Int(parameter.length))
     NSLog("Raw data: %@", data)
     let result = parameter.data().stringValue
     assert(result, equals: "red")
-    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN color color varchar(255)")
+    Application.sharedDatabaseConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN color color varchar(255)")
     
   }
   
   func testCanSendAndReceiveTimestamp() {
-    let timestamp = 20.minutes.ago.inTimeZone(DatabaseConnection.sharedConnection().timeZone)
-    let connection = DatabaseConnection.sharedConnection()
+    let timestamp = 20.minutes.ago.inTimeZone(Application.sharedDatabaseConnection().timeZone)
+    let connection = Application.sharedDatabaseConnection()
     connection.executeQuery("INSERT INTO `hats` (`updated_at`) VALUES (?)", timestamp)
     let rows = connection.executeQuery("SELECT * FROM `hats`")
     if rows.count > 0 {
@@ -450,9 +450,9 @@ class MysqlBindParameterTests: TailorTestCase {
   }
   
   func testCanSendAndReceiveTime() {
-    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at time")
-    let time = 45.minutes.ago.inTimeZone(DatabaseConnection.sharedConnection().timeZone).change(nanosecond: 0).time
-    let connection = DatabaseConnection.sharedConnection()
+    Application.sharedDatabaseConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at time")
+    let time = 45.minutes.ago.inTimeZone(Application.sharedDatabaseConnection().timeZone).change(nanosecond: 0).time
+    let connection = Application.sharedDatabaseConnection()
     connection.executeQuery("INSERT INTO `hats` (`updated_at`) VALUES (?)", time)
     let rows = connection.executeQuery("SELECT * FROM `hats`")
     if rows.count > 0 {
@@ -462,13 +462,13 @@ class MysqlBindParameterTests: TailorTestCase {
     else {
       assert(false)
     }
-    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at timestamp")
+    Application.sharedDatabaseConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at timestamp")
   }
   
   func testCanSendAndReceiveDate() {
-    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at date")
+    Application.sharedDatabaseConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at date")
     let date = 3.months.ago.date
-    let connection = DatabaseConnection.sharedConnection()
+    let connection = Application.sharedDatabaseConnection()
     connection.executeQuery("INSERT INTO `hats` (`updated_at`) VALUES (?)", date)
     let rows = connection.executeQuery("SELECT * FROM `hats`")
     if rows.count > 0 {
@@ -478,7 +478,7 @@ class MysqlBindParameterTests: TailorTestCase {
     else {
       assert(false)
     }
-    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at timestamp")
+    Application.sharedDatabaseConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN updated_at updated_at timestamp")
   }
   
   //MARK: - Comparison

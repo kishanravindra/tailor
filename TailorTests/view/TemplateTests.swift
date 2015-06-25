@@ -240,7 +240,7 @@ class TemplateTests: TailorTestCase {
       }
     }
     
-    let store = CacheStore.shared()
+    let store = Application.cache
       
     store.clear()
     
@@ -264,7 +264,7 @@ class TemplateTests: TailorTestCase {
       }
     }
     
-    let store = CacheStore.shared()
+    let store = Application.cache
     
     store.clear()
     
@@ -293,8 +293,8 @@ class TemplateTests: TailorTestCase {
       }
     }
     
-    CacheStore.shared().clear()
-    CacheStore.shared().write("cache.test", value: "<p>the cached content</p>")
+    Application.cache.clear()
+    Application.cache.write("cache.test", value: "<p>the cached content</p>")
     
     let template = TestTemplate(controller: controller)
     template.generate()

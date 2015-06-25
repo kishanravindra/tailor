@@ -120,7 +120,7 @@ public class Application {
           }
         }
       }
-      application = applicationClass()
+      application = applicationClass.init()
       NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] = application
     }
     return application!
@@ -172,8 +172,8 @@ public class Application {
 
     - returns:   The connection
     */
-  public func openDatabaseConnection() -> DatabaseConnection {
-    return DatabaseConnection(config: [:])
+  public func openDatabaseConnection() -> DatabaseDriver {
+    return MysqlConnection(config: [:])
   }
   
   //MARK: - Loading
@@ -440,12 +440,15 @@ public class Application {
   /**
     This method constructs a localization based on the configuration settings.
   
+    The localization class name will be taken from the `localization.class`
+    setting. It will default to `PropertyListLocalization`.
+  
     - parameter locale:     The locale for the localization
     - returns:              The localization
     */
-  public func localization(locale: String) -> Localization {
-    let klass = NSClassFromString(self.configuration["localization.class"] ?? "") as? Localization.Type ?? Localization.self
-    return klass(locale: locale)
+  public func localization(locale: String) -> LocalizationSource {
+    let klass = NSClassFromString(self.configuration["localization.class"] ?? "") as? LocalizationSource.Type ?? PropertyListLocalization.self
+    return klass.init(locale: locale)
   }
 }
 

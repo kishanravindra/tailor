@@ -3,19 +3,29 @@ import Tailor
 import TailorTesting
 
 class CacheStoreTests: TailorTestCase {
-  class TestCacheStore : CacheStore {
+  final class TestCacheStore : CacheImplementation {
     var data = [String:String]()
     var expiries = [String:TimeInterval]()
     
-    override func read(key: String)->String? {
+    init() {}
+    
+    func read(key: String)->String? {
       return data[key]
     }
     
-    override func write(key: String, value: String, expireIn expiryTime: TimeInterval? = nil) {
+    func write(key: String, value: String, expireIn expiryTime: TimeInterval? = nil) {
       data[key] = value
       if expiryTime != nil {
         expiries[key] = expiryTime!
       }
+    }
+    
+    func clear() {
+      data = [:]
+    }
+    
+    func clear(key: String) {
+      data.removeValueForKey(key)
     }
   }
   
@@ -69,22 +79,22 @@ class CacheStoreTests: TailorTestCase {
   }
   
   func testSharedCacheStoreReturnsWithNoConfigurationSettingReturnsMemoryCacheStore() {
-    let store = CacheStore.shared()
+    let store = Application.cache
     let name = reflect(store).summary
     assert(name, equals: "Tailor.MemoryCacheStore", message: "returns a memory cache store")
   }
   
   func testSharedCacheStoreWithConfigurationSettingReturnsThatType() {
     Application.sharedApplication().configuration["cache.class"] = "Tailor.CacheStore"
-    let store = CacheStore.shared()
+    let store = Application.cache
     let name = reflect(store).summary
     assert(name, equals: "Tailor.CacheStore", message: "returns a cache store with the specified type")
   }
   
   func testSharedCacheStoreOnlyCreatesOneStore() {
-    let store1 = CacheStore.shared()
+    let store1 = Application.cache
     store1.write("cache.test", value: "test value")
-    let store2 = CacheStore.shared()
+    let store2 = Application.cache
     let value = store2.read("cache.test")
     assert(value, equals: "test value")
   }

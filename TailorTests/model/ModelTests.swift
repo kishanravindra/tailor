@@ -28,8 +28,12 @@ class ModelTests: TailorTestCase {
   }
   
   func testModelAttributeNameCanGetNameFromLocalization() {
-    class TestLocalization : Localization {
-      override func fetch(key: String, inLocale locale: String) -> String? {
+    final class TestLocalization : LocalizationSource {
+      let locale: String
+      init(locale: String) {
+        self.locale = locale
+      }
+      func fetch(key: String, inLocale locale: String) -> String? {
         return key + " translated"
       }
     }

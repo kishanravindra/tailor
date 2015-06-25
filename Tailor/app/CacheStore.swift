@@ -1,10 +1,10 @@
-import Foundation
-
 /**
   This class provides a cache store, which is responsible for caching
   information across requests.
+
+  This class has been deprecated in favor of the CacheImplementation protocol.
   */
-public class CacheStore {
+@available(*, deprecated, message="Use the CacheImplementation protocol instead") public class CacheStore: CacheImplementation {
   /**
     This method initializes an empty cache store.
 
@@ -49,74 +49,27 @@ public class CacheStore {
   }
   
   /**
-    This method removes all values form the cache.
+    This method removes all values from the cache.
     */
   public func clear() {
     
-  }
-  
-  //MARK: - Fetching
-  
-  /**
-    This method gets a value from the cache.
-    
-    If there is no value in the cache, the generator function will be run to
-    get it.
-    
-    - parameter key:          The identifier for the cache entry.
-    - parameter generator:    The function to generate a value on a cache miss.
-    - returns:                The value provided by the cache or the generator.
-    */
-  public func fetch(key: String, @noescape generator: ()->String)->String {
-    return self.fetch(key, expireIn: nil, generator: generator)
-  }
-  
-  /**
-    This method gets a value from the cache.
-
-    If there is no value in the cache, the generator function will be run to
-    get it.
-
-    - parameter key:          The identifier for the cache entry.
-    - parameter expiryTime:   The time interval until the cache entry should
-                              expire.
-    - parameter generator:    The function to generate a value on a cache miss.
-    - returns:                The value provided by the cache or the generator.
-    */
-  public func fetch(key: String, expireIn expiryTime: TimeInterval?, @noescape generator: ()->String) -> String {
-    if let result = self.read(key) {
-      return result
-    }
-    else {
-      let result = generator()
-      self.write(key, value: result, expireIn: expiryTime)
-      return result
-    }
   }
   
   //MARK: - Initialization
   
   /**
     This method gets the shared cache store.
-
+    
     There will be one shared cache store instance, which will be shared across
     all threads. It will be initialized the first time this method is called.
-
+    
     The type of the cache store is specified by the cache.class configuration
     setting. If there is no setting for it, it will fall back to using a
     MemoryCacheStore.
-
+    
     - returns:   The cache store.
     */
   public class func shared() -> CacheStore {
-    if SHARED_CACHE_STORE == nil {
-      let name = Application.sharedApplication().configuration["cache.class"] ?? "MemoryCacheStore"
-      let type = NSClassFromString(name) as? CacheStore.Type ?? MemoryCacheStore.self
-      SHARED_CACHE_STORE = type.init()
-    }
-    return SHARED_CACHE_STORE
+    return Application.cache as! CacheStore
   }
 }
-
-/** The global cache store. */
-public var SHARED_CACHE_STORE: CacheStore!

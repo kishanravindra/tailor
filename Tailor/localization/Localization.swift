@@ -2,8 +2,10 @@ import Foundation
 
 /**
   This class represents a source of localized content.
+
+  This has been deprecated in favor of the LocalizationSource protocol.
   */
-public class Localization {
+@available(*, deprecated, message="Use LocalizationSource instead") public class Localization: LocalizationSource {
   /** The locale for the content this source provides. */
   public let locale : String
   
@@ -20,31 +22,7 @@ public class Localization {
     - returns:              The locales to try
     */
   public class func fallbackLocales(locale: String) -> [String] {
-    var locales = [String]()
-    if locale == "en" {
-      return locales
-    }
-    var components = locale.componentsSeparatedByString("-")
-    if components.count > 1 {
-      var fallback = ""
-      for component in components {
-        if !fallback.isEmpty {
-          fallback += "-"
-        }
-        fallback += component
-        if fallback == locale {
-          break
-        }
-        locales.insert(fallback, atIndex: 0)
-      }
-      if components[0] != "en" {
-        locales.append("en")
-      }
-    }
-    else {
-      locales.append("en")
-    }
-    return locales
+    return self.init(locale: locale).fallbackLocales()
   }
   
   /**
@@ -54,42 +32,6 @@ public class Localization {
     */
   public required init(locale: String) {
     self.locale = locale
-  }
-  
-  /**
-    This method gets the localized content for a key, falling back to other
-    locales.
-
-    The other locales are defined in the fallbackLocales class method.
-  
-    Subclasses should not override this method. If they need to define a
-    different behavior for fetching the content in a given locale, they should
-    override fetchInLocale. If they need to change the way the fallbacks work,
-    they should override fallbackLocales.
-  
-    This can also interpolate dynamic values into the content, as provided in
-    the interpolations parameter. If there is a key "name" in that dictionary
-    mapped to the value "John", then all occurrences of "\(name)" in the content
-    will be replaced with "John".
-    
-    - parameter key:              The key for the content.
-    - parameter interpolations:   The values to interpolate into the content.
-    - returns:                    The content.
-    */
-  public func fetch(key: String, interpolations: [String:String] = [:]) -> String? {
-    var result = self.fetch(key, inLocale: self.locale)
-    if result == nil {
-      for fallbackLocale in self.dynamicType.fallbackLocales(self.locale) {
-        result = self.fetch(key, inLocale: fallbackLocale)
-        if result != nil {
-          break
-        }
-      }
-    }
-    for (key,value) in interpolations {
-      result = result?.stringByReplacingOccurrencesOfString("\\(\(key))", withString: value, options: [], range: nil)
-    }
-    return result
   }
   
   /**

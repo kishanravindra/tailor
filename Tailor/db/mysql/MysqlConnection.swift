@@ -4,9 +4,12 @@ import mysql
 /**
   This class represents a connection to a MySQL database.
   */
-public class MysqlConnection : DatabaseConnection {
+public final class MysqlConnection : DatabaseDriver {
   /** The underlying MySQL connection. */
-  public var connection : UnsafeMutablePointer<MYSQL>
+  internal var connection : UnsafeMutablePointer<MYSQL>
+  
+  /** The time zone that the database is using. */
+  public private(set) var timeZone: TimeZone
   
   /**
     This method initializes a connection to a MySQL database.
@@ -15,11 +18,12 @@ public class MysqlConnection : DatabaseConnection {
                           It must provide keys for host, username, password, and
                           database.
     */
-  public required init(config: [String:String]) {
+  public init(config: [String:String]) {
     CONNECTION_INITIALIZATION_LOCK.lock()
     self.connection = mysql_init(nil)
     CONNECTION_INITIALIZATION_LOCK.unlock()
-    super.init(config: config)
+    self.timeZone = TimeZone.systemTimeZone()
+    
     mysql_real_connect(self.connection, config["host"]!, config["username"]!, config["password"]!, config["database"]!,   0, nil, 0)
     
     let timeZoneInfo = self.executeQuery("SELECT @@session.time_zone as timeZone")
@@ -64,7 +68,7 @@ public class MysqlConnection : DatabaseConnection {
                                   database side.
     - returns:                    The interpreted result set.
     */
-  public override func executeQuery(query: String, parameters bindParameters: [DatabaseValue]) -> [DatabaseConnection.Row] {
+  public func executeQuery(query: String, parameters bindParameters: [DatabaseValue]) -> [DatabaseConnection.Row] {
     
     let stringParameters = bindParameters.map { $0.description }
     NSLog("Executing %@ %@", query, stringParameters)
@@ -73,21 +77,21 @@ public class MysqlConnection : DatabaseConnection {
     
     if let error = statement.error {
       NSLog("Error in query: %@", error)
-      return [Row(error: error)]
+      return [DatabaseRow(error: error)]
     }
     
     let results = statement.execute(bindParameters)
     
     if let error = statement.error {
       NSLog("Error in query: %@", error)
-      return [Row(error: error)]
+      return [DatabaseRow(error: error)]
     }
     
     if let insertId = statement.insertId {
-      return [Row(rawData: ["id": insertId])]
+      return [DatabaseRow(rawData: ["id": insertId])]
     }
     
-    return results.map { Row(data: $0) }
+    return results.map { DatabaseRow(data: $0) }
   }
 
   //MARK: Transactions
@@ -97,7 +101,7 @@ public class MysqlConnection : DatabaseConnection {
 
     - parameter block:   The block to execute.
     */
-  public override func transaction(block: ()->()) {
+  public func transaction(block: ()->()) {
     mysql_query(self.connection, "START TRANSACTION;")
     block()
     mysql_query(self.connection, "COMMIT;")

@@ -2,9 +2,14 @@ import XCTest
 import Tailor
 import TailorTesting
 
-@available(*, deprecated) class LocalizationTests: TailorTestCase {
-  class TestLocalization: Localization {
-    override func fetch(key: String, inLocale locale: String) -> String? {
+class LocalizationSourceTests: TailorTestCase {
+  final class TestLocalization: LocalizationSource {
+    let locale: String
+    
+    init(locale: String) {
+      self.locale = locale
+    }
+    func fetch(key: String, inLocale locale: String) -> String? {
       if key == "description" {
         switch(locale) {
         case "en-gb":
@@ -25,32 +30,24 @@ import TailorTesting
       }
     }
   }
-  override func setUp() {
-    Application.start()
-  }
-  
-  func testInitializationSetsLocale() {
-    let localization = Localization(locale: "en")
-    assert(localization.locale, equals: "en", message: "sets the locale")
-  }
   
   func testFallbackLocalesWithGlobalEnglishIsEmpty() {
-    let locales = Localization.fallbackLocales("en")
+    let locales = TestLocalization(locale: "en").fallbackLocales()
     XCTAssertTrue(locales.isEmpty)
   }
   
   func testFallbackLocalesWithLocalEnglishHasGlobalEnglish() {
-    let locales = Localization.fallbackLocales("en-gb")
+    let locales = TestLocalization(locale: "en-gb").fallbackLocales()
     assert(locales, equals: ["en"])
   }
   
   func testFallbackLocalesWithLocalSpanishHasSpanishAndEnglish() {
-    let locales = Localization.fallbackLocales("es-mx")
+    let locales = TestLocalization(locale: "es-mx").fallbackLocales()
     assert(locales, equals: ["es", "en"])
   }
   
   func testFallbackLocalesWIthMultiplePartsHasAllAncestors() {
-    let locales = Localization.fallbackLocales("en-gb-123")
+    let locales = TestLocalization(locale: "en-gb-123").fallbackLocales()
     assert(locales, equals: ["en-gb", "en"])
   }
   
@@ -79,12 +76,6 @@ import TailorTesting
     if result != nil {
       assert(result!, equals: "English", message: "uses the second fallback")
     }
-  }
-  
-  func testFetchInLocaleGetsNil() {
-    let localization = Localization(locale: "en")
-    let string = localization.fetch("localization_test", inLocale: "en")
-    XCTAssertNil(string, "gets a nil result from fetchInLocale")
   }
   
   func testFetchWithInterpolationPutsValueInTranslation() {

@@ -98,7 +98,7 @@ class PersistableTests: TailorTestCase {
   }
   
   func testSaveInsertsNewRecord() {
-    DatabaseConnection.sharedConnection()
+    Application.sharedDatabaseConnection()
     
     assert(Query<Hat>().count(), equals: 0, message: "starts out with 0 records")
     let hat = Hat()
@@ -123,7 +123,7 @@ class PersistableTests: TailorTestCase {
     TestConnection.withTestConnection {
       connection in
       let store = Store(name: "Little Shop")
-      connection.response = [DatabaseConnection.Row(rawData: ["id": 2])]
+      connection.response = [DatabaseRow(rawData: ["id": 2])]
       store.save()
       self.assert(connection.queries.count, equals: 1, message: "executes 1 query")
       if connection.queries.count > 0 {
@@ -139,7 +139,7 @@ class PersistableTests: TailorTestCase {
     TestConnection.withTestConnection {
       connection in
       var store = Store(name: "Little Shop")
-      connection.response = [DatabaseConnection.Row(rawData: ["id": 2])]
+      connection.response = [DatabaseRow(rawData: ["id": 2])]
       store = store.save() ?? store
       self.assert(store.id, equals: NSNumber(int: 2), message: "sets the id based on the database response")
     }
@@ -149,7 +149,7 @@ class PersistableTests: TailorTestCase {
     TestConnection.withTestConnection {
       connection in
       let store = Store(name: "Little Shop")
-      connection.response = [DatabaseConnection.Row(rawData: ["id": 2])]
+      connection.response = [DatabaseRow(rawData: ["id": 2])]
       let result = store.save()
       self.assert(result?.id, equals: 2)
     }
@@ -159,7 +159,7 @@ class PersistableTests: TailorTestCase {
     TestConnection.withTestConnection {
       connection in
       let store = Store(name: "Little Shop")
-      connection.response = [DatabaseConnection.Row(error: "Lost Connection")]
+      connection.response = [DatabaseRow(error: "Lost Connection")]
       let result = store.save()
       XCTAssertTrue(result == nil)
     }
@@ -169,7 +169,7 @@ class PersistableTests: TailorTestCase {
     TestConnection.withTestConnection {
       connection in
       self.assert(connection.queries.count, equals: 0)
-      connection.response = [DatabaseConnection.Row(rawData: ["id": 2])]
+      connection.response = [DatabaseRow(rawData: ["id": 2])]
       var hat = Hat(brimSize: 10, color: "red")
       hat.shelfId = nil
       hat.save()
@@ -246,7 +246,7 @@ class PersistableTests: TailorTestCase {
     TestConnection.withTestConnection {
       connection in
       shelf.name = nil
-      connection.response = [DatabaseConnection.Row(error: "Connection Error")]
+      connection.response = [DatabaseRow(error: "Connection Error")]
       let result = shelf.save()
       XCTAssertTrue(result == nil)
     }

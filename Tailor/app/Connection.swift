@@ -154,7 +154,7 @@ public struct Connection {
       return false
     }
     
-    Connection(fileDescriptor: socketDescriptor, handler: handler)
+    _ = Connection(fileDescriptor: socketDescriptor, handler: handler)
     
     NSLog("Listening on port %d", port)
     

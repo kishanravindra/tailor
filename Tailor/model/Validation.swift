@@ -179,7 +179,7 @@ public struct Validation: Equatable {
     
     query += parameterString
     
-    let duplicates = DatabaseConnection.sharedConnection().executeQuery(query, parameters: parameters)
+    let duplicates = Application.sharedDatabaseConnection().executeQuery(query, parameters: parameters)
 
     if !duplicates.isEmpty {
       let compositeKey = "_".join(fields.keys.sort())

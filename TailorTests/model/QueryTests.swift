@@ -14,7 +14,7 @@ class QueryTests: TailorTestCase {
   
   override func setUp() {
     super.setUp()
-    let connection = DatabaseConnection.sharedConnection()
+    let connection = Application.sharedDatabaseConnection()
     connection.executeQuery("TRUNCATE TABLE hats")
     connection.executeQuery("TRUNCATE TABLE shelfs")
     connection.executeQuery("TRUNCATE TABLE stores")
@@ -327,7 +327,7 @@ class QueryTests: TailorTestCase {
     Hat(color: "black").save()!
     Hat(color: "black").save()!
     
-    CacheStore.shared().clear()
+    Application.cache.clear()
     let query = Query<Hat>().filter(["color": "black"]).cached()
     let firstResults = query.all()
     assert(firstResults.count, equals: 2, message: "gets two results")
@@ -341,7 +341,7 @@ class QueryTests: TailorTestCase {
     let hat2 = Hat(color: "black", brimSize: 10).save()!
     let hat3 = Hat(color: "black", brimSize: 11).save()!
     
-    CacheStore.shared().clear()
+    Application.cache.clear()
     let query = Query<Hat>().order("brim_size", .OrderedDescending).filter(["color": "black"]).cached()
     let firstResults = query.all()
     assert(firstResults, equals: [hat3, hat2], message: "uses the specified ordering")
@@ -355,14 +355,14 @@ class QueryTests: TailorTestCase {
     Hat(color: "black").save()!
     Hat(color: "black").save()!
     
-    CacheStore.shared().clear()
+    Application.cache.clear()
     let query = Query<Hat>().filter(["color": "black"]).cached()
     let firstResults = query.all()
     assert(firstResults.count, equals: 2, message: "gets two results")
     
     let cacheKey = "SELECT hats.* FROM hats WHERE hats.color=?(black)"
-    XCTAssertNotNil(CacheStore.shared().read(cacheKey))
-    CacheStore.shared().write(cacheKey, value: "0); DROP TABLE `hats`; SELECT (0")
+    XCTAssertNotNil(Application.cache.read(cacheKey))
+    Application.cache.write(cacheKey, value: "0); DROP TABLE `hats`; SELECT (0")
     Hat(color: "black").save()!
     let secondResults = query.all()
     assert(secondResults.count, equals: 3, message: "gets three results after one is created")
@@ -374,7 +374,7 @@ class QueryTests: TailorTestCase {
     Hat(color: "black").save()!
     Hat(color: "black").save()!
     
-    CacheStore.shared().clear()
+    Application.cache.clear()
     let query = Query<Hat>().filter(["color": "black"])
     let firstResults = query.all()
     assert(firstResults.count, equals: 2, message: "gets two results")

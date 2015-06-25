@@ -54,13 +54,14 @@ class ControllerTests: TailorTestCase {
   var user: User!
   var callback: Connection.ResponseCallback = {response in }
   var controller: ControllerType!
+  var routeSet = RouteSet()
   
   override func setUp() {
     super.setUp()
     
     user = User(emailAddress: "test@test.com", password: "test").save()!
     
-    var routeSet = RouteSet()
+    routeSet = RouteSet()
     TestController.defineRoutes(&routeSet)
     SecondTestController.defineRoutes(&routeSet)
     Application.sharedApplication().routeSet = routeSet
@@ -80,6 +81,7 @@ class ControllerTests: TailorTestCase {
   }
   
   func testInitializeSetsUserFromIdInSession() {
+    NSLog("A")
     controller = TestController(
       request: Request(sessionData: ["userId": String(user.id!)]),
       actionName: "index",
@@ -88,6 +90,7 @@ class ControllerTests: TailorTestCase {
       }
     )
     assert(controller.currentUser, equals: user, message: "sets user to the one with the id given")
+    NSLog("B")
   }
   
   func testInitializerSetsUserToNilWithBadId() {

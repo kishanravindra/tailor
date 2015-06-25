@@ -3,11 +3,11 @@ import Tailor
 import TailorTesting
 
 class DatabaseLocalizationTests: TailorTestCase {
-  var localization: Localization!
+  var localization: LocalizationSource!
   override func setUp() {
     super.setUp()
     Application.start()
-    DatabaseConnection.sharedConnection().executeQuery("TRUNCATE TABLE `tailor_translations`")
+    Application.sharedDatabaseConnection().executeQuery("TRUNCATE TABLE `tailor_translations`")
     localization = DatabaseLocalization(locale: "en")
     DatabaseLocalization.Translation(translationKey: "database.message", locale: "en", translatedText: "Hello").save()
   }

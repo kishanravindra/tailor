@@ -193,7 +193,7 @@ extension Persistable {
   public func destroy() {
     if self.id != nil {
       let query = "DELETE FROM \(self.dynamicType.tableName) WHERE id = ?"
-      DatabaseConnection.sharedConnection().executeQuery(query, parameters: [self.id!.databaseValue])
+      Application.sharedDatabaseConnection().executeQuery(query, parameters: [self.id!.databaseValue])
     }
   }
 
@@ -278,13 +278,13 @@ extension Persistable {
         query += ", "
         parameterString += ", "
       }
-      query += "\(DatabaseConnection.sanitizeColumnName(key))"
+      query += "\(Application.sharedDatabaseConnection().sanitizeColumnName(key))"
       parameterString += "?"
       parameters.append(databaseValue)
     }
     query += ") VALUES (\(parameterString))"
     
-    let results = DatabaseConnection.sharedConnection().executeQuery(query, parameters: parameters)
+    let results = Application.sharedDatabaseConnection().executeQuery(query, parameters: parameters)
     
     let result : DatabaseConnection.Row? = results.isEmpty ? nil : results[0]
     
@@ -317,7 +317,7 @@ extension Persistable {
       else {
         query += ", "
       }
-      query += "\(DatabaseConnection.sanitizeColumnName(key)) = "
+      query += "\(Application.sharedDatabaseConnection().sanitizeColumnName(key)) = "
       if value == nil {
         query += "NULL"
       }
@@ -329,7 +329,7 @@ extension Persistable {
     query += " WHERE id = ?"
     parameters.append(self.id!.databaseValue)
     mappedValues["id"] = self.id!.databaseValue
-    let result = DatabaseConnection.sharedConnection().executeQuery(query, parameters: parameters)
+    let result = Application.sharedDatabaseConnection().executeQuery(query, parameters: parameters)
     
     if result.count > 0 {
       if let error = result[0].error {

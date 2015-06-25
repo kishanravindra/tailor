@@ -14,8 +14,8 @@ public final class AlterationsTask : TaskType {
     its id in the tailor_alterations table.
     */
   public static func runTask() {
-    let connection = DatabaseConnection.sharedConnection()
-    for alteration in PendingAlterations() {
+    let connection = Application.sharedDatabaseConnection()
+    for alteration in Application.pendingAlterations() {
       if alteration.identifier != "" {
         NSLog("Running alteration %@ %@", alteration.identifier, alteration.name)
         alteration.run()

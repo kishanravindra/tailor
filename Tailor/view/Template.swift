@@ -207,15 +207,14 @@ public class Template {
                           the template body, using the normal helper methods.
     */
   public func cache(key: String, @noescape block: ()->()) {
-    let cache = CacheStore.shared()
-    if let cachedContent = cache.read(key) {
+    if let cachedContent = Application.cache.read(key) {
       self.buffer.appendString(cachedContent)
     }
     else {
       let previousLength = self.buffer.length
       block()
       let addedContent = self.buffer.substringFromIndex(previousLength)
-      cache.write(key, value: addedContent)
+      Application.cache.write(key, value: addedContent, expireIn: nil)
     }
   }
   
@@ -248,7 +247,7 @@ public class Template {
   //MARK: - Localization
   
   /** The localization that this template will use by default, if it has one. */
-  public var localization: Localization { get { return self.controller.localization } }
+  public var localization: LocalizationSource { get { return self.controller.localization } }
   
   /**
     This method gets a localized, capitalized attribute name.

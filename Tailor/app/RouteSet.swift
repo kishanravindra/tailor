@@ -370,7 +370,7 @@ public class RouteSet {
     let description = NSString(format: "%@#%@", controllerType.name, actionName)
     let handler = {
       (request: Request, callback: Connection.ResponseCallback) -> () in
-      let controller = controllerType(request: request, actionName: actionName, callback: callback)
+      let controller = controllerType.init(request: request, actionName: actionName, callback: callback)
       controller.action.run(controller)
     }
     self.addRoute(pathPattern, method: method, handler: handler, description: description as String, controller: controllerType, actionName: actionName)

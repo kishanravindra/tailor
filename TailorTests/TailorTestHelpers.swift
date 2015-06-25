@@ -17,36 +17,38 @@ class TestApplication: Tailor.Application {
     ]])
   }
   
-  override func openDatabaseConnection() -> DatabaseConnection {
+  override func openDatabaseConnection() -> DatabaseDriver {
     let config = self.configuration.child("database").toDictionary() as! [String: String]
     return MysqlConnection(config: config)
   }
   
   override func start() {
     super.start()
-    DatabaseConnection.sharedConnection().executeQuery("DROP TABLE IF EXISTS `hats`")
-    DatabaseConnection.sharedConnection().executeQuery("CREATE TABLE `hats` ( `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, `color` varchar(255), `brim_size` int(11), shelf_id int(11), `created_at` timestamp, `updated_at` timestamp)")
+    Application.sharedDatabaseConnection().executeQuery("DROP TABLE IF EXISTS `hats`")
+    Application.sharedDatabaseConnection().executeQuery("CREATE TABLE `hats` ( `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, `color` varchar(255), `brim_size` int(11), shelf_id int(11), `created_at` timestamp, `updated_at` timestamp)")
     
-    DatabaseConnection.sharedConnection().executeQuery("DROP TABLE IF EXISTS `shelfs`")
-    DatabaseConnection.sharedConnection().executeQuery("CREATE TABLE `shelfs` ( `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, `name` varchar(255), `store_id` int(11))")
+    Application.sharedDatabaseConnection().executeQuery("DROP TABLE IF EXISTS `shelfs`")
+    Application.sharedDatabaseConnection().executeQuery("CREATE TABLE `shelfs` ( `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, `name` varchar(255), `store_id` int(11))")
     
-    DatabaseConnection.sharedConnection().executeQuery("DROP TABLE IF EXISTS `stores`")
-    DatabaseConnection.sharedConnection().executeQuery("CREATE TABLE `stores` ( `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, `name` varchar(255))")
+    Application.sharedDatabaseConnection().executeQuery("DROP TABLE IF EXISTS `stores`")
+    Application.sharedDatabaseConnection().executeQuery("CREATE TABLE `stores` ( `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, `name` varchar(255))")
     
-    DatabaseConnection.sharedConnection().executeQuery("DROP TABLE IF EXISTS `users`")
-    DatabaseConnection.sharedConnection().executeQuery("CREATE TABLE `users` ( `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, `email_address` varchar(255), `encrypted_password` varchar(255))")
+    Application.sharedDatabaseConnection().executeQuery("DROP TABLE IF EXISTS `users`")
+    Application.sharedDatabaseConnection().executeQuery("CREATE TABLE `users` ( `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, `email_address` varchar(255), `encrypted_password` varchar(255))")
     
-    DatabaseConnection.sharedConnection().executeQuery("DROP TABLE IF EXISTS `tailor_translations`")
-    DatabaseConnection.sharedConnection().executeQuery("CREATE TABLE `tailor_translations` ( `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, `translation_key` varchar(255), `locale` varchar(255), `translated_text` varchar(255))")
+    Application.sharedDatabaseConnection().executeQuery("DROP TABLE IF EXISTS `tailor_translations`")
+    Application.sharedDatabaseConnection().executeQuery("CREATE TABLE `tailor_translations` ( `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, `translation_key` varchar(255), `locale` varchar(255), `translated_text` varchar(255))")
   }
 }
 
 
-class TestConnection : DatabaseConnection {
+final class TestConnection : DatabaseDriver {
+  var timeZone: TimeZone
   var queries = [(String,[DatabaseValue])]()
   var response : [DatabaseConnection.Row] = []
   
-  override func executeQuery(query: String, parameters bindParameters: [DatabaseValue]) -> [Row] {
+  init(config: [String : String]) { timeZone = TimeZone.systemTimeZone() }
+  func executeQuery(query: String, parameters bindParameters: [DatabaseValue]) -> [DatabaseRow] {
     NSLog("Executing %@", query)
     queries.append((query, bindParameters))
     let temporaryResponse = response

@@ -33,7 +33,7 @@ public protocol ModelType {
     - parameter capitalize:     Whether we should capitalize the name.
     - returns:                  The humanized attribute name.
     */
-  static func attributeName(key: String, localization: Localization?, capitalize: Bool) -> String
+  static func attributeName(key: String, localization: LocalizationSource?, capitalize: Bool) -> String
 }
 
 public extension ModelType {
@@ -46,7 +46,7 @@ public extension ModelType {
   }
   
   
-  public static func attributeName(key: String, localization: Localization? = nil, capitalize: Bool = false) -> String {
+  public static func attributeName(key: String, localization: LocalizationSource? = nil, capitalize: Bool = false) -> String {
     var result = ""
     
     if localization != nil {

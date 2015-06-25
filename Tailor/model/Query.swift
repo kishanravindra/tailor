@@ -297,7 +297,7 @@ public class Query<RecordType: Persistable> {
       let parameterString = ",".join(parameters.map { $0.description })
       let cacheKey = query + "(" + parameterString + ")"
       
-      var idString = CacheStore.shared().read(cacheKey)
+      var idString = Application.cache.read(cacheKey)
       if idString != nil && !idString!.matches("[0-9,]*") {
         idString = nil
       }
@@ -305,7 +305,7 @@ public class Query<RecordType: Persistable> {
       if idString == nil {
         let results = self.dynamicType.init(copyFrom: self, cacheResults: false).all()
         let ids = results.map { String($0.id!) }
-        CacheStore.shared().write(cacheKey, value: ",".join(ids))
+        Application.cache.write(cacheKey, value: ",".join(ids), expireIn: nil)
         return results
       }
       else {
@@ -319,9 +319,9 @@ public class Query<RecordType: Persistable> {
         }
       }
     }
-    let results = DatabaseConnection.sharedConnection().executeQuery(query, parameters: parameters)
+    let results = Application.sharedDatabaseConnection().executeQuery(query, parameters: parameters)
     let type = RecordType.self
-    return removeNils(results.map { $0.error == nil ? type(databaseRow: $0.data) : nil })
+    return removeNils(results.map { $0.error == nil ? type.init(databaseRow: $0.data) : nil })
   }
   
   /**
@@ -368,7 +368,7 @@ public class Query<RecordType: Persistable> {
     */
   public func count() -> Int {
     let (query, parameters) = self.select("count(*) as tailor_record_count").toSql()
-    let results = DatabaseConnection.sharedConnection().executeQuery(query, parameters: parameters)
+    let results = Application.sharedDatabaseConnection().executeQuery(query, parameters: parameters)
     let count = results.isEmpty ? 0 : results[0].data["tailor_record_count"]?.intValue ?? 0
     return count
   }

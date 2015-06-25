@@ -1,11 +1,11 @@
-import Tailor
+@testable import Tailor
 import TailorTesting
 import XCTest
 import mysql
 
 class MysqlFieldTests : TailorTestCase {
   func getField(query: String) -> MYSQL_FIELD {
-    let connection = DatabaseConnection.sharedConnection() as! MysqlConnection
+    let connection = Application.sharedDatabaseConnection() as! MysqlConnection
     let statement = mysql_stmt_init(connection.connection)
     
     let encodedQuery = query.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!
@@ -32,10 +32,10 @@ class MysqlFieldTests : TailorTestCase {
   }
   
   func testInitializationWithBlobTypeIsNonBinary() {
-    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE users ADD column avatar blob")
+    Application.sharedDatabaseConnection().executeQuery("ALTER TABLE users ADD column avatar blob")
     let field = MysqlField(field: getField("SELECT avatar FROM users"))
     XCTAssertTrue(field.isBinary)
-    DatabaseConnection.sharedConnection().executeQuery("ALTER TABLE users DROP column avatar")
+    Application.sharedDatabaseConnection().executeQuery("ALTER TABLE users DROP column avatar")
   }
   
   func testBufferSizeForTinyIntIsOneChar() {

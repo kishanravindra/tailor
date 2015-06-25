@@ -4,7 +4,19 @@
   It requires a table called tailor_translations, with fields for
   translation_key, locale, and translated_text.
   */
-public class DatabaseLocalization: Localization {
+public final class DatabaseLocalization: LocalizationSource {
+  /** The locale that we are getting content in. */
+  public let locale: String
+  
+  /**
+    This method initializes a database localization.
+
+    - parameter locale:   The locale that we are getting content in.
+    */
+  public init(locale: String) {
+    self.locale = locale
+  }
+  
   /**
     This class models a translation from the database.
     */
@@ -88,7 +100,7 @@ public class DatabaseLocalization: Localization {
     - parameter locale:     The locale for the localization
     - returns:              The localized text, if we could find it.
     */
-  public override func fetch(key: String, inLocale locale: String) -> String? {
+  public func fetch(key: String, inLocale locale: String) -> String? {
     let translation = Query<Translation>().filter(["locale": locale, "translation_key": key]).first()
     return translation?.translatedText
   }

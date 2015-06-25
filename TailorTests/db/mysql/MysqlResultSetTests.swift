@@ -1,11 +1,11 @@
 import TailorTesting
-import Tailor
+@testable import Tailor
 import XCTest
 import mysql
 
 class MysqlResultSetTests: TailorTestCase {
   
-  var connection: MysqlConnection { return DatabaseConnection.sharedConnection() as! MysqlConnection }
+  var connection: MysqlConnection { return Application.sharedDatabaseConnection() as! MysqlConnection }
   
   var statement: UnsafeMutablePointer<MYSQL_STMT> = nil
   

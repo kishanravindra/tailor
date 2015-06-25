@@ -121,7 +121,7 @@ class ApplicationTests : TailorTestCase {
     application.configuration["localization.class"] = "Tailor.DatabaseLocalization"
     let localization = application.localization("en")
     self.assert(localization.locale, equals: "en", message: "sets the localization")
-    XCTAssertNotNil(localization as? DatabaseLocalization, "uses the class from the configuration")
+    assert(isNotNil: localization as? DatabaseLocalization, message: "uses the class from the configuration")
     application.configuration["localization.class"] = "Tailor.PropertyListLocalization"
   }
 }

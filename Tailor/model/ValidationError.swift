@@ -56,7 +56,7 @@ public struct ValidationError: Equatable {
     - parameter localization:     The localization to use to fetch the content.
     - returns:                    The description
     */
-  public func localize(localization: Localization) -> String {
+  public func localize(localization: LocalizationSource) -> String {
     let message = self.message.underscored()
     let key = self.key.underscored()
     let keys = [

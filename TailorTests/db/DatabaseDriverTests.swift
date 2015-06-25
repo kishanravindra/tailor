@@ -2,18 +2,14 @@ import XCTest
 import Tailor
 import TailorTesting
 
-@available(*, deprecated) class DatabaseConnectionTests: TailorTestCase {
+class DatabaseDriverTests: TailorTestCase {
   class TestApplication : TailorTests.TestApplication {
     var connectionCount = 0
     
     override func openDatabaseConnection() -> DatabaseDriver {
       connectionCount += 1
-      return DatabaseConnection(config: [:])
+      return super.openDatabaseConnection()
     }
-  }
-  
-  override func tearDown() {
-    NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")
   }
   
   //MARK: - Initialization
@@ -23,8 +19,8 @@ import TailorTesting
     application.start()
     NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] = application
     NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")
-    DatabaseConnection.openSharedConnection()
-    assert(NSStringFromClass(DatabaseConnection.sharedConnection().dynamicType), equals: NSStringFromClass(DatabaseConnection.self), message: "has a mysql connection as the shared connection")
+    Application.sharedDatabaseConnection()
+    assert(NSStringFromClass(Application.sharedDatabaseConnection().dynamicType), equals: NSStringFromClass(MysqlConnection.self), message: "has a mysql connection as the shared connection")
     assert(application.connectionCount, equals: 1, message: "increments the connection count")
     NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
   }
@@ -34,22 +30,19 @@ import TailorTesting
     application.start()
     NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] = application
     NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")
-    DatabaseConnection.openSharedConnection()
+    Application.sharedDatabaseConnection()
     let expectation = expectationWithDescription("executes block in thread")
-    DatabaseConnection.sharedConnection()
+    Application.sharedDatabaseConnection()
     NSOperationQueue().addOperationWithBlock {
       expectation.fulfill()
-      let application = TestApplication.init()
-      application.start()
-      NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] = application
-      DatabaseConnection.sharedConnection()
+      Application.sharedDatabaseConnection()
       self.assert(application.connectionCount, equals: 2, message: "creates two connections")
     }
     waitForExpectationsWithTimeout(0.1, handler: nil)
   }
   
   func testRowInitializationWithConvertibleValuesWrapsValues() {
-    let row = DatabaseConnection.Row(rawData: ["name": "John", "height": 200])
+    let row = DatabaseRow(rawData: ["name": "John", "height": 200])
     let name = row.data["name"]?.stringValue
     assert(name, equals: "John")
     let height = row.data["height"]?.intValue
@@ -105,7 +98,7 @@ import TailorTesting
   }
   
   func testSanitizeColumnNameRemovesSpecialCharacters() {
-    let sanitizedName = DatabaseConnection.sanitizeColumnName("color;brim_size")
+    let sanitizedName = Application.sharedDatabaseConnection().sanitizeColumnName("color;brim_size")
     assert(sanitizedName, equals: "colorbrim_size", message: "removes special characters from column name")
   }
   

@@ -21,11 +21,10 @@ class MemoryCacheStoreTests: TailorTestCase {
     assert(isNotNil: store.read("key1"))
   }
   
-  func testReadWithPastExpiryTimeClearsValue() {
+  func testReadWithPastExpiryTimeGetsNil() {
     store.expiryTimes["key1"] = 60.seconds.ago
     let result = store.read("key1")
     assert(isNil: result, message: "returns a nil value")
-    assert(isNil: store.expiryTimes["key1"], message: "removes the expiry time")
   }
 
   func testWriteSetsExpiryTime() {

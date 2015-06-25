@@ -106,7 +106,7 @@ public struct ControllerState {
   public var currentUser: User?
 
   /** The localization that the controller should use to localize text. */
-  public var localization: Localization
+  public var localization: LocalizationSource
 
   /**
     This method initializes a controller state for an incoming request.
@@ -148,7 +148,7 @@ public struct ControllerState {
     - parameter localization  The localization that the controller should use
                               to localize its text.
     */
-  public init(request: Request, callback: Connection.ResponseCallback, session: Session, actionName: String, currentUser: User?, localization: Localization) {
+  public init(request: Request, callback: Connection.ResponseCallback, session: Session, actionName: String, currentUser: User?, localization: LocalizationSource) {
     self.request = request
     self.callback = callback
     self.session = session
@@ -172,7 +172,7 @@ extension ControllerType {
   public var actionName: String { return self.state.actionName }
 
   /** The localization that the controller should use to localize its text. */
-  public var localization: Localization { return self.state.localization }
+  public var localization: LocalizationSource { return self.state.localization }
 
   /** The user that is signed in. */
   public var currentUser: User? { return self.state.currentUser }

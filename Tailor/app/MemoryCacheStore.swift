@@ -3,7 +3,7 @@ import Foundation
 /**
   This class provides an in-memory cache store backed by NSCache.
   */
-public class MemoryCacheStore: CacheStore {
+public final class MemoryCacheStore: CacheImplementation {
   /** The internal storage. */
   let cache = NSCache()
   
@@ -11,16 +11,20 @@ public class MemoryCacheStore: CacheStore {
   public var expiryTimes = [String:Timestamp]()
 
   /**
+    This method initializes an empty cache store.
+    */
+  public init() { }
+  
+  /**
     This method reads an entry for the cache store.
 
     - parameter key:    The key for the cache entry.
     - returns:          The fetched value.
     */
-  public override func read(key: String) -> String? {
+  public func read(key: String) -> String? {
     if let time = expiryTimes[key] {
       if time < Timestamp.now() {
-        expiryTimes.removeValueForKey(key)
-        cache.removeObjectForKey(key)
+        return nil
       }
     }
     return cache.objectForKey(key) as? String
@@ -33,7 +37,7 @@ public class MemoryCacheStore: CacheStore {
     - parameter value:         The value to store in the cache.
     - parameter expiryTime:    The time until the cache entry should expire.
     */
-  public override func write(key: String, value: String, expireIn expiryTime: TimeInterval?=nil) {
+  public func write(key: String, value: String, expireIn expiryTime: TimeInterval?=nil) {
     cache.setObject(value, forKey: key)
     if expiryTime != nil {
       expiryTimes[key] = expiryTime!.fromNow
@@ -45,14 +49,14 @@ public class MemoryCacheStore: CacheStore {
 
     - parameter key:     The key for the entry to remove.
     */
-  public override func clear(key: String) {
+  public func clear(key: String) {
     cache.removeObjectForKey(key)
   }
   
   /**
     This method removes all the entries from the cache.
     */
-  public override func clear() {
+  public func clear() {
     cache.removeAllObjects()
   }
 }

@@ -3,7 +3,7 @@ import Tailor
 import XCTest
 
 class MysqlStatementTests: TailorTestCase {
-  var connection: MysqlConnection { return DatabaseConnection.sharedConnection() as! MysqlConnection }
+  var connection: MysqlConnection { return Application.sharedDatabaseConnection() as! MysqlConnection }
   
   func testInitializationWithGoodQueryDoesNotPutErrorOnStatement() {
     let statement = MysqlStatement(connection: connection, query: "SELECT * FROM stores")

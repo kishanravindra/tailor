@@ -81,7 +81,7 @@ public struct MysqlBindParameter: Equatable {
     case let .Data(wrappedData):
       data = wrappedData
     case let .Timestamp(timestamp):
-      let timestamp = timestamp.inTimeZone(DatabaseConnection.sharedConnection().timeZone)
+      let timestamp = timestamp.inTimeZone(Application.sharedDatabaseConnection().timeZone)
       mysqlTime = MYSQL_TIME(
         year: UInt32(timestamp.year),
         month: UInt32(timestamp.month),
@@ -234,7 +234,7 @@ public struct MysqlBindParameter: Equatable {
       minute: Int(time.minute),
       second: Int(time.second),
       nanosecond: 0,
-      timeZone: DatabaseConnection.sharedConnection().timeZone
+      timeZone: Application.sharedDatabaseConnection().timeZone
     )
   }
 }
