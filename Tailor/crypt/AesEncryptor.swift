@@ -3,7 +3,7 @@ import Foundation
 /**
   This class provides a high-level interface for doing AES encryption.
   */
-public class AesEncryptor {
+public final class AesEncryptor {
   /** The low-level key for the encryption. */
   private let key: Unmanaged<SecKey>
   

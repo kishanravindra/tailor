@@ -100,7 +100,7 @@ class SessionTests: TailorTestCase {
   }
   
   func testCookieStringWithDataChangesConveysChanges() {
-    let session = createSession(createCookieString(["name": "Joan"]))
+    var session = createSession(createCookieString(["name": "Joan"]))
     session["name"] = "Jane"
     session["userId"] = "1"
     let session2 = createSession(session.cookieString())
@@ -115,7 +115,7 @@ class SessionTests: TailorTestCase {
   }
   
   func testCookieStringWithFlashParamsConveysOnlyNewParams() {
-    let session = createSession(createCookieString(flashData: ["notice": "Success"]))
+    var session = createSession(createCookieString(flashData: ["notice": "Success"]))
     session.setFlash("notice", "More Success", currentPage: true)
     session.setFlash("error", "Error")
     let session2 = createSession(session.cookieString())
@@ -127,7 +127,7 @@ class SessionTests: TailorTestCase {
   }
   
   func testCookieStringIsAesEncoded() {
-    let session = createSession(createCookieString(["name": "Joan"]))
+    var session = createSession(createCookieString(["name": "Joan"]))
     session.setFlash("notice", "Success")
     let string = session.cookieString()
     let key = Application.sharedApplication().configuration["sessions.encryptionKey"]  ?? ""
@@ -150,8 +150,8 @@ class SessionTests: TailorTestCase {
   
   func testStoreInCookiesPutsCookieStringInFlash() {
     let session = createSession(createCookieString())
-    let cookieJar = CookieJar()
-    session.storeInCookies(cookieJar)
+    var cookieJar = CookieJar()
+    session.storeInCookies(&cookieJar)
     let string = cookieJar["_session"]
     XCTAssertNotNil(string, "sets cookie string")
     if string != nil { assert(string!, equals: session.cookieString(), message: "sets cookie string") }
@@ -160,13 +160,13 @@ class SessionTests: TailorTestCase {
   //MARK: - Flash
   
   func testSetFlashMethodDoesNotMakeValueAvailableImmediately() {
-    let session = createSession(createCookieString())
+    var session = createSession(createCookieString())
     session.setFlash("notice", "Success")
     XCTAssertNil(session.flash("notice"), "does not make flash message available")
   }
   
   func testSetFlashMethodMakesValueAvailableImmediatelyWhenFlagIsSet() {
-    let session = createSession(createCookieString())
+    var session = createSession(createCookieString())
     session.setFlash("notice", "Success", currentPage: true)
     let notice = session.flash("notice")
     XCTAssertNotNil(notice, "makes flash message available")

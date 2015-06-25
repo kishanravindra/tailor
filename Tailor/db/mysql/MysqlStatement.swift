@@ -5,14 +5,7 @@ import mysql
   This class wraps around a MySQL statement and provides a simpler syntax for
   executing it.
   */
-public class MysqlStatement {
-  /**
-    A connection to the database.
-
-    This is never set. It's just here to work around a bug in the compiler.
-    */
-  private let connection: UnsafeMutablePointer<MYSQL>? = nil
-  
+public final class MysqlStatement {
   /**
     The statement we are executing.
     */

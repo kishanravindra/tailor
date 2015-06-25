@@ -3,7 +3,7 @@ import Foundation
 /**
   This class stories a set of cookies for a request.
   */
-public class CookieJar: Equatable {
+public struct CookieJar: Equatable {
   /** The cookies in the jar. */
   public private(set) var cookies: [Cookie] = []
   
@@ -37,7 +37,7 @@ public class CookieJar: Equatable {
     - parameter httpOnly:         Whether the cookie should only be sent over
                                   HTTP/HTTPS requests.
     */
-  public func setCookie(key: String, _ value: String, path: String = "/",
+  public mutating func setCookie(key: String, _ value: String, path: String = "/",
     expiresAt: Timestamp? = nil, maxAge: Int? = nil, domain: String? = nil,
     secureOnly: Bool = false, httpOnly: Bool = false) {
       var cookie = Cookie(key: key, value: value)
@@ -66,7 +66,7 @@ public class CookieJar: Equatable {
     
     - parameter string:    The header string with the cookies.
     */
-  public func addHeaderString(string: String) {
+  public mutating func addHeaderString(string: String) {
     for component in string.componentsSeparatedByString("; ") {
       let equalSignRange = component.rangeOfString("=", options: [], range: nil, locale: nil)
       if equalSignRange != nil {

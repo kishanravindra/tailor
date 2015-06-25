@@ -200,7 +200,7 @@ extension ControllerType {
     var response = Response()
     response.cookies = request.cookies
     contents(&response)
-    session.storeInCookies(response.cookies)
+    session.storeInCookies(&response.cookies)
     self.callback(response)
   }
   
@@ -358,7 +358,7 @@ extension ControllerType {
     - returns:            The new session information with the user signed in.
     */
   public func signIn(user: User) -> Session {
-    let session = self.session
+    var session = self.session
     session["userId"] = String(user.id ?? 0)
     return session
   }
@@ -372,7 +372,7 @@ extension ControllerType {
     - returns:    The new session information with the user signed out.
     */
   public func signOut() -> Session {
-    let session = self.session
+    var session = self.session
     session["userId"] = nil
     return session
   }

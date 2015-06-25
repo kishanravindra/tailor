@@ -40,7 +40,7 @@ public struct Request: Equatable {
   public var uploadedFiles: [String:[String:Any]] = [:]
   
   /** The cookies that were sent with this request. */
-  public let cookies = CookieJar()
+  public let cookies: CookieJar
   
   /**
     This method initializes a request.
@@ -87,6 +87,7 @@ public struct Request: Equatable {
     
     var headers : [String:String] = [:]
     var cookieHeaders = [String]()
+    var cookies = CookieJar()
     for index in 0..<lines.count {
       let line = lines[index].stringByTrimmingCharactersInSet(NSCharacterSet.newlineCharacterSet())
       if line.isEmpty {
@@ -107,8 +108,10 @@ public struct Request: Equatable {
     self.headers = headers
     
     for header in cookieHeaders {
-      self.cookies.addHeaderString(header)
+      cookies.addHeaderString(header)
     }
+    
+    self.cookies = cookies
     
     self.parseRequestParameters()
   }
@@ -263,7 +266,7 @@ public struct Request: Equatable {
     lines.append("Content-Type: application/x-www-form-urlencoded")
     
     if !sessionData.isEmpty {
-      let session = Session(request: Request(clientAddress: clientAddress, data: NSData()))
+      var session = Session(request: Request(clientAddress: clientAddress, data: NSData()))
       for (key, value) in sessionData {
         session[key] = value
       }

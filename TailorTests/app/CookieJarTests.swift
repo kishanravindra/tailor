@@ -98,7 +98,7 @@ class CookieJarTests: TailorTestCase {
   //MARK: - Comparison
   
   func testCookieJarsAreEqualWithSameCookies() {
-    let cookieJar2 = CookieJar()
+    var cookieJar2 = CookieJar()
     cookieJar.setCookie("test1", "value1")
     cookieJar.setCookie("test2", "value2")
     cookieJar2.setCookie("test1", "value1")
@@ -107,7 +107,7 @@ class CookieJarTests: TailorTestCase {
   }
   
   func testCookieJarsAreUnequalWithDifferentCookieValues() {
-    let cookieJar2 = CookieJar()
+    var cookieJar2 = CookieJar()
     cookieJar.setCookie("test1", "value1")
     cookieJar.setCookie("test2", "value2")
     cookieJar2.setCookie("test1", "value2")
@@ -116,7 +116,7 @@ class CookieJarTests: TailorTestCase {
   }
   
   func testCookieJarsAreEqualWithSameCookiesInDifferentOrder() {
-    let cookieJar2 = CookieJar()
+    var cookieJar2 = CookieJar()
     cookieJar.setCookie("test1", "value1")
     cookieJar.setCookie("test2", "value2")
     cookieJar2.setCookie("test2", "value2")

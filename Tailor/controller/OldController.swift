@@ -147,7 +147,7 @@
     response.code = 404
     response.appendString("Page Not Found")
     response.cookies = request.cookies
-    session.storeInCookies(response.cookies)
+    session.storeInCookies(&response.cookies)
     self.responded = true
     self.callback(response)
   }

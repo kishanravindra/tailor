@@ -6,7 +6,7 @@ import Foundation
   This will allow storing arbitrary data on the client, persisted between
   requests, without the client being able to read it.
   */
-public class Session {
+public struct Session {
   /** The data in the sessions. */
   private var data: [String:String] = [:]
   
@@ -132,7 +132,7 @@ public class Session {
 
     - parameter cookies:   The cookie jar to put the session info in.
     */
-  public func storeInCookies(cookies: CookieJar) {
+  public func storeInCookies(inout cookies: CookieJar) {
     cookies["_session"] = self.cookieString()
   }
   
@@ -156,7 +156,7 @@ public class Session {
     - parameter currentPage:      Whether we should set the message for the
                                   current page or the next page.
     */
-  public func setFlash(key: String, _ value: String?, currentPage: Bool = false) {
+  public mutating func setFlash(key: String, _ value: String?, currentPage: Bool = false) {
     if currentPage {
       self.currentFlash[key] = value
     }

@@ -5,7 +5,7 @@ import Foundation
 
   It provides methods for building the query by method chaining.
   */
-public class Query<RecordType: Persistable> {
+public struct Query<RecordType: Persistable> {
   //MARK: - Structure
   
   /** A portion of a SQL query that contains a query and the bind parameters. */
@@ -45,7 +45,7 @@ public class Query<RecordType: Persistable> {
                                   tables to join to.
     - parameter cacheResults:     Whether the query should cache its results.
     */
-  public required init(copyFrom: Query<RecordType>? = nil, selectClause: String? = nil, whereClause: SqlFragment? = nil, orderClause: SqlFragment? = nil, limitClause: SqlFragment? = nil, joinClause: SqlFragment? = nil, cacheResults: Bool? = nil) {
+  public init(copyFrom: Query<RecordType>? = nil, selectClause: String? = nil, whereClause: SqlFragment? = nil, orderClause: SqlFragment? = nil, limitClause: SqlFragment? = nil, joinClause: SqlFragment? = nil, cacheResults: Bool? = nil) {
     self.selectClause = selectClause ?? copyFrom?.selectClause ?? "\(RecordType.tableName).*"
     self.whereClause = whereClause ?? copyFrom?.whereClause ?? ("", [])
     self.orderClause = orderClause ?? copyFrom?.orderClause ?? ("", [])

@@ -3,7 +3,7 @@ import Foundation
 /**
   This class provides a Swift wrapper for hashing a string.
   */
-public class PasswordHasher {
+public struct PasswordHasher {
   /**
     The salt that we are applying to the password.
     */
@@ -53,7 +53,7 @@ public class PasswordHasher {
     - returns:                    Whether the encrypted hash is a hash of the
                                   given input.
     */
-  public class func isMatch(input: String, encryptedHash: String) -> Bool {
+  public static func isMatch(input: String, encryptedHash: String) -> Bool {
     let saltLength = Int(encryptedHash.substringToIndex(advance(encryptedHash.startIndex, 2))) ?? 0
     let encodedSalt = encryptedHash.substringWithRange(Range(start: advance(encryptedHash.startIndex, 2), end: advance(encryptedHash.startIndex, 2 + saltLength)))
     let salt = NSData(base64EncodedString: encodedSalt, options: [])
