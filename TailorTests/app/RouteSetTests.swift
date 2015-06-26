@@ -26,7 +26,7 @@ class RouteSetTests: TailorTestCase {
     
     func showAction() {
       generateResponse {
-        (inout response: Response) in
+        (inout response: Response) -> Void in
         let id = request.requestParameters["id"] ?? "None"
         response.appendString("Test Controller: show \(id)")
       }

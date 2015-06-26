@@ -137,20 +137,40 @@ class ControllerTests: TailorTestCase {
       actionName: "index",
       callback: { self.callback($0) }
     )
+    self.callback = {
+      response in
+      expectation.fulfill()
+      self.assert(response.cookies.cookieDictionary(), equals: [
+        "cookie1": "value1",
+        "cookie2": "value2",
+        "_session": self.controller.session.cookieString()
+        ], message: "gets old cookies, new cookies, and session info")
+    }
     
     controller.generateResponse {
-      (inout response: Response) in
+      (inout response: Response)->Void in
       response.cookies["cookie2"] = "value2"
-      
-      self.callback = {
-        response in
-        expectation.fulfill()
-        self.assert(response.cookies.cookieDictionary(), equals: [
-          "cookie1": "value1",
-          "cookie2": "value2",
-          "_session": self.controller.session.cookieString()
-          ], message: "gets old cookies, new cookies, and session info")
-      }
+    }
+    
+    waitForExpectationsWithTimeout(0.01, handler: nil)
+  }
+  
+  func testGenerateResponseWithSessionSetsSessionInfoOnResponse() {
+    let expectation = expectationWithDescription("callback called")
+    
+    self.callback = {
+      response in
+      expectation.fulfill()
+      let newRequest = Request(cookies: response.cookies.cookieDictionary())
+      let session = Session(request: newRequest)
+      self.assert(session["test"], equals: "value")
+    }
+    
+    controller.generateResponse {
+      response -> Session in
+      var session = controller.session
+      session["test"] = "value"
+      return session
     }
     
     waitForExpectationsWithTimeout(0.01, handler: nil)
@@ -241,6 +261,24 @@ class ControllerTests: TailorTestCase {
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
+  func testRedirectToWithSessionGeneratesRedirectResponse() {
+    let expectation = expectationWithDescription("callback called")
+    self.callback = {
+      response in
+      expectation.fulfill()
+      self.assert(response.code, equals: 302, message: "gives a 302 response")
+      self.assert(response.headers, equals: ["Location": "/test/path"], message: "gives a location header")
+      
+      let session = Session(request: Request(cookies: response.cookies.cookieDictionary()))
+      self.assert(session["test1"], equals: "value1")
+    }
+    var newSession = controller.session
+    newSession["test1"] = "value1"
+    self.controller.redirectTo("/test/path", session: newSession)
+    waitForExpectationsWithTimeout(0.01, handler: nil)
+  }
+
+  
   func testPathForCanGetFullyQualifiedRoute() {
     let path = self.controller.pathFor(TestController.name, actionName: "index", parameters: ["id": "5"])
     assert(path, equals: "/route1?id=5", message: "gets the url for the controller and action")
@@ -278,6 +316,24 @@ class ControllerTests: TailorTestCase {
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
+  func testRedirectToWithControllerNameWithSessionGeneratesRedirectResponse() {
+    let expectation = expectationWithDescription("callback called")
+    self.callback = {
+      response in
+      expectation.fulfill()
+      self.assert(response.code, equals: 302, message: "gives a 302 response")
+      self.assert(response.headers, equals: ["Location": "/route1"], message: "has a location header")
+      
+      let session = Session(request: Request(cookies: response.cookies.cookieDictionary()))
+      self.assert(session["test2"], equals: "value2")
+    }
+    var newSession = controller.session
+    newSession["test2"] = "value2"
+
+    self.controller.redirectTo(TestController.name, actionName: "index", session: newSession)
+    waitForExpectationsWithTimeout(0.01, handler: nil)
+  }
+  
   func testRedirectToWithControllerTypeGeneratesRedirectResponse() {
     let expectation = expectationWithDescription("callback called")
     self.callback = {
@@ -287,6 +343,24 @@ class ControllerTests: TailorTestCase {
       self.assert(response.headers, equals: ["Location": "/route1"], message: "has a location header")
     }
     self.controller.redirectTo(TestController.self, actionName: "index")
+    waitForExpectationsWithTimeout(0.01, handler: nil)
+  }
+  
+  func testRedirectToWithControllerTypeWithSessionGeneratesRedirectResponse() {
+    let expectation = expectationWithDescription("callback called")
+    self.callback = {
+      response in
+      expectation.fulfill()
+      self.assert(response.code, equals: 302, message: "gives a 302 response")
+      self.assert(response.headers, equals: ["Location": "/route1"], message: "has a location header")
+      
+      let session = Session(request: Request(cookies: response.cookies.cookieDictionary()))
+      self.assert(session["test3"], equals: "value3")
+    }
+    var newSession = controller.session
+    newSession["test3"] = "value3"
+    
+    self.controller.redirectTo(TestController.self, actionName: "index", session: newSession)
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   

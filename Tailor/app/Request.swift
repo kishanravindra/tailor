@@ -252,15 +252,16 @@ public struct Request: Equatable {
     This method crafts a request with desired properties. It is intended for use
     in testing.
 
-    - parameter parameters:      The request parameters.
-    - parameter sessionData:     The data for the session.
-    - parameter cookies:         The cookie data.
-    - parameter method:          The HTTP method
-    - parameter clientAddress:   The client's remote IP address.
+    - parameter parameters:       The request parameters.
+    - parameter sessionData:      The data for the session.
+    - parameter cookies:          The cookie data.
+    - parameter method:           The HTTP method
+    - parameter clientAddress:    The client's remote IP address.
+    - parameter path:             The path that the request should go to.
     */
-  public init(clientAddress: String = "0.0.0.0", method: String = "GET", parameters: [String: String] = [:], sessionData: [String: String] = [:], cookies: [String:String] = [:]) {
+  public init(clientAddress: String = "0.0.0.0", method: String = "GET", parameters: [String: String] = [:], sessionData: [String: String] = [:], cookies: [String:String] = [:], path: String = "/") {
     var lines = [
-      "\(method) / HTTP/1.1"
+      "\(method) \(path) HTTP/1.1"
     ]
     
     lines.append("Content-Type: application/x-www-form-urlencoded")

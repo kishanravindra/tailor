@@ -1,480 +1,189 @@
-import Foundation
-
 /**
-  This protocol describes the method that a controller must provide.
+  This class is the base class for controllers that route requests.
 
-  A controller encapsulates a set of responses for related types of requests.
-  For instance, you might have a controller for managing hats through restful
-  actions, and it would handle requests for listing hats, showing details on a
-  single hat, showing a form for updating a hat, and receiving a form submission
-  for updating a hat. Each of these requests would be mapped to an action, which
-  is an instance method that provides a response to a request.
-
-  This protocol does not specify much about how you set up the actions, or even
-  require that you set up the actions. Instead, it describes how a controller
-  should represent the state of a request and some metadata about the
-  controller, which allows the protocol to provide lots of helper methods for
-  responding to requests.
+  This class has been deprecated. You should use the ControllerType protocol
+  instead.
   */
-public protocol ControllerType {
-  //MARK: - Metadata
-  
+@available(*, deprecated, message="Use the ControllerType protocol instead") public class Controller: ControllerType {
   /**
-    This method gets the name of the controller, for debugging and identifying
-    routes.
-
-    The default implementation uses the name of the class.
+    This structure contains all the information about an action that can be run
+    on a controller.
     */
-  static var name: String { get }
-  
-  /**
-    This method gets the layout that this controller uses to wrap around its
-    templates.
-
-    The default implementation uses an empty layout.
-    */
-  static var layout: LayoutType.Type { get }
-  
-  /**
-    This method initializes a controller to handle a request.
-
-    This initializer will always be invoked when creating controllers to handle
-    a request.
-  
-    The default implementation uses this information to initialize a
-    `ControllerState`, and then invokes the initializer on the controller that
-    takes in the state.
-
-    - parameter request:      The request that the controller is responding to.
-    - parameter actionName:   The name of the action that the controller should
-                              invoke. This is mostly useful for generating
-                              routes, because the actual action method will be
-                              called when the controller needs to respond.
-    - parameter callback      The callback that the controller should invoke
-                              when the response is ready.
-    */
-  init(request: Request, actionName: String, callback: Connection.ResponseCallback)
-
-  /**
-    This method initializes a controller with its state.
-
-    We wrap this state in a `ControllerState` to make it easier for controllers
-    to conform to the protocol without lots of boiler plate.
-
-    - parameter state:    The state that tells the controller about the request and
-                          how it should respond.
-    */
-  init(state: ControllerState)
-  
-  /**
-    This attribute gets the state for the controller.
-
-    We wrap it in another struct to reduce the boilerplate of conforming to the
-    protocol.
-    */
-  var state: ControllerState { get }
-  
-  /**
-    This method defines routes for the controller.
-
-    The main thing you will want to do here is add routes for your actions. You
-    can also define scopes for filters that the controller provides, or add a
-    path prefix for the controller.
-  
-    - parameter routes:   The route set that we are adding our routes to.
-    */
-  static func defineRoutes(inout routes:  RouteSet)
-}
-
-/**
-  This struct wraps around the state that we use to initialize a controller.
-  */
-public struct ControllerState {
-  /** The request that the controller is responding to. */
-  public var request: Request
-
-  /** The callback that the controller should call once it has a response. */
-  public var callback: Connection.ResponseCallback
-
-  /** The session information that we extracted from the request. */
-  public var session: Session
-
-  /** The name of the action that is being called, as specified on the route. */
-  public var actionName: String
-
-  /** The user that is signed into the session. */
-  public var currentUser: User?
-
-  /** The localization that the controller should use to localize text. */
-  public var localization: LocalizationSource
-
-  /**
-    This method initializes a controller state for an incoming request.
-
-    This will set the request, action name, and callback from the input
-    parameters. It will then build a session based on the request, set a default
-    localization, and try and fetch the user from the session information.
-
-    - parameter request:      The request that the controller is responding to.
-    - parameter actionName:   The name of the action that the controller should
-                              invoke. This is mostly useful for generating
-                              routes, because the actual action method will be
-                              called when the controller needs to respond.
-    - parameter callback      The callback that the controller should invoke
-                              when the response is ready.
-    */
-  public init(request: Request, actionName: String, callback: Connection.ResponseCallback) {
-    self.request = request
-    self.callback = callback
-    self.session = Session(request: request)
-    self.localization = Application.sharedApplication().localization("en")
-    self.actionName = actionName
+  public struct Action {
+    /** The name of the action. */
+    public let name: String
     
-    if let userId = Int(self.session["userId"] ?? "") {
-      self.currentUser = Query<User>().find(userId)
+    /**
+    The block that provides a normal response for the action.
+    
+    This has an unusual type signature to support curried methods. For
+    instance, if you are writing a controller called `HatsController`, and
+    you want to use its `index` method as the body of an action, you can
+    just set the body to `HatsController.wrap(HatsController.index)`. If you
+    are setting the body inside of a class method on `HatsController`, which
+    will be the common case, you can just set it to `wrap(index)`. The wrapper
+    method is necessary to support any controller type rather than just
+    `HatsController`, which actions require.
+    
+    If you are not using a curried function, then the body should take in a
+    controller and return another block that will execute the action on that
+    controller.
+    */
+    public let body: (Controller)->()->()
+    
+    /**
+    The filters that run for this action.
+    
+    A filter provides a pre-check before an action's body is run. It can check
+    that the request data is valid and potentially render an error response.
+    
+    By keeping this logic separate from the action body, it can be easier to
+    re-use in multiple actions.
+    
+    If the check fails, this must return false. As soon as a filter returns
+    false, the request processing stops, so any filter that returns false must
+    also respond to the request.
+    */
+    public let filters: [(Controller)->()->Bool]
+    
+    /**
+    This method creates an action.
+    
+    - parameter name:       The name of the action.
+    - parameter body:       The body of the action.
+    - parameter filters:    The filters that should be run before the body is
+    called.
+    */
+    public init(name: String, body: (Controller)->()->(), filters: [(Controller)->()->Bool] = []) {
+      self.name = name
+      self.body = body
+      self.filters = filters
+    }
+    
+    /**
+    This method runs the filters and the action body.
+    */
+    public func run(controller: Controller) {
+      for filter in self.filters {
+        if !filter(controller)() {
+          return
+        }
+      }
+      self.body(controller)()
     }
   }
-
+  
+  /** The action that we are executing. */
+  public private(set) var action: Action! = nil
+  
+  /** The state of the controller. */
+  public var state: ControllerState
+  
   /**
-    This method initializes a controller state with a full set of fields.
-
-    - parameter request:      The request that the controller is responding to.
-    - parameter actionName:   The name of the action that the controller should
-                              invoke.
-    - parameter callback      The callback that the controller should invoke
-                              when the response is ready.
-    - parameter session       The session information from the request.
-    - parameter currentUser   The user that is signed in to the session.
-    - parameter localization  The localization that the controller should use
-                              to localize its text.
-    */
-  public init(request: Request, callback: Connection.ResponseCallback, session: Session, actionName: String, currentUser: User?, localization: LocalizationSource) {
-    self.request = request
-    self.callback = callback
-    self.session = session
-    self.actionName = actionName
-    self.currentUser = currentUser
-    self.localization = localization
+  The actions that this controller supports.
+  
+  This implementation provides no actions. Subclasses must override this with
+  their actions.
+  */
+  public class var actions: [Action] { return [] }
+  
+  public class func defineRoutes(inout routes: RouteSet) {
   }
-}
-
-extension ControllerType {
-  /** The request that the controller is responding to. */
-  public var request: Request { return self.state.request }
-
-  /** The session information from the request. */
-  public var session: Session { return self.state.session }
-
-  /** The callback that the controller should use to respond to its request. */
-  public var callback: Connection.ResponseCallback { return self.state.callback }
-
-  /** The name of the action is being invoked. */
-  public var actionName: String { return self.state.actionName }
-
-  /** The localization that the controller should use to localize its text. */
-  public var localization: LocalizationSource { return self.state.localization }
-
-  /** The user that is signed in. */
-  public var currentUser: User? { return self.state.currentUser }
-
-  public init(request: Request, actionName: String, callback: Connection.ResponseCallback) {
+  
+  /**
+  The templates that this controller has rendered in the course of responding
+  to its action.
+  */
+  public var renderedTemplates: [Template] = []
+  
+  /** Whether we have responded to our request. */
+  public var responded = false
+  
+  /**
+  This method creates a controller for handling a request.
+  
+  - parameter request:       The request that we are processing
+  - parameter actionName:    The name of the action that we are executing.
+  - parameter callback:      The callback to give the response to.
+  */
+  public required convenience init(request: Request, actionName: String, callback: Connection.ResponseCallback) {
     self.init(state: ControllerState(request: request, actionName: actionName, callback: callback))
   }
   
-  public static var name: String {
-    return reflect(self).summary
+  public required init(state: ControllerState) {
+    self.state = state
   }
   
-  public static var layout: LayoutType.Type { return EmptyLayout.self }
-  
-  //MARK: - Responses
-  
   /**
-    This method generates a response object and passes it to a block.
+  This method takes in an action body using a specialized controller
+  type and returns a more general one that will take any controller type.
+  
+  When the resulting function is called, this will perform an safe cast from
+  the general controller to the specialized type. If the case fails, this will
+  return a block that always renders a 404 page.
+  
+  - parameter block:    The block with the specialized controller type.
+  - returns:            The block with the general controller type.
+  */
+  public class func wrap<SpecificType: Controller>(block: (SpecificType)->()->())->(Controller)->()->() {
+    return {
+      (controller) in
+      if let controller = controller as? SpecificType {
+        return block(controller)
+      }
+      else {
+        return { controller.render404Action() }
+      }
+    }
+  }
+  
+  public func render404Action() {
     
-    This will set the cookies on the response before giving it to the block,
-    and after the block is done it will give the response to the controller's
-    handler.
-    */
-  public func generateResponse(@noescape contents: (inout Response)->()) {
+    if self.responded {
+      NSLog("Error: Controller %@ attempted to respond twice. Subsequent responses will be ignored.", self.dynamicType.name)
+      return
+    }
     var response = Response()
+    response.code = 404
+    response.appendString("Page Not Found")
     response.cookies = request.cookies
-    contents(&response)
     session.storeInCookies(&response.cookies)
+    self.responded = true
     self.callback(response)
   }
   
   /**
-    This method generates a response with a template.
-    
-    - parameter template:    The template to use for the request.
-    */
-  public func respondWith(template: TemplateType) {
-    var layout = self.dynamicType.layout.init(controller: self, template: template)
-    let contents = layout.generate()
-    self.generateResponse {
-      (inout response : Response) in
-      response.renderedTemplates.append(template)
-      response.appendString(contents)
-    }
-  }
+  This method takes in an action filter using a specialized controller
+  type and returns a more general one that will take any controller type.
   
-  /**
-    This method generates a response with a redirect to a different path.
+  When the resulting function is called, this will perform an safe cast from
+  the general controller to the specialized type. If the case fails, this will
+  return a block that always renders a 404 page.
   
-    - parameter path:      The path to redirect to.
-    */
-  public func redirectTo(path: String) {
-    self.generateResponse {
-      response in
-      response.code = 302
-      response.headers["Location"] = path
-    }
-  }
-  
-  /**
-    This method generates a response with a redirect to a generated URL.
-    
-    - parameter controllerName:   The controller to link to. This will default to
-                                  the current controller.
-    - parameter actionName:       The action to link to.
-    - parameter parameters:       Additional parameters for the path.
+  - parameter block:    The block with the specialized controller type.
+  - returns:            The block with the general controller type.
   */
-  public func redirectTo(controllerName: String? = nil, actionName: String? = nil, parameters: [String:String] = [:]) {
-    let path = self.pathFor(controllerName, actionName: actionName, parameters: parameters) ?? "/"
-    self.redirectTo(path)
-  }
-  
-  /**
-    This method generates a response with a redirect to a generated URL.
-    
-    This is a wrapper around the version that uses a controllerName. This
-    version provides a more concise syntax when redirecting to other
-    controllers.
-    
-    - parameter controller:       The controller to link to. This will default
-                                  to the current controller.
-    - parameter actionName:       The name of the action to link to.
-    - parameter parameters:       Additional parameters for the path.
-  */
-  public func redirectTo(controller: ControllerType.Type, actionName: String, parameters: [String:String] = [:]) {
-    self.redirectTo(
-      controller.name,
-      actionName: actionName,
-      parameters: parameters
-    )
-  }
-  
-  /**
-    This method generates a response with a 404 page.
-  */
-  public func render404() {
-    self.generateResponse {
-      response in
-      response.code = 404
-      response.appendString("Page Not Found")
-    }
-  }
-  
-  /**
-    This method gets the path for a route.
-    
-    It defaults to the current controller and action. It will also substitute
-    any of the current request's parameters into the new path, if they are part
-    of that path.
-    
-    - parameter controllerName:   The controller to link to. This will default
-                                  to the current controller.
-    - parameter actionName:       The action to link to.
-    - parameter parameters:       Additional parameters for the path.
-    - parameter domain:           The domain to use for the URL. If this is
-                                  omitted, the result will just be the path part
-                                  of the URL.
-    - parameter https:            Whether the URL should be https or http. If
-                                  the domain is omitted, this is ignored.
-    - returns:                    The path
-  */
-  public func pathFor(controllerName: String? = nil, actionName: String? = nil, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
-    var path = Application.sharedApplication().routeSet.pathFor(
-      controllerName ?? self.dynamicType.name,
-      actionName: actionName ?? self.actionName,
-      parameters: parameters,
-      domain: domain,
-      https: https
-    )
-    if path != nil {
-      for (key,value) in self.request.requestParameters {
-        if !key.isEmpty {
-          path = path?.stringByReplacingOccurrencesOfString(":\(key)", withString: value)
-        }
+  public class func wrap<SpecificType: Controller>(block: (SpecificType)->()->(Bool))->(Controller)->()->(Bool) {
+    return {
+      (controller) in
+      if let controller = controller as? SpecificType {
+        return block(controller)
+      }
+      else {
+        return { controller.render404Action(); return false }
       }
     }
-    return path
   }
   
-  //MARK: - Localization
+  public class var layout: Layout.Type { return Layout.self }
+  
+  //MARK: - Responses
   
   /**
-    This method gets the prefix that is automatically prepended to keys sent for
-    localization in this controller.
-    
-    This will only be added to keys that start with a dot.
+  This method calls the controller's action and generates a response.
   */
-  public var localizationPrefix: String {
-    return self.dynamicType.name.underscored() + "." + self.actionName
+  public final func respond() {
+    self.action.run(self)
   }
   
-  /**
-    This method localizes text.
-    
-    - parameter key:      The key for the localized text
-    - parameter locale:   The locale that the localized text should be in. If
-                          this is not provided, it will use the locale from the
-                          default localization on this controller.
-    - returns:            The localized text
-  */
-  public func localize(key: String, locale: String? = nil) -> String? {
-    var fullKey = key
-    if fullKey.hasPrefix(".") {
-      fullKey = self.localizationPrefix + fullKey
-    }
-    if locale != nil {
-      return Application.sharedApplication().localization(locale!).fetch(fullKey)
-    }
-    else {
-      return self.localization.fetch(fullKey)
-    }
-  }
-  
-  //MARK: - Authentication
-  
-  /**
-    This method signs a user in for our session.
-  
-    This will not modify any information on the controller. Instead, it provides
-    a new session that you can feed into the response.
-  
-    - parameter user:     The user to sign in.
-    - returns:            The new session information with the user signed in.
-    */
-  public func signIn(user: User) -> Session {
-    var session = self.session
-    session["userId"] = String(user.id ?? 0)
-    return session
-  }
-  
-  /**
-    This method signs a user out for our session.
-    
-    This will not modify any information on the controller. Instead, it provides
-    a new session that you can feed into the response.
-
-    - returns:    The new session information with the user signed out.
-    */
-  public func signOut() -> Session {
-    var session = self.session
-    session["userId"] = nil
-    return session
-  }
-  
-  /**
-    This method signs in a user by providing their credentials.
-    
-    This will not modify any information on the controller. Instead, it provides
-    a new session that you can feed into the response.
-  
-    - parameter emailAddress:   The email address the user has provided.
-    - parameter password:       The password the user has provided.
-    - returns:                  If we were able to sign them in, this will
-                                return a new session with the user signed out.
-                                If we were not able to sign them in, this will
-                                return nil.
-  */
-  public func signIn(emailAddress: String, password: String) -> Session? {
-    if let user = User.authenticate(emailAddress, password: password) {
-      return self.signIn(user)
-    }
-    else {
-      return nil
-    }
-  }
-  
-  //MARK: - Test Helpers
-  
-  /**
-    This method calls an action manually on a controller. It is intended for use
-    in testing.
-
-    - parameter actionName:  The name of the action to call.
-    - parameter request:     The request to provide to the controller.
-    - parameter callback:    The callback to call with the response.
-    */
-  public static func callAction<T:ControllerType>(actionName: String, _ action: (T)->Void->Void, _ request: Request, callback: (Response,T)->()) {
-    var controller: T!
-
-    controller = T(
-      request: request,
-      actionName: actionName,
-      callback: { response in callback(response, controller) }
-    )
-    
-    action(controller!)()
-  }
-  
-  /**
-    This method calls an action manually on a controller. It is intended for use
-    in testing.
-  
-    This will give the controller a request with no parameters.
-
-    - parameter action:    The name of the action to call.
-    - parameter callback:  The callback to call with the response.
-    */
-  public static func callAction<T:ControllerType>(actionName: String, _ action: (T)->(Void->Void), callback: (Response,T)->()) {
-    self.callAction(actionName, action, Request(), callback: callback)
-  }
-  
-  /**
-    This method calls an action manually on a controller. It is intended for use
-    in testing.
-    
-    - parameter action:        The name of the action to call.
-    - parameter user:          The user for the request.
-    - parameter parameters:    The request parameters.
-    - parameter callback:      The callback to call with the response.
-  */
-  public static func callAction<T:ControllerType>(actionName: String, _ action: (T)->(Void->Void), user: User?, parameters: [String:String], callback: (Response,T)->()) {
-    var sessionData = [String:String]()
-    if let id = user?.id {
-      sessionData["userId"] = String(id)
-    }
-    else {
-      sessionData["userId"] = ""
-    }
-    self.callAction(actionName, action, Request(parameters: parameters, sessionData: sessionData), callback: callback)
-  }
-  
-  /**
-    This method calls an action manually on a controller. It is intended for use
-    in testing.
-    
-    - parameter action:        The name of the action to call.
-    - parameter parameters:    The request parameters.
-    - parameter callback:      The callback to call with the response.
-  */
-  public static func callAction<T:ControllerType>(actionName: String, _ action: (T)->(Void->Void), parameters: [String:String], callback: (Response,T)->()) {
-    self.callAction(actionName, action, user: nil, parameters: parameters, callback: callback)
-  }
-  
-  /**
-    This method calls an action manually on a controller. It is intended for use
-    in testing.
-    
-    - parameter action:        The name of the action to call.
-    - parameter user:          The user for the request.
-    - parameter callback:      The callback to call with the response.
-  */
-  public static func callAction<T:ControllerType>(actionName: String, _ action: (T)->(Void->Void), user: User?, callback: (Response,T)->()) {
-    self.callAction(actionName, action, user: user, parameters: [:], callback: callback)
-  }
 }

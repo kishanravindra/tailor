@@ -153,24 +153,50 @@ public class ControllerTestCase : TailorTestCase {
       self.recordFailureWithDescription(failureMessage, inFile: file, atLine: line, expected: true)
     }
   }
+  
+  //MARK: - Helpers
+  
+  public func pathFor(controllerName: String? = nil, actionName: String, parameters: [String:String] = [:]) -> String? {
+    let name: String
+    
+    if let type = controllerType {
+      name = controllerName ?? type.name
+    }
+    else {
+      name = controllerName ?? ""
+    }
+    return Application.sharedApplication().routeSet.pathFor(name, actionName: actionName, parameters: parameters)
+  }
 
   //MARK: - Calling Actions
   
-  public func callAction<T: ControllerType>(actionName: String, _ action: (T)->(Void->Void), callback: (Response, ControllerType) -> ()) {
+  public func callAction(actionName: String, callback: Response -> Void) {
     let actionParams = params[actionName] ?? [:]
     var sessionData = [String:String]()
     if user != nil {
       sessionData["userId"] = String(user.id ?? 0)
     }
-    var request = Request(parameters: actionParams, sessionData: sessionData)
+    let routes = Application.sharedApplication().routeSet
+    
+    guard let type = controllerType else { assert(false, message: "Did not have a controller type"); return }
+    let path = routes.pathFor(type.name, actionName: actionName, parameters: actionParams)
+    let method = routes.routes.filter {
+      route in
+      return route.controller == type && route.actionName == actionName
+    }.first?.method ?? "GET"
+    if path == nil {
+      assert(false, message: "could not generate route for \(type.name)/\(actionName)")
+    }
+    var request = Request(parameters: actionParams, sessionData: sessionData, path: path!, method: method)
     if let actionFiles = files[actionName] {
       request.uploadedFiles = actionFiles
     }
     let expectation = expectationWithDescription("response called")
-    T.callAction(actionName, action, request) {
-      response, controller in
+    
+    Application.sharedApplication().routeSet.handleRequest(request) {
+      response in
       expectation.fulfill()
-      callback(response, controller)
+      callback(response)
     }
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
