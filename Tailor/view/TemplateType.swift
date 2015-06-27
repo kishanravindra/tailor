@@ -190,6 +190,45 @@ extension TemplateType {
   }
   
   /**
+    This method puts a form into the template.
+  
+    You must provide a name or a type parameter to this method, but you must not
+    provide both.
+  
+    This will add the form tag, build a form object, and give it to the contents
+    block so that you can add the inputs to it.
+  
+    If you call methods on this template in the contents block, the result of
+    those methods will not be added in the right place in the template. The form
+    maintains its own template for adding content to, and we cannot merge the
+    two together. If you want to add any content inside the form other than the
+    content added by the form's immediate input methods, you can do that by
+    adding the content to the form's template, not this one.
+  
+    - parameter path:               The path that the form will submit to.
+    - parameter method:             The HTTP method that the submission should
+                                    use.
+    - parameter name:               The name of the model in the form.
+    - parameter type:               The type of the model in the form.
+    - parameter validationErrors:   The errors that should be shown in the form.
+    - parameter attributes:         The attributes to put on the form tag.
+    - parameter inputBuilder:       The method to use to build inputs for the
+                                    form.
+    - parameter contents:           A block that will be run on the form to add
+                                    the body of the form.
+    */
+  public mutating func form(path: String, method: String = "POST", name: String? = nil, type: ModelType.Type? = nil, validationErrors: [ValidationError] = [], attributes: [String:String] = [:], inputBuilder: TemplateForm.InputBuilder? = nil, @noescape with contents: (inout TemplateForm)->()) {
+    var mergedAttributes = attributes
+    mergedAttributes["method"] = method
+    mergedAttributes["action"] = path
+    self.tag("form", mergedAttributes) {
+      var form = TemplateForm(controller: self.controller, name: name, type: type, validationErrors: validationErrors, inputBuilder: inputBuilder)
+      contents(&form)
+      self.state.contents += form.template.contents
+    }
+  }
+  
+  /**
     This method renders another template within the context of this one.
     
     - parameter template:    The template to render

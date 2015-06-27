@@ -335,7 +335,6 @@ public class Application {
       
       if matcher(type) {
         let key = reflect(parentType).summary
-        NSLog("Adding %@ to %@", reflect(type).summary, key)
         var subtypes = self.registeredSubtypes[key] ?? []
         subtypes.append(type)
         self.registeredSubtypes[key] = subtypes

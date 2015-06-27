@@ -190,6 +190,17 @@ class TemplateTypeTests: TailorTestCase {
     assert(template2.contents, equals: "<a class=\"btn\" href=\"/test/path?id=5\">Click here</a>", message: "puts the tag in the buffer")
   }
   
+  func testFormMethodBuildsForm() {
+    template.tag("p", text: "Hello")
+    template.form("/hats/5", type: Hat.self, attributes: ["form-type": "my-form"]) {
+      (inout form: TemplateForm) in
+      form.input("color", "red")
+      form.input("brimSize", "10")
+    }
+    template.tag("p", text: "Goodbye")
+    assert(template.contents, equals: "<p>Hello</p><form action=\"/hats/5\" form-type=\"my-form\" method=\"POST\"><div><label>color</label><input name=\"hat[color]\" value=\"red\"></input></div><div><label>brimSize</label><input name=\"hat[brimSize]\" value=\"10\"></input></div></form><p>Goodbye</p>")
+  }
+  
   func testRenderTemplatePutsTemplateContentsInBuffer() {
     template.tag("p", text: "Hello")
     struct TestTemplate: TemplateType {

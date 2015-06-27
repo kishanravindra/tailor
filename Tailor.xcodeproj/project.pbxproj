@@ -97,6 +97,8 @@
 		52B2B6E119F3656F0086261B /* TemplateInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 52B2B6E019F3656F0086261B /* TemplateInfo.plist */; };
 		52B2B6EE19F3F75C0086261B /* Sanitizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6ED19F3F75C0086261B /* Sanitizer.swift */; };
 		52B2B6F219F3F7FC0086261B /* SanitizedText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6F119F3F7FC0086261B /* SanitizedText.swift */; };
+		52B417341B3DF5DD00B274F7 /* TemplateForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B417331B3DF5DD00B274F7 /* TemplateForm.swift */; };
+		52B417361B3E12E400B274F7 /* TemplateFormTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B417351B3E12E400B274F7 /* TemplateFormTests.swift */; };
 		52BD13A319E9D7E4006D72B0 /* Tailor.h in Headers */ = {isa = PBXBuildFile; fileRef = 52BD13A219E9D7E4006D72B0 /* Tailor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52BD142619E9DA1D006D72B0 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140119E9DA1D006D72B0 /* Application.swift */; };
 		52BD142719E9DA1D006D72B0 /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140219E9DA1D006D72B0 /* Connection.swift */; };
@@ -260,6 +262,8 @@
 		52B2B6E219F3EE8B0086261B /* ___FILEBASENAME___.swift */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; path = "___FILEBASENAME___.swift"; sourceTree = "<group>"; };
 		52B2B6ED19F3F75C0086261B /* Sanitizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sanitizer.swift; sourceTree = "<group>"; };
 		52B2B6F119F3F7FC0086261B /* SanitizedText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SanitizedText.swift; sourceTree = "<group>"; };
+		52B417331B3DF5DD00B274F7 /* TemplateForm.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateForm.swift; sourceTree = "<group>"; };
+		52B417351B3E12E400B274F7 /* TemplateFormTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateFormTests.swift; sourceTree = "<group>"; };
 		52BD139D19E9D7E4006D72B0 /* Tailor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Tailor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52BD13A219E9D7E4006D72B0 /* Tailor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Tailor.h; sourceTree = "<group>"; };
 		52BD13A819E9D7E4006D72B0 /* TailorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TailorTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -445,6 +449,7 @@
 				528D6FA61A56354400783BE5 /* TemplateTests.swift */,
 				52FC9E0D1B3B952E001F783B /* TemplateTypeTests.swift */,
 				528D6FA41A562D5900783BE5 /* FormBuilderTests.swift */,
+				52B417351B3E12E400B274F7 /* TemplateFormTests.swift */,
 				523F29341A583EEB00C1BBC0 /* SanitizerTests.swift */,
 				523F29381A58459200C1BBC0 /* SanitizedTextTests.swift */,
 			);
@@ -676,6 +681,7 @@
 				528D18401A8FE15D00A6E116 /* Layout.swift */,
 				52FC9E0B1B3B9180001F783B /* LayoutType.swift */,
 				52BD142519E9DA1D006D72B0 /* Template.swift */,
+				52B417331B3DF5DD00B274F7 /* TemplateForm.swift */,
 				525F84611B3B85F50025CA38 /* TemplateType.swift */,
 				52B2B6ED19F3F75C0086261B /* Sanitizer.swift */,
 				52B2B6F119F3F7FC0086261B /* SanitizedText.swift */,
@@ -970,6 +976,7 @@
 				525F84581B3A41920025CA38 /* TaskType.swift in Sources */,
 				52B2B6A919F2B1D00086261B /* Task.swift in Sources */,
 				52BD142719E9DA1D006D72B0 /* Connection.swift in Sources */,
+				52B417341B3DF5DD00B274F7 /* TemplateForm.swift in Sources */,
 				521E87481A0FCEDA00D84B7B /* NSData.swift in Sources */,
 				52B2B6F219F3F7FC0086261B /* SanitizedText.swift in Sources */,
 			);
@@ -984,6 +991,7 @@
 				5262EEC11AD1713E006F864D /* MysqlBindParameterTests.swift in Sources */,
 				52FC9E0E1B3B952E001F783B /* TemplateTypeTests.swift in Sources */,
 				526254351AABC9A600D63024 /* MemoryCacheStoreTests.swift in Sources */,
+				52B417361B3E12E400B274F7 /* TemplateFormTests.swift in Sources */,
 				528D183F1A8FDD4A00A6E116 /* TailorTestHelpers.swift in Sources */,
 				5214B5D51AA3903800624E9D /* ValidationErrorTests.swift in Sources */,
 				52E784C51A5B6E2D0065C10D /* StringTests.swift in Sources */,
