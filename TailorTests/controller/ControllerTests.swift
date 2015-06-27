@@ -81,7 +81,6 @@ class ControllerTests: TailorTestCase {
   }
   
   func testInitializeSetsUserFromIdInSession() {
-    NSLog("A")
     controller = TestController(
       request: Request(sessionData: ["userId": String(user.id!)]),
       actionName: "index",
@@ -90,7 +89,6 @@ class ControllerTests: TailorTestCase {
       }
     )
     assert(controller.currentUser, equals: user, message: "sets user to the one with the id given")
-    NSLog("B")
   }
   
   func testInitializerSetsUserToNilWithBadId() {

@@ -24,7 +24,6 @@ class MysqlBindParameterTests: TailorTestCase {
     
     let resultSet = MysqlResultSet(statement: statement)
     parameterSet = MysqlBindParameterSet(resultSet: resultSet)
-    NSLog("Query is %@", query)
     parameterSet.bindToOutputOfStatement(statement)
     mysql_stmt_execute(statement)
     mysql_stmt_fetch(statement)
@@ -427,8 +426,6 @@ class MysqlBindParameterTests: TailorTestCase {
     Application.sharedDatabaseConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN color color text")
     connection.executeQuery("INSERT INTO hats (color) VALUES ('red')")
     runQuery("SELECT color FROM hats")
-    let data = NSData(bytes: parameter.buffer, length: Int(parameter.length))
-    NSLog("Raw data: %@", data)
     let result = parameter.data().stringValue
     assert(result, equals: "red")
     Application.sharedDatabaseConnection().executeQuery("ALTER TABLE hats CHANGE COLUMN color color varchar(255)")

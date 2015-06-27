@@ -1,6 +1,6 @@
 import Tailor
 
-class ___FILEBASENAME___ : Persistable {
+struct ___FILEBASENAME___ : Persistable {
   /** The id for the record. */
   let id: Int?
 
@@ -12,7 +12,7 @@ class ___FILEBASENAME___ : Persistable {
 
     :param: databaseRow   The row in the database.
     */
-  required init?(databaseRow: [String : DatabaseValue]) {
+  init?(databaseRow: [String : DatabaseValue]) {
     self.id = databaseRow["id"]?.intValue
   }
   

@@ -1,8 +1,8 @@
 import Tailor
 
 class ___FILEBASENAME___ : Alteration {
-  override class func id() -> String { return "___YEAR______DATE______TIME___" }
-  override func alter() {
+  static var identifier: String { return "___YEAR______DATE______TIME___" }
+  static func run() {
 
   }
 }

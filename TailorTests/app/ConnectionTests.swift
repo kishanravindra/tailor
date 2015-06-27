@@ -13,7 +13,6 @@ class ConnectionTests: TailorTestCase {
   
   func setUpConnection() {
     path = Application.sharedApplication().rootPath() + "/" + path
-    NSLog("Full path is %@", path)
     connection = Connection(fileDescriptor: 0, handler: self.handler)
     fileContents.dataUsingEncoding(NSUTF8StringEncoding)?.writeToFile(path, atomically: true)
     guard let connectionHandle = NSFileHandle(forUpdatingAtPath: path) else { NSLog("Handle failed"); return }

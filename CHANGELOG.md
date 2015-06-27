@@ -18,3 +18,7 @@
 * Requests are now put onto a single dispatch queue, with no limit on the number
   of simultaneous connections.
 * The current time now uses NSDate to get an accurate nanosecond count.
+* Several base classes have been replaced with protocols: Controller,
+  Alteration, Task, Localization, CacheStore, DatabaseConnection, and Layout
+* Several classes have been replaced with structs: CookieJar, Session,
+  PasswordHasher, and Query.

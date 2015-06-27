@@ -14,10 +14,4 @@
 * Getting rid of connection parameter for MysqlStatement class
 * Finding better way of switching on MySQL type enum
 * Initializing calendars in different years
-
-# Changes as part of Issue 46
-
-* Change the way we specify the database connection type
-* Fix form builders
-* Try to reproduce crazy compiler crashes with classes implementing mutating
-  protocol method.
+* Specifying explicit names on controller structs
