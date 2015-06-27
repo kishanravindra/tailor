@@ -72,7 +72,6 @@
 		528D183F1A8FDD4A00A6E116 /* TailorTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D183E1A8FDD4A00A6E116 /* TailorTestHelpers.swift */; };
 		528D18411A8FE15D00A6E116 /* Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D18401A8FE15D00A6E116 /* Layout.swift */; };
 		528D6FA51A562D5900783BE5 /* FormBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D6FA41A562D5900783BE5 /* FormBuilderTests.swift */; };
-		528D6FA71A56354400783BE5 /* TemplateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D6FA61A56354400783BE5 /* TemplateTests.swift */; };
 		529230061A3CF4E4006DD6EB /* ApplicationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529230051A3CF4E4006DD6EB /* ApplicationTests.swift */; };
 		5292303C1A3CF9AA006DD6EB /* libmysqlclient.18.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D61A7319FDB27800FFA2EF /* libmysqlclient.18.dylib */; };
 		5292303E1A3CFB93006DD6EB /* ExitTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5292303D1A3CFB93006DD6EB /* ExitTask.swift */; };
@@ -237,7 +236,6 @@
 		528D183E1A8FDD4A00A6E116 /* TailorTestHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TailorTestHelpers.swift; sourceTree = "<group>"; };
 		528D18401A8FE15D00A6E116 /* Layout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Layout.swift; sourceTree = "<group>"; };
 		528D6FA41A562D5900783BE5 /* FormBuilderTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FormBuilderTests.swift; path = TailorTests/view/FormBuilderTests.swift; sourceTree = SOURCE_ROOT; };
-		528D6FA61A56354400783BE5 /* TemplateTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TemplateTests.swift; path = TailorTests/view/TemplateTests.swift; sourceTree = SOURCE_ROOT; };
 		529230051A3CF4E4006DD6EB /* ApplicationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApplicationTests.swift; sourceTree = "<group>"; };
 		5292303B1A3CF74A006DD6EB /* TailorTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TailorTests.h; sourceTree = "<group>"; };
 		5292303D1A3CFB93006DD6EB /* ExitTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ExitTask.swift; path = tasks/ExitTask.swift; sourceTree = "<group>"; };
@@ -446,7 +444,6 @@
 		528D6FA31A562D1F00783BE5 /* view */ = {
 			isa = PBXGroup;
 			children = (
-				528D6FA61A56354400783BE5 /* TemplateTests.swift */,
 				52FC9E0D1B3B952E001F783B /* TemplateTypeTests.swift */,
 				528D6FA41A562D5900783BE5 /* FormBuilderTests.swift */,
 				52B417351B3E12E400B274F7 /* TemplateFormTests.swift */,
@@ -999,7 +996,6 @@
 				526ACD841B07B8FC00CE0CC0 /* TimestampTests.swift in Sources */,
 				52E784B81A59F2030065C10D /* AesEncryptorTests.swift in Sources */,
 				525F845C1B3A4C830025CA38 /* DatabaseDriverTests.swift in Sources */,
-				528D6FA71A56354400783BE5 /* TemplateTests.swift in Sources */,
 				52A95E391AE321C9001AED1F /* PersistableTests.swift in Sources */,
 				52C10D071B092838005D85D4 /* TimeTests.swift in Sources */,
 				526ACD801B07922900CE0CC0 /* TimeFormatTests.swift in Sources */,
