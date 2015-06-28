@@ -5,7 +5,7 @@ import Foundation
   */
 public final class AesEncryptor {
   /** The low-level key for the encryption. */
-  private let key: Unmanaged<SecKey>
+  private let key: Unmanaged<SecKey>!
   
   //MARK: - Encodings
   
@@ -86,10 +86,16 @@ public final class AesEncryptor {
     This method creates a new AES encryptor/decryptor.
 
     - parameter key:    A string with the hexadecimal encoding of the
-                        encryption key.
+                        encryption key. The key must be at least 64 characters.
+                        If it is fewer than 64 characters, this return nil.
+  
     */
-  public init(key hexKey: String) {
+  public init?(key hexKey: String) {
     let keyData = NSMutableData()
+    if hexKey.characters.count < 64 {
+      self.key = nil
+      return nil
+    }
     for indexOfByte in (0..<hexKey.characters.count/2) {
       let range = Range(start: advance(hexKey.startIndex, indexOfByte), end: advance(hexKey.startIndex, indexOfByte + 2))
       if var byte = AesEncryptor.getHex(hexKey.substringWithRange(range)) {
@@ -101,6 +107,7 @@ public final class AesEncryptor {
       kSecAttrKeyType as NSString: kSecAttrKeyTypeAES as NSString,
       kSecAttrKeySizeInBits as NSString: NSNumber(int: 256)
     ]
+    
     self.key = SecKeyCreateFromData(keyParams, keyData, nil)
   }
   
@@ -110,7 +117,7 @@ public final class AesEncryptor {
     This will release our hold on the underlying security transforms.
     */
   deinit {
-    key.release()
+    key?.release()
   }
   
   //MARK: - Encryption

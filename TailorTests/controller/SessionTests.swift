@@ -23,7 +23,7 @@ class SessionTests: TailorTestCase {
       jsonData = NSData()
     }
     let encryptor = AesEncryptor(key: key)
-    let encryptedData = encryptor.encrypt(jsonData)
+    let encryptedData = encryptor?.encrypt(jsonData) ?? NSData()
     let encryptedDataString = encryptedData.base64EncodedStringWithOptions([])
     return encryptedDataString
   }
@@ -134,7 +134,7 @@ class SessionTests: TailorTestCase {
     let decryptor = AesEncryptor(key: key)
     let cookieData = NSData(base64EncodedString: string, options: []) ?? NSData()
     XCTAssertNotEqual(cookieData.length, 0, "can base-64 decode the cookie data")
-    let decodedData = decryptor.decrypt(cookieData)
+    let decodedData = decryptor?.decrypt(cookieData) ?? NSData()
     XCTAssertNotEqual(decodedData.length, 0, "can decrypt the cookie data with the application key")
     let jsonObject : [String:String]
     do {

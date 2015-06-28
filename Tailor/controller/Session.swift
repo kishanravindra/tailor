@@ -11,7 +11,7 @@ public struct Session {
   private var data: [String:String] = [:]
   
   /** The internal encryption object. */
-  private let encryptor : AesEncryptor
+  private let encryptor : AesEncryptor?
   
   /** The IP Address that can use this session. */
   private let clientAddress: String
@@ -37,7 +37,7 @@ public struct Session {
     encryptor = AesEncryptor(key: key ?? "")
     if let encryptedDataString = cookies["_session"] {
       let encryptedData = NSData(base64EncodedString: encryptedDataString, options: []) ?? NSData()
-      let decryptedData = encryptor.decrypt(encryptedData)
+      let decryptedData = encryptor?.decrypt(encryptedData) ?? NSData()
       
       var cookieData: [String:String]
       do {
@@ -123,7 +123,7 @@ public struct Session {
     catch {
       jsonData = NSData()
     }
-    let encryptedData = encryptor.encrypt(jsonData)
+    let encryptedData = encryptor?.encrypt(jsonData) ?? NSData()
     let encryptedDataString = encryptedData.base64EncodedStringWithOptions([])
     return encryptedDataString
   }

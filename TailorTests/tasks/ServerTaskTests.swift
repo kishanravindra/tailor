@@ -1,7 +1,8 @@
 import XCTest
 import Tailor
+import TailorTesting
 
-class ServerTaskTests: XCTestCase {
+class ServerTaskTests: TailorTestCase {
   func testRunStartsServer() {
     let expectation = expectationWithDescription("server started")
     class ServerTestApplication : Application {

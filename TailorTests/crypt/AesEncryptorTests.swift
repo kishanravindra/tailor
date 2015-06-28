@@ -48,7 +48,7 @@ class AesEncryptorTests: TailorTestCase {
   //MARK: - Encryption
   
   func testEncryptIsReversible() {
-    let encryptor = AesEncryptor(key: AesEncryptor.generateKey())
+    let encryptor = AesEncryptor(key: AesEncryptor.generateKey())!
     let inputData = "test data".dataUsingEncoding(NSUTF8StringEncoding) ?? NSData()
     let value = encryptor.encrypt(inputData)
     let decryptedValue = encryptor.decrypt(value)
@@ -57,11 +57,16 @@ class AesEncryptorTests: TailorTestCase {
   }
   
   func testEncryptIsIdempotent() {
-    let encryptor = AesEncryptor(key: AesEncryptor.generateKey())
+    let encryptor = AesEncryptor(key: AesEncryptor.generateKey())!
     let inputData = "test data".dataUsingEncoding(NSUTF8StringEncoding) ?? NSData()
     let value1 = encryptor.encrypt(inputData)
     let value2 = encryptor.encrypt(inputData)
     assert(value1, equals: value2, message: "gets the same data both times")
+  }
+  
+  func testInitializationWithEmptyKeyIsNil() {
+    let encryptor = AesEncryptor(key: "")
+    assert(isNil: encryptor)
   }
   
   func testGenerateKeyGetsHexString() {
