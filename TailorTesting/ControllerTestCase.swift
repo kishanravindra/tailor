@@ -165,18 +165,18 @@ public class ControllerTestCase : TailorTestCase {
     else {
       name = controllerName ?? ""
     }
-    return Application.sharedApplication().routeSet.pathFor(name, actionName: actionName, parameters: parameters)
+    return RouteSet.shared().pathFor(name, actionName: actionName, parameters: parameters)
   }
 
   //MARK: - Calling Actions
   
-  public func callAction(actionName: String, callback: Response -> Void) {
+  public func callAction(actionName: String, file: String = __FILE__, line: UInt = __LINE__, callback: Response -> Void) {
     let actionParams = params[actionName] ?? [:]
     var sessionData = [String:String]()
     if user != nil {
       sessionData["userId"] = String(user.id ?? 0)
     }
-    let routes = Application.sharedApplication().routeSet
+    let routes = RouteSet.shared()
     
     guard let type = controllerType else { assert(false, message: "Did not have a controller type"); return }
     let path = routes.pathFor(type.name, actionName: actionName, parameters: actionParams)
@@ -185,7 +185,8 @@ public class ControllerTestCase : TailorTestCase {
       return route.controller == type && route.actionName == actionName
     }.first?.method ?? "GET"
     if path == nil {
-      assert(false, message: "could not generate route for \(type.name)/\(actionName)")
+      recordFailureWithDescription("could not generate route for \(type.name)/\(actionName)", inFile: file, atLine: line, expected: true)
+      return
     }
     var request = Request(parameters: actionParams, sessionData: sessionData, path: path!, method: method)
     if let actionFiles = files[actionName] {
@@ -193,7 +194,7 @@ public class ControllerTestCase : TailorTestCase {
     }
     let expectation = expectationWithDescription("response called")
     
-    Application.sharedApplication().routeSet.handleRequest(request) {
+    routes.handleRequest(request) {
       response in
       expectation.fulfill()
       callback(response)

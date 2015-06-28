@@ -10,8 +10,26 @@ public class Application {
   /** The port that the application listens on. */
   public var port = 8080
   
-  /** The routes that process requests for the app. */
-  public var routeSet = RouteSet()
+  /**
+    The routes that process requests for the app.
+  
+    This has been deprecated in favor of getting the load and shared methods on
+    RouteSet.
+    */
+  @available(*, deprecated, message="Use the shared route set instead") public var routeSet: RouteSet {
+    get {
+      return RouteSet.shared()
+    }
+    set {
+      RouteSet.load {
+        routes in
+        for route in newValue.routes {
+          let path = route.pathPattern
+          routes.addRoute(path.substringFromIndex(advance(path.startIndex, 1)), method: route.method, handler: route.handler, description: route.description, controller: route.controller, actionName: route.actionName)
+        }
+      }
+    }
+  }
   
   /** The formatters that we have available for dates. */
   public var dateFormatters: [String:NSDateFormatter] = [:]
@@ -153,7 +171,7 @@ public class Application {
     This method starts a server for this application.
     */
   public func startServer() {
-    Connection.startServer(ipAddress, port: port, handler: { self.routeSet.handleRequest($0, callback: $1) })
+    Connection.startServer(ipAddress, port: port, handler: { RouteSet.shared().handleRequest($0, callback: $1) })
   }
   
   /** Starts a version of this application as the shared application. */
@@ -451,5 +469,5 @@ public class Application {
   }
 }
 
-/** The application that we are running. */
+/** The arguments for the application that we are running. */
 public var APPLICATION_ARGUMENTS : (String, [String:String])? = nil

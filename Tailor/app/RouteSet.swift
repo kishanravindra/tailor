@@ -153,13 +153,6 @@ public class RouteSet {
     
   }
   
-  /**
-    This method gets the shared route set for the application.
-    */
-  public class func shared() -> RouteSet {
-    return Application.sharedApplication().routeSet
-  }
-  
   //MARK: - Managing Routes
 
   /**
@@ -557,4 +550,29 @@ public class RouteSet {
     }
     return matchingPath
   }
+  
+  //MARK: - Shared Routes
+  
+  /**
+    This method loads the shared route set.
+  
+    This will build an empty route set, give it to the routeBuilder to
+    populate the routes, and then set that as the shared route set.
+
+    - parameter routeBuilder:   A function that will populate the routes.
+    */
+  public static func load(@noescape routeBuilder: (inout RouteSet) -> ()) {
+    var routes = RouteSet()
+    routeBuilder(&routes)
+    SHARED_ROUTE_SET = routes
+  }
+  
+  /**
+    This method gets the shared route set.
+    */
+  public static func shared() -> RouteSet {
+    return SHARED_ROUTE_SET
+  }
 }
+
+private var SHARED_ROUTE_SET = RouteSet()

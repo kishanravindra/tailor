@@ -61,10 +61,10 @@ class ControllerTests: TailorTestCase {
     
     user = User(emailAddress: "test@test.com", password: "test").save()!
     
-    routeSet = RouteSet()
-    TestController.defineRoutes(&routeSet)
-    SecondTestController.defineRoutes(&routeSet)
-    Application.sharedApplication().routeSet = routeSet
+    RouteSet.load { routes in
+      TestController.defineRoutes(&routes)
+      SecondTestController.defineRoutes(&routes)
+    }
     
     controller = TestController(
       request: Request(),
@@ -77,7 +77,7 @@ class ControllerTests: TailorTestCase {
   }
   
   override func tearDown() {
-    Application.sharedApplication().routeSet = RouteSet()
+    RouteSet.load { routes in }
   }
   
   func testInitializeSetsUserFromIdInSession() {

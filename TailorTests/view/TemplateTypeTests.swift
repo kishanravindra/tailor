@@ -178,7 +178,12 @@ class TemplateTypeTests: TailorTestCase {
         
       }
     }
-    Application.sharedApplication().routeSet.addRoute("test/path", method: "GET", actionName: "index", action: TestController.indexAction)
+    
+    RouteSet.load {
+      routes in
+      routes.addRoute("test/path", method: "GET", actionName: "index", action: TestController.indexAction)
+      ()
+    }
     var template2 = EmptyTemplate(state: TemplateState(InnerTestController(
       request: controller.request,
       actionName: "show",

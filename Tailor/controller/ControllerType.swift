@@ -315,7 +315,7 @@ extension ControllerType {
     - returns:                    The path
   */
   public func pathFor(controllerName: String? = nil, actionName: String? = nil, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
-    var path = Application.sharedApplication().routeSet.pathFor(
+    var path = RouteSet.shared().pathFor(
       controllerName ?? self.dynamicType.name,
       actionName: actionName ?? self.actionName,
       parameters: parameters,

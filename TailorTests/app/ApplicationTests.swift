@@ -22,7 +22,6 @@ class ApplicationTests : TailorTestCase {
       address.3 == 0
       , "initalizes IP address to dummy address")
     self.assert(application.port, equals: 8080, message: "initializes port to HTTP Alt")
-    self.assert(application.routeSet.routes.count, equals: 0, message: "initializes route set to an empty one")
   }
   
   func testInitializationSetsDateFormatters() {
@@ -52,6 +51,27 @@ class ApplicationTests : TailorTestCase {
     let application = TestApplication()
     self.assert(application.command, equals: "tailor.exit", message: "sets the command from the prompt")
     self.assert(application.flags, equals: ["a": "5"], message: "sets the flags from the prompt")
+  }
+  
+  @available(*, deprecated) func testGettingRouteSetGetsSharedRouteSet() {
+    RouteSet.load {
+      (inout routes: RouteSet)->Void in
+      routes.addRoute("test1", method: "GET", handler: {
+        request,callback in
+      })
+    }
+    assert(application.routeSet.routes.count, equals: 1)
+  }
+  
+  @available(*, deprecated) func testSettingRouteSetSetsSharedRouteSet() {
+    let routes = RouteSet()
+    
+    routes.addRoute("test1", method: "GET", handler: {
+      request,callback in
+    })
+    
+    application.routeSet = routes
+    assert(RouteSet.shared().routes.count, equals: 1)
   }
   
   func testParseArgumentsRepeatedlyPromptsUntilValidTaskAppears() {
