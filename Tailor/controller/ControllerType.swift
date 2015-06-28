@@ -83,7 +83,7 @@ public protocol ControllerType {
   
     - parameter routes:   The route set that we are adding our routes to.
     */
-  static func defineRoutes(inout routes:  RouteSet)
+  static func defineRoutes(routes:  RouteSet)
 }
 
 /**

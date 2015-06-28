@@ -35,6 +35,8 @@ class DatabaseDriverTests: TailorTestCase {
     Application.sharedDatabaseConnection()
     NSOperationQueue().addOperationWithBlock {
       expectation.fulfill()
+      NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] = application
+      NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")
       Application.sharedDatabaseConnection()
       self.assert(application.connectionCount, equals: 2, message: "creates two connections")
     }

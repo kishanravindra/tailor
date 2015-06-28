@@ -183,7 +183,7 @@ public class ControllerTestCase : TailorTestCase {
     let method = routes.routes.filter {
       route in
       return route.controller == type && route.actionName == actionName
-    }.first?.method ?? "GET"
+    }.first?.path.methodName ?? "GET"
     if path == nil {
       recordFailureWithDescription("could not generate route for \(type.name)/\(actionName)", inFile: file, atLine: line, expected: true)
       return

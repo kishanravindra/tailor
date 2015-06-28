@@ -8,9 +8,9 @@ class ControllerTests: TailorTestCase {
       return "TailorTests.TestController"
     }
     var state: ControllerState
-    static func defineRoutes(inout routes: RouteSet) {
-      routes.addRoute("route1", method: "GET", actionName: "index", action: indexAction)
-      routes.addRoute("route1/:id", method: "GET", actionName: "show", action: showAction)
+    static func defineRoutes(routes: RouteSet) {
+      routes.route(.Get("route1"), to: indexAction, name: "index")
+      routes.route(.Get("route1/:id"), to: showAction, name: "show")
     }
     
     func checkParams() -> Bool {
@@ -42,8 +42,8 @@ class ControllerTests: TailorTestCase {
   
   struct SecondTestController : ControllerType {
     var state: ControllerState
-    static func defineRoutes(inout routes: RouteSet) {
-      routes.addRoute("route2", method: "GET", actionName: "index", action: indexAction)
+    static func defineRoutes(routes: RouteSet) {
+      routes.route(.Get("route2"), to: indexAction, name: "index")
     }
     
     func indexAction() {
@@ -62,8 +62,8 @@ class ControllerTests: TailorTestCase {
     user = User(emailAddress: "test@test.com", password: "test").save()!
     
     RouteSet.load { routes in
-      TestController.defineRoutes(&routes)
-      SecondTestController.defineRoutes(&routes)
+      TestController.defineRoutes(routes)
+      SecondTestController.defineRoutes(routes)
     }
     
     controller = TestController(
@@ -435,7 +435,7 @@ class ControllerTests: TailorTestCase {
     let expectation = expectationWithDescription("respond method called")
     struct TestController: ControllerType {
       var state: ControllerState
-      static func defineRoutes(inout routes: RouteSet) {
+      static func defineRoutes(routes: RouteSet) {
         
       }
       func index() {
@@ -475,7 +475,7 @@ class ControllerTests: TailorTestCase {
     let expectation = expectationWithDescription("respond method called")
     struct TestController: ControllerType {
       var state: ControllerState
-      static func defineRoutes(inout routes: RouteSet) {
+      static func defineRoutes(routes: RouteSet) {
         
       }
       func index() {

@@ -87,7 +87,7 @@
   */
   public class var actions: [Action] { return [] }
   
-  public class func defineRoutes(inout routes: RouteSet) {
+  public class func defineRoutes(routes: RouteSet) {
   }
   
   /**

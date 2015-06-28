@@ -17,11 +17,24 @@ public class RouteSet {
     in a request parameter called `parameter_name`.
     */
   public struct Route {
-    /** The pattern for the path. */
-    public let pathPattern: String
+    /**
+      The path for the route.
+      */
+    public let path: RoutePath
     
-    /** The method for the HTTP request. */
-    public let method: String
+    /**
+      The pattern for the path.
+    
+      This has been deprecated in favor of the path variable.
+      */
+    @available(*, deprecated, message="Use the path instead") public var pathPattern: String { return path.pathPattern }
+    
+    /**
+      The method for the HTTP request.
+    
+      This has been deprecated in favor of the new path variable.
+      */
+    @available(*, deprecated, message="Use the path instead") public var method: String { return path.methodName }
     
     /** The implementation of the response handler. */
     public let handler: Connection.RequestHandler
@@ -50,33 +63,48 @@ public class RouteSet {
     
     /**
       This method initializes a route.
+    
+      This method has been deprecated in favor of the version that takes a path
+      enum.
 
-      - parameter pathPattern:   The pattern for the path.
-      - parameter handler:       The response handler.
-      - parameter description:   The description for the route.
+      - parameter pathPattern:    The pattern for the path.
+      - parameter method:         The HTTP method.
+      - parameter handler:        The response handler.
+      - parameter description:    The description for the route.
       */
-    public init(pathPattern: String, method: String, handler: Connection.RequestHandler, description: String) {
-      self.pathPattern = pathPattern
+    @available(*, deprecated, message="This has been deprecated in favor of the version that takes a path") public init(pathPattern: String, method: String, handler: Connection.RequestHandler, description: String) {
+      let path = RoutePath.build(method, pathPattern: pathPattern) ?? RoutePath.Get(pathPattern)
+      self.init(path: path, handler: handler, description: description)
+    }
+    
+    /**
+      This method initializes a route.
+      
+      - parameter path:           The path.
+      - parameter handler:        The response handler.
+      - parameter description:    The description for the route.
+      */
+    public init(path: RoutePath, handler: Connection.RequestHandler, description: String) {
+      self.path = path
       self.handler = handler
       self.description = description
-      self.method = method
       
       let parameterPattern = try! NSRegularExpression(pattern: ":[\\w]+", options: [])
       
       var parameterNames : [String] = []
       
-      parameterPattern.enumerateMatchesInString(pathPattern, options: [], range: NSMakeRange(0, pathPattern.characters.count), usingBlock: {
+      parameterPattern.enumerateMatchesInString(path.pathPattern, options: [], range: NSMakeRange(0, path.pathPattern.characters.count), usingBlock: {
         (match, _, _) in
         guard let match = match else { return }
-        let range = Range<String.Index>(start: advance(pathPattern.startIndex, match.range.location + 1), end: advance(pathPattern.startIndex, match.range.location + match.range.length))
-        parameterNames.append(pathPattern.substringWithRange(range))
+        let range = Range<String.Index>(start: advance(path.pathPattern.startIndex, match.range.location + 1), end: advance(path.pathPattern.startIndex, match.range.location + match.range.length))
+        parameterNames.append(path.pathPattern.substringWithRange(range))
       })
       
       self.pathParameters = parameterNames
       
-      let filteredPathPattern = NSMutableString(string: pathPattern)
+      let filteredPathPattern = NSMutableString(string: path.pathPattern)
       
-      parameterPattern.replaceMatchesInString(filteredPathPattern, options: [], range: NSMakeRange(0, pathPattern.characters.count), withTemplate: "([^/]*)")
+      parameterPattern.replaceMatchesInString(filteredPathPattern, options: [], range: NSMakeRange(0, path.pathPattern.characters.count), withTemplate: "([^/]*)")
       
       do {
         try self.regex = NSRegularExpression(pattern: "^" + (filteredPathPattern as String) + "/?$", options: [])
@@ -93,7 +121,7 @@ public class RouteSet {
       - returns: The description
       */
     public func fullDescription() -> String {
-      return NSString(format: "%@ %@ %@", self.method, self.pathPattern, self.description) as String
+      return NSString(format: "%@ %@", self.path.description, self.description) as String
     }
     
     //MARK: - Request Handling
@@ -108,7 +136,7 @@ public class RouteSet {
       let path = request.path
       let range = NSRange(location: 0, length: path.characters.count)
       let match = self.regex?.firstMatchInString(path, options: [], range: range)
-      return match != nil && request.method == self.method
+      return match != nil && request.method == self.path.methodName
     }
     
     /**
@@ -129,6 +157,43 @@ public class RouteSet {
       
       NSLog("Parameters: %@", requestCopy.requestParameters)
       self.handler(requestCopy, callback)
+    }
+  }
+  
+  /**
+    This enum represents a path in a route.
+  
+    The enum cases represent the HTTP verbs, and each one takes a string for the
+    path.
+    */
+  public enum RoutePath: Equatable, CustomStringConvertible {
+    case Get(String)
+    case Post(String)
+    
+    public static func build(methodName: String, pathPattern: String) -> RoutePath? {
+      switch(methodName) {
+      case "GET": return .Get(pathPattern)
+      case "POST": return .Post(pathPattern)
+      default: return nil
+      }
+    }
+    
+    public var pathPattern: String {
+      switch(self) {
+      case let Get(pathPattern): return pathPattern
+      case let Post(pathPattern): return pathPattern
+      }
+    }
+    
+    public var methodName: String {
+      switch(self) {
+      case Get: return "GET"
+      case Post: return "POST"
+      }
+    }
+    
+    public var description: String {
+      return "\(methodName) \(pathPattern)"
     }
   }
   
@@ -285,7 +350,7 @@ public class RouteSet {
     - parameter toPath:        The full path to redirect to.
     */
   public func addRedirect(pathPattern: String, toPath: String) {
-    self.addRoute(pathPattern, method: "GET", handler: {
+    self.addRoute(.Get(pathPattern), handler: {
       request, responseHandler in
       var response = Response()
       response.code = 302
@@ -297,6 +362,8 @@ public class RouteSet {
   
   /**
     This method adds a route with a block.
+  
+    This method has been deprecated in favor of the version with a path enum.
 
     - parameter pathPattern:   The pattern for the route.
     - parameter handler:       The block that will handle the request.
@@ -304,12 +371,27 @@ public class RouteSet {
     - parameter controller:    The controller that will handle the request.
     - parameter actionName:    The name of the action that will handle the request.
     */
-  public func addRoute(pathPattern: String, method: String, handler: Connection.RequestHandler, description: String, controller: ControllerType.Type? = nil, actionName: String? = nil) {
+  @available(*, deprecated, message="Use the version that takes a path enum instead") public func addRoute(pathPattern: String, method: String, handler: Connection.RequestHandler, description: String, controller: ControllerType.Type? = nil, actionName: String? = nil) {
+    let path = RoutePath.build(method, pathPattern: pathPattern) ?? .Get(pathPattern)
+    self.addRoute(path, handler: handler, description: description, controller: controller, actionName: actionName)
+  }
+  
+  /**
+    This method adds a route with a block.
+    
+    - parameter path:           The path for the route.
+    - parameter description:    The description of the route implementation.
+    - parameter controller:     The controller that will handle the request.
+    - parameter actionName:     The name of the action that will handle the request.
+  */
+  public func addRoute(path: RoutePath, handler: Connection.RequestHandler, description: String, controller: ControllerType.Type? = nil, actionName: String? = nil) {
     var fullPattern = self.currentPathPrefix
+    let pathPattern = path.pathPattern
     if !pathPattern.isEmpty {
       fullPattern += "/" + pathPattern
     }
-    var route = Route(pathPattern: fullPattern, method: method, handler: handler, description: description)
+    let fullPath = RoutePath.build(path.methodName, pathPattern: fullPattern) ?? .Get(fullPattern)
+    var route = Route(path: fullPath, handler: handler, description: description)
     route.controller = controller ?? currentController
     route.actionName = actionName
     self.routes.append(route)
@@ -317,6 +399,9 @@ public class RouteSet {
   
   /**
     This method adds a route for a controller action.
+  
+    This method has been deprecated in favor of the version that takes a path
+    enum.
 
     - parameter pathPattern:    The pattern for the route.
     - parameter method:         The HTTP method for the route.
@@ -324,7 +409,21 @@ public class RouteSet {
                                 and looking up routes by name.
     - parameter action          The body of the action.
     */
-  public func addRoute<T: ControllerType>(pathPattern: String, method: String, actionName: String, action: (T)->()->()) {
+  @available(*, deprecated, message="Use the version that takes a path enum instead") public func addRoute<T: ControllerType>(pathPattern: String, method: String, actionName: String, action: (T)->()->()) {
+    let path = RoutePath.build(method, pathPattern: pathPattern) ?? .Get(pathPattern)
+    self.route(path, to: action, name: actionName)
+  }
+  
+  
+  /**
+    This method adds a route for a controller action.
+    
+    - parameter path:           The path for the route.
+    - parameter actionName:     The name of the action, for use in debugging
+                                and looking up routes by name.
+    - parameter action          The body of the action.
+    */
+  public func route<T: ControllerType>(path: RoutePath, to action: (T)->()->(), name actionName: String) {
     let description = NSString(format: "%@#%@", T.name, actionName) as String
     let filters = self.currentFilters
     let handler: Connection.RequestHandler = {
@@ -337,18 +436,32 @@ public class RouteSet {
       }
       action(controller)()
     }
-    addRoute(pathPattern, method: method, handler: handler, description: description, controller: T.self, actionName: actionName)
+    addRoute(path, handler: handler, description: description, controller: T.self, actionName: actionName)
   }
   
   /**
     This method adds a route with a block.
+  
+    This method has been deprecated in favor of the version that takes a path
+    enum.
 
     - parameter pathPattern:   The pattern for the route.
     - parameter method:        The HTTP method for the route.
     - parameter handler:       The block that will handle the request.
   */
-  public func addRoute(pathPattern: String, method: String, handler: Connection.RequestHandler) {
-    self.addRoute(pathPattern, method: method, handler: handler, description: "custom block")
+  @available(*, deprecated, message="Use the version that takes a path enum instead") public func addRoute(pathPattern: String, method: String, handler: Connection.RequestHandler) {
+    let path = RoutePath.build(method, pathPattern: pathPattern) ?? .Get(pathPattern)
+    self.addRoute(path, handler: handler)
+  }
+  
+  /**
+    This method adds a route with a block.
+  
+    - parameter path:           The path for the route.
+    - parameter handler:        The block that will handle the request.
+    */
+  public func addRoute(path: RoutePath, handler: Connection.RequestHandler) {
+    self.addRoute(path, handler: handler, description: "custom block")
   }
   
   /**
@@ -428,6 +541,17 @@ public class RouteSet {
   }
   
   /**
+    This method adds routes from several controllers.
+
+    - parameters: controllers   The controller whose routes we are adding.
+    */
+  public func addControllerRoutes(controllers: ControllerType.Type...) {
+    for controller in controllers {
+      controller.defineRoutes(self)
+    }
+  }
+  
+  /**
     This method prints information about all of the routes.
     */
   public func printRoutes() {
@@ -480,7 +604,7 @@ public class RouteSet {
     for assetName in assets {
       let path = "\(prefix)/\(assetName)"
       let localPath = "\(localPrefix)/\(assetName)"
-      self.addRoute(path, method: "GET") {
+      self.addRoute(.Get(path)) {
         (request, callback) -> () in
         
         let fullPath = Application.sharedApplication().rootPath() + "/\(localPath)"
@@ -521,7 +645,7 @@ public class RouteSet {
     for route in self.routes {
       if route.controller != nil && route.controller!.name == controllerName &&
       route.actionName != nil && route.actionName! == actionName {
-        var path = route.pathPattern
+        var path = route.path.pathPattern
         var hasQuery = false
         for (key, value) in parameters {
           if let range = path.rangeOfString(":" + key, options: [], range: nil, locale: nil) {
@@ -576,3 +700,16 @@ public class RouteSet {
 }
 
 private var SHARED_ROUTE_SET = RouteSet()
+
+/**
+  This method determines if two route paths are equal.
+
+  Route paths are equal when they have the same method and path pattern.
+
+  - parameter lhs:    The left-hand side of the operator
+  - parameter rhs:    The right-hand side of the operator
+  - returns:          Whether the two paths are equal.
+  */
+public func ==(lhs: RouteSet.RoutePath, rhs: RouteSet.RoutePath) -> Bool {
+  return lhs.methodName == rhs.methodName && lhs.pathPattern == rhs.pathPattern
+}

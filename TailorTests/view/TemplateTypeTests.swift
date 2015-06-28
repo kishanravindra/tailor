@@ -10,7 +10,7 @@ class TemplateTypeTests: TailorTestCase {
   struct TestController: ControllerType {
     var state: ControllerState
     static let layout = EmptyLayout.self
-    static func defineRoutes(inout RouteSet) {}
+    static func defineRoutes(RouteSet) {}
     static let name = "TestController"
     func indexAction() {
       
@@ -174,14 +174,14 @@ class TemplateTypeTests: TailorTestCase {
   func testLinkPutsLinkTagInBuffer() {
     struct InnerTestController: ControllerType {
       var state: ControllerState
-      static func defineRoutes(inout routes: RouteSet) {
+      static func defineRoutes(routes: RouteSet) {
         
       }
     }
     
     RouteSet.load {
       routes in
-      routes.addRoute("test/path", method: "GET", actionName: "index", action: TestController.indexAction)
+      routes.route(.Get("test/path"), to: TestController.indexAction, name: "index")
       ()
     }
     var template2 = EmptyTemplate(state: TemplateState(InnerTestController(
