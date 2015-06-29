@@ -15,3 +15,10 @@
 * Finding better way of switching on MySQL type enum
 * Initializing calendars in different years
 * Specifying explicit names on controller structs
+
+# Changes for Sqlite database
+
+* Better specification of database type
+* Portable way of getting list of tables
+* Adding support for more column types
+* Switching test cases to use SQLite 

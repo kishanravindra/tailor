@@ -112,6 +112,8 @@ public enum DatabaseValue: Equatable, CustomStringConvertible {
     switch(self) {
     case let .Timestamp(timestamp):
       return timestamp
+    case let .String(string):
+      return TimeFormat.Database.parseTime(string, timeZone: Application.sharedDatabaseConnection().timeZone, calendar: SystemCalendar())
     default:
       return nil
     }

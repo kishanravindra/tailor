@@ -98,6 +98,16 @@
 		52B2B6F219F3F7FC0086261B /* SanitizedText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6F119F3F7FC0086261B /* SanitizedText.swift */; };
 		52B417341B3DF5DD00B274F7 /* TemplateForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B417331B3DF5DD00B274F7 /* TemplateForm.swift */; };
 		52B417361B3E12E400B274F7 /* TemplateFormTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B417351B3E12E400B274F7 /* TemplateFormTests.swift */; };
+		52B417B51B40B1F400B274F7 /* TailorSqlite.h in Headers */ = {isa = PBXBuildFile; fileRef = 52B417B41B40B1F400B274F7 /* TailorSqlite.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		52B417BC1B40B1F400B274F7 /* TailorSqlite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52B417B21B40B1F400B274F7 /* TailorSqlite.framework */; };
+		52B417C11B40B1F400B274F7 /* SqliteConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B417C01B40B1F400B274F7 /* SqliteConnectionTests.swift */; };
+		52B417CA1B40B25100B274F7 /* SqliteConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B417C91B40B25100B274F7 /* SqliteConnection.swift */; };
+		52B417CC1B40B50300B274F7 /* Tailor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5262EEA21AD0BA3D006F864D /* Tailor.framework */; };
+		52B417CD1B40B50500B274F7 /* Tailor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5262EEA21AD0BA3D006F864D /* Tailor.framework */; };
+		52B417CE1B40B51500B274F7 /* TailorTesting.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5262EEA31AD0BA3D006F864D /* TailorTesting.framework */; };
+		52B417D11B40B9D300B274F7 /* TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B417CF1B40B9CA00B274F7 /* TestHelpers.swift */; };
+		52B417D31B40BCA500B274F7 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 52B417D21B40BCA500B274F7 /* libsqlite3.tbd */; };
+		52B417D51B40D48600B274F7 /* SqliteStatement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B417D41B40D48600B274F7 /* SqliteStatement.swift */; };
 		52BD13A319E9D7E4006D72B0 /* Tailor.h in Headers */ = {isa = PBXBuildFile; fileRef = 52BD13A219E9D7E4006D72B0 /* Tailor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52BD142619E9DA1D006D72B0 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140119E9DA1D006D72B0 /* Application.swift */; };
 		52BD142719E9DA1D006D72B0 /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140219E9DA1D006D72B0 /* Connection.swift */; };
@@ -157,6 +167,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 52BD139C19E9D7E4006D72B0;
 			remoteInfo = Tailor;
+		};
+		52B417BD1B40B1F400B274F7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 52BD139419E9D7E3006D72B0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 52B417B11B40B1F400B274F7;
+			remoteInfo = TailorSqlite;
 		};
 		52BD13AA19E9D7E4006D72B0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -262,6 +279,17 @@
 		52B2B6F119F3F7FC0086261B /* SanitizedText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SanitizedText.swift; sourceTree = "<group>"; };
 		52B417331B3DF5DD00B274F7 /* TemplateForm.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateForm.swift; sourceTree = "<group>"; };
 		52B417351B3E12E400B274F7 /* TemplateFormTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateFormTests.swift; sourceTree = "<group>"; };
+		52B417B21B40B1F400B274F7 /* TailorSqlite.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TailorSqlite.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		52B417B41B40B1F400B274F7 /* TailorSqlite.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TailorSqlite.h; sourceTree = "<group>"; };
+		52B417B61B40B1F400B274F7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		52B417BB1B40B1F400B274F7 /* TailorSqliteTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TailorSqliteTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		52B417C01B40B1F400B274F7 /* SqliteConnectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SqliteConnectionTests.swift; sourceTree = "<group>"; };
+		52B417C21B40B1F400B274F7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		52B417C91B40B25100B274F7 /* SqliteConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SqliteConnection.swift; sourceTree = "<group>"; };
+		52B417CB1B40B3E400B274F7 /* module.map */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.map; sourceTree = "<group>"; };
+		52B417CF1B40B9CA00B274F7 /* TestHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TestHelpers.swift; path = ../TailorSqlite/TestHelpers.swift; sourceTree = "<group>"; };
+		52B417D21B40BCA500B274F7 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		52B417D41B40D48600B274F7 /* SqliteStatement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SqliteStatement.swift; sourceTree = "<group>"; };
 		52BD139D19E9D7E4006D72B0 /* Tailor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Tailor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52BD13A219E9D7E4006D72B0 /* Tailor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Tailor.h; sourceTree = "<group>"; };
 		52BD13A819E9D7E4006D72B0 /* TailorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TailorTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -327,6 +355,25 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		52B417AE1B40B1F400B274F7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				52B417D31B40BCA500B274F7 /* libsqlite3.tbd in Frameworks */,
+				52B417CC1B40B50300B274F7 /* Tailor.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		52B417B81B40B1F400B274F7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				52B417CE1B40B51500B274F7 /* TailorTesting.framework in Frameworks */,
+				52B417BC1B40B1F400B274F7 /* TailorSqlite.framework in Frameworks */,
+				52B417CD1B40B50500B274F7 /* Tailor.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -531,9 +578,32 @@
 			path = "Tailor Application.xctemplate";
 			sourceTree = "<group>";
 		};
+		52B417B31B40B1F400B274F7 /* TailorSqlite */ = {
+			isa = PBXGroup;
+			children = (
+				52B417B41B40B1F400B274F7 /* TailorSqlite.h */,
+				52B417CB1B40B3E400B274F7 /* module.map */,
+				52B417C91B40B25100B274F7 /* SqliteConnection.swift */,
+				52B417D41B40D48600B274F7 /* SqliteStatement.swift */,
+				52B417B61B40B1F400B274F7 /* Info.plist */,
+			);
+			path = TailorSqlite;
+			sourceTree = "<group>";
+		};
+		52B417BF1B40B1F400B274F7 /* TailorSqliteTests */ = {
+			isa = PBXGroup;
+			children = (
+				52B417C01B40B1F400B274F7 /* SqliteConnectionTests.swift */,
+				52B417CF1B40B9CA00B274F7 /* TestHelpers.swift */,
+				52B417C21B40B1F400B274F7 /* Info.plist */,
+			);
+			path = TailorSqliteTests;
+			sourceTree = "<group>";
+		};
 		52BD139319E9D7E3006D72B0 = {
 			isa = PBXGroup;
 			children = (
+				52B417D21B40BCA500B274F7 /* libsqlite3.tbd */,
 				5262EEA21AD0BA3D006F864D /* Tailor.framework */,
 				5262EEA31AD0BA3D006F864D /* TailorTesting.framework */,
 				52D61A7319FDB27800FFA2EF /* libmysqlclient.18.dylib */,
@@ -544,6 +614,8 @@
 				52BD139F19E9D7E4006D72B0 /* Tailor */,
 				52BD13AC19E9D7E4006D72B0 /* TailorTests */,
 				5218B9701AB64EAF0036ED34 /* TailorTesting */,
+				52B417B31B40B1F400B274F7 /* TailorSqlite */,
+				52B417BF1B40B1F400B274F7 /* TailorSqliteTests */,
 				52BD139E19E9D7E4006D72B0 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -554,6 +626,8 @@
 				52BD139D19E9D7E4006D72B0 /* Tailor.framework */,
 				52BD13A819E9D7E4006D72B0 /* TailorTests.xctest */,
 				5218B96F1AB64EAF0036ED34 /* TailorTesting.framework */,
+				52B417B21B40B1F400B274F7 /* TailorSqlite.framework */,
+				52B417BB1B40B1F400B274F7 /* TailorSqliteTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -760,6 +834,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		52B417AF1B40B1F400B274F7 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				52B417B51B40B1F400B274F7 /* TailorSqlite.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		52BD139A19E9D7E4006D72B0 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -789,6 +871,42 @@
 			productName = TailorTesting;
 			productReference = 5218B96F1AB64EAF0036ED34 /* TailorTesting.framework */;
 			productType = "com.apple.product-type.framework";
+		};
+		52B417B11B40B1F400B274F7 /* TailorSqlite */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 52B417C31B40B1F400B274F7 /* Build configuration list for PBXNativeTarget "TailorSqlite" */;
+			buildPhases = (
+				52B417AD1B40B1F400B274F7 /* Sources */,
+				52B417AE1B40B1F400B274F7 /* Frameworks */,
+				52B417AF1B40B1F400B274F7 /* Headers */,
+				52B417B01B40B1F400B274F7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TailorSqlite;
+			productName = TailorSqlite;
+			productReference = 52B417B21B40B1F400B274F7 /* TailorSqlite.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		52B417BA1B40B1F400B274F7 /* TailorSqliteTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 52B417C61B40B1F400B274F7 /* Build configuration list for PBXNativeTarget "TailorSqliteTests" */;
+			buildPhases = (
+				52B417B71B40B1F400B274F7 /* Sources */,
+				52B417B81B40B1F400B274F7 /* Frameworks */,
+				52B417B91B40B1F400B274F7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				52B417BE1B40B1F400B274F7 /* PBXTargetDependency */,
+			);
+			name = TailorSqliteTests;
+			productName = TailorSqliteTests;
+			productReference = 52B417BB1B40B1F400B274F7 /* TailorSqliteTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		52BD139C19E9D7E4006D72B0 /* Tailor */ = {
 			isa = PBXNativeTarget;
@@ -840,6 +958,12 @@
 					5218B96E1AB64EAF0036ED34 = {
 						CreatedOnToolsVersion = 6.1.1;
 					};
+					52B417B11B40B1F400B274F7 = {
+						CreatedOnToolsVersion = 7.0;
+					};
+					52B417BA1B40B1F400B274F7 = {
+						CreatedOnToolsVersion = 7.0;
+					};
 					52BD139C19E9D7E4006D72B0 = {
 						CreatedOnToolsVersion = 6.1;
 					};
@@ -863,12 +987,28 @@
 				52BD139C19E9D7E4006D72B0 /* Tailor */,
 				52BD13A719E9D7E4006D72B0 /* TailorTests */,
 				5218B96E1AB64EAF0036ED34 /* TailorTesting */,
+				52B417B11B40B1F400B274F7 /* TailorSqlite */,
+				52B417BA1B40B1F400B274F7 /* TailorSqliteTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		5218B96D1AB64EAF0036ED34 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		52B417B01B40B1F400B274F7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		52B417B91B40B1F400B274F7 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -905,6 +1045,24 @@
 				5218B9C41AB8DBC80036ED34 /* TailorTestCase.swift in Sources */,
 				52FC9E101B3CC1E9001F783B /* Response.swift in Sources */,
 				5218B9C61AB95B2C0036ED34 /* ControllerTestCase.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		52B417AD1B40B1F400B274F7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				52B417CA1B40B25100B274F7 /* SqliteConnection.swift in Sources */,
+				52B417D51B40D48600B274F7 /* SqliteStatement.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		52B417B71B40B1F400B274F7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				52B417C11B40B1F400B274F7 /* SqliteConnectionTests.swift in Sources */,
+				52B417D11B40B9D300B274F7 /* TestHelpers.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1054,6 +1212,11 @@
 			target = 52BD139C19E9D7E4006D72B0 /* Tailor */;
 			targetProxy = 5218B98C1AB650E10036ED34 /* PBXContainerItemProxy */;
 		};
+		52B417BE1B40B1F400B274F7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 52B417B11B40B1F400B274F7 /* TailorSqlite */;
+			targetProxy = 52B417BD1B40B1F400B274F7 /* PBXContainerItemProxy */;
+		};
 		52BD13AB19E9D7E4006D72B0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 52BD139C19E9D7E4006D72B0 /* Tailor */;
@@ -1115,6 +1278,79 @@
 			};
 			name = Release;
 		};
+		52B417C41B40B1F400B274F7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/build";
+				FRAMEWORK_VERSION = A;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = TailorSqlite/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.johnbrownlee.TailorSqlite;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		52B417C51B40B1F400B274F7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/build";
+				FRAMEWORK_VERSION = A;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = TailorSqlite/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.johnbrownlee.TailorSqlite;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		52B417C71B40B1F400B274F7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/build";
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = TailorSqliteTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.johnbrownlee.TailorSqliteTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		52B417C81B40B1F400B274F7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/build";
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = TailorSqliteTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.johnbrownlee.TailorSqliteTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		52BD13B119E9D7E4006D72B0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1154,6 +1390,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
+					"$(SRCROOT)/TailorSqlite",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					/usr/local/include/mysql,
 				);
@@ -1200,6 +1437,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
+					"$(SRCROOT)/TailorSqlite",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					/usr/local/include/mysql,
 				);
@@ -1319,6 +1557,22 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		52B417C31B40B1F400B274F7 /* Build configuration list for PBXNativeTarget "TailorSqlite" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				52B417C41B40B1F400B274F7 /* Debug */,
+				52B417C51B40B1F400B274F7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		52B417C61B40B1F400B274F7 /* Build configuration list for PBXNativeTarget "TailorSqliteTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				52B417C71B40B1F400B274F7 /* Debug */,
+				52B417C81B40B1F400B274F7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 		52BD139719E9D7E3006D72B0 /* Build configuration list for PBXProject "Tailor" */ = {
 			isa = XCConfigurationList;

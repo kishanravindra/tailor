@@ -87,8 +87,28 @@ class DatabaseValueTests: TailorTestCase {
     assert(timestamp2, equals: timestamp)
   }
   
-  func testTimestampValueWithStringReturnsNil() {
+  func testTimestampValueWithPartialStringReturnsNil() {
     let value = DatabaseValue.String("2015-04-15")
+    let timestamp = value.timestampValue
+    assert(isNil: timestamp)
+  }
+  
+  func testTimestampValueWithFullTimestampStringReturnsTimestamp() {
+    let value = DatabaseValue.String("2015-04-15 09:30:15")
+    let timestamp = value.timestampValue
+    assert(isNotNil: timestamp)
+    if timestamp != nil {
+      assert(timestamp?.year, equals: 2015)
+      assert(timestamp?.month, equals: 4)
+      assert(timestamp?.day, equals: 15)
+      assert(timestamp?.hour, equals: 9)
+      assert(timestamp?.minute, equals: 30)
+      assert(timestamp?.second, equals: 15)
+    }
+  }
+  
+  func testTimestampValueWithIntegerReturnsNil() {
+    let value = DatabaseValue.Integer(12345)
     let timestamp = value.timestampValue
     assert(isNil: timestamp)
   }

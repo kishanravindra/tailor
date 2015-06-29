@@ -1,4 +1,6 @@
-
+/**
+  This protocol describes an interface to a database.
+  */
 public protocol DatabaseDriver: class {
   /** The time zone that the database is using. */
   var timeZone: TimeZone { get }
