@@ -22,3 +22,9 @@
   Alteration, Task, Localization, CacheStore, DatabaseConnection, and Layout
 * Several classes have been replaced with structs: CookieJar, Session,
   PasswordHasher, and Query.
+* Makes the AES Encryptor handle missing encryption keys more gracefully.
+* Adds a more concise syntax for specifying paths and HTTP methods for routes.
+* Creates a mechanism for specifying the shared route set without overriding
+  the Application class.
+* Adds a SQLite database driver
+* Adds a configuration setting for the database driver
