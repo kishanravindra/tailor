@@ -13,6 +13,7 @@ public class TailorTestCase: XCTestCase {
     
     if NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] == nil {
       Application.start()
+      AlterationsTask.runTask()
     }
     Application.truncateTables()
   }

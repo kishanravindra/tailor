@@ -445,10 +445,10 @@ public class Application {
   /**
     The path to the root of the application.
   
-    This defaults to the path of the executable
+    This defaults to the resource path from the main bundle.
     */
   public func rootPath() -> String {
-    return NSBundle(forClass: self.dynamicType).resourcePath ?? "."
+    return NSBundle.mainBundle().resourcePath ?? "."
   }
   
   /**
