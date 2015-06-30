@@ -106,6 +106,24 @@ public final class MysqlConnection : DatabaseDriver {
     block()
     mysql_query(self.connection, "COMMIT;")
   }
+  
+  //MARK: - Metadata
+  
+  /**
+    This method gets the names of the tables in the database.
+    */
+  public func tableNames() -> [String] {
+    let results = Application.sharedDatabaseConnection().executeQuery("SHOW TABLES")
+    var filteredResults = [String]()
+    for result in results {
+      if let key = result.data.keys.first {
+        if let tableName = result.data[key]?.stringValue {
+          filteredResults.append(tableName)
+        }
+      }
+    }
+    return filteredResults
+  }
 }
 
 private let CONNECTION_INITIALIZATION_LOCK = NSLock()

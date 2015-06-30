@@ -4,12 +4,16 @@ import XCTest
 import mysql
 
 class MysqlResultSetTests: TailorTestCase {
-  
   var connection: MysqlConnection { return Application.sharedDatabaseConnection() as! MysqlConnection }
   
   var statement: UnsafeMutablePointer<MYSQL_STMT> = nil
   
+  override func setUp() {
+    super.setUp()
+    loadMysqlConnection()
+  }
   override func tearDown() {
+    loadSqliteConnection()
     if statement != nil {
       mysql_stmt_close(statement)
     }

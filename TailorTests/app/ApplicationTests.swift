@@ -108,6 +108,41 @@ class ApplicationTests : TailorTestCase {
     self.assert(application2.configuration["test.identity"], equals: "success")
   }
   
+  func testOpenDatabaseConnectionGetsConnectionFromConfig() {
+    let application = Application()
+    @objc(ApplicationTestConnection)
+    final class ApplicationTestConnection: DatabaseDriver {
+      let name: String
+      let timeZone: TimeZone = TimeZone.systemTimeZone()
+      
+      init(config: [String:String]) {
+        self.name = config["name"] ?? "Anonymous"
+      }
+      
+      func executeQuery(query: String, parameters: [DatabaseValue]) -> [DatabaseRow] {
+        return []
+      }
+      
+      func tableNames() -> [String] {
+        return []
+      }
+    }
+    
+    application.configuration.child("database").addDictionary([
+      "class": "ApplicationTestConnection",
+      "name": "My Connection"
+    ])
+    
+    let connection = application.openDatabaseConnection()
+    
+    if let castConnection = connection as? ApplicationTestConnection {
+      assert(castConnection.name, equals: "My Connection")
+    }
+    else {
+      assert(false, message: "Did not have correct class for connection")
+    }
+  }
+  
   //MARK: Getting Subclasses
   
   func testCanRegisterCustomSubclasses() {

@@ -1,43 +1,37 @@
 import Foundation
 import Tailor
 import TailorTesting
+import TailorSqlite
 
 class TestApplication: Tailor.Application {
    required init() {
     super.init()
     self.configuration.addDictionary([
     "database": [
-      "host": "127.0.0.1",
-      "username": "tailor",
-      "password": "tailor",
-      "database": "tailor_tests"
+      "class": "TailorSqlite.SqliteConnection",
+      "path": self.rootPath() + "/testing.sqlite"
     ],
     "sessions": [
       "encryptionKey": "0FC7ECA7AADAD635DCC13A494F9A2EA8D8DAE366382CDB3620190F6F20817124"
     ]])
   }
   
-  override func openDatabaseConnection() -> DatabaseDriver {
-    let config = self.configuration.child("database").toDictionary() as! [String: String]
-    return MysqlConnection(config: config)
-  }
-  
   override func start() {
     super.start()
     Application.sharedDatabaseConnection().executeQuery("DROP TABLE IF EXISTS `hats`")
-    Application.sharedDatabaseConnection().executeQuery("CREATE TABLE `hats` ( `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, `color` varchar(255), `brim_size` int(11), shelf_id int(11), `created_at` timestamp, `updated_at` timestamp)")
+    Application.sharedDatabaseConnection().executeQuery("CREATE TABLE `hats` ( `id` integer NOT NULL PRIMARY KEY, `color` varchar(255), `brim_size` integer, shelf_id integer, `created_at` timestamp, `updated_at` timestamp)")
     
     Application.sharedDatabaseConnection().executeQuery("DROP TABLE IF EXISTS `shelfs`")
-    Application.sharedDatabaseConnection().executeQuery("CREATE TABLE `shelfs` ( `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, `name` varchar(255), `store_id` int(11))")
+    Application.sharedDatabaseConnection().executeQuery("CREATE TABLE `shelfs` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255), `store_id` integer)")
     
     Application.sharedDatabaseConnection().executeQuery("DROP TABLE IF EXISTS `stores`")
-    Application.sharedDatabaseConnection().executeQuery("CREATE TABLE `stores` ( `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, `name` varchar(255))")
+    Application.sharedDatabaseConnection().executeQuery("CREATE TABLE `stores` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255))")
     
     Application.sharedDatabaseConnection().executeQuery("DROP TABLE IF EXISTS `users`")
-    Application.sharedDatabaseConnection().executeQuery("CREATE TABLE `users` ( `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, `email_address` varchar(255), `encrypted_password` varchar(255))")
+    Application.sharedDatabaseConnection().executeQuery("CREATE TABLE `users` ( `id` integer NOT NULL PRIMARY KEY, `email_address` varchar(255), `encrypted_password` varchar(255))")
     
     Application.sharedDatabaseConnection().executeQuery("DROP TABLE IF EXISTS `tailor_translations`")
-    Application.sharedDatabaseConnection().executeQuery("CREATE TABLE `tailor_translations` ( `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, `translation_key` varchar(255), `locale` varchar(255), `translated_text` varchar(255))")
+    Application.sharedDatabaseConnection().executeQuery("CREATE TABLE `tailor_translations` ( `id` integer NOT NULL PRIMARY KEY, `translation_key` varchar(255), `locale` varchar(255), `translated_text` varchar(255))")
   }
 }
 
@@ -63,6 +57,10 @@ final class TestConnection : DatabaseDriver {
     dictionary["databaseConnection"] = newConnection
     block(newConnection)
     dictionary["databaseConnection"] = oldConnection
+  }
+  
+  func tableNames() -> [String] {
+    return []
   }
 }
 
@@ -174,5 +172,39 @@ struct Store : Persistable {
 @available(*, deprecated) extension Controller {
   convenience init() {
     self.init(request: Request(), actionName: "index", callback: {_ in })
+  }
+}
+
+extension TailorTestCase {
+  func loadMysqlConnection() {
+    
+    Application.sharedApplication().configuration.child("database").addDictionary([
+      "host": "127.0.0.1",
+      "username": "tailor",
+      "password": "tailor",
+      "database": "tailor_tests"
+      ])
+    Application.sharedApplication().configuration["database.class"] = "Tailor.MysqlConnection"
+    Application.openSharedDatabaseConnection()
+    
+    Application.sharedDatabaseConnection().executeQuery("DROP TABLE IF EXISTS `hats`")
+    Application.sharedDatabaseConnection().executeQuery("CREATE TABLE `hats` ( `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, `color` varchar(255), `brim_size` int(11), shelf_id int(11), `created_at` timestamp, `updated_at` timestamp)")
+    
+    Application.sharedDatabaseConnection().executeQuery("DROP TABLE IF EXISTS `shelfs`")
+    Application.sharedDatabaseConnection().executeQuery("CREATE TABLE `shelfs` ( `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, `name` varchar(255), `store_id` int(11))")
+    
+    Application.sharedDatabaseConnection().executeQuery("DROP TABLE IF EXISTS `stores`")
+    Application.sharedDatabaseConnection().executeQuery("CREATE TABLE `stores` ( `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, `name` varchar(255))")
+    
+    Application.sharedDatabaseConnection().executeQuery("DROP TABLE IF EXISTS `users`")
+    Application.sharedDatabaseConnection().executeQuery("CREATE TABLE `users` ( `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, `email_address` varchar(255), `encrypted_password` varchar(255))")
+    
+    Application.sharedDatabaseConnection().executeQuery("DROP TABLE IF EXISTS `tailor_translations`")
+    Application.sharedDatabaseConnection().executeQuery("CREATE TABLE `tailor_translations` ( `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, `translation_key` varchar(255), `locale` varchar(255), `translated_text` varchar(255))")
+  }
+  
+  func loadSqliteConnection() {
+    Application.sharedApplication().configuration["database.class"] = "TailorSqlite.SqliteConnection"
+    Application.openSharedDatabaseConnection()
   }
 }

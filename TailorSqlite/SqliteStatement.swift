@@ -95,7 +95,8 @@ public final class SqliteStatement {
     This method binds a string to an input parameter.
     */
   public func bindString(string: String, at column: Int32) {
-    sqlite3_bind_text(statement, column, string, Int32(string.utf8.count), {_ in})
+    let data = string.dataUsingEncoding(NSUTF8StringEncoding) ?? NSData()
+    sqlite3_bind_text(statement, column, UnsafePointer<CChar>(data.bytes), Int32(data.length), {_ in})
   }
   
   /**

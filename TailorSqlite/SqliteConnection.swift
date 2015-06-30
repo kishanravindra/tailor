@@ -22,7 +22,6 @@ public final class SqliteConnection: DatabaseDriver {
   public init(config: [String: String]) {
     self.timeZone = TimeZone.systemTimeZone()
     guard let path = config["path"] else { fatalError("Could not create sqlite connection with no path") }
-    NSLog("Opening SQLite database: %@", path)
     var connection: COpaquePointer = nil
     let result = sqlite3_open(path, &connection)
     if result != SQLITE_OK {
@@ -51,5 +50,15 @@ public final class SqliteConnection: DatabaseDriver {
     let results = statement.execute()
     statement.close()
     return results
+  }
+  
+  /**
+    This method gets the names of the tables in the database.
+    */
+  public func tableNames() -> [String] {
+    let results = executeQuery("SELECT * FROM sqlite_master")
+    return removeNils(results.map {
+      return $0.data["tbl_name"]?.stringValue
+    })
   }
 }

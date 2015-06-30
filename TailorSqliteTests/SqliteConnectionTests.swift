@@ -1,14 +1,13 @@
 import Tailor
 import TailorTesting
 import TailorSqlite
+import XCTest
 
 class SqliteConnectionTests: TailorTestCase {
   lazy var connection: SqliteConnection = Application.sharedDatabaseConnection() as! SqliteConnection
   
-  override func setUp() {
-    super.setUp()
-    connection.executeQuery("DELETE FROM hats")
-  }
+  //MARK: - Executing Query
+  
   func testCanExecuteInsertQuery() {
     let results = connection.executeQuery("INSERT INTO `hats` (`color`) VALUES ('red')")
     assert(results.count, equals: 1)
@@ -238,5 +237,12 @@ class SqliteConnectionTests: TailorTestCase {
     }
     
     connection.executeQuery("DROP TABLE `temp_table`")
+  }
+
+  //MARK: - Metadata
+  
+  func testTableNamesCanGetNames() {
+    let names = connection.tableNames().sort()
+    assert(names, equals: ["hats", "shelfs", "stores", "users"])
   }
 }

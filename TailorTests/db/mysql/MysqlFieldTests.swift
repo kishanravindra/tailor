@@ -4,6 +4,15 @@ import XCTest
 import mysql
 
 class MysqlFieldTests : TailorTestCase {
+  override func setUp() {
+    super.setUp()
+    loadMysqlConnection()
+  }
+  
+  override func tearDown() {
+    loadSqliteConnection()
+    super.tearDown()
+  }
   func getField(query: String) -> MYSQL_FIELD {
     let connection = Application.sharedDatabaseConnection() as! MysqlConnection
     let statement = mysql_stmt_init(connection.connection)

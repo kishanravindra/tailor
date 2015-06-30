@@ -5,6 +5,16 @@ import XCTest
 class MysqlStatementTests: TailorTestCase {
   var connection: MysqlConnection { return Application.sharedDatabaseConnection() as! MysqlConnection }
   
+  override func setUp() {
+    super.setUp()
+    loadMysqlConnection()
+    connection.executeQuery("TRUNCATE TABLE `stores`")
+  }
+  
+  override func tearDown() {
+    loadSqliteConnection()
+  }
+  
   func testInitializationWithGoodQueryDoesNotPutErrorOnStatement() {
     let statement = MysqlStatement(connection: connection, query: "SELECT * FROM stores")
     XCTAssertNil(statement.error)

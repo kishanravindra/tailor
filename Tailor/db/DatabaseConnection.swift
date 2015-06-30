@@ -71,5 +71,7 @@ import Foundation
     return sanitizedColumn
   }
   
-  //MARK: Transactions
+  public func tableNames() -> [String] {
+    return []
+  }
 }

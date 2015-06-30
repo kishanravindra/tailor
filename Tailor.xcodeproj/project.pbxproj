@@ -108,6 +108,7 @@
 		52B417D11B40B9D300B274F7 /* TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B417CF1B40B9CA00B274F7 /* TestHelpers.swift */; };
 		52B417D31B40BCA500B274F7 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 52B417D21B40BCA500B274F7 /* libsqlite3.tbd */; };
 		52B417D51B40D48600B274F7 /* SqliteStatement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B417D41B40D48600B274F7 /* SqliteStatement.swift */; };
+		52B417D61B423E2D00B274F7 /* TailorSqlite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52B417B21B40B1F400B274F7 /* TailorSqlite.framework */; };
 		52BD13A319E9D7E4006D72B0 /* Tailor.h in Headers */ = {isa = PBXBuildFile; fileRef = 52BD13A219E9D7E4006D72B0 /* Tailor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52BD142619E9DA1D006D72B0 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140119E9DA1D006D72B0 /* Application.swift */; };
 		52BD142719E9DA1D006D72B0 /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140219E9DA1D006D72B0 /* Connection.swift */; };
@@ -175,12 +176,26 @@
 			remoteGlobalIDString = 52B417B11B40B1F400B274F7;
 			remoteInfo = TailorSqlite;
 		};
+		52B417D71B423E6200B274F7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 52BD139419E9D7E3006D72B0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 52B417B11B40B1F400B274F7;
+			remoteInfo = TailorSqlite;
+		};
 		52BD13AA19E9D7E4006D72B0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 52BD139419E9D7E3006D72B0 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 52BD139C19E9D7E4006D72B0;
 			remoteInfo = Tailor;
+		};
+		52F394601B42477300B777D2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 52BD139419E9D7E3006D72B0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5218B96E1AB64EAF0036ED34;
+			remoteInfo = TailorTesting;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -389,6 +404,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52B417D61B423E2D00B274F7 /* TailorSqlite.framework in Frameworks */,
 				5262EEA41AD0BA3D006F864D /* Tailor.framework in Frameworks */,
 				5262EEA51AD0BA3D006F864D /* TailorTesting.framework in Frameworks */,
 				5292303C1A3CF9AA006DD6EB /* libmysqlclient.18.dylib in Frameworks */,
@@ -901,6 +917,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				52F394611B42477300B777D2 /* PBXTargetDependency */,
 				52B417BE1B40B1F400B274F7 /* PBXTargetDependency */,
 			);
 			name = TailorSqliteTests;
@@ -937,6 +954,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				52B417D81B423E6200B274F7 /* PBXTargetDependency */,
 				5218B98B1AB64F880036ED34 /* PBXTargetDependency */,
 				52BD13AB19E9D7E4006D72B0 /* PBXTargetDependency */,
 			);
@@ -1217,10 +1235,20 @@
 			target = 52B417B11B40B1F400B274F7 /* TailorSqlite */;
 			targetProxy = 52B417BD1B40B1F400B274F7 /* PBXContainerItemProxy */;
 		};
+		52B417D81B423E6200B274F7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 52B417B11B40B1F400B274F7 /* TailorSqlite */;
+			targetProxy = 52B417D71B423E6200B274F7 /* PBXContainerItemProxy */;
+		};
 		52BD13AB19E9D7E4006D72B0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 52BD139C19E9D7E4006D72B0 /* Tailor */;
 			targetProxy = 52BD13AA19E9D7E4006D72B0 /* PBXContainerItemProxy */;
+		};
+		52F394611B42477300B777D2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5218B96E1AB64EAF0036ED34 /* TailorTesting */;
+			targetProxy = 52F394601B42477300B777D2 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1283,6 +1311,7 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/build";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -1306,6 +1335,7 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/build";
 				COPY_PHASE_STRIP = NO;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -1328,10 +1358,13 @@
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/build";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/build",
+				);
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = TailorSqliteTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks ./build";
 				PRODUCT_BUNDLE_IDENTIFIER = com.johnbrownlee.TailorSqliteTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -1342,10 +1375,13 @@
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/build";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/build",
+				);
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = TailorSqliteTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks ./build";
 				PRODUCT_BUNDLE_IDENTIFIER = com.johnbrownlee.TailorSqliteTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -1565,6 +1601,7 @@
 				52B417C51B40B1F400B274F7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		52B417C61B40B1F400B274F7 /* Build configuration list for PBXNativeTarget "TailorSqliteTests" */ = {
 			isa = XCConfigurationList;
@@ -1573,6 +1610,7 @@
 				52B417C81B40B1F400B274F7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		52BD139719E9D7E3006D72B0 /* Build configuration list for PBXProject "Tailor" */ = {
 			isa = XCConfigurationList;

@@ -32,8 +32,5 @@ class TestApplication: Tailor.Application {
     
     Application.sharedDatabaseConnection().executeQuery("DROP TABLE IF EXISTS `users`")
     Application.sharedDatabaseConnection().executeQuery("CREATE TABLE `users` ( `id` integer NOT NULL PRIMARY KEY, `email_address` varchar(255), `encrypted_password` varchar(255))")
-    
-    Application.sharedDatabaseConnection().executeQuery("DROP TABLE IF EXISTS `tailor_translations`")
-    Application.sharedDatabaseConnection().executeQuery("CREATE TABLE `tailor_translations` ( `id` integer NOT NULL PRIMARY KEY, `translation_key` varchar(255), `locale` varchar(255), `translated_text` varchar(255))")
   }
 }

@@ -15,6 +15,11 @@ class MysqlBindParameterTests: TailorTestCase {
     return nil
   }
   
+  override func setUp() {
+    super.setUp()
+    loadMysqlConnection()
+  }
+  
   func runQuery(query: String) {
     let statement = mysql_stmt_init(connection.connection)
     
@@ -31,6 +36,7 @@ class MysqlBindParameterTests: TailorTestCase {
   }
   
   override func tearDown() {
+    loadSqliteConnection()
     super.tearDown()
   }
   

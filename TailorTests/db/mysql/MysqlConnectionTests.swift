@@ -7,8 +7,13 @@ class MysqlConnectionTests: TailorTestCase {
   
   override func setUp() {
     super.setUp()
+    loadMysqlConnection()
     connection.executeQuery("TRUNCATE TABLE `hats`")
     connection.executeQuery("INSERT INTO `hats` (`color`, `brim_size`) VALUES ('red', 10)")
+  }
+  
+  override func tearDown() {
+    loadSqliteConnection()
   }
   
   func testInitializationGetsTimeZoneFromDatabaseSettings() {

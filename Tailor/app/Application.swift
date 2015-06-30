@@ -182,16 +182,28 @@ public class Application {
   /**
     This method opens a database connection.
     
-    This will be called every time a new thread is created, so that we have a
-    distinct database connection for every thread.
- 
-    This implementation will return a dummy connection. Subclasses must provide
-    their own implementation.
+    This will pull the `database` section of the application's configuration,
+    and look for a field called `class`. If this field exists and has the name
+    of a class that conforms to the `DatabaseDriver` protocol, then this will
+    return an instance of the class, initialized with the rest of the database
+    configuration.
+  
+    If this cannot find a database driver from the configuration, it will raise
+    a fatal error.
 
     - returns:   The connection
     */
   public func openDatabaseConnection() -> DatabaseDriver {
-    return MysqlConnection(config: [:])
+    guard let config = configuration.child("database").toDictionary() as? [String:String] else {
+      fatalError("Cannot open a database connection because there is no database configuration")
+    }
+    
+    guard let klass = NSClassFromString(config["class"] ?? "DatabaseDriver") as? DatabaseDriver.Type else {
+      let className = config["class"] ?? "No class"
+      fatalError("Cannot get database class from configuration: \(className)")
+    }
+    
+    return klass.init(config: config)
   }
   
   //MARK: - Loading

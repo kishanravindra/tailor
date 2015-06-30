@@ -33,6 +33,11 @@ public protocol DatabaseDriver: class {
     - parameter block:   The block to execute.
     */
    func transaction(block: ()->())
+  
+  /**
+    This method getes the list of tables in the database.
+    */
+  func tableNames() -> [String]
 }
 
 public extension DatabaseDriver {
