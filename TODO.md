@@ -20,5 +20,4 @@
 
 * Better specification of database type
 * Portable way of getting list of tables
-* Adding support for more column types
 * Switching test cases to use SQLite 

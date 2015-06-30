@@ -24,10 +24,22 @@ class DatabaseValueTests: TailorTestCase {
     assert(boolean, equals: true)
   }
   
-  func testBoolValueWithIntegerTypeReturnsNil() {
+  func testBoolValueWithZeroReturnsFalse() {
     let value = DatabaseValue.Integer(0)
     let boolean = value.boolValue
-    XCTAssertNil(boolean)
+    assert(boolean, equals: false)
+  }
+  
+  func testBoolValueWithOneReturnsTrue() {
+    let value = DatabaseValue.Integer(1)
+    let boolean = value.boolValue
+    assert(boolean, equals: true)
+  }
+  
+  func testBoolValueWithStringReturnsNil() {
+    let value = DatabaseValue.String("true")
+    let boolean = value.boolValue
+    assert(isNil: boolean)
   }
   
   func testIntValueWithIntegerReturnsValue() {
@@ -130,8 +142,23 @@ class DatabaseValueTests: TailorTestCase {
     assert(isNil: value.dateValue)
   }
   
-  func testDateValueWithStringReturnsNil() {
+  func testDateValueWithValidStringReturnsDate() {
     let value = DatabaseValue.String("2015-10-02")
+    assert(isNotNil: value.dateValue)
+    if value.dateValue != nil {
+      assert(value.dateValue?.year, equals: 2015)
+      assert(value.dateValue?.month, equals: 10)
+      assert(value.dateValue?.day, equals: 2)
+    }
+  }
+  
+  func testDateValueWithInvalidStringReturnsNil() {
+    let value = DatabaseValue.String("2015-10")
+    assert(isNil: value.dateValue)
+  }
+  
+  func testDateValueWithIntReturnsNil() {
+    let value = DatabaseValue.Integer(20151002)
     assert(isNil: value.dateValue)
   }
   

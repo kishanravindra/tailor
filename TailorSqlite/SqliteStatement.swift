@@ -55,6 +55,14 @@ public final class SqliteStatement {
       value = string?.databaseValue ?? DatabaseValue.Null
     case SQLITE_NULL:
       value = DatabaseValue.Null
+    case SQLITE_FLOAT:
+      let double = sqlite3_column_double(statement, Int32(column))
+      value = DatabaseValue.Double(double)
+    case SQLITE_BLOB:
+      let size = sqlite3_column_bytes(statement, Int32(column))
+      let bytes = sqlite3_column_blob(statement, Int32(column))
+      let data = NSData(bytes: bytes, length: Int(size))
+      value = DatabaseValue.Data(data)
     default:
       print("Could not parse result type: \(type)")
       value = DatabaseValue.Null
@@ -84,6 +92,13 @@ public final class SqliteStatement {
   }
   
   /**
+    This method binds a string to an input parameter.
+    */
+  public func bindString(string: String, at column: Int32) {
+    sqlite3_bind_text(statement, column, string, Int32(string.utf8.count), {_ in})
+  }
+  
+  /**
     This method binds parameters to the inputs for this statement.
 
     - parameter parameters:   The parameters to bind.
@@ -95,12 +110,26 @@ public final class SqliteStatement {
       case let .Integer(int):
         sqlite3_bind_int(statement, column, Int32(int))
       case let .String(string):
-        sqlite3_bind_text(statement, column, string, Int32(string.utf8.count), {_ in})
+        bindString(string, at: column)
       case let .Timestamp(timestamp):
         let string = timestamp.format(TimeFormat.Database)
-        sqlite3_bind_text(statement, column, string, Int32(string.utf8.count), {_ in })
-      default:
-        NSLog("Could not bind %@", parameter.description)
+        bindString(string, at: column)
+      case let .Time(time):
+        let timestamp = Timestamp.now().change(hour: time.hour, minute: time.minute, second: time.second)
+        let string = timestamp.format(TimeFormat(.Hour, ":", .Minute, ":", .Seconds))
+        bindString(string, at: column)
+      case let .Date(date):
+        let timestamp = date.beginningOfDay(Application.sharedDatabaseConnection().timeZone)
+        let string = timestamp.format(TimeFormat(.Year, "-", .Month, "-", .Day))
+        bindString(string, at: column)
+      case .Null:
+        sqlite3_bind_null(statement, column)
+      case let .Double(double):
+        sqlite3_bind_double(statement, column, double)
+      case let .Data(data):
+        sqlite3_bind_blob(statement, column, data.bytes, Int32(data.length), {_ in })
+      case let .Boolean(boolean):
+        sqlite3_bind_int(statement, column, Int32(boolean ? 1 : 0))
         continue
       }
     }

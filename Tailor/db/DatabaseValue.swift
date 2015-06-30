@@ -55,6 +55,8 @@ public enum DatabaseValue: Equatable, CustomStringConvertible {
     switch(self) {
     case let .Boolean(bool):
       return bool
+    case let .Integer(int):
+      return int == 1
     default:
       return nil
     }
@@ -128,6 +130,8 @@ public enum DatabaseValue: Equatable, CustomStringConvertible {
       return date
     case let .Timestamp(timestamp):
       return timestamp.date
+    case let .String(string):
+      return TimeFormat(.Year, "-", .Month, "-", .Day).parseTime(string, timeZone: Application.sharedDatabaseConnection().timeZone, calendar: SystemCalendar())?.date
     default:
       return nil
     }
@@ -142,6 +146,8 @@ public enum DatabaseValue: Equatable, CustomStringConvertible {
       return time
     case let .Timestamp(timestamp):
       return timestamp.time
+    case let .String(string):
+      return TimeFormat(.Hour, ":", .Minute, ":", .Seconds).parseTime(string, timeZone: Application.sharedDatabaseConnection().timeZone, calendar: SystemCalendar())?.time
     default:
       return nil
     }
