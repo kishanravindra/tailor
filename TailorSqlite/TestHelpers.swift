@@ -7,16 +7,12 @@ class TestApplication: Tailor.Application {
     let path = self.rootPath() + "/testing.sqlite"
     self.configuration.addDictionary([
       "database": [
+        "class": "TailorSqlite.SqliteConnection",
         "path": path
       ],
       "sessions": [
         "encryptionKey": "0FC7ECA7AADAD635DCC13A494F9A2EA8D8DAE366382CDB3620190F6F20817124"
       ]])
-  }
-  
-  override func openDatabaseConnection() -> DatabaseDriver {
-    let config = self.configuration.child("database").toDictionary() as! [String: String]
-    return SqliteConnection(config: config)
   }
   
   override func start() {
