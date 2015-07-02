@@ -56,7 +56,7 @@ public final class SqliteConnection: DatabaseDriver {
     This method gets the names of the tables in the database.
     */
   public func tableNames() -> [String] {
-    let results = executeQuery("SELECT * FROM sqlite_master")
+    let results = executeQuery("SELECT DISTINCT tbl_name FROM sqlite_master")
     return removeNils(results.map {
       return $0.data["tbl_name"]?.stringValue
     })

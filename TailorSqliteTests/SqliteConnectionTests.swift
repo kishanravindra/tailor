@@ -243,6 +243,6 @@ class SqliteConnectionTests: TailorTestCase {
   
   func testTableNamesCanGetNames() {
     let names = connection.tableNames().sort()
-    assert(names, equals: ["hats", "shelfs", "stores", "users"])
+    assert(names, equals: ["hats", "shelfs", "stores", "tailor_alterations", "users"])
   }
 }
