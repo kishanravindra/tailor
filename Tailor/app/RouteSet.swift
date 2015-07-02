@@ -612,7 +612,7 @@ public class RouteSet {
         if let contents = NSFileManager.defaultManager().contentsAtPath(fullPath) {
           var response = Response()
           response.code = 200
-          response.bodyData.appendData(contents)
+          response.appendData(contents)
           callback(response)
         }
         else {

@@ -352,7 +352,7 @@ class RouteSetTests: TailorTestCase {
       let location = response.headers["location"]
       self.assert(location, equals: "/route2", message: "sets location header to the second path")
       
-      let bodyString = NSString(data: response.bodyData, encoding: NSUTF8StringEncoding)!
+      let bodyString = response.bodyString
       self.assert(bodyString, equals: "You are being redirected", message: "sets request body to a redirect message")
     }
   }
@@ -397,7 +397,7 @@ class RouteSetTests: TailorTestCase {
     route?.handler(createTestRequest()) {
       response in
       expectation.fulfill()
-      let body = NSString(data: response.bodyData, encoding: NSUTF8StringEncoding)!
+      let body = response.bodyString
       self.assert(body, equals: "Test Controller: index", message: "calls controller's respond method")
     }
     waitForExpectationsWithTimeout(0.01, handler: nil)
@@ -412,7 +412,7 @@ class RouteSetTests: TailorTestCase {
     route?.handler(createTestRequest()) {
       response in
       expectation.fulfill()
-      let body = NSString(data: response.bodyData, encoding: NSUTF8StringEncoding)!
+      let body = response.bodyString
       self.assert(body, equals: "Test Controller: index", message: "calls controller's respond method")
     }
     waitForExpectationsWithTimeout(0.01, handler: nil)
@@ -470,21 +470,21 @@ class RouteSetTests: TailorTestCase {
     routeSet.handleRequest(createTestRequest("/hats")) {
       response in
       expectation1.fulfill()
-      let body = NSString(data: response.bodyData, encoding: NSUTF8StringEncoding)!
+      let body = response.bodyString
       self.assert(body, equals: "Request 1", message: "calls appropriate request")
     }
     
     routeSet.handleRequest(createTestRequest("/hats/3")) {
       response in
       expectation2.fulfill()
-      let body = NSString(data: response.bodyData, encoding: NSUTF8StringEncoding)!
+      let body = response.bodyString
       self.assert(body, equals: "Request 2: 3", message: "calls appropriate request")
     }
     
     routeSet.handleRequest(createTestRequest("/bad/path")) {
       response in
       expectation3.fulfill()
-      let body = NSString(data: response.bodyData, encoding: NSUTF8StringEncoding)!
+      let body = response.bodyString
       self.assert(response.code, equals: 404, message: "gives 404 response")
       self.assert(body, equals: "File Not Found", message: "gives error response")
 

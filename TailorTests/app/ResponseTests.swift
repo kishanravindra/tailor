@@ -26,14 +26,14 @@ class ResponseTests: TailorTestCase {
     response.appendString("Test")
     response.appendString("String")
     let data = "TestString".dataUsingEncoding(NSUTF8StringEncoding)!
-    assert(response.bodyData, equals: data, message: "sets the body data to the combined strings")
+    assert(response.body, equals: data, message: "sets the body data to the combined strings")
   }
   
   func testAppendDataAppendsToBody() {
     let bytes = [1,2,3,4]
     let data = NSData(bytes: bytes, length: bytes.count)
     response.appendData(data)
-    assert(response.bodyData, equals: data, message: "sets the body data to the data given")
+    assert(response.body, equals: data, message: "sets the body data to the data given")
   }
   
   func testResponseDataContainsHTTPCode() {
@@ -75,8 +75,8 @@ class ResponseTests: TailorTestCase {
     response2.code = 200
     response1.headers = ["Content-Type": "text/plain"]
     response2.headers = ["Content-Type": "text/plain"]
-    response1.bodyData.appendData(NSData(bytes: [1,2,3,4]))
-    response2.bodyData.appendData(NSData(bytes: [1,2,3,4]))
+    response1.appendData(NSData(bytes: [1,2,3,4]))
+    response2.appendData(NSData(bytes: [1,2,3,4]))
     response1.cookies.setCookie("test", "hello")
     response2.cookies.setCookie("test", "hello")
     assert(response1, equals: response2)
@@ -89,8 +89,8 @@ class ResponseTests: TailorTestCase {
     response2.code = 302
     response1.headers = ["Content-Type": "text/plain"]
     response2.headers = ["Content-Type": "text/plain"]
-    response1.bodyData.appendData(NSData(bytes: [1,2,3,4]))
-    response2.bodyData.appendData(NSData(bytes: [1,2,3,4]))
+    response1.appendData(NSData(bytes: [1,2,3,4]))
+    response2.appendData(NSData(bytes: [1,2,3,4]))
     response1.cookies.setCookie("test", "hello")
     response2.cookies.setCookie("test", "hello")
     assert(response1, doesNotEqual: response2)
@@ -104,8 +104,8 @@ class ResponseTests: TailorTestCase {
     response2.code = 200
     response1.headers = ["Content-Type": "text/plain"]
     response2.headers = ["Content-Type": "text/xml"]
-    response1.bodyData.appendData(NSData(bytes: [1,2,3,4]))
-    response2.bodyData.appendData(NSData(bytes: [1,2,3,4]))
+    response1.appendData(NSData(bytes: [1,2,3,4]))
+    response2.appendData(NSData(bytes: [1,2,3,4]))
     response1.cookies.setCookie("test", "hello")
     response2.cookies.setCookie("test", "hello")
     assert(response1, doesNotEqual: response2)
@@ -118,8 +118,8 @@ class ResponseTests: TailorTestCase {
     response2.code = 200
     response1.headers = ["Content-Type": "text/plain"]
     response2.headers = ["Content-Type": "text/plain"]
-    response1.bodyData.appendData(NSData(bytes: [1,2,3,4]))
-    response2.bodyData.appendData(NSData(bytes: [1,2,3,5]))
+    response1.appendData(NSData(bytes: [1,2,3,4]))
+    response2.appendData(NSData(bytes: [1,2,3,5]))
     response1.cookies.setCookie("test", "hello")
     response2.cookies.setCookie("test", "hello")
     assert(response1, doesNotEqual: response2)
@@ -132,8 +132,8 @@ class ResponseTests: TailorTestCase {
     response2.code = 200
     response1.headers = ["Content-Type": "text/plain"]
     response2.headers = ["Content-Type": "text/plain"]
-    response1.bodyData.appendData(NSData(bytes: [1,2,3,4]))
-    response2.bodyData.appendData(NSData(bytes: [1,2,3,4]))
+    response1.appendData(NSData(bytes: [1,2,3,4]))
+    response2.appendData(NSData(bytes: [1,2,3,4]))
     response1.cookies.setCookie("test", "goodbye")
     response2.cookies.setCookie("test", "hello")
     assert(response1, doesNotEqual: response2)

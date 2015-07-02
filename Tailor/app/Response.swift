@@ -11,7 +11,7 @@ public struct Response: Equatable {
   public var headers: [String:String] = [:]
   
   /** The data for the response body. */
-  public var bodyData = NSMutableData()
+  private var bodyData = NSMutableData()
   
   /** The cookies that should be updated with this response. */
   public var cookies = CookieJar()
@@ -45,6 +45,9 @@ public struct Response: Equatable {
   public mutating func appendData(data: NSData) {
     bodyData.appendData(data)
   }
+  
+  /** A copy of the body data. */
+  public var body: NSData { return NSData(data: self.bodyData) }
   
   /** The full HTTP response data. */
   public var data : NSData { get {

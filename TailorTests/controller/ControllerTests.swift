@@ -208,7 +208,7 @@ class ControllerTests: TailorTestCase {
     self.callback = {
       response in
       expectation.fulfill()
-      let body = NSString(data: response.bodyData, encoding: NSUTF8StringEncoding)!
+      let body = response.bodyString
       self.assert(body, equals: "<html><body><p>Nesting</p></body></html>", message: "sets body")
     }
     
