@@ -28,3 +28,4 @@
   the Application class.
 * Adds a SQLite database driver
 * Adds a configuration setting for the database driver
+* Moves the MySQL connection into a separate framework.

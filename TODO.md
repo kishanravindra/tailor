@@ -1,7 +1,6 @@
 # General
 
 * Memcache support
-* Update README for new starting procedure
 
 # Modeling
 
@@ -12,8 +11,6 @@
 
 # Workarounds to Revisit
 
-* Getting rid of connection parameter for MysqlStatement class
-* Finding better way of switching on MySQL type enum
 * Initializing calendars in different years
 * Specifying explicit names on controller structs
 * Hacks in TailorMysql where we moved code out of initializers to work around
