@@ -24,7 +24,7 @@ import TailorTesting
     NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] = application
     NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")
     DatabaseConnection.openSharedConnection()
-    assert(NSStringFromClass(DatabaseConnection.sharedConnection().dynamicType), equals: NSStringFromClass(DatabaseConnection.self), message: "has a mysql connection as the shared connection")
+    assert(NSStringFromClass(DatabaseConnection.sharedConnection().dynamicType), equals: NSStringFromClass(DatabaseConnection.self), message: "has a database connection as the shared connection")
     assert(application.connectionCount, equals: 1, message: "increments the connection count")
     NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
   }

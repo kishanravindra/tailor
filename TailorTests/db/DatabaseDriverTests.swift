@@ -21,7 +21,7 @@ class DatabaseDriverTests: TailorTestCase {
     NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] = application
     NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")
     Application.sharedDatabaseConnection()
-    assert(NSStringFromClass(Application.sharedDatabaseConnection().dynamicType), equals: NSStringFromClass(SqliteConnection.self), message: "has a mysql connection as the shared connection")
+    assert(NSStringFromClass(Application.sharedDatabaseConnection().dynamicType), equals: NSStringFromClass(SqliteConnection.self), message: "has a SQLite connection as the shared connection")
     assert(application.connectionCount, equals: 1, message: "increments the connection count")
     NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
   }

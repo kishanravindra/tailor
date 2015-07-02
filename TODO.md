@@ -1,6 +1,7 @@
 # General
 
 * Memcache support
+* Update README for new starting procedure
 
 # Modeling
 
