@@ -28,6 +28,8 @@
 		522643271B06C7F40081D04E /* TimeZoneReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522643201B06C7F40081D04E /* TimeZoneReader.swift */; };
 		5226432A1B06C8CB0081D04E /* CalendarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522643291B06C8CB0081D04E /* CalendarTests.swift */; };
 		522B56CA1A18C849009BBE32 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522B56C91A18C849009BBE32 /* Array.swift */; };
+		5233011D1B45FC1500C9E5EE /* PersistableEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233011C1B45FC1500C9E5EE /* PersistableEnums.swift */; };
+		5233011F1B45FC5B00C9E5EE /* PersistableEnumTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233011E1B45FC5B00C9E5EE /* PersistableEnumTests.swift */; };
 		523D655B1A98CBEB000C686B /* DatabaseLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523D655A1A98CBEB000C686B /* DatabaseLocalization.swift */; };
 		523D655D1A98CC1B000C686B /* PropertyListLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523D655C1A98CC1B000C686B /* PropertyListLocalization.swift */; };
 		523D655F1A98CD3C000C686B /* LocalizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523D655E1A98CD3C000C686B /* LocalizationTests.swift */; };
@@ -208,6 +210,8 @@
 		522643201B06C7F40081D04E /* TimeZoneReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeZoneReader.swift; sourceTree = "<group>"; };
 		522643291B06C8CB0081D04E /* CalendarTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarTests.swift; sourceTree = "<group>"; };
 		522B56C91A18C849009BBE32 /* Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
+		5233011C1B45FC1500C9E5EE /* PersistableEnums.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistableEnums.swift; sourceTree = "<group>"; };
+		5233011E1B45FC5B00C9E5EE /* PersistableEnumTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistableEnumTests.swift; sourceTree = "<group>"; };
 		523D655A1A98CBEB000C686B /* DatabaseLocalization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DatabaseLocalization.swift; path = localization/DatabaseLocalization.swift; sourceTree = "<group>"; };
 		523D655C1A98CC1B000C686B /* PropertyListLocalization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PropertyListLocalization.swift; path = localization/PropertyListLocalization.swift; sourceTree = "<group>"; };
 		523D655E1A98CD3C000C686B /* LocalizationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalizationTests.swift; sourceTree = "<group>"; };
@@ -393,6 +397,7 @@
 				52ACAC771A56059200E875D9 /* UserTests.swift */,
 				5214B5D41AA3903800624E9D /* ValidationErrorTests.swift */,
 				52A95E341AE27537001AED1F /* ValidationTests.swift */,
+				5233011E1B45FC5B00C9E5EE /* PersistableEnumTests.swift */,
 			);
 			path = model;
 			sourceTree = "<group>";
@@ -695,6 +700,7 @@
 			children = (
 				52BD141B19E9DA1D006D72B0 /* Model.swift */,
 				52A95E361AE318C6001AED1F /* Persistable.swift */,
+				5233011C1B45FC1500C9E5EE /* PersistableEnums.swift */,
 				525C80841A1C1B4900E7035F /* Query.swift */,
 				52EF126319EF545000B61DF4 /* User.swift */,
 				52BD142219E9DA1D006D72B0 /* Validation.swift */,
@@ -1059,6 +1065,7 @@
 				52B2B6B219F2DAD30086261B /* Alteration.swift in Sources */,
 				522B56CA1A18C849009BBE32 /* Array.swift in Sources */,
 				523D65621A98D36D000C686B /* ConfigurationSetting.swift in Sources */,
+				5233011D1B45FC1500C9E5EE /* PersistableEnums.swift in Sources */,
 				522643251B06C7F40081D04E /* FoundationTimes.swift in Sources */,
 				52BD144219E9DA1D006D72B0 /* Validation.swift in Sources */,
 				52BD144419E9DA1D006D72B0 /* Template.swift in Sources */,
@@ -1156,6 +1163,7 @@
 				52E784C11A5B64030065C10D /* NSDataTests.swift in Sources */,
 				52A95E351AE27537001AED1F /* ValidationTests.swift in Sources */,
 				526254321AABC46300D63024 /* CacheStoreTests.swift in Sources */,
+				5233011F1B45FC5B00C9E5EE /* PersistableEnumTests.swift in Sources */,
 				5226432A1B06C8CB0081D04E /* CalendarTests.swift in Sources */,
 				52E784B51A59C12D0065C10D /* SessionTests.swift in Sources */,
 				5262EE7A1AD0AC9B006F864D /* RequestTests.swift in Sources */,
