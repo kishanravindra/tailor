@@ -37,8 +37,10 @@ public extension NSData {
       searchRange.location += componentRange.length + matchRange.length
       searchRange.length -= componentRange.length + matchRange.length
       
-      if limit != nil && components.count == limit! - 1 {
-        break
+      if let limit = limit {
+        if components.count == limit - 1 {
+          break
+        }
       }
     }
     if searchRange.length > 0 {

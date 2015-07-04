@@ -191,9 +191,9 @@ extension Persistable {
     This method deletes the record from the database.
     */
   public func destroy() {
-    if self.id != nil {
+    if let id = self.id {
       let query = "DELETE FROM \(self.dynamicType.tableName) WHERE id = ?"
-      Application.sharedDatabaseConnection().executeQuery(query, parameters: [self.id!.databaseValue])
+      Application.sharedDatabaseConnection().executeQuery(query, parameters: [id.databaseValue])
     }
   }
 
@@ -305,6 +305,7 @@ extension Persistable {
     var parameters = [DatabaseValue]()
     var mappedValues = [String:DatabaseValue]()
     
+    guard let id = self.id else { return nil }
     var firstParameter = true
     for key in values.keys.sort() {
       let value = values[key]!
@@ -327,8 +328,8 @@ extension Persistable {
       }
     }
     query += " WHERE id = ?"
-    parameters.append(self.id!.databaseValue)
-    mappedValues["id"] = self.id!.databaseValue
+    parameters.append(id.databaseValue)
+    mappedValues["id"] = id.databaseValue
     let result = Application.sharedDatabaseConnection().executeQuery(query, parameters: parameters)
     
     if result.count > 0 {

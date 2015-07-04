@@ -196,8 +196,8 @@ public final class ConfigurationSetting: Equatable {
       if child.isEmpty {
         continue
       }
-      if child.value != nil {
-        dictionary[key] = child.value!
+      if let value = child.value {
+        dictionary[key] = value
       }
       else {
         dictionary[key] = child.toDictionary()
@@ -235,11 +235,9 @@ public final class ConfigurationSetting: Equatable {
   */
 public func ==(lhs: ConfigurationSetting, rhs: ConfigurationSetting) -> Bool {
   for (key,value1) in lhs.children {
-    let value2 = rhs.children[key]
-    if value2 == nil {
-      return false
-    }
-    if value2! != value1 {
+    guard let value2 = rhs.children[key] else { return false }
+    
+    if value2 != value1 {
       return false
     }
   }

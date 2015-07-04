@@ -358,8 +358,8 @@ extension ControllerType {
     if fullKey.hasPrefix(".") {
       fullKey = self.localizationPrefix + fullKey
     }
-    if locale != nil {
-      return Application.sharedApplication().localization(locale!).fetch(fullKey)
+    if let locale = locale {
+      return Application.sharedApplication().localization(locale).fetch(fullKey)
     }
     else {
       return self.localization.fetch(fullKey)
@@ -430,15 +430,17 @@ extension ControllerType {
     - parameter callback:    The callback to call with the response.
     */
   public static func callAction<T:ControllerType>(actionName: String, _ action: (T)->Void->Void, _ request: Request, callback: (Response,T)->()) {
-    var controller: T!
+    
+    var controller: T
 
+    controller = T(request: request, actionName: actionName, callback: {_ in })
     controller = T(
       request: request,
       actionName: actionName,
       callback: { response in callback(response, controller) }
     )
     
-    action(controller!)()
+    action(controller)()
   }
   
   /**

@@ -163,18 +163,18 @@ public struct Validation: Equatable {
       }
       let sanitizedKey = Sanitizer.sqlSanitizer.sanitizeString(key)
       
-      if value == nil {
-        parameterString += "\(sanitizedKey) IS NULL"
+      if let value = value {
+        parameterString += "\(sanitizedKey)=?"
+        parameters.append(value.databaseValue)
       }
       else {
-        parameterString += "\(sanitizedKey)=?"
-        parameters.append(value!.databaseValue)
+        parameterString += "\(sanitizedKey) IS NULL"
       }
     }
     
-    if record.id != nil {
-      parameterString += " AND id!=?"
-      parameters.append(record.id!.databaseValue)
+    if let id = record.id {
+      parameterString += " AND id != ?"
+      parameters.append(id.databaseValue)
     }
     
     query += parameterString

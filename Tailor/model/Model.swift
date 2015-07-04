@@ -51,9 +51,8 @@ public extension ModelType {
     
     if localization != nil {
       let translationKey = "record.\(modelName()).attributes.\(key.underscored())"
-      let translation = localization?.fetch(translationKey)
-      if translation != nil {
-        return capitalize ? translation!.capitalizedString : translation!
+      if let translation = localization?.fetch(translationKey) {
+        return capitalize ? translation.capitalizedString : translation
       }
     }
     
@@ -114,9 +113,8 @@ public extension ModelType {
   
   if localization != nil {
     let translationKey = "record.\(modelName).attributes.\(key.underscored())"
-    let translation = localization?.fetch(translationKey)
-    if translation != nil {
-      return capitalize ? translation!.capitalizedString : translation!
+    if let translation = localization?.fetch(translationKey) {
+      return capitalize ? translation.capitalizedString : translation
     }
   }
   

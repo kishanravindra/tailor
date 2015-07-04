@@ -309,9 +309,8 @@ public class RouteSet {
         (controller: ControllerType)->Void->Bool in
         return {
           ()->Bool in
-          let castController = controller as? T
-          if castController != nil {
-            return filter(castController!)()
+          if let castController = controller as? T {
+            return filter(castController)()
           }
           else {
             controller.render404()
@@ -643,8 +642,8 @@ public class RouteSet {
   public func pathFor(controllerName: String, actionName: String, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
     var matchingPath: String? = nil
     for route in self.routes {
-      if route.controller != nil && route.controller!.name == controllerName &&
-      route.actionName != nil && route.actionName! == actionName {
+      guard let routeController = route.controller, let routeAction = route.actionName else { continue }
+      if routeController.name == controllerName && routeAction == actionName {
         var path = route.path.pathPattern
         var hasQuery = false
         for (key, value) in parameters {
@@ -668,9 +667,10 @@ public class RouteSet {
         break
       }
     }
-    if matchingPath != nil && domain != nil {
+    
+    if let path = matchingPath, let domain = domain {
       let httpProtocol = https ? "https" : "http"
-      matchingPath = "\(httpProtocol)://\(domain!)\(matchingPath!)"
+      matchingPath = "\(httpProtocol)://\(domain)\(path)"
     }
     return matchingPath
   }

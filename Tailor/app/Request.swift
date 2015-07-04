@@ -128,9 +128,8 @@ public struct Request: Equatable {
     request body.
     */
   private mutating func parseRequestParameters() {
-    let queryStringLocation = self.fullPath.rangeOfString("?", options: NSStringCompareOptions.BackwardsSearch)
-    if queryStringLocation != nil {
-      let queryString = self.fullPath.substringFromIndex(queryStringLocation!.startIndex.successor())
+    if let queryStringLocation = self.fullPath.rangeOfString("?", options: NSStringCompareOptions.BackwardsSearch) {
+      let queryString = self.fullPath.substringFromIndex(queryStringLocation.startIndex.successor())
       for (key, value) in Request.decodeQueryString(queryString) {
         self.requestParameters[key] = value
       }
@@ -162,7 +161,7 @@ public struct Request: Equatable {
       let trimmedData = component.subdataWithRange(NSRange(location: 2, length: component.length - 4))
       let subRequest = Request(clientAddress: self.clientAddress, data: trimmedData)
       
-      var parameterName : String! = nil
+      var parameterName : String? = nil
       
       if let disposition = subRequest.headers["Content-Disposition"] {
         for dispositionComponent in disposition.componentsSeparatedByString("; ") {
@@ -172,18 +171,16 @@ public struct Request: Equatable {
         }
       }
       
-      if parameterName == nil {
-        continue
-      }
+      guard let name = parameterName else { continue }
       
       if let contentType = subRequest.headers["Content-Type"] {
-        self.uploadedFiles[parameterName] = [
+        self.uploadedFiles[name] = [
           "contentType": contentType,
           "data": subRequest.body
         ]
       }
       else {
-        self.requestParameters[parameterName] = NSString(data: subRequest.body, encoding: NSUTF8StringEncoding) as? String
+        self.requestParameters[name] = NSString(data: subRequest.body, encoding: NSUTF8StringEncoding) as? String
       }
     }
 

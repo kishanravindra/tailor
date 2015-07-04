@@ -69,5 +69,3 @@ extension TimeZone {
     return TimeZone(name: zone.name)
   }
 }
-
-private var SYSTEM_TIME_ZONE: TimeZone!

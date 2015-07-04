@@ -72,7 +72,7 @@ public struct Connection {
     let data = NSMutableData()
     let bufferLength: UInt = 1024
     var buffer = [UInt8](count: Int(bufferLength), repeatedValue: 0)
-    var request: Request!
+    var request: Request = Request()
     let startTime = Timestamp.now()
     
     var clientAddress = sockaddr(

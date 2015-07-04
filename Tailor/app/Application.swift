@@ -154,8 +154,7 @@ public class Application {
   
   /** The application that we are running. */
   public class func sharedApplication() -> Application {
-    var application = NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] as? Application
-    if application == nil {
+    return NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] as? Application ?? {
       var applicationClass = self
       for bundle in NSBundle.allBundles() {
         for key in ["NSPrincipalClass", "TailorApplicationClass"] {
@@ -165,10 +164,10 @@ public class Application {
           }
         }
       }
-      application = applicationClass.init()
+      let application = applicationClass.init()
       NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] = application
-    }
-    return application!
+      return application
+    }()
   }
   
   //MARK: - Running
@@ -382,11 +381,7 @@ public class Application {
     objc_getClassList(AutoreleasingUnsafeMutablePointer<AnyClass?>(allClasses), classCount)
     
     for _ in 0..<classCount {
-      let type : AnyClass! = allClasses.memory
-      
-      if type == nil {
-        continue
-      }
+      guard let type : AnyClass = allClasses.memory else { continue }
       
       allClasses = advance(allClasses, 1)
       
@@ -426,7 +421,7 @@ public class Application {
   public func registeredAlterations() -> [AlterationScript.Type] {
     let description = reflect(AlterationScript.self).summary
     let classes = self.registeredSubtypes[description] ?? []
-    return classes.map { $0 as! AlterationScript.Type }
+    return removeNils(classes.map { $0 as? AlterationScript.Type })
   }
   
   /**
@@ -436,7 +431,7 @@ public class Application {
   public func registeredTasks() -> [TaskType.Type] {
     let description = reflect(TaskType.self).summary
     let classes = self.registeredSubtypes[description] ?? []
-    return classes.map { $0 as! TaskType.Type }
+    return removeNils(classes.map { $0 as? TaskType.Type })
   }
   
   /**
@@ -464,7 +459,7 @@ public class Application {
   public func registeredSubtypeList<ParentType>(type: ParentType.Type) -> [ParentType.Type] {
     let description = reflect(ParentType).summary
     let classes = self.registeredSubtypes[description] ?? []
-    return classes.map { $0 as! ParentType.Type }
+    return removeNils(classes.map { $0 as? ParentType.Type })
   }
   
   //MARK: - Configuration

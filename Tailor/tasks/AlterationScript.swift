@@ -52,7 +52,7 @@ public extension Application {
       alteration in
       return previousAlterations.filter {
         previousAlteration in
-        let id = previousAlteration.data["id"]!.stringValue!
+        let id = previousAlteration.data["id"]?.stringValue
         return id == alteration.identifier
         }.isEmpty
     }
@@ -83,23 +83,26 @@ public extension AlterationScript {
     var foundNil = false
     
     for component in components {
-      if component == nil {
+      guard let component = component else {
         foundNil = true
         continue
       }
-      else if foundNil {
-        parameters.append(component!)
+      
+      if foundNil {
+        parameters.append(component)
       }
       else {
-        query += component! + "\n"
+        query += component + "\n"
       }
     }
     let results = Application.sharedDatabaseConnection().executeQuery(query, parameterValues: parameters)
-    if !results.isEmpty && results[0].error != nil {
-      NSLog("Error running query")
-      NSLog("%@ %@", query, parameters.map { $0.databaseValue.description })
-      NSLog("Error: %@", results[0].error!)
-      exit(1)
+    if !results.isEmpty {
+      if let error = results[0].error {
+        NSLog("Error running query")
+        NSLog("%@ %@", query, parameters.map { $0.databaseValue.description })
+        NSLog("Error: %@", error)
+        exit(1)
+      }
     }
   }
 }

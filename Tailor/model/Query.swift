@@ -101,9 +101,9 @@ public struct Query<RecordType: Persistable> {
           query += " AND "
         }
         
-        if value != nil {
+        if let value = value {
           query += "\(tableName).\(columnName)=?"
-          parameters.append(value!.databaseValue)
+          parameters.append(value.databaseValue)
         }
         else {
           query += "\(tableName).\(columnName) IS NULL"
@@ -297,26 +297,24 @@ public struct Query<RecordType: Persistable> {
       let parameterString = ",".join(parameters.map { $0.description })
       let cacheKey = query + "(" + parameterString + ")"
       
-      var idString = Application.cache.read(cacheKey)
-      if idString != nil && !idString!.matches("[0-9,]*") {
-        idString = nil
+      var cachedIds = Application.cache.read(cacheKey)
+      if !(cachedIds?.matches("[0-9,]*") ?? false) {
+        cachedIds = nil
       }
       
-      if idString == nil {
+      guard let idString = cachedIds else {
         let results = self.dynamicType.init(copyFrom: self, cacheResults: false).all()
-        let ids = results.map { String($0.id!) }
+        let ids = removeNils(results.map { $0.id }).map { String($0) }
         Application.cache.write(cacheKey, value: ",".join(ids), expireIn: nil)
         return results
       }
-      else {
-        let ids = idString?.componentsSeparatedByString(",").map { Int($0) ?? 0 } ?? []
-        let results = self.dynamicType.init().filter("id IN (\(idString!))").all()
-        return results.sort {
-          (record1, record2) -> Bool in
-          let index1 = ids.indexOf(record1.id!)
-          let index2 = ids.indexOf(record2.id!)
-          return index1 != nil && index2 != nil && index1! < index2!
-        }
+      let ids = idString.componentsSeparatedByString(",").map { Int($0) ?? 0 } ?? []
+      let results = self.dynamicType.init().filter("id IN (\(idString))").all()
+      return results.sort {
+        (record1, record2) -> Bool in
+        guard let id1 = record1.id, id2 = record2.id else { return false }
+        guard let index1 = ids.indexOf(id1), let index2 = ids.indexOf(id2) else { return false }
+        return index1 < index2
       }
     }
     let results = Application.sharedDatabaseConnection().executeQuery(query, parameters: parameters)

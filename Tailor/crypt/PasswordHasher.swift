@@ -17,13 +17,13 @@ public struct PasswordHasher {
                         to encrypt plaintext.
     */
   public init(salt: NSData? = nil) {
-    if salt == nil {
+    if let salt = salt {
+      self.salt = salt
+    }
+    else {
       var saltBytes = [UInt8](count: 16, repeatedValue: 0)
       SecRandomCopyBytes(kSecRandomDefault, saltBytes.count, &saltBytes)
       self.salt = NSData(bytes: saltBytes)
-    }
-    else {
-      self.salt = salt!
     }
   }
   

@@ -137,6 +137,14 @@ public extension TablePersistableEnum {
     return self.fromId(id)
   }
   
+  /**
+    This method gets the id in the lookup table that maps to this case.
+
+    This will insert a new record if there is not a matching record.
+
+    This will always return a value, unless the table does not have the
+    necessary structure to support the protocol.
+    */
   var id: Int! {
     let connection = Application.sharedDatabaseConnection()
     let tableName = self.dynamicType.tableName

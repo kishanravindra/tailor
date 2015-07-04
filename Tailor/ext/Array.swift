@@ -10,8 +10,8 @@ import Foundation
 public func removeNils<T>(array: Array<T?>) -> Array<T> {
   var results : [T] = []
   for element in array {
-    if element != nil {
-      results.append(element!)
+    if let element = element {
+      results.append(element)
     }
   }
   return results

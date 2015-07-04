@@ -79,15 +79,18 @@ public struct Cookie: Equatable {
       
       let expirationString : String? = expiresAt?.format(TimeFormat.Cookie)
       
+      let ageString: String?
+      if let age = maxAge { ageString = String(age) } else { ageString = nil }
+      
       let pairs : [(String,String?)] = [
         ("Path", self.path),
         ("Expires", expirationString),
         ("Domain", self.domain),
-        ("Max-Age", ((maxAge == nil) ? nil : String(maxAge!)))
+        ("Max-Age", ageString)
       ]
       for (name, value) in pairs {
-        if value != nil {
-          string += "; \(name)=\(value!)"
+        if let value = value {
+          string += "; \(name)=\(value)"
         }
       }
       if self.secureOnly {

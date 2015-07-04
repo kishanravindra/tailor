@@ -50,14 +50,14 @@ public extension String {
     */
   public func matches(pattern: String, allowPartial: Bool = false) -> Bool {
     let fullPattern = allowPartial ? pattern : "^\(pattern)$"
-    let expression: NSRegularExpression?
+    let expression: NSRegularExpression
     do {
       expression = try NSRegularExpression(pattern: fullPattern, options: [])
     } catch {
       return false
     }
     let range = NSRange(location: 0, length: self.characters.count)
-    let results = expression!.numberOfMatchesInString(self, options: [], range: range)
+    let results = expression.numberOfMatchesInString(self, options: [], range: range)
     return results > 0
   }
 }

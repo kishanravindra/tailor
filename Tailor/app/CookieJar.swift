@@ -68,10 +68,9 @@ public struct CookieJar: Equatable {
     */
   public mutating func addHeaderString(string: String) {
     for component in string.componentsSeparatedByString("; ") {
-      let equalSignRange = component.rangeOfString("=", options: [], range: nil, locale: nil)
-      if equalSignRange != nil {
-        let key = component.substringToIndex(equalSignRange!.startIndex)
-        let value = component.substringFromIndex(equalSignRange!.endIndex)
+      if let equalSignRange = component.rangeOfString("=", options: [], range: nil, locale: nil) {
+        let key = component.substringToIndex(equalSignRange.startIndex)
+        let value = component.substringFromIndex(equalSignRange.endIndex)
         self.cookies.append(Cookie(key: key, value: value))
       }
     }

@@ -33,8 +33,12 @@ public struct TemplateForm {
   /** The validation errors on the model object. */
   public let validationErrors: [ValidationError]
   
-  /** The block that we use to build the input. */
-  public let inputBuilder: InputBuilder!
+  /**
+    The block that we use to build the input.
+
+    This can never be null, but if the
+    */
+  public let inputBuilder: InputBuilder?
   
   /**
     This method creates a form builder.
@@ -57,11 +61,11 @@ public struct TemplateForm {
     self.modelType = type
     self.validationErrors = validationErrors
     
-    if inputBuilder == nil {
-      self.inputBuilder = TemplateForm.defaultInputBuilder
+    if let builder = inputBuilder {
+      self.inputBuilder = builder
     }
     else {
-      self.inputBuilder = inputBuilder!
+      self.inputBuilder = TemplateForm.defaultInputBuilder
     }
   }
 
@@ -101,8 +105,7 @@ public struct TemplateForm {
     */
   public mutating func input(key: String, _ value: String, attributes: [String: String] = [:]) {
     let errors = self.validationErrors.filter { $0.key == key }
-    let builder = self.inputBuilder!
-    self.template = builder(form: self, key: key, value: value, attributes: attributes, errors: errors)
+    self.template = self.inputBuilder?(form: self, key: key, value: value, attributes: attributes, errors: errors) ?? self.template
   }
   
   /**
@@ -121,7 +124,7 @@ public struct TemplateForm {
       for (value,label) in values {
         let optionAttributes: [String:String]
         
-        if selectedValue != nil && selectedValue! == value {
+        if selectedValue == value {
           optionAttributes = ["selected": "selected", "value": value]
         }
         else {
@@ -164,7 +167,7 @@ public struct TemplateForm {
     for value in values {
       let optionAttributes: [String:String]
       
-      if selectedValue != nil && selectedValue! == value {
+      if selectedValue == value {
         optionAttributes = merge(mergedAttributes, ["checked": "checked"])
       }
       else {

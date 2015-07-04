@@ -155,13 +155,13 @@ public struct TimeFormat: TimeFormatter {
     - returns:           The remaining string.
   */
   public func parseTime(from string: String, inout into container: (year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int, nanosecond: Double), calendar: Calendar = GregorianCalendar()) -> String? {
-    var string: String! = string
+    var string: String = string
     
     for component in components {
-      string = component.parseTime(from: string, into: &container, calendar: calendar)
-      if string == nil {
+      guard let newString = component.parseTime(from: string, into: &container, calendar: calendar) else {
         return nil
       }
+      string = newString
     }
     return string
   }
@@ -404,8 +404,11 @@ public enum TimeFormatComponent: TimeFormatter {
     var substring = string.substringToIndex(advance(string.startIndex, length))
     var realStartIndex = -1
     for (index,character) in substring.unicodeScalars.enumerate() {
-      if padding != nil && padding! != "0" && String(character) == String(padding!) {
-        continue
+      
+      if let padding = padding {
+        if padding != "0" && String(character) == String(padding) {
+          continue
+        }
       }
       if realStartIndex == -1 {
         realStartIndex = index

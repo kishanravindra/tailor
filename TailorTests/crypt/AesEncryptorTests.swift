@@ -1,4 +1,3 @@
-import XCTest
 import Tailor
 import TailorTesting
 
@@ -16,19 +15,11 @@ class AesEncryptorTests: TailorTestCase {
   }
   
   func testGetHexWorksForSingleDigit() {
-    if let value = AesEncryptor.getHex("5") {
-      assert(value, equals: UInt8(5), message: "gets single digit")
-    }
-    else {
-      XCTFail()
-    }
+    let value1 = AesEncryptor.getHex("5")
+    assert(value1, equals: UInt8(5), message: "gets single digit")
     
-    if let value = AesEncryptor.getHex("F") {
-      assert(value, equals: UInt8(15), message: "gets single digit over 10")
-    }
-    else {
-      XCTFail()
-    }
+    let value2 = AesEncryptor.getHex("F")
+    assert(value2, equals: UInt8(15), message: "gets single digit over 10")
   }
   
   func testGetHexWorksForMultipleDigits() {
@@ -38,11 +29,11 @@ class AesEncryptorTests: TailorTestCase {
   }
   
   func testGetHexHandlesInvalidValues() {
-    XCTAssertTrue(AesEncryptor.getHex("") == nil, "returns nil for an empty string")
-    XCTAssertTrue(AesEncryptor.getHex("105") == nil, "returns nil for a string with more than two digits")
-    XCTAssertTrue(AesEncryptor.getHex("Z") == nil, "returns nil with a non-hex character")
-    XCTAssertTrue(AesEncryptor.getHex("ZZ") == nil, "returns nil with multiple non-hex character")
-    XCTAssertTrue(AesEncryptor.getHex("0Z") == nil, "returns nil with a non-hex character and a hex character")
+    assert(AesEncryptor.getHex("") == nil, message: "returns nil for an empty string")
+    assert(AesEncryptor.getHex("105") == nil, message: "returns nil for a string with more than two digits")
+    assert(AesEncryptor.getHex("Z") == nil, message: "returns nil with a non-hex character")
+    assert(AesEncryptor.getHex("ZZ") == nil, message: "returns nil with multiple non-hex character")
+    assert(AesEncryptor.getHex("0Z") == nil, message: "returns nil with a non-hex character and a hex character")
   }
   
   //MARK: - Encryption
@@ -53,7 +44,7 @@ class AesEncryptorTests: TailorTestCase {
     let value = encryptor.encrypt(inputData)
     let decryptedValue = encryptor.decrypt(value)
     let string = NSString(data: decryptedValue, encoding: NSUTF8StringEncoding)
-    assert(string!, equals: "test data", message: "gets original data back")
+    assert(string, equals: "test data", message: "gets original data back")
   }
   
   func testEncryptIsIdempotent() {

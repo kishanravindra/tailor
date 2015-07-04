@@ -67,14 +67,13 @@ public final class AesEncryptor {
         }
       }
     case 2:
-      let top = self.getHex(String(byte[byte.startIndex]))
-      let bottom = self.getHex(String(byte[advance(byte.startIndex, 1)]))
-      if top != nil && bottom != nil {
-        return top! * 16 + bottom!
+      guard let top = self.getHex(String(byte[byte.startIndex])),
+        let bottom = self.getHex(String(byte[advance(byte.startIndex, 1)]))
+        else {
+          return nil
       }
-      else {
-        return nil
-      }
+
+      return top * 16 + bottom
     default:
       return nil
     }
@@ -165,14 +164,14 @@ public final class AesEncryptor {
     
     var keyString = ""
     
-    if dataContainer != nil {
-      let data = dataContainer!.takeUnretainedValue() as NSData
+    if let container = dataContainer {
+      let data = container.takeUnretainedValue() as NSData
       var bytes = [UInt8](count: data.length, repeatedValue: 0)
       data.getBytes(&bytes, length: data.length)
       for byte in bytes {
         keyString += self.getHexString(byte)
       }
-      dataContainer!.release()
+      container.release()
     }
     key.release()
     return keyString

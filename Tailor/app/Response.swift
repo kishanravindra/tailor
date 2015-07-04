@@ -72,8 +72,8 @@ public struct Response: Equatable {
   } }
   
   /** The string version of the response body. */
-  public var bodyString: String! { get {
-    return NSString(data: self.bodyData, encoding: NSUTF8StringEncoding) as! String
+  public var bodyString: String { get {
+    return NSString(data: self.bodyData, encoding: NSUTF8StringEncoding) as? String ?? ""
   } }
 }
 

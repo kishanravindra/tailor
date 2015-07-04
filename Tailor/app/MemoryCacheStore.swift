@@ -40,7 +40,7 @@ public final class MemoryCacheStore: CacheImplementation {
   public func write(key: String, value: String, expireIn expiryTime: TimeInterval?=nil) {
     cache.setObject(value, forKey: key)
     if expiryTime != nil {
-      expiryTimes[key] = expiryTime!.fromNow
+      expiryTimes[key] = expiryTime?.fromNow
     }
   }
   

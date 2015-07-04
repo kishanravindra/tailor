@@ -65,7 +65,7 @@ import Foundation
       alteration in
       previousAlterations.filter {
         previousAlteration in
-        let id = previousAlteration.data["id"]!.stringValue!
+        let id = previousAlteration.data["id"]?.stringValue
         return id == alteration.id()
       }.isEmpty
     }.sort {
@@ -90,15 +90,16 @@ import Foundation
     var foundNil = false
     
     for component in components {
-      if component == nil {
+      guard let component = component else {
         foundNil = true
         continue
       }
-      else if foundNil {
-        parameters.append(component!)
+      
+      if foundNil {
+        parameters.append(component)
       }
       else {
-        query += component! + "\n"
+        query += component + "\n"
       }
     }
     let results = DatabaseConnection.sharedConnection().executeQuery(query, parameterValues: parameters)

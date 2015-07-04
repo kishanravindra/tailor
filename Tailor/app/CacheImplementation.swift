@@ -114,14 +114,16 @@ extension Application {
     - returns:   The cache store.
     */
   public static var cache: CacheImplementation {
-    if SHARED_CACHE_STORE == nil {
+    guard let store = SHARED_CACHE_STORE else {
       let name = Application.sharedApplication().configuration["cache.class"] ?? "MemoryCacheStore"
       let type = NSClassFromString(name) as? CacheImplementation.Type ?? MemoryCacheStore.self
-      SHARED_CACHE_STORE = type.init()
+      let store = type.init()
+      SHARED_CACHE_STORE = store
+      return store
     }
-    return SHARED_CACHE_STORE
+    return store
   }
 }
 
 /** The global cache store. */
-public var SHARED_CACHE_STORE: CacheImplementation!
+public var SHARED_CACHE_STORE: CacheImplementation?
