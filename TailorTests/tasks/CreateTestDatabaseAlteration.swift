@@ -6,7 +6,10 @@ class CreateTestDatabaseAlteration: AlterationScript {
   }
   static func run() {
     let connection = Application.sharedDatabaseConnection()
-    NSLog("Environment is %@", NSProcessInfo.processInfo().environment)
+    
+    for tableName in ["hats", "shelfs", "stores", "users", "tailor_translations"] {
+      connection.executeQuery("DROP TABLE IF EXISTS \(tableName)")
+    }
     connection.executeQuery("CREATE TABLE `hats` ( `id` integer NOT NULL PRIMARY KEY, `color` varchar(255), `brim_size` integer, shelf_id integer, `created_at` timestamp, `updated_at` timestamp)")
     connection.executeQuery("CREATE TABLE `shelfs` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255), `store_id` integer)")
     connection.executeQuery("CREATE TABLE `stores` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255))")

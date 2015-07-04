@@ -12,14 +12,6 @@ class QueryTests: TailorTestCase {
     cacheResults: true
   )
   
-  override func setUp() {
-    super.setUp()
-    let connection = Application.sharedDatabaseConnection()
-    connection.executeQuery("TRUNCATE TABLE hats")
-    connection.executeQuery("TRUNCATE TABLE shelfs")
-    connection.executeQuery("TRUNCATE TABLE stores")
-  }
-  
   //MARK: - Initialization
   
   func testInitializationWithNoParametersHasDefaultClauses() {

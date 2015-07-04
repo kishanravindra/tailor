@@ -32,7 +32,17 @@ public class Application {
   }
   
   /** The formatters that we have available for dates. */
-  public var dateFormatters: [String:NSDateFormatter] = [:]
+  @available(*, deprecated, message="You should use the TimeFormat class instead")
+  public var dateFormatters: [String:NSDateFormatter] {
+    get {
+      return _dateFormatters
+    }
+    set {
+      _dateFormatters = newValue
+    }
+  }
+  
+  private var _dateFormatters: [String:NSDateFormatter] = [:]
   
   /** The subclasses that we've registered for certain critical base classes. */
   private var registeredSubtypes: [String:[Any.Type]] = [:]
@@ -338,19 +348,19 @@ public class Application {
     This method loads the default date formatters.
     */
   private func loadDateFormatters() {
-    self.dateFormatters["short"] = NSDateFormatter()
-    self.dateFormatters["long"] = NSDateFormatter()
-    self.dateFormatters["shortDate"] = NSDateFormatter()
-    self.dateFormatters["longDate"] = NSDateFormatter()
-    self.dateFormatters["db"] = NSDateFormatter()
+    self._dateFormatters["short"] = NSDateFormatter()
+    self._dateFormatters["long"] = NSDateFormatter()
+    self._dateFormatters["shortDate"] = NSDateFormatter()
+    self._dateFormatters["longDate"] = NSDateFormatter()
+    self._dateFormatters["db"] = NSDateFormatter()
     
-    self.dateFormatters["short"]?.dateFormat = "hh:mm Z"
-    self.dateFormatters["long"]?.dateFormat = "dd MMMM, yyyy, hh:mm z"
+    self._dateFormatters["short"]?.dateFormat = "hh:mm Z"
+    self._dateFormatters["long"]?.dateFormat = "dd MMMM, yyyy, hh:mm z"
     
-    self.dateFormatters["shortDate"]?.dateFormat = "dd MMMM"
-    self.dateFormatters["longDate"]?.dateFormat = "dd MMMM, yyyy"
+    self._dateFormatters["shortDate"]?.dateFormat = "dd MMMM"
+    self._dateFormatters["longDate"]?.dateFormat = "dd MMMM, yyyy"
     
-    self.dateFormatters["db"]?.dateFormat = "yyyy-MM-dd HH:mm:ss"
+    self._dateFormatters["db"]?.dateFormat = "yyyy-MM-dd HH:mm:ss"
   }
   
   /**

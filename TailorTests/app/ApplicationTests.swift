@@ -24,7 +24,7 @@ class ApplicationTests : TailorTestCase {
     self.assert(application.port, equals: 8080, message: "initializes port to HTTP Alt")
   }
   
-  func testInitializationSetsDateFormatters() {
+  @available(*, deprecated) func testInitializationSetsDateFormatters() {
     self.assert(application.dateFormatters["short"]?.dateFormat, equals: "hh:mm Z", message: "sets the short time format properly")
     self.assert(application.dateFormatters["long"]?.dateFormat, equals: "dd MMMM, yyyy, hh:mm z", message: "sets a long time format properly")
     self.assert(application.dateFormatters["shortDate"]?.dateFormat, equals: "dd MMMM", message: "sets a short date format properly")

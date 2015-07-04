@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		5209E2891A50920C0044EE70 /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5209E2881A50920C0044EE70 /* ModelTests.swift */; };
 		520BD5021AA90E2600CBC3DC /* PropertyListLocalizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784C91A5CC1A40065C10D /* PropertyListLocalizationTests.swift */; };
+		5212E7581B483081000239DC /* database.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5212E7571B483081000239DC /* database.plist */; };
+		5212E75A1B4830A1000239DC /* sessions.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5212E7591B4830A1000239DC /* sessions.plist */; };
+		5212E75C1B4830F1000239DC /* CreateTestDatabaseAlteration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5212E75B1B4830F1000239DC /* CreateTestDatabaseAlteration.swift */; };
 		52135CA51B07FE0D00595794 /* TimeZoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52135CA41B07FE0D00595794 /* TimeZoneTests.swift */; };
 		5214B5D21AA38B0800624E9D /* ValidationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5214B5D11AA38B0800624E9D /* ValidationError.swift */; };
 		5214B5D51AA3903800624E9D /* ValidationErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5214B5D41AA3903800624E9D /* ValidationErrorTests.swift */; };
@@ -89,7 +92,6 @@
 		52B417CC1B40B50300B274F7 /* Tailor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5262EEA21AD0BA3D006F864D /* Tailor.framework */; };
 		52B417CD1B40B50500B274F7 /* Tailor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5262EEA21AD0BA3D006F864D /* Tailor.framework */; };
 		52B417CE1B40B51500B274F7 /* TailorTesting.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5262EEA31AD0BA3D006F864D /* TailorTesting.framework */; };
-		52B417D11B40B9D300B274F7 /* TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B417CF1B40B9CA00B274F7 /* TestHelpers.swift */; };
 		52B417D31B40BCA500B274F7 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 52B417D21B40BCA500B274F7 /* libsqlite3.tbd */; };
 		52B417D51B40D48600B274F7 /* SqliteStatement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B417D41B40D48600B274F7 /* SqliteStatement.swift */; };
 		52B417D61B423E2D00B274F7 /* TailorSqlite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52B417B21B40B1F400B274F7 /* TailorSqlite.framework */; };
@@ -193,6 +195,9 @@
 		520526E91AF69DCC00B02CCF /* Model.xctemplate */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Model.xctemplate; sourceTree = "<group>"; };
 		5205278E1AF6A3C400B02CCF /* Controller.xctemplate */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Controller.xctemplate; path = Tailor/ext/xcode_templates/Controller.xctemplate; sourceTree = SOURCE_ROOT; };
 		5209E2881A50920C0044EE70 /* ModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelTests.swift; sourceTree = "<group>"; };
+		5212E7571B483081000239DC /* database.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = database.plist; sourceTree = "<group>"; };
+		5212E7591B4830A1000239DC /* sessions.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = sessions.plist; sourceTree = "<group>"; };
+		5212E75B1B4830F1000239DC /* CreateTestDatabaseAlteration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateTestDatabaseAlteration.swift; sourceTree = "<group>"; };
 		52135CA41B07FE0D00595794 /* TimeZoneTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeZoneTests.swift; sourceTree = "<group>"; };
 		5214B5D11AA38B0800624E9D /* ValidationError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidationError.swift; sourceTree = "<group>"; };
 		5214B5D41AA3903800624E9D /* ValidationErrorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidationErrorTests.swift; sourceTree = "<group>"; };
@@ -280,7 +285,6 @@
 		52B417C21B40B1F400B274F7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		52B417C91B40B25100B274F7 /* SqliteConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SqliteConnection.swift; sourceTree = "<group>"; };
 		52B417CB1B40B3E400B274F7 /* module.map */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.map; sourceTree = "<group>"; };
-		52B417CF1B40B9CA00B274F7 /* TestHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TestHelpers.swift; path = ../TailorSqlite/TestHelpers.swift; sourceTree = "<group>"; };
 		52B417D21B40BCA500B274F7 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		52B417D41B40D48600B274F7 /* SqliteStatement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SqliteStatement.swift; sourceTree = "<group>"; };
 		52BD139D19E9D7E4006D72B0 /* Tailor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Tailor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -577,8 +581,10 @@
 			isa = PBXGroup;
 			children = (
 				52B417C01B40B1F400B274F7 /* SqliteConnectionTests.swift */,
-				52B417CF1B40B9CA00B274F7 /* TestHelpers.swift */,
+				5212E75B1B4830F1000239DC /* CreateTestDatabaseAlteration.swift */,
 				52B417C21B40B1F400B274F7 /* Info.plist */,
+				5212E7571B483081000239DC /* database.plist */,
+				5212E7591B4830A1000239DC /* sessions.plist */,
 			);
 			path = TailorSqliteTests;
 			sourceTree = "<group>";
@@ -999,6 +1005,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5212E7581B483081000239DC /* database.plist in Resources */,
+				5212E75A1B4830A1000239DC /* sessions.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1066,7 +1074,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				52B417C11B40B1F400B274F7 /* SqliteConnectionTests.swift in Sources */,
-				52B417D11B40B9D300B274F7 /* TestHelpers.swift in Sources */,
+				5212E75C1B4830F1000239DC /* CreateTestDatabaseAlteration.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

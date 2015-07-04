@@ -66,7 +66,7 @@ class PersistableEnumTests: TailorTestCase {
   
   func testDatabasePersistableEnumWithBadStructureReturnsNull() {
     Application.sharedDatabaseConnection().executeQuery("DROP TABLE hat_types")
-    Application.sharedDatabaseConnection().executeQuery("CREATE TABLE hat_types (id integer PRIMARY KEY")
+    Application.sharedDatabaseConnection().executeQuery("CREATE TABLE hat_types (id integer PRIMARY KEY)")
     let value = HatType.Feathered
     assert(value.databaseValue, equals: DatabaseValue.Null)
   }
