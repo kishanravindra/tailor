@@ -4,7 +4,7 @@ import TailorTesting
 import TailorSqlite
 
 class DatabaseDriverTests: TailorTestCase {
-  class TestApplication : TailorTests.TestApplication {
+  class TestApplication : Application {
     var connectionCount = 0
     
     override func openDatabaseConnection() -> DatabaseDriver {
@@ -16,7 +16,7 @@ class DatabaseDriverTests: TailorTestCase {
   //MARK: - Initialization
   
   func testSharedConnectionOpensWithApplication() {
-    let application = TestApplication.init()
+    let application = TestApplication.init(testing: true)
     application.start()
     NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] = application
     NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")
@@ -27,7 +27,7 @@ class DatabaseDriverTests: TailorTestCase {
   }
   
   func testSharedConnectionOpensSeparateConnectionInNewThread() {
-    let application = TestApplication.init()
+    let application = TestApplication.init(testing: true)
     application.start()
     NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] = application
     NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")

@@ -54,6 +54,9 @@ public class Application {
     The configuration settings for the application.
     */
   public let configuration = ConfigurationSetting()
+  
+  /** Whether this application is being loaded as part of a test bundle. */
+  private let testing: Bool
     
   /**
     This method initializes the application.
@@ -61,13 +64,27 @@ public class Application {
     This implementation parses command-line arguments, loads date formatters,
     and registers all the subclasses of Task and AlterationScript for use in
     running scripts.
+  
+    - parameter testing:    Whether this application is being loaded as part of
+                            a test bundle. This is set to true in test cases
+                            that subclass TailorTestCase.
     */
-  public required init() {
+  public required init(testing: Bool = false) {
+    self.testing = testing
+    
     self.loadDateFormatters()
     self.registerSubtypes(TaskType.self) { $0 is TaskType.Type }
     self.registerSubtypes(AlterationScript.self) { $0 is AlterationScript.Type }
     
-    if let arguments = APPLICATION_ARGUMENTS {
+    if NSProcessInfo.processInfo().environment["TestBundleLocation"] != nil {
+      self.command = "run_tests"
+      self.flags = [:]
+    }
+    else if testing {
+      self.command = "tailor.exit"
+      self.flags = [:]
+    }
+    else if let arguments = APPLICATION_ARGUMENTS {
       self.command = arguments.0
       self.flags = arguments.1
     }
@@ -446,9 +463,22 @@ public class Application {
     The path to the root of the application.
   
     This defaults to the resource path from the main bundle.
+  
+    For application's that are loaded in test cases, this will use the resource
+    path from the first XCTest bundle in the active bundle list.
     */
   public func rootPath() -> String {
-    return NSBundle.mainBundle().resourcePath ?? "."
+    if testing {
+      for bundle in NSBundle.allBundles() {
+        if bundle.bundlePath.hasSuffix(".xctest") {
+          return bundle.resourcePath ?? "."
+        }
+      }
+      return "."
+    }
+    else {
+      return NSBundle.mainBundle().resourcePath ?? "."
+    }
   }
   
   /**

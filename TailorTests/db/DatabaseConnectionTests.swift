@@ -3,7 +3,7 @@ import Tailor
 import TailorTesting
 
 @available(*, deprecated) class DatabaseConnectionTests: TailorTestCase {
-  class TestApplication : TailorTests.TestApplication {
+  class TestApplication : Application {
     var connectionCount = 0
     
     override func openDatabaseConnection() -> DatabaseDriver {

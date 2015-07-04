@@ -35,6 +35,6 @@ class AlterationTests: TailorTestCase {
     
     let alterations = Application.pendingAlterations()
     let ids = alterations.map { $0.identifier }
-    assert(ids, equals: ["2", "3"], message: "gets the ids for the alterations that have not been run")
+    assert(ids, equals: ["0", "2", "3"], message: "gets the ids for the alterations that have not been run")
   }
 }

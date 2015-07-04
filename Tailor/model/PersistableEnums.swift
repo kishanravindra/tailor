@@ -21,7 +21,7 @@ public protocol PersistableEnum: DatabaseValueConvertible {
     - parameter databaseValue:    The value from the database.
     - returns                     The enum case
     */
-  static func fromDatabaseValue(databaseValue: DatabaseValue) -> Self?
+  static func fromDatabaseValue(databaseValue: DatabaseValue?) -> Self?
 }
 
 /**
@@ -81,8 +81,8 @@ public extension PersistableEnum {
 }
 
 public extension StringPersistableEnum {
-  static func fromDatabaseValue(databaseValue: DatabaseValue) -> Self? {
-    if let caseName = databaseValue.stringValue {
+  static func fromDatabaseValue(databaseValue: DatabaseValue?) -> Self? {
+    if let caseName = databaseValue?.stringValue {
       return self.fromCaseName(caseName)
     }
     else {
@@ -132,12 +132,12 @@ public extension TablePersistableEnum {
     return self.fromCaseName(name)
   }
   
-  static func fromDatabaseValue(databaseValue: DatabaseValue) -> Self? {
-    guard let id = databaseValue.intValue else { return nil }
+  static func fromDatabaseValue(databaseValue: DatabaseValue?) -> Self? {
+    guard let id = databaseValue?.intValue else { return nil }
     return self.fromId(id)
   }
   
-  var databaseValue: DatabaseValue {
+  var id: Int! {
     let connection = Application.sharedDatabaseConnection()
     let tableName = self.dynamicType.tableName
     let caseName = self.caseName
@@ -145,9 +145,13 @@ public extension TablePersistableEnum {
     if result.isEmpty {
       result = connection.executeQuery("INSERT INTO \(tableName) (name) VALUES (?)", caseName)
       if result.isEmpty {
-        return DatabaseValue.Null
+        return nil
       }
     }
-    return result[0].data["id"] ?? DatabaseValue.Null
+    return result[0].data["id"]?.intValue
+  }
+  
+  var databaseValue: DatabaseValue {
+    return self.id?.databaseValue ?? .Null
   }
 }

@@ -8,8 +8,8 @@ class ValidationErrorTests: TailorTestCase {
   var content: ConfigurationSetting!
   
   override func setUp() {
-    Application.start()
-    content = TestApplication.sharedApplication().configuration.child("localization.content.en")
+    super.setUp()
+    content = Application.sharedApplication().configuration.child("localization.content.en")
     content.addDictionary([
       "hat.errors.height.too_low": "is too short",
       "hat.errors.too_low": "is too low",

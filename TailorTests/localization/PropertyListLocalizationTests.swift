@@ -4,9 +4,9 @@ import TailorTesting
 
 class PropertyListLocalizationTests: TailorTestCase {
   override func setUp() {
-    Application.start()
+    super.setUp()
     let key = "localization.content.en.localization_test"
-    TestApplication.sharedApplication().configuration[key] = "Hello"
+    Application.sharedApplication().configuration[key] = "Hello"
   }
   
   func testFetchInLocaleGetsValueFromConfiguration() {
