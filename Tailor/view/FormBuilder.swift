@@ -50,7 +50,10 @@ import Foundation
     self.modelType = type
     self.validationErrors = validationErrors
     
-    if inputBuilder == nil {
+    if let builder = inputBuilder {
+      self.inputBuilder = builder
+    }
+    else {
       self.inputBuilder = {
         (form, key: String, value, attributes, _) -> () in
         form.template.tag("div") {
@@ -67,9 +70,6 @@ import Foundation
           form.template.tag("input", mergedAttributes)
         }
       }
-    }
-    else {
-      self.inputBuilder = inputBuilder!
     }
   }
   
@@ -116,7 +116,7 @@ import Foundation
       for (value,label) in values {
         let optionAttributes: [String:String]
         
-        if selectedValue != nil && selectedValue! == value {
+        if selectedValue == value {
           optionAttributes = ["selected": "selected", "value": value]
         }
         else {
@@ -159,7 +159,7 @@ import Foundation
     for value in values {
       let optionAttributes: [String:String]
       
-      if selectedValue != nil && selectedValue! == value {
+      if selectedValue == value {
         optionAttributes = merge(mergedAttributes, ["checked": "checked"])
       }
       else {

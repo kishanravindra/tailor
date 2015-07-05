@@ -50,18 +50,11 @@ public struct Session {
       
       self.expirationDate = TimeFormat.Cookie.parseTime(dateString) ?? 1.hour.fromNow
       
-      if cookieData["clientAddress"] == nil {
-        return
-      }
-      if cookieData["clientAddress"]! != clientAddress {
-        return
-      }
-      if cookieData["expirationDate"] == nil {
-        return
-      }
-      if self.expirationDate < Timestamp.now() {
-        return
-      }
+      guard let address = cookieData["clientAddress"] else { return }
+      guard address == clientAddress else { return }
+      guard cookieData["expirationDate"] != nil else { return }
+      guard self.expirationDate >= Timestamp.now() else { return }
+      
       self.data = cookieData
       
       self.data["clientAddress"] = nil

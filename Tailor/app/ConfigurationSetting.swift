@@ -82,10 +82,12 @@ public final class ConfigurationSetting: Equatable {
   public func child(keyPath: String) -> ConfigurationSetting {
     let keys = keyPath.componentsSeparatedByString(".")
     if keys.count == 1 {
-      if self.children[keyPath] == nil {
-        self.children[keyPath] = ConfigurationSetting()
-      }
-      return self.children[keyPath]!
+      let child = self.children[keyPath] ?? {
+        let setting = ConfigurationSetting()
+        self.children[keyPath] = setting
+        return setting
+      }()
+      return child
     }
     else {
       return self.child(keys: keys)

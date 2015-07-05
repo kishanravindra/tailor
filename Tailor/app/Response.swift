@@ -34,7 +34,9 @@ public struct Response: Equatable {
     - parameter string:  The string to add
     */
   public mutating func appendString(string: String) {
-    self.appendData(string.dataUsingEncoding(NSUTF8StringEncoding)!)
+    if let data = string.dataUsingEncoding(NSUTF8StringEncoding) {
+      self.appendData(data)
+    }
   }
   
   /**

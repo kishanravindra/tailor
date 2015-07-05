@@ -22,7 +22,7 @@ public extension NSData {
     */
   public func componentsSeparatedByString(separator: String, limit: Int? = nil) -> [NSData] {
     var components = [NSData]()
-    let separatorData = separator.dataUsingEncoding(NSUTF8StringEncoding)!
+    let separatorData = separator.dataUsingEncoding(NSUTF8StringEncoding) ?? NSData()
     if self.length == 0 {
       return [self]
     }

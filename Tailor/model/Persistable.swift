@@ -171,7 +171,7 @@ extension Persistable {
     let properties = values.keys
     
     if properties.contains("created_at") {
-      if values["created_at"]! == nil {
+      if (values["created_at"] ?? nil) == nil {
         values["created_at"] = Timestamp.now()
       }
     }
@@ -263,7 +263,7 @@ extension Persistable {
     var mappedValues = [String:DatabaseValue]()
     
     for key in values.keys.sort() {
-      let value = values[key]!
+      guard let value = values[key] else { continue }
       
       let databaseValue = value?.databaseValue ?? DatabaseValue.Null
       mappedValues[key] = databaseValue
@@ -308,7 +308,7 @@ extension Persistable {
     guard let id = self.id else { return nil }
     var firstParameter = true
     for key in values.keys.sort() {
-      let value = values[key]!
+      guard let value = values[key] else { continue }
       let databaseValue = value?.databaseValue ?? DatabaseValue.Null
       mappedValues[key] = databaseValue
       if firstParameter {

@@ -138,8 +138,9 @@ extension TemplateType {
     var openingTag = "<\(name)"
     
     for key in attributes.keys.sort() {
-      let value = attributes[key]!
-      openingTag += " \(key)=\"\(value)\""
+      if let value = attributes[key] {
+        openingTag += " \(key)=\"\(value)\""
+      }
     }
     openingTag += ">"
     self.state.contents += openingTag

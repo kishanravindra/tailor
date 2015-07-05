@@ -5,7 +5,7 @@ import Foundation
   */
 public final class AesEncryptor {
   /** The low-level key for the encryption. */
-  private let key: Unmanaged<SecKey>!
+  private let key: Unmanaged<SecKey>?
   
   //MARK: - Encodings
   
@@ -128,7 +128,7 @@ public final class AesEncryptor {
     - returns:            The encrypted data.
     */
   public func encrypt(data: NSData) -> NSData {
-    let encryptor = SecEncryptTransformCreate(key.takeUnretainedValue(), nil)
+    let encryptor = SecEncryptTransformCreate(key?.takeUnretainedValue(), nil)
     SecTransformSetAttribute(encryptor.takeUnretainedValue(), kSecTransformInputAttributeName, data, nil)
     return (SecTransformExecute(encryptor.takeUnretainedValue(), nil) as? NSData) ?? NSData()
   }
@@ -140,7 +140,7 @@ public final class AesEncryptor {
     - returns:          The plaintext.
     */
   public func decrypt(data: NSData) -> NSData {
-    let decryptor = SecDecryptTransformCreate(key.takeUnretainedValue(), nil)
+    let decryptor = SecDecryptTransformCreate(key?.takeUnretainedValue(), nil)
     SecTransformSetAttribute(decryptor.takeUnretainedValue(), kSecTransformInputAttributeName, data, nil)
     return (SecTransformExecute(decryptor.takeUnretainedValue(), nil) as? NSData) ?? NSData()
   }

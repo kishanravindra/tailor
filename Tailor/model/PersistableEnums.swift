@@ -145,7 +145,7 @@ public extension TablePersistableEnum {
     This will always return a value, unless the table does not have the
     necessary structure to support the protocol.
     */
-  var id: Int! {
+  var id: Int? {
     let connection = Application.sharedDatabaseConnection()
     let tableName = self.dynamicType.tableName
     let caseName = self.caseName
