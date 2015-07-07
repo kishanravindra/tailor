@@ -56,11 +56,13 @@
 		526254321AABC46300D63024 /* CacheStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526254311AABC46300D63024 /* CacheStoreTests.swift */; };
 		526254351AABC9A600D63024 /* MemoryCacheStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526254341AABC9A600D63024 /* MemoryCacheStoreTests.swift */; };
 		526254371AABC9C800D63024 /* MemoryCacheStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526254361AABC9C800D63024 /* MemoryCacheStore.swift */; };
+		5262D11B1B4A06CC00101154 /* JsonPrimitiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5262D11A1B4A06CC00101154 /* JsonPrimitiveTests.swift */; };
 		5262EE7A1AD0AC9B006F864D /* RequestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EADCC91A40504000D9A8CF /* RequestTests.swift */; };
 		5262EE7B1AD0AC9B006F864D /* DictionaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784C61A5B72990065C10D /* DictionaryTests.swift */; };
 		5262EE7E1AD0AC9B006F864D /* ServerTaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784CE1A5CC6350065C10D /* ServerTaskTests.swift */; };
 		5262EEA41AD0BA3D006F864D /* Tailor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5262EEA21AD0BA3D006F864D /* Tailor.framework */; };
 		5262EEA51AD0BA3D006F864D /* TailorTesting.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5262EEA31AD0BA3D006F864D /* TailorTesting.framework */; };
+		526378D91B4A06600008B2E1 /* JsonPrimitive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526378D81B4A06600008B2E1 /* JsonPrimitive.swift */; };
 		526A23771B30E0A30033A094 /* TestConfig.plist in Resources */ = {isa = PBXBuildFile; fileRef = 526A23761B30E0A30033A094 /* TestConfig.plist */; };
 		526ACD801B07922900CE0CC0 /* TimeFormatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526ACD7F1B07922900CE0CC0 /* TimeFormatTests.swift */; };
 		526ACD821B07A9FD00CE0CC0 /* TimeIntervalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526ACD811B07A9FD00CE0CC0 /* TimeIntervalTests.swift */; };
@@ -247,8 +249,10 @@
 		526254311AABC46300D63024 /* CacheStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheStoreTests.swift; sourceTree = "<group>"; };
 		526254341AABC9A600D63024 /* MemoryCacheStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemoryCacheStoreTests.swift; sourceTree = "<group>"; };
 		526254361AABC9C800D63024 /* MemoryCacheStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemoryCacheStore.swift; sourceTree = "<group>"; };
+		5262D11A1B4A06CC00101154 /* JsonPrimitiveTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonPrimitiveTests.swift; sourceTree = "<group>"; };
 		5262EEA21AD0BA3D006F864D /* Tailor.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Tailor.framework; path = build/Tailor.framework; sourceTree = "<group>"; };
 		5262EEA31AD0BA3D006F864D /* TailorTesting.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TailorTesting.framework; path = build/TailorTesting.framework; sourceTree = "<group>"; };
+		526378D81B4A06600008B2E1 /* JsonPrimitive.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonPrimitive.swift; sourceTree = "<group>"; };
 		526A23761B30E0A30033A094 /* TestConfig.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = TestConfig.plist; sourceTree = "<group>"; };
 		526ACD7F1B07922900CE0CC0 /* TimeFormatTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeFormatTests.swift; sourceTree = "<group>"; };
 		526ACD811B07A9FD00CE0CC0 /* TimeIntervalTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeIntervalTests.swift; sourceTree = "<group>"; };
@@ -487,6 +491,22 @@
 			path = db;
 			sourceTree = "<group>";
 		};
+		5262D1191B4A06AC00101154 /* json */ = {
+			isa = PBXGroup;
+			children = (
+				5262D11A1B4A06CC00101154 /* JsonPrimitiveTests.swift */,
+			);
+			path = json;
+			sourceTree = "<group>";
+		};
+		526378D71B4A061C0008B2E1 /* json */ = {
+			isa = PBXGroup;
+			children = (
+				526378D81B4A06600008B2E1 /* JsonPrimitive.swift */,
+			);
+			path = json;
+			sourceTree = "<group>";
+		};
 		528D6FA31A562D1F00783BE5 /* view */ = {
 			isa = PBXGroup;
 			children = (
@@ -626,6 +646,7 @@
 				52BD141919E9DA1D006D72B0 /* Info.plist */,
 				52BD140019E9DA1D006D72B0 /* app */,
 				52BD140E19E9DA1D006D72B0 /* db */,
+				526378D71B4A061C0008B2E1 /* json */,
 				52BD141A19E9DA1D006D72B0 /* model */,
 				52BD142319E9DA1D006D72B0 /* view */,
 				52BD140919E9DA1D006D72B0 /* controller */,
@@ -647,6 +668,7 @@
 				5233019B1B46FB8D00C9E5EE /* config */,
 				529230041A3CF4AF006DD6EB /* app */,
 				525898A01A4F28A900DD853D /* db */,
+				5262D1191B4A06AC00101154 /* json */,
 				5209E2871A5091BE0044EE70 /* model */,
 				528D6FA31A562D1F00783BE5 /* view */,
 				523F293C1A584F4E00C1BBC0 /* controller */,
@@ -1100,6 +1122,7 @@
 				52BD144219E9DA1D006D72B0 /* Validation.swift in Sources */,
 				52BD144419E9DA1D006D72B0 /* Template.swift in Sources */,
 				526254371AABC9C800D63024 /* MemoryCacheStore.swift in Sources */,
+				526378D91B4A06600008B2E1 /* JsonPrimitive.swift in Sources */,
 				522643221B06C7F40081D04E /* TimeFormat.swift in Sources */,
 				52BD142619E9DA1D006D72B0 /* Application.swift in Sources */,
 				52C5B4811B47055000F4A5C5 /* ServerTask.swift in Sources */,
@@ -1170,6 +1193,7 @@
 				525F84601B3B65F40025CA38 /* LocalizationSourceTests.swift in Sources */,
 				5262EE7B1AD0AC9B006F864D /* DictionaryTests.swift in Sources */,
 				520BD5021AA90E2600CBC3DC /* PropertyListLocalizationTests.swift in Sources */,
+				5262D11B1B4A06CC00101154 /* JsonPrimitiveTests.swift in Sources */,
 				526ACD821B07A9FD00CE0CC0 /* TimeIntervalTests.swift in Sources */,
 				523F29351A583EEB00C1BBC0 /* SanitizerTests.swift in Sources */,
 				52ACAC781A56059200E875D9 /* UserTests.swift in Sources */,
