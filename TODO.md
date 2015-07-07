@@ -15,3 +15,5 @@
 * Specifying explicit names on controller structs
 * Hacks in TailorMysql where we moved code out of initializers to work around
   compiler crashes
+* Building dictionaries by iterating rather than mapping in JsonPrimitive
+* Building arrays by iterating to handle exceptions in JSonPrimitive
