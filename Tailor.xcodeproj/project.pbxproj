@@ -57,6 +57,8 @@
 		526254351AABC9A600D63024 /* MemoryCacheStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526254341AABC9A600D63024 /* MemoryCacheStoreTests.swift */; };
 		526254371AABC9C800D63024 /* MemoryCacheStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526254361AABC9C800D63024 /* MemoryCacheStore.swift */; };
 		5262D11B1B4A06CC00101154 /* JsonPrimitiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5262D11A1B4A06CC00101154 /* JsonPrimitiveTests.swift */; };
+		5262D14B1B4B5A3800101154 /* JsonErrorsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5262D14A1B4B5A3800101154 /* JsonErrorsTests.swift */; };
+		5262D14D1B4B5A5500101154 /* JsonErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5262D14C1B4B5A5500101154 /* JsonErrors.swift */; };
 		5262EE7A1AD0AC9B006F864D /* RequestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EADCC91A40504000D9A8CF /* RequestTests.swift */; };
 		5262EE7B1AD0AC9B006F864D /* DictionaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784C61A5B72990065C10D /* DictionaryTests.swift */; };
 		5262EE7E1AD0AC9B006F864D /* ServerTaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784CE1A5CC6350065C10D /* ServerTaskTests.swift */; };
@@ -250,6 +252,8 @@
 		526254341AABC9A600D63024 /* MemoryCacheStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemoryCacheStoreTests.swift; sourceTree = "<group>"; };
 		526254361AABC9C800D63024 /* MemoryCacheStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemoryCacheStore.swift; sourceTree = "<group>"; };
 		5262D11A1B4A06CC00101154 /* JsonPrimitiveTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonPrimitiveTests.swift; sourceTree = "<group>"; };
+		5262D14A1B4B5A3800101154 /* JsonErrorsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonErrorsTests.swift; sourceTree = "<group>"; };
+		5262D14C1B4B5A5500101154 /* JsonErrors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonErrors.swift; sourceTree = "<group>"; };
 		5262EEA21AD0BA3D006F864D /* Tailor.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Tailor.framework; path = build/Tailor.framework; sourceTree = "<group>"; };
 		5262EEA31AD0BA3D006F864D /* TailorTesting.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TailorTesting.framework; path = build/TailorTesting.framework; sourceTree = "<group>"; };
 		526378D81B4A06600008B2E1 /* JsonPrimitive.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonPrimitive.swift; sourceTree = "<group>"; };
@@ -495,6 +499,7 @@
 			isa = PBXGroup;
 			children = (
 				5262D11A1B4A06CC00101154 /* JsonPrimitiveTests.swift */,
+				5262D14A1B4B5A3800101154 /* JsonErrorsTests.swift */,
 			);
 			path = json;
 			sourceTree = "<group>";
@@ -503,6 +508,7 @@
 			isa = PBXGroup;
 			children = (
 				526378D81B4A06600008B2E1 /* JsonPrimitive.swift */,
+				5262D14C1B4B5A5500101154 /* JsonErrors.swift */,
 			);
 			path = json;
 			sourceTree = "<group>";
@@ -1156,6 +1162,7 @@
 				52C6251A19EE110B0024453F /* AesEncryptor.swift in Sources */,
 				52C5B47E1B47055000F4A5C5 /* AlterationScript.swift in Sources */,
 				52FC9E0C1B3B9180001F783B /* LayoutType.swift in Sources */,
+				5262D14D1B4B5A5500101154 /* JsonErrors.swift in Sources */,
 				522643231B06C7F40081D04E /* TimeInterval.swift in Sources */,
 				52A95E371AE318C6001AED1F /* Persistable.swift in Sources */,
 				523D655D1A98CC1B000C686B /* PropertyListLocalization.swift in Sources */,
@@ -1175,6 +1182,7 @@
 				52EC6D4A1A47B3F100A4D822 /* RouteSetTests.swift in Sources */,
 				52FC9E0E1B3B952E001F783B /* TemplateTypeTests.swift in Sources */,
 				526254351AABC9A600D63024 /* MemoryCacheStoreTests.swift in Sources */,
+				5262D14B1B4B5A3800101154 /* JsonErrorsTests.swift in Sources */,
 				52B417361B3E12E400B274F7 /* TemplateFormTests.swift in Sources */,
 				528D183F1A8FDD4A00A6E116 /* TailorTestHelpers.swift in Sources */,
 				5214B5D51AA3903800624E9D /* ValidationErrorTests.swift in Sources */,

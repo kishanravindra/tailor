@@ -200,16 +200,19 @@ class JsonPrimitiveTests: TailorTestCase {
     }
   }
   
-  func testInitWithJsonObjectWithDataThrowsException() {
-    let object = NSData()
+  func testInitWithJsonObjectWithUnsupportedTypeThrowsException() {
+    let object = NSObject()
     
     do {
       _ = try JsonPrimitive(jsonObject: object)
       assert(false, message: "should throw an exception")
     }
-    catch {
+    catch JsonParsingError.UnsupportedType(let type) {
+      assert(type == NSObject.self)
     }
-    
+    catch {
+      assert(false, message: "threw an unexpected error type")
+    }
   }
   
   func testInitWithJsonDataForDictionaryCreatesDictionary() {
@@ -229,6 +232,288 @@ class JsonPrimitiveTests: TailorTestCase {
     catch {
       assert(false, message: "should not throw exception")
     }
+  }
+  
+  func testReadStringWithStringGetsString() {
+    let primitive = JsonPrimitive.String("Hello")
+    do {
+      let value: String = try primitive.read()
+      assert(value, equals: "Hello")
+    }
+    catch {
+      assert(false, message: "should not throw exception")
+    }
+  }
+  
+  func testReadStringWithArrayThrowsException() {
+    let primitive = JsonPrimitive.Array([JsonPrimitive.String("A"), JsonPrimitive.String("B")])
+    do {
+      _ = try primitive.read() as String
+      assert(false, message: "should throw some kind of exception")
+    }
+    catch JsonParsingError.WrongFieldType(field: let field, type: let type, caseType: let caseType) {
+      assert(field, equals: "root")
+      assert(type == String.self)
+      assert(caseType == [JsonPrimitive].self)
+    }
+    catch {
+      assert(false, message: "threw unexpected exception type")
+    }
+  }
+  
+  func testReadArrayWithArrayGetsArray() {
+    let array = [
+      JsonPrimitive.String("A"),
+      JsonPrimitive.Array([JsonPrimitive.String("B"), JsonPrimitive.String("C")])
+    ]
+    let primitive = JsonPrimitive.Array(array)
+    do {
+      let value: [JsonPrimitive] = try primitive.read()
+      assert(value, equals: array)
+    }
+    catch {
+      assert(false, message: "should not throw exception")
+    }
+  }
+  
+  func testReadArrayWithDictionaryThrowsError() {
+    let primitive = JsonPrimitive.Dictionary([
+      "key1": JsonPrimitive.String("value1"),
+      "key2": JsonPrimitive.String("value2")
+    ])
+    do {
+      _  = try primitive.read() as [JsonPrimitive]
+      assert(false, message: "should show some kind of exception")
+    }
+    catch JsonParsingError.WrongFieldType(field: let field, type: let type, caseType: let caseType) {
+      assert(field, equals: "root")
+      assert(type == [JsonPrimitive].self)
+      assert(caseType == [String:JsonPrimitive].self)
+    }
+    catch {
+      assert(false, message: "threw unexpected exception type")
+    }
+  }
+  
+  func testReadDictionaryWithDictionaryGetsDictionary() {
+    let dictionary = [
+      "key1": JsonPrimitive.String("value1"),
+      "key2": JsonPrimitive.Array([JsonPrimitive.String("B"), JsonPrimitive.String("C")])
+    ]
+    let primitive = JsonPrimitive.Dictionary(dictionary)
+    do {
+      let value = try primitive.read() as [String:JsonPrimitive]
+      assert(value, equals: dictionary)
+    }
+    catch {
+      assert(false, message: "should not throw exception")
+    }
+  }
+  
+  func testReadDictionaryWithStringThrowsError() {
+    let primitive = JsonPrimitive.String("test")
+    do {
+      _  = try primitive.read() as [String:JsonPrimitive]
+      assert(false, message: "should show some kind of exception")
+    }
+    catch JsonParsingError.WrongFieldType(field: let field, type: let type, caseType: let caseType) {
+      assert(field, equals: "root")
+      assert(type == Dictionary<String,JsonPrimitive>.self)
+      assert(caseType == String.self)
+    }
+    catch {
+      assert(false, message: "threw unexpected exception type")
+    }
+  }
+  
+  func testReadStringValueWithStringGetsString() {
+    let dictionary = [
+      "key1": JsonPrimitive.String("value1"),
+      "key2": JsonPrimitive.Array([
+        JsonPrimitive.String("value2"),
+        JsonPrimitive.String("value3")
+      ]),
+      "key3": JsonPrimitive.Dictionary([
+        "bKey1": JsonPrimitive.String("value4"),
+        "bKey2": JsonPrimitive.String("value5")
+      ])
+    ]
+    let primitive = JsonPrimitive.Dictionary(dictionary)
+    do {
+      let value: String = try primitive.read("key1")
+      assert(value, equals: try dictionary["key1"]!.read())
+    }
+    catch {
+      assert(false, message: "should not throw exception")
+    }
+  }
+  
+  func testReadStringValueWithArrayThrowsException() {
+    let dictionary = [
+      "key1": JsonPrimitive.String("value1"),
+      "key2": JsonPrimitive.Array([
+        JsonPrimitive.String("value2"),
+        JsonPrimitive.String("value3")
+        ]),
+      "key3": JsonPrimitive.Dictionary([
+        "bKey1": JsonPrimitive.String("value4"),
+        "bKey2": JsonPrimitive.String("value5")
+        ])
+    ]
+    let primitive = JsonPrimitive.Dictionary(dictionary)
+    do {
+      _ = try primitive.read("key2") as String
+      assert(false, message: "should throw some kind of exception")
+    }
+    catch JsonParsingError.WrongFieldType(field: let field, type: let type, caseType: let caseType) {
+      assert(field, equals: "key2")
+      assert(type == String.self)
+      assert(caseType == [JsonPrimitive].self)
+    }
+    catch {
+      assert(false, message: "threw unexpected exception type")
+    }
+  }
+  
+  func testReadArrayValueWithArrayGetsArray() {
+    let dictionary = [
+      "key1": JsonPrimitive.String("value1"),
+      "key2": JsonPrimitive.Array([
+        JsonPrimitive.String("value2"),
+        JsonPrimitive.String("value3")
+        ]),
+      "key3": JsonPrimitive.Dictionary([
+        "bKey1": JsonPrimitive.String("value4"),
+        "bKey2": JsonPrimitive.String("value5")
+        ])
+    ]
+    let primitive = JsonPrimitive.Dictionary(dictionary)
+    do {
+      let value: [JsonPrimitive] = try primitive.read("key2")
+      assert(value, equals: try dictionary["key2"]!.read())
+    }
+    catch {
+      assert(false, message: "should not throw exception")
+    }
+  }
+  
+  func testReadArrayValueWithDictionaryThrowsException() {
+    let dictionary = [
+      "key1": JsonPrimitive.String("value1"),
+      "key2": JsonPrimitive.Array([
+        JsonPrimitive.String("value2"),
+        JsonPrimitive.String("value3")
+        ]),
+      "key3": JsonPrimitive.Dictionary([
+        "bKey1": JsonPrimitive.String("value4"),
+        "bKey2": JsonPrimitive.String("value5")
+        ])
+    ]
+    let primitive = JsonPrimitive.Dictionary(dictionary)
+    do {
+      _ = try primitive.read("key3") as [JsonPrimitive]
+      assert(false, message: "should throw some kind of exception")
+    }
+    catch JsonParsingError.WrongFieldType(field: let field, type: let type, caseType: let caseType) {
+      assert(field, equals: "key3")
+      assert(type == [JsonPrimitive].self)
+      assert(caseType == [String:JsonPrimitive].self)
+    }
+    catch {
+      assert(false, message: "threw unexpected exception type")
+    }
+  }
+  
+  func testReadDictionaryValueWithDictionaryReturnsDictionary() {
+    let dictionary = [
+      "key1": JsonPrimitive.String("value1"),
+      "key2": JsonPrimitive.Array([
+        JsonPrimitive.String("value2"),
+        JsonPrimitive.String("value3")
+        ]),
+      "key3": JsonPrimitive.Dictionary([
+        "bKey1": JsonPrimitive.String("value4"),
+        "bKey2": JsonPrimitive.String("value5")
+        ])
+    ]
+    let primitive = JsonPrimitive.Dictionary(dictionary)
+    do {
+      let value: [String:JsonPrimitive] = try primitive.read("key3")
+      assert(value, equals: try dictionary["key3"]!.read())
+    }
+    catch {
+      assert(false, message: "should not throw exception")
+    }
+  }
+  
+  func testReadDictionaryValueWithStringThrowsException() {
+    let dictionary = [
+      "key1": JsonPrimitive.String("value1"),
+      "key2": JsonPrimitive.Array([
+        JsonPrimitive.String("value2"),
+        JsonPrimitive.String("value3")
+        ]),
+      "key3": JsonPrimitive.Dictionary([
+        "bKey1": JsonPrimitive.String("value4"),
+        "bKey2": JsonPrimitive.String("value5")
+        ])
+    ]
+    let primitive = JsonPrimitive.Dictionary(dictionary)
+    do {
+      _ = try primitive.read("key1") as [String:JsonPrimitive]
+      assert(false, message: "should throw some kind of exception")
+    }
+    catch JsonParsingError.WrongFieldType(field: let field, type: let type, caseType: let caseType) {
+      assert(field, equals: "key1")
+      assert(type == [String:JsonPrimitive].self)
+      assert(caseType == String.self)
+    }
+    catch {
+      assert(false, message: "threw unexpected exception type")
+    }
+  }
+  
+  func testReadValueWithNonDictionaryPrimitiveThrowsException() {
+    let primitive = JsonPrimitive.String("Hello")
+    do {
+      _ = try primitive.read("key1") as String
+      assert(false, message: "should throw some kind of exception")
+    }
+    catch JsonParsingError.WrongFieldType(field: let field, type: let type, caseType: let caseType) {
+      assert(field, equals: "root")
+      assert(type == [String:JsonPrimitive].self)
+      assert(caseType == String.self)
+    }
+    catch {
+      assert(false, message: "threw unexpected exception type")
+    }
+  }
+  
+  func testReadValueWithMissingKeyThrowsException() {
+    let dictionary = [
+      "key1": JsonPrimitive.String("value1"),
+      "key2": JsonPrimitive.Array([
+        JsonPrimitive.String("value2"),
+        JsonPrimitive.String("value3")
+        ]),
+      "key3": JsonPrimitive.Dictionary([
+        "bKey1": JsonPrimitive.String("value4"),
+        "bKey2": JsonPrimitive.String("value5")
+        ])
+    ]
+    let primitive = JsonPrimitive.Dictionary(dictionary)
+    
+    do {
+      _ = try primitive.read("key4") as String
+      assert(false, message: "should throw some kind of exception")
+    }
+    catch JsonParsingError.MissingField(field: let field) {
+      assert(field, equals: "key4")
+    }
+    catch {
+      assert(false, message: "threw unexpected exception type")
+    }
+    
   }
   
   //MARK: - Equality
@@ -287,7 +572,7 @@ class JsonPrimitiveTests: TailorTestCase {
     assert(value1, doesNotEqual: value2)
   }
   
-  func testArraDoesNotEqualString() {
+  func testArrayDoesNotEqualString() {
     let value1 = JsonPrimitive.Array([JsonPrimitive.String("value1"), JsonPrimitive.String("value2")])
     let value2 = JsonPrimitive.String("[value1,value2]")
     assert(value1, doesNotEqual: value2)
