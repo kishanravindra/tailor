@@ -16,4 +16,8 @@
 * Hacks in TailorMysql where we moved code out of initializers to work around
   compiler crashes
 * Building dictionaries by iterating rather than mapping in JsonPrimitive
-* Building arrays by iterating to handle exceptions in JSonPrimitive
+* Building arrays by iterating to handle exceptions in JsonPrimitive
+* Not being able to declare JsonEncodable conformance on Arrays and Dictionaries
+* Using JsonDictionaryConvertable instead of just calling toJson on the
+  dictionary
+* Having separate throwing and non-throwing implementations of Dictionary.map

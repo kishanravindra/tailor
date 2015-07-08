@@ -67,4 +67,64 @@ class JsonErrorsTests: TailorTestCase {
     let value2 = JsonParsingError.WrongFieldType(field: "root", type: String.self, caseType: NSData.self)
     assert(value1, doesNotEqual: value2)
   }
+  
+  func testParsingErrorWithFieldPrefixWithWrongFieldTypeErrorAddsPrefixToField() {
+    do {
+      try JsonParsingError.withFieldPrefix("test") {
+        Void->Void in
+        throw JsonParsingError.WrongFieldType(field: "value", type: String.self, caseType: NSNumber.self)
+      }
+      assert(false, message: "should throw some kind of exception")
+    }
+    catch JsonParsingError.WrongFieldType(field: let field, type: let type, caseType: let caseType) {
+      assert(field, equals: "test.value")
+      assert(type == String.self)
+      assert(caseType == NSNumber.self)
+    }
+    catch  {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
+  func testParsingErrorWithFieldPrefixWithMissingFieldErrorAddsPrefixToField() {
+    do {
+      try JsonParsingError.withFieldPrefix("test") {
+        Void->Void in
+        throw JsonParsingError.MissingField(field: "name")
+      }
+      assert(false, message: "should throw some kind of exception")
+    }
+    catch JsonParsingError.MissingField(field: let field) {
+      assert(field, equals: "test.name")
+    }
+    catch  {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
+  func testParsingErrorWithFieldPrefixWithUnsupportedTypeErrorRethrowsError() {
+    do {
+      try JsonParsingError.withFieldPrefix("test") {
+        Void->Void in
+        throw JsonParsingError.UnsupportedType(NSColor.self)
+      }
+      assert(false, message: "should throw some kind of exception")
+    }
+    catch JsonParsingError.UnsupportedType(let type) {
+      assert(type == NSColor.self)
+    }
+    catch  {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
+  func testParsingErrorWithFieldPrefixWithNoErrorReturnsValue() {
+    do {
+      let value = try JsonParsingError.withFieldPrefix("test") { "Hello" }
+      assert(value, equals: "Hello")
+    }
+    catch  {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
 }

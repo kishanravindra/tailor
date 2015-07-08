@@ -146,10 +146,7 @@ public enum JsonPrimitive: Equatable {
     - returns:          The unwrapped value.
     */
   public func read<OutputType>(key: Swift.String) throws -> OutputType {
-    let dictionary = try self.read() as [Swift.String:JsonPrimitive]
-    guard let value = dictionary[key] else {
-      throw JsonParsingError.MissingField(field: key)
-    }
+    let value: JsonPrimitive = try self.read(key)
     do {
       return try value.read()
     }
@@ -159,6 +156,46 @@ public enum JsonPrimitive: Equatable {
     catch let e {
       throw e
     }
+  }
+  
+  /**
+    This method reads a primitive from a key in a JSON dictionary.
+
+    If this is not a dictionary type, this will throw a
+    `JsonParsingError.WrongFieldType` error. If there is no field on the
+    dictionary for the desired key, this will throw a
+    `JsonParsingError.MissingField` error.
+    
+    - parameter key:    The name of the key to read.
+    - returns:          The primitive at that key.
+    */
+  public func read(key: Swift.String) throws -> JsonPrimitive {
+    let dictionary = try self.read() as [Swift.String:JsonPrimitive]
+    guard let value = dictionary[key] else {
+      throw JsonParsingError.MissingField(field: key)
+    }
+    return value
+  }
+  
+  /**
+    This method takes a value from a key in a JSON dictionary and uses it to
+    populate an instance of a JSON-convertible type.
+
+    If the output type throws a parsing error when building itself, this will
+    add the key as a prefix to the field name in the parsing error. So if the
+    key here is "hat", and the Hat constructor throws an error over a missing
+    "size" variable, this call will throw a MissingField error with a field
+    of "hat.size". This allows us to build full key paths as we push errors up
+    a parsing call stack.
+  
+    - parameter key:    The key to fetch
+    - parameter into:   The type that we should build with the value at that
+                        key.
+    - returns:          The newly constructed value in the output type.  
+    */
+  public func read<T: JsonConvertible>(key: Swift.String, into: T.Type) throws -> T {
+    let value: JsonPrimitive = try self.read(key)
+    return try JsonParsingError.withFieldPrefix(key) { return try T(json: value) }
   }
 }
 

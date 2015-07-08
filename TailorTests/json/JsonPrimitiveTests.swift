@@ -4,6 +4,17 @@ import TailorTesting
 class JsonPrimitiveTests: TailorTestCase {
   //MARK: - Converting to JSON
   
+  var complexJsonDictionary: [String:JsonPrimitive] = [
+    "key1": JsonPrimitive.String("value1"),
+    "key2": JsonPrimitive.Array([
+      JsonPrimitive.String("value2"),
+      JsonPrimitive.String("value3")
+      ]),
+    "key3": JsonPrimitive.Dictionary([
+      "bKey1": JsonPrimitive.String("value4"),
+      "bKey2": JsonPrimitive.String("value5")
+      ])
+  ]
   func testFoundationJsonObjectForStringIsString() {
     let primitive = JsonPrimitive.String("Hello")
     assert(primitive.toFoundationJsonObject as? String, equals: "Hello")
@@ -327,21 +338,10 @@ class JsonPrimitiveTests: TailorTestCase {
   }
   
   func testReadStringValueWithStringGetsString() {
-    let dictionary = [
-      "key1": JsonPrimitive.String("value1"),
-      "key2": JsonPrimitive.Array([
-        JsonPrimitive.String("value2"),
-        JsonPrimitive.String("value3")
-      ]),
-      "key3": JsonPrimitive.Dictionary([
-        "bKey1": JsonPrimitive.String("value4"),
-        "bKey2": JsonPrimitive.String("value5")
-      ])
-    ]
-    let primitive = JsonPrimitive.Dictionary(dictionary)
+    let primitive = JsonPrimitive.Dictionary(complexJsonDictionary)
     do {
       let value: String = try primitive.read("key1")
-      assert(value, equals: try dictionary["key1"]!.read())
+      assert(value, equals: try complexJsonDictionary["key1"]!.read())
     }
     catch {
       assert(false, message: "should not throw exception")
@@ -349,18 +349,7 @@ class JsonPrimitiveTests: TailorTestCase {
   }
   
   func testReadStringValueWithArrayThrowsException() {
-    let dictionary = [
-      "key1": JsonPrimitive.String("value1"),
-      "key2": JsonPrimitive.Array([
-        JsonPrimitive.String("value2"),
-        JsonPrimitive.String("value3")
-        ]),
-      "key3": JsonPrimitive.Dictionary([
-        "bKey1": JsonPrimitive.String("value4"),
-        "bKey2": JsonPrimitive.String("value5")
-        ])
-    ]
-    let primitive = JsonPrimitive.Dictionary(dictionary)
+    let primitive = JsonPrimitive.Dictionary(complexJsonDictionary)
     do {
       _ = try primitive.read("key2") as String
       assert(false, message: "should throw some kind of exception")
@@ -376,21 +365,10 @@ class JsonPrimitiveTests: TailorTestCase {
   }
   
   func testReadArrayValueWithArrayGetsArray() {
-    let dictionary = [
-      "key1": JsonPrimitive.String("value1"),
-      "key2": JsonPrimitive.Array([
-        JsonPrimitive.String("value2"),
-        JsonPrimitive.String("value3")
-        ]),
-      "key3": JsonPrimitive.Dictionary([
-        "bKey1": JsonPrimitive.String("value4"),
-        "bKey2": JsonPrimitive.String("value5")
-        ])
-    ]
-    let primitive = JsonPrimitive.Dictionary(dictionary)
+    let primitive = JsonPrimitive.Dictionary(complexJsonDictionary)
     do {
       let value: [JsonPrimitive] = try primitive.read("key2")
-      assert(value, equals: try dictionary["key2"]!.read())
+      assert(value, equals: try complexJsonDictionary["key2"]!.read())
     }
     catch {
       assert(false, message: "should not throw exception")
@@ -398,18 +376,7 @@ class JsonPrimitiveTests: TailorTestCase {
   }
   
   func testReadArrayValueWithDictionaryThrowsException() {
-    let dictionary = [
-      "key1": JsonPrimitive.String("value1"),
-      "key2": JsonPrimitive.Array([
-        JsonPrimitive.String("value2"),
-        JsonPrimitive.String("value3")
-        ]),
-      "key3": JsonPrimitive.Dictionary([
-        "bKey1": JsonPrimitive.String("value4"),
-        "bKey2": JsonPrimitive.String("value5")
-        ])
-    ]
-    let primitive = JsonPrimitive.Dictionary(dictionary)
+    let primitive = JsonPrimitive.Dictionary(complexJsonDictionary)
     do {
       _ = try primitive.read("key3") as [JsonPrimitive]
       assert(false, message: "should throw some kind of exception")
@@ -425,21 +392,10 @@ class JsonPrimitiveTests: TailorTestCase {
   }
   
   func testReadDictionaryValueWithDictionaryReturnsDictionary() {
-    let dictionary = [
-      "key1": JsonPrimitive.String("value1"),
-      "key2": JsonPrimitive.Array([
-        JsonPrimitive.String("value2"),
-        JsonPrimitive.String("value3")
-        ]),
-      "key3": JsonPrimitive.Dictionary([
-        "bKey1": JsonPrimitive.String("value4"),
-        "bKey2": JsonPrimitive.String("value5")
-        ])
-    ]
-    let primitive = JsonPrimitive.Dictionary(dictionary)
+    let primitive = JsonPrimitive.Dictionary(complexJsonDictionary)
     do {
       let value: [String:JsonPrimitive] = try primitive.read("key3")
-      assert(value, equals: try dictionary["key3"]!.read())
+      assert(value, equals: try complexJsonDictionary["key3"]!.read())
     }
     catch {
       assert(false, message: "should not throw exception")
@@ -447,18 +403,7 @@ class JsonPrimitiveTests: TailorTestCase {
   }
   
   func testReadDictionaryValueWithStringThrowsException() {
-    let dictionary = [
-      "key1": JsonPrimitive.String("value1"),
-      "key2": JsonPrimitive.Array([
-        JsonPrimitive.String("value2"),
-        JsonPrimitive.String("value3")
-        ]),
-      "key3": JsonPrimitive.Dictionary([
-        "bKey1": JsonPrimitive.String("value4"),
-        "bKey2": JsonPrimitive.String("value5")
-        ])
-    ]
-    let primitive = JsonPrimitive.Dictionary(dictionary)
+    let primitive = JsonPrimitive.Dictionary(complexJsonDictionary)
     do {
       _ = try primitive.read("key1") as [String:JsonPrimitive]
       assert(false, message: "should throw some kind of exception")
@@ -490,18 +435,7 @@ class JsonPrimitiveTests: TailorTestCase {
   }
   
   func testReadValueWithMissingKeyThrowsException() {
-    let dictionary = [
-      "key1": JsonPrimitive.String("value1"),
-      "key2": JsonPrimitive.Array([
-        JsonPrimitive.String("value2"),
-        JsonPrimitive.String("value3")
-        ]),
-      "key3": JsonPrimitive.Dictionary([
-        "bKey1": JsonPrimitive.String("value4"),
-        "bKey2": JsonPrimitive.String("value5")
-        ])
-    ]
-    let primitive = JsonPrimitive.Dictionary(dictionary)
+    let primitive = JsonPrimitive.Dictionary(complexJsonDictionary)
     
     do {
       _ = try primitive.read("key4") as String
@@ -513,7 +447,93 @@ class JsonPrimitiveTests: TailorTestCase {
     catch {
       assert(false, message: "threw unexpected exception type")
     }
+  }
+  
+  func testReadValueWithJsonPrimitiveGetsPrimitive() {
+    let primitive = JsonPrimitive.Dictionary(complexJsonDictionary)
     
+    do {
+      let innerPrimitive = try primitive.read("key2") as JsonPrimitive
+      assert(innerPrimitive, equals: complexJsonDictionary["key2"]!)
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
+  func testReadValueWithJsonPrimitiveWithMissingKeyThrowsException() {
+    let primitive = JsonPrimitive.Dictionary(complexJsonDictionary)
+    
+    do {
+      _ = try primitive.read("key4") as JsonPrimitive
+      assert(false, message: "should throw some kind of exception")
+    }
+    catch JsonParsingError.MissingField(field: let field) {
+      assert(field, equals: "key4")
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
+  func testReadIntoConvertiblePopulatesValues() {
+    struct MyStruct: JsonConvertible {
+      let value1: String
+      let value2: String
+      
+      init(json: JsonPrimitive) throws {
+        self.value1 = try json.read("bKey1")
+        self.value2 = try json.read("bKey2")
+      }
+      
+      func toJson() -> JsonPrimitive {
+        return JsonPrimitive.Dictionary([
+          "bKey1": JsonPrimitive.String(value1),
+          "bKey2": JsonPrimitive.String(value2)
+        ])
+      }
+    }
+    
+    let primitive = JsonPrimitive.Dictionary(complexJsonDictionary)
+    do {
+      let value = try primitive.read("key3", into: MyStruct.self)
+      assert(value.value1, equals: "value4")
+      assert(value.value2, equals: "value5")
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
+  func testReadIntoConvertibleWithErrorAddsOuterKeyToError() {
+    struct MyStruct: JsonConvertible {
+      let value1: String
+      let value2: String
+      
+      init(json: JsonPrimitive) throws {
+        self.value1 = try json.read("bKey1")
+        self.value2 = try json.read("bKey3")
+      }
+      
+      func toJson() -> JsonPrimitive {
+        return JsonPrimitive.Dictionary([
+          "bKey1": JsonPrimitive.String(value1),
+          "bKey3": JsonPrimitive.String(value2)
+          ])
+      }
+    }
+    
+    let primitive = JsonPrimitive.Dictionary(complexJsonDictionary)
+    do {
+      _ = try primitive.read("key3", into: MyStruct.self)
+      assert(false, message: "should throw some kind of exception")
+    }
+    catch JsonParsingError.MissingField(field: let field) {
+      assert(field, equals: "key3.bKey3")
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
   }
   
   //MARK: - Equality

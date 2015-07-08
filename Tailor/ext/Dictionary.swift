@@ -20,3 +20,38 @@ public func merge<KeyType,ValueType>(lhs: Dictionary<KeyType, ValueType>, _ rhs:
   }
   return result
 }
+
+public extension Dictionary {
+  /**
+    This method creates a new dictionary with this dictionary's keys mapped
+    to the results of calling a transform function on their corresponding
+    values.
+
+    - parameter transform:    The transform function
+    - returns:                The new dictionary.
+    */
+  public func map<T>(@noescape transform: (Value) -> T) -> [Key:T] {
+    var result = [Key:T]()
+    for (key,value) in self {
+      result[key] = transform(value)
+    }
+    return result
+  }
+  
+  /**
+    This method creates a new dictionary with this dictionary's keys mapped
+    to the results of calling a transform function on their corresponding
+    values.
+
+    - parameter transform:    The transform function
+    - returns:                The new dictionary.
+    */
+  public func map<T>(@noescape transform: (Value) throws -> T) rethrows -> [Key:T] {
+    var result = [Key:T]()
+    for (key,value) in self {
+      result[key] = try transform(value)
+    }
+    return result
+  }
+
+}

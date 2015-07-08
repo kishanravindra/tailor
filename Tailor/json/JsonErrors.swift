@@ -30,6 +30,35 @@ public enum JsonParsingError : ErrorType, Equatable {
     - parameter field:  The name of the field that we are trying to read.
     */
   case MissingField(field: String)
+  
+  /**
+    This method runs a block and adds a prefix to the field for any parsing
+    errors that get thrown by the block.
+
+    The purpose of this is to make it easier to generate errors for nested
+    dictionaries. With this method, you can have a subroutine process a
+    lower-level dictionary, and add a key path to its errors as you pass them
+    up the call chain. The top-level caller can then report an error that has
+    a full path down to where the error occurred.
+
+    - parameter prefix:   The prefix to add to the errors.
+    - parameter block:    The block to run
+    - returns:            The result of the block.
+    */
+  public static func withFieldPrefix<T>(prefix: String, block: Void throws->T) throws -> T {
+    do {
+      return try block()
+    }
+    catch JsonParsingError.WrongFieldType(field: let field, type: let type, caseType: let caseType) {
+      throw JsonParsingError.WrongFieldType(field: "\(prefix).\(field)", type: type, caseType: caseType)
+    }
+    catch JsonParsingError.MissingField(field: let field) {
+      throw JsonParsingError.MissingField(field: "\(prefix).\(field)")
+    }
+    catch let e {
+      throw e
+    }
+  }
 }
 
 /**
