@@ -12,8 +12,10 @@ class JsonPrimitiveTests: TailorTestCase {
       ]),
     "key3": JsonPrimitive.Dictionary([
       "bKey1": JsonPrimitive.String("value4"),
-      "bKey2": JsonPrimitive.String("value5")
-      ])
+      "bKey2": JsonPrimitive.Number(891)
+      ]),
+    "nullKey": JsonPrimitive.Null,
+    "numberKey": JsonPrimitive.Number(12)
   ]
   func testFoundationJsonObjectForStringIsString() {
     let primitive = JsonPrimitive.String("Hello")
@@ -106,6 +108,18 @@ class JsonPrimitiveTests: TailorTestCase {
     }
   }
   
+  func testFoundationJsonObjectForNullIsNsNull() {
+    let primitive = JsonPrimitive.Null
+    let object = primitive.toFoundationJsonObject
+    assert(object is NSNull)
+  }
+  
+  func testFoundationJsonObjectForNumberIsNsNumber() {
+    let primitive = JsonPrimitive.Number(11.5)
+    let object = primitive.toFoundationJsonObject
+    assert(object as? NSNumber, equals: NSNumber(double: 11.5))
+  }
+  
   func testJsonDataForStringGetsThrowsException() {
     let primitive = JsonPrimitive.String("Hello")
     do {
@@ -113,6 +127,7 @@ class JsonPrimitiveTests: TailorTestCase {
       assert(false, message: "should throw error before it gets here")
     }
     catch {
+      assert(true, message: "throws an error")
     }
   }
   
@@ -166,6 +181,41 @@ class JsonPrimitiveTests: TailorTestCase {
     }
   }
   
+  func testJsonDataForDictionaryWithNullGetsData() {
+    
+    let primitive = JsonPrimitive.Dictionary([
+      "aKey1": JsonPrimitive.String("value1"),
+      "aKey2": JsonPrimitive.Null
+      ])
+    
+    let expectedData = "{\"aKey1\":\"value1\",\"aKey2\":null}".dataUsingEncoding(NSUTF8StringEncoding)!
+    do {
+      let data = try primitive.jsonData()
+      assert(data, equals: expectedData)
+    }
+    catch {
+      assert(false, message: "should not throw exception")
+    }
+  }
+  
+  func testJsonDataForDictionaryWithNumbersGetsData() {
+    
+    let primitive = JsonPrimitive.Dictionary([
+      "aKey1": JsonPrimitive.String("value1"),
+      "aKey2": JsonPrimitive.Number(42),
+      "aKey3": JsonPrimitive.Number(3.14)
+      ])
+    
+    let expectedData = "{\"aKey3\":3.14,\"aKey1\":\"value1\",\"aKey2\":42}".dataUsingEncoding(NSUTF8StringEncoding)!
+    do {
+      let data = try primitive.jsonData()
+      assert(data, equals: expectedData)
+    }
+    catch {
+      assert(false, message: "should not throw exception")
+    }
+  }
+  
   //MARK: - Parsing from JSON
   
   func testInitWithJsonStringBuildsString() {
@@ -205,6 +255,39 @@ class JsonPrimitiveTests: TailorTestCase {
         JsonPrimitive.String("value1"),
         JsonPrimitive.String("value2")
       ]))
+    }
+    catch {
+      assert(false, message: "should not throw exception")
+    }
+  }
+  
+  func testInitWithNsNullGetsNull() {
+    let object = NSNull()
+    do {
+      let primitive = try JsonPrimitive(jsonObject: object)
+      assert(primitive, equals: JsonPrimitive.Null)
+    }
+    catch {
+      assert(false, message: "should not throw exception")
+    }
+  }
+  
+  func testInitWithIntegerGetsNumber() {
+    let object = 823
+    do {
+      let primitive = try JsonPrimitive(jsonObject: object)
+      assert(primitive, equals: JsonPrimitive.Number(823))
+    }
+    catch {
+      assert(false, message: "should not throw exception")
+    }
+  }
+  
+  func testInitWithDoubleGetsNumber() {
+    let object = 61.4
+    do {
+      let primitive = try JsonPrimitive(jsonObject: object)
+      assert(primitive, equals: JsonPrimitive.Number(61.4))
     }
     catch {
       assert(false, message: "should not throw exception")
@@ -321,8 +404,8 @@ class JsonPrimitiveTests: TailorTestCase {
     }
   }
   
-  func testReadDictionaryWithStringThrowsError() {
-    let primitive = JsonPrimitive.String("test")
+  func testReadDictionaryWithNullThrowsError() {
+    let primitive = JsonPrimitive.Null
     do {
       _  = try primitive.read() as [String:JsonPrimitive]
       assert(false, message: "should show some kind of exception")
@@ -330,10 +413,81 @@ class JsonPrimitiveTests: TailorTestCase {
     catch JsonParsingError.WrongFieldType(field: let field, type: let type, caseType: let caseType) {
       assert(field, equals: "root")
       assert(type == Dictionary<String,JsonPrimitive>.self)
-      assert(caseType == String.self)
+      assert(caseType == NSNull.self)
     }
     catch {
       assert(false, message: "threw unexpected exception type")
+    }
+  }
+  
+  func testReadNullWithNullGetsNull() {
+    let primitive = JsonPrimitive.Null
+    do {
+      _ = try primitive.read() as NSNull
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
+  func testReadNullWithNumberThrowsException() {
+    let primitive = JsonPrimitive.Number(9841)
+    do {
+      _ = try primitive.read() as NSNull
+      assert(false, message: "show throw some kind of exception")
+    }
+    catch JsonParsingError.WrongFieldType(field: let field, type: let type, caseType: let caseType) {
+      assert(field, equals: "root")
+      assert(type == NSNull.self)
+      assert(caseType == NSNumber.self)
+    }
+
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
+  func testReadIntWithIntGetsInt() {
+    let primitive = JsonPrimitive.Number(95)
+    do {
+      let number = try primitive.read() as Int
+      assert(number, equals: 95)
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
+  func testReadIntWithDoubleGetsDouble() {
+    let primitive = JsonPrimitive.Number(95)
+    do {
+      let number = try primitive.read() as Double
+      assert(number, equals: 95.0)
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
+  func testReadDoubleWithDoubleGetsDouble() {
+    let primitive = JsonPrimitive.Number(123.3)
+    do {
+      let number = try primitive.read() as Double
+      assert(number, equals: 123.3)
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
+  func testReadDoubleWithIntGetsInt() {
+    let primitive = JsonPrimitive.Number(81.45)
+    do {
+      let number = try primitive.read() as Int
+      assert(number, equals: 81)
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
     }
   }
   
@@ -399,6 +553,43 @@ class JsonPrimitiveTests: TailorTestCase {
     }
     catch {
       assert(false, message: "should not throw exception")
+    }
+  }
+  
+  func testReadNullValueWithNullReturnsNull() {
+    let primitive = JsonPrimitive.Dictionary(complexJsonDictionary)
+    do {
+      _ = try primitive.read("nullKey") as NSNull
+    }
+    catch {
+      assert(false, message: "should not throw exception")
+    }
+  }
+  
+  func testReadIntValueWithIntGetsInt() {
+    let primitive = JsonPrimitive.Dictionary(complexJsonDictionary)
+    do {
+      let value: Int = try primitive.read("numberKey")
+      assert(value, equals: try complexJsonDictionary["numberKey"]!.read())
+    }
+    catch {
+      assert(false, message: "should not throw exception")
+    }
+  }
+  
+  func testReadIntValueWithArrayThrowsException() {
+    let primitive = JsonPrimitive.Dictionary(complexJsonDictionary)
+    do {
+      _ = try primitive.read("key2") as Int
+      assert(false, message: "should throw some kind of exception")
+    }
+    catch JsonParsingError.WrongFieldType(field: let field, type: let type, caseType: let caseType) {
+      assert(field, equals: "key2")
+      assert(type == Int.self)
+      assert(caseType == [JsonPrimitive].self)
+    }
+    catch {
+      assert(false, message: "threw unexpected exception type")
     }
   }
   
@@ -479,7 +670,7 @@ class JsonPrimitiveTests: TailorTestCase {
   func testReadIntoConvertiblePopulatesValues() {
     struct MyStruct: JsonConvertible {
       let value1: String
-      let value2: String
+      let value2: Int
       
       init(json: JsonPrimitive) throws {
         self.value1 = try json.read("bKey1")
@@ -489,7 +680,7 @@ class JsonPrimitiveTests: TailorTestCase {
       func toJson() -> JsonPrimitive {
         return JsonPrimitive.Dictionary([
           "bKey1": JsonPrimitive.String(value1),
-          "bKey2": JsonPrimitive.String(value2)
+          "bKey2": JsonPrimitive.Number(value2)
         ])
       }
     }
@@ -498,7 +689,7 @@ class JsonPrimitiveTests: TailorTestCase {
     do {
       let value = try primitive.read("key3", into: MyStruct.self)
       assert(value.value1, equals: "value4")
-      assert(value.value2, equals: "value5")
+      assert(value.value2, equals: 891)
     }
     catch {
       assert(false, message: "threw unexpected exception")
@@ -597,4 +788,34 @@ class JsonPrimitiveTests: TailorTestCase {
     let value2 = JsonPrimitive.String("[value1,value2]")
     assert(value1, doesNotEqual: value2)
   }
+  
+  func testNullEqualsOtherNull() {
+    let value1 = JsonPrimitive.Null
+    let value2 = JsonPrimitive.Null
+    assert(value1, equals: value2)
+  }
+  
+  func testNullDoesNotEqualString() {
+    let value1 = JsonPrimitive.Null
+    let value2 = JsonPrimitive.String("[value1,value2]")
+    assert(value1, doesNotEqual: value2)
+  }
+  func testNumberWithSameContentsAreEqual() {
+    let value1 = JsonPrimitive.Number(93)
+    let value2 = JsonPrimitive.Number(93)
+    assert(value1, equals: value2)
+  }
+  
+  func testNumbersWithDifferentContentsAreNotEqual() {
+    let value1 = JsonPrimitive.Number(93)
+    let value2 = JsonPrimitive.Number(92)
+    assert(value1, doesNotEqual: value2)
+  }
+  
+  func testNumberDoesNotEqualDictionary() {
+    let value1 = JsonPrimitive.Number(93)
+    let value2 = JsonPrimitive.Dictionary(["key1": JsonPrimitive.String("value1"), "key2": JsonPrimitive.String("value2")])
+    assert(value1, doesNotEqual: value2)
+  }
+
 }

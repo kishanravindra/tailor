@@ -11,6 +11,12 @@ public enum JsonPrimitive: Equatable {
   /** A JSON dictionary, mapping Swift strings to other JSON primitives. */
   case Dictionary([Swift.String: JsonPrimitive])
   
+  /** A null value. */
+  case Null
+  
+  /** A numeric value. */
+  case Number(NSNumber)
+  
   //MARK: - Converting to JSON
   
   /**
@@ -21,6 +27,8 @@ public enum JsonPrimitive: Equatable {
     case .String: return Swift.String.self
     case .Array: return [JsonPrimitive].self
     case .Dictionary: return Swift.Dictionary<Swift.String,JsonPrimitive>.self
+    case .Null: return NSNull.self
+    case .Number: return NSNumber.self
     }
   }
   
@@ -42,6 +50,10 @@ public enum JsonPrimitive: Equatable {
         results[key] = value.toFoundationJsonObject
       }
       return results
+    case Null:
+      return NSNull()
+    case let Number(number):
+      return number
     }
   }
   
@@ -104,6 +116,10 @@ public enum JsonPrimitive: Equatable {
         try mappedArray.append(JsonPrimitive(jsonObject: value))
       }
       self = Array(mappedArray)
+    case _ as NSNull:
+      self = Null
+    case let n as NSNumber:
+      self = Number(n)
     default:
       throw JsonParsingError.UnsupportedType(jsonObject.dynamicType)
     }
@@ -126,6 +142,10 @@ public enum JsonPrimitive: Equatable {
       if let value = array as? OutputType { return value }
     case let .Dictionary(dictionary):
       if let value = dictionary as? OutputType { return value }
+    case .Null:
+      if let value = NSNull() as? OutputType { return value }
+    case let .Number(number):
+      if let value = number as? OutputType { return value }
     }
     throw JsonParsingError.WrongFieldType(field: "root", type: OutputType.self, caseType: self.wrappedType)
   }
@@ -219,6 +239,14 @@ public func ==(lhs: JsonPrimitive, rhs: JsonPrimitive) -> Bool {
   case let .String(string1):
     if case let .String(string2) = rhs {
       return string1 == string2
+    }
+  case .Null:
+    if case .Null = rhs {
+      return true
+    }
+  case let .Number(number1):
+    if case let .Number(number2) = rhs {
+      return number1 == number2
     }
   }
   
