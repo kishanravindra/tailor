@@ -10,7 +10,7 @@ class TemplateTypeTests: TailorTestCase {
   struct TestController: ControllerType {
     var state: ControllerState
     static let layout = EmptyLayout.self
-    static func defineRoutes(RouteSet) {}
+    static func defineRoutes(routes: RouteSet) {}
     static let name = "TestController"
     func indexAction() {
       

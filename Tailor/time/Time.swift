@@ -41,6 +41,14 @@ public struct Time: Comparable, CustomStringConvertible {
   public var description: String {
     return String(format: "%02i:%02i:%02i %@", hour, minute, second, timeZone.name)
   }
+  
+  /**
+    This method gets a timestamp that is on the current date at the time in this
+    value.
+    */
+  public var today: Timestamp {
+    return Timestamp.now().change(hour: hour, minute: minute, second: second, nanosecond: nanosecond)
+  }
 }
 
 /**

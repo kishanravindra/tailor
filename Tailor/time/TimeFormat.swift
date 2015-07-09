@@ -610,6 +610,12 @@ public extension TimeFormat {
   /** This formats a time as a SQL timestamp. */
   public static let Database = TimeFormat(.Year, "-", .Month, "-", .Day, " ", .Hour, ":", .Minute, ":", .Seconds)
   
+  /** This formats a time as a SQL time. */
+  public static let DatabaseTime = TimeFormat(.Hour, ":", .Minute, ":", .Seconds)
+  
+  /** This formats a time as a SQL date. */
+  public static let DatabaseDate = TimeFormat(.Year, "-", .Month, "-", .Day)
+  
   /** This formats a time for a cookie. */
   public static let Cookie = TimeFormat(.WeekDayName(abbreviate: true), ", ", .Day, " ", .MonthName(abbreviate: true), " ", .Year, " ", .Hour, ":", .Minute, ":", .Seconds, " ", .TimeZone)
   

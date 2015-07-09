@@ -37,6 +37,41 @@ class JsonConvertibleTests: TailorTestCase {
     assert(string.toJson(), equals: .String("Test"))
   }
   
+  func testIntegerCanInitializeFromJsonPrimitive() {
+    let primitive = JsonPrimitive.Number(5)
+    do {
+      let int = try Int(json: primitive)
+      assert(int, equals: 5)
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
+  func testIntegerInitializedWithJsonArrayThrowsException() {
+    let primitive = JsonPrimitive.Array([
+      .String("A"),
+      .String("B")
+      ])
+    do {
+      _ = try Int(json: primitive)
+      assert(false, message: "should throw an exception")
+    }
+    catch JsonParsingError.WrongFieldType(field: let field, type: let type, caseType: let caseType) {
+      assert(field, equals: "root")
+      assert(type == Int.self)
+      assert(caseType == [JsonPrimitive].self)
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
+  func testIntConvertsToJsonAsJsonPrimitive() {
+    let int = 19
+    assert(int.toJson(), equals: .Number(19))
+  }
+  
   func testArrayOfConvertiblesConvertsToJsonAsArrayOfPrimitives() {
     let array = ["A", "B", "C"]
     let converted = array.toJson()

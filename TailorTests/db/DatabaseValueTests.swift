@@ -317,4 +317,120 @@ class DatabaseValueTests: TailorTestCase {
   func testComparisonWithNullsIsEqual() {
     assert(DatabaseValue.Null, equals: DatabaseValue.Null)
   }
+
+  //MARK: - JSON Serialization
+
+  func testNullSerializesToNullJsonValue() {
+    assert(DatabaseValue.Null.toJson(), equals: JsonPrimitive.Null)
+  }
+  
+  func testStringSerializesToStringJsonValue() {
+    let value = DatabaseValue.String("test")
+    assert(value.toJson(), equals: JsonPrimitive.String("test"))
+  }
+  
+  func testBooleanSeralizesToIntegerJsonValue() {
+    let value = DatabaseValue.Boolean(true)
+    assert(value.toJson(), equals: JsonPrimitive.Number(1))
+  }
+  
+  func testDataSerializesToStringJsonValueWithDataRepresentation() {
+    let value = DatabaseValue.Data(NSData(bytes: [1,2,3,4]))
+    assert(value.toJson(), equals: JsonPrimitive.String("<01020304>"))
+  }
+  
+  func testIntegerSerializesToIntegerJsonValue() {
+    let value = DatabaseValue.Integer(93)
+    assert(value.toJson(), equals: JsonPrimitive.Number(93))
+  }
+  
+  func testDoubleSerializesToDoubleJsonValue() {
+    let value = DatabaseValue.Double(39.12)
+    assert(value.toJson(), equals: JsonPrimitive.Number(39.12))
+  }
+  
+  func testTimestampSerializesToStringJsonValueWithDatabaseFormat() {
+    let timestamp = Timestamp.now()
+    let value = DatabaseValue.Timestamp(timestamp)
+    assert(value.toJson(), equals: JsonPrimitive.String(timestamp.format(TimeFormat.Database)))
+  }
+  
+  func testTimeSerializesToStringJsonValueWithDatabaseFormat() {
+    let timestamp = Timestamp.now()
+    let value = DatabaseValue.Time(timestamp.time)
+    let string = timestamp.format(TimeFormat(.Hour, ":", .Minute, ":", .Seconds))
+    assert(value.toJson(), equals: JsonPrimitive.String(string))
+  }
+  
+  func testDateSerializesToStringJsonValueWithDatabaseFormat() {
+    let timestamp = Timestamp.now()
+    let value = DatabaseValue.Date(timestamp.date)
+    assert(value.toJson(), equals: JsonPrimitive.String(timestamp.format(TimeFormat(.Year, "-", .Month, "-", .Day))))
+  }
+  
+  func testInitializationWithJsonNullCreatesNullValue() {
+    do {
+      let value = try DatabaseValue(json: .Null)
+      assert(value, equals: .Null)
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
+  func testInitializationWithJsonStringCreatesStringValue() {
+    do {
+      let value = try DatabaseValue(json: .String("test"))
+      assert(value, equals: .String("test"))
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
+  func testInitializationWithJsonIntegerCreatesIntegerValue() {
+    do {
+      let value = try DatabaseValue(json: .Number(19))
+      assert(value, equals: .Integer(19))
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
+  func testInitializationWithJsonDoubleCreatesIntegerValue() {
+    do {
+      let value = try DatabaseValue(json: .Number(84.9))
+      assert(value, equals: .Double(84.9))
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+
+  func testInitializationWithJsonArrayThrowsException() {
+    do {
+      _ = try DatabaseValue(json: .Array([JsonPrimitive.String("test")]))
+      assert(false, message: "should throw some kind of exception")
+    }
+    catch JsonParsingError.UnsupportedType(let type) {
+      assert(type == [JsonPrimitive].self)
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
+  func testInitializationWithJsonDictionaryThrowsException() {
+    do {
+      _ = try DatabaseValue(json: .Dictionary(["key1": JsonPrimitive.String("test")]))
+      assert(false, message: "should throw some kind of exception")
+    }
+    catch JsonParsingError.UnsupportedType(let type) {
+      assert(type == [String:JsonPrimitive].self)
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
 }

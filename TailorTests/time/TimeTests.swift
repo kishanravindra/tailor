@@ -80,6 +80,19 @@ class TimeTests: TailorTestCase {
     assert(!(time2 < time1))
   }
   
+  func testTodayGetsCurrentDateWithSpecifiedTime() {
+    let time = Time(hour: 13, minute: 55, second: 39, nanosecond: 23)
+    let timestamp = time.today
+    let currentTime = Timestamp.now()
+    assert(timestamp.year, equals: currentTime.year)
+    assert(timestamp.month, equals: currentTime.month)
+    assert(timestamp.day, equals: currentTime.day)
+    assert(timestamp.hour, equals: time.hour)
+    assert(timestamp.minute, equals: time.minute)
+    assert(timestamp.second, equals: time.second)
+    assert(timestamp.nanosecond, equals: time.nanosecond)
+  }
+  
   func testTimeGetsDescription() {
     let time1 = Time(hour: 17, minute: 22, second: 15, nanosecond: 1.5, timeZone: TimeZone(name: "US/Eastern"))
     assert(time1.description, equals: "17:22:15 US/Eastern")

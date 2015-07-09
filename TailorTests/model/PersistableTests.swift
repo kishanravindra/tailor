@@ -266,4 +266,17 @@ class PersistableTests: TailorTestCase {
       }
     }
   }
+  
+  func testToJsonCreatesJsonDictionaryBasedOnDataMapping() {
+    let hat = Hat(brimSize: 10, color: "red", shelfId: nil, owner: "John", id: 5)
+    let json = hat.toJson()
+    assert(json, equals: .Dictionary([
+      "brim_size": JsonPrimitive.Number(10),
+      "color": JsonPrimitive.String("red"),
+      "shelf_id": JsonPrimitive.Null,
+      "id": JsonPrimitive.Number(5),
+      "created_at": JsonPrimitive.Null,
+      "updated_at": JsonPrimitive.Null
+    ]))
+  }
 }

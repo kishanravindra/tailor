@@ -2,7 +2,7 @@
   This protocol describes methods that a model class must provide in order to
   be persisted to a database.
   */
-public protocol Persistable: Equatable, ModelType {
+public protocol Persistable: Equatable, ModelType, JsonEncodable {
   /**
     This method initializes a record with a row from the database.
     
@@ -343,5 +343,20 @@ extension Persistable {
   
   public static func foreignKeyName() -> String {
     return self.modelName() + "_id"
+  }
+}
+
+extension Persistable {
+  /**
+    This method converts the record to a JSON representation.
+
+    The default implementation takes the database mapping from `valuesToPersist`
+    to a JSON dictionary.
+
+    - returns:    The JSON value.
+    */
+  public func toJson() -> JsonPrimitive {
+    let values = self.valuesToPersist().map { $0?.databaseValue.toJson() ?? .Null }
+    return .Dictionary(merge(values, ["id": self.id?.toJson() ?? .Null]))
   }
 }

@@ -318,3 +318,48 @@ extension DatabaseValue: DatabaseValueConvertible {
   /** The wrapped database value. */
   public var databaseValue: DatabaseValue { return self }
 }
+
+//MARK: - JSON Serialization
+
+extension DatabaseValue: JsonConvertible {
+  /**
+    This method creates a database value from a JSON primitive.
+
+    This only supports string and numeric primitives. Anything else will
+    throw an exception.
+
+    - parameter json:   The JSON value
+    */
+  public init(json: JsonPrimitive) throws {
+    switch(json) {
+    case .Null: self = .Null
+    case let .String(s): self = .String(s)
+    case let .Number(n):
+      if n.doubleValue != Swift.Double(n.integerValue) {
+        self = .Double(n.doubleValue)
+      }
+      else {
+        self = .Integer(n.integerValue)
+      }
+    case .Array, .Dictionary:
+      throw JsonParsingError.UnsupportedType(json.wrappedType)
+    }
+  }
+  
+  /**
+    This method converts this value into its corresponding JSON value.
+    */
+  public func toJson() -> JsonPrimitive {
+    switch(self) {
+    case .Null: return .Null
+    case let .String(s): return .String(s)
+    case let .Boolean(b): return .Number(b)
+    case let .Data(d): return .String(d.description)
+    case let .Integer(i): return .Number(i)
+    case let .Double(d): return .Number(d)
+    case let .Timestamp(t): return .String(t.format(TimeFormat.Database))
+    case let .Time(t): return .String(t.today.format(TimeFormat.DatabaseTime))
+    case let .Date(t): return .String(t.beginningOfDay().format(TimeFormat.DatabaseDate))
+    }
+  }
+}

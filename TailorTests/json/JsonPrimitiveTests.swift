@@ -818,4 +818,30 @@ class JsonPrimitiveTests: TailorTestCase {
     assert(value1, doesNotEqual: value2)
   }
 
+  //MARK: - Description
+  
+  func testDescriptionForStringIsString() {
+    let value = JsonPrimitive.String("Hello")
+    assert(value.description, equals: "Hello")
+  }
+  
+  func testDescriptionForNumberIsNumber() {
+    let value = JsonPrimitive.Number(89)
+    assert(value.description, equals: "89")
+  }
+  
+  func testDescriptionForArrayIsArrayDescription() {
+    let value = JsonPrimitive.Array([JsonPrimitive.String("A"), JsonPrimitive.String("B")])
+    assert(value.description, equals: "[A, B]")
+  }
+  
+  func testDescriptionForDictionaryIsDictionaryDescription() {
+    let value = JsonPrimitive.Dictionary(["key1": JsonPrimitive.Number(891), "key2": JsonPrimitive.String("C")])
+    assert(value.description, equals: "[key1: 891, key2: C]")
+  }
+  
+  func testDescriptionForNullIsNull() {
+    let value = JsonPrimitive.Null
+    assert(value.description, equals: "null")
+  }
 }

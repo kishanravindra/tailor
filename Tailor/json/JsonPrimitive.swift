@@ -1,7 +1,7 @@
 /**
   This enum represents a simple value that can be natively represented in JSON.
   */
-public enum JsonPrimitive: Equatable {
+public enum JsonPrimitive: Equatable, CustomStringConvertible {
   /** A JSON String. */
   case String(Swift.String)
   
@@ -216,6 +216,21 @@ public enum JsonPrimitive: Equatable {
   public func read<T: JsonConvertible>(key: Swift.String, into: T.Type) throws -> T {
     let value: JsonPrimitive = try self.read(key)
     return try JsonParsingError.withFieldPrefix(key) { return try T(json: value) }
+  }
+  
+  //MARK: - Description
+  
+  /**
+    This method gets a description of this value for debugging.
+    */
+  public var description: Swift.String {
+    switch(self) {
+    case let .String(s): return s
+    case let .Number(n): return n.description
+    case let .Array(a): return a.description
+    case let .Dictionary(d): return d.description
+    case .Null: return "null"
+    }
   }
 }
 
