@@ -42,10 +42,11 @@ import TailorTesting
       let application = TestApplication.init()
       application.start()
       NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] = application
+      NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")
       DatabaseConnection.sharedConnection()
       self.assert(application.connectionCount, equals: 2, message: "creates two connections")
     }
-    waitForExpectationsWithTimeout(0.1, handler: nil)
+    waitForExpectationsWithTimeout(1, handler: nil)
   }
   
   func testRowInitializationWithConvertibleValuesWrapsValues() {

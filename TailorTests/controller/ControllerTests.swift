@@ -362,6 +362,38 @@ class ControllerTests: TailorTestCase {
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
+  func testRespondWithJsonGeneratesJsonResponse() {
+    do {
+      let hat = Hat(brimSize: 10, color: "red", shelfId: nil, owner: nil, id: nil)
+      let data = try hat.toJson().jsonData()
+      let expectation = expectationWithDescription("callback called")
+      self.callback = {
+        response in
+        expectation.fulfill()
+        self.assert(response.code, equals: 200, message: "gives a success response")
+        self.assert(response.headers, equals: ["Content-Type": "application/json"])
+        self.assert(response.body, equals: data)
+      }
+      self.controller.respondWith(json: hat)
+      waitForExpectationsWithTimeout(0.01, handler: nil)
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
+  func testRespondWithJsonWithStringGives500Response() {
+    let expectation = expectationWithDescription("callback called")
+    self.callback = {
+      response in
+      expectation.fulfill()
+      self.assert(response.code, equals: 500, message: "gives an error response")
+    }
+    self.controller.respondWith(json: "Hat")
+    waitForExpectationsWithTimeout(0.01, handler: nil)
+    
+  }
+  
   func testRender404Gives404Response() {
     let expectation = expectationWithDescription("callback called")
     self.callback = {

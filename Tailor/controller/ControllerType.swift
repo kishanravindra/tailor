@@ -250,6 +250,29 @@ extension ControllerType {
   }
   
   /**
+    This method generates a JSON response.
+  
+    - parameter json:   The object to convert to JSON and render.
+    */
+  public func respondWith(json json: JsonEncodable) {
+    do {
+      let jsonData = try json.toJson().jsonData()
+      generateResponse {
+        (inout response: Response) -> Void in
+        response.code = 200
+        response.headers["Content-Type"] = "application/json"
+        response.appendData(jsonData)
+      }
+    }
+    catch {
+      generateResponse {
+        (inout response: Response) -> Void in
+        response.code = 500
+      }
+    }
+  }
+  
+  /**
     This method generates a response with a redirect to a generated URL.
     
     - parameter controllerName:   The controller to link to. This will default to
