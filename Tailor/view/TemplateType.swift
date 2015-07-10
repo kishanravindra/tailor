@@ -175,6 +175,9 @@ extension TemplateType {
   
   /**
     This method adds a tag for linking to a path.
+  
+    This method has been deprecated in favor of the version that takes a
+    controller type.
     
     - parameter controllerName:   The controller to link to. This will default to
                                   the current controller.
@@ -183,9 +186,38 @@ extension TemplateType {
     - parameter attributes:       Additional attributes for the tag.
     - parameter with:             A closure that adds the contents of the link.
     */
-  public mutating func link(controllerName: String? = nil, actionName: String? = nil, parameters: [String:String] = [:], attributes: [String:String] = [:], @noescape with contents: ()->()={}) {
+  @available(*, deprecated, message="Use a controller type instead") public mutating func link(controllerName: String?, actionName: String? = nil, parameters: [String:String] = [:], attributes: [String:String] = [:], @noescape with contents: ()->()={}) {
     var mergedAttributes = attributes
-    mergedAttributes["href"] = self.controller.pathFor(controllerName,
+    mergedAttributes["href"] = self.controller.pathFor(controllerName ?? self.controller.dynamicType.name,
+      actionName: actionName, parameters: parameters) ?? ""
+    self.tag("a", mergedAttributes, with: contents)
+  }
+  
+  /**
+    This method adds a tag for linking to a path.
+  
+    - parameter actionName:       The action to link to.
+    - parameter parameters:       Additional parameters for the path.
+    - parameter attributes:       Additional attributes for the tag.
+    - parameter with:             A closure that adds the contents of the link.
+    */
+  public mutating func link(actionName actionName: String? = nil, parameters: [String:String] = [:], attributes: [String:String] = [:], @noescape with contents: ()->()={}) {
+    self.link(self.controller.dynamicType, actionName: actionName, parameters: parameters, attributes: attributes, with: contents)
+  }
+  
+  /**
+    This method adds a tag for linking to a path.
+    
+    - parameter controllerType:   The controller to link to. This will default to
+                                  the current controller.
+    - parameter actionName:       The action to link to.
+    - parameter parameters:       Additional parameters for the path.
+    - parameter attributes:       Additional attributes for the tag.
+    - parameter with:             A closure that adds the contents of the link.
+    */
+  public mutating func link(controllerType: ControllerType.Type, actionName: String? = nil, parameters: [String:String] = [:], attributes: [String:String] = [:], @noescape with contents: ()->()={}) {
+    var mergedAttributes = attributes
+    mergedAttributes["href"] = self.controller.pathFor(controllerType,
       actionName: actionName, parameters: parameters) ?? ""
     self.tag("a", mergedAttributes, with: contents)
   }

@@ -627,6 +627,9 @@ public class RouteSet {
   
   /**
     This method generates a path using our route set.
+  
+    This method has been deprecated in favor of the one that uses a controller
+    type.
 
     - parameter controller:     The name of the controller that the link is to.
     - parameter actionName:     The name of the action.
@@ -639,11 +642,62 @@ public class RouteSet {
                                 ignored.
     - returns:                  The path, if we could match it up.
     */
-  public func pathFor(controllerName: String, actionName: String, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
+  @available(*, deprecated, message="Use a controller type instead") public func pathFor(controllerName: String, actionName: String, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
     var matchingPath: String? = nil
     for route in self.routes {
       guard let routeController = route.controller, let routeAction = route.actionName else { continue }
       if routeController.name == controllerName && routeAction == actionName {
+        var path = route.path.pathPattern
+        var hasQuery = false
+        for (key, value) in parameters {
+          if let range = path.rangeOfString(":" + key, options: [], range: nil, locale: nil) {
+            path = path.stringByReplacingCharactersInRange(range, withString: value.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding) ?? "")
+          }
+          else {
+            if hasQuery {
+              path += "&"
+            }
+            else {
+              path += "?"
+              hasQuery = true
+            }
+            path += key.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding) ?? ""
+            path += "="
+            path += value.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding) ?? ""
+          }
+        }
+        matchingPath = path
+        break
+      }
+    }
+    
+    if let path = matchingPath, let domain = domain {
+      let httpProtocol = https ? "https" : "http"
+      matchingPath = "\(httpProtocol)://\(domain)\(path)"
+    }
+    return matchingPath
+
+  }
+  
+  /**
+    This method generates a path using our route set.
+    
+    - parameter controller:     The type of the controller that the link is to.
+    - parameter actionName:     The name of the action.
+    - parameter parameters:     The parameters to interpolate into the route.
+    - parameter domain:         The domain to use for a full URL. If this is
+                                omitted, this will just give the path rather
+                                than a URL.
+    - parameter https:          Whether the URL should use the https protocol.
+                                If the domain is omitted, this value will be
+                                ignored.
+    - returns:                  The path, if we could match it up.
+    */
+  public func pathFor(controllerType: ControllerType.Type, actionName: String, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
+    var matchingPath: String? = nil
+    for route in self.routes {
+      guard let routeController = route.controller, let routeAction = route.actionName else { continue }
+      if routeController == controllerType && routeAction == actionName {
         var path = route.path.pathPattern
         var hasQuery = false
         for (key, value) in parameters {

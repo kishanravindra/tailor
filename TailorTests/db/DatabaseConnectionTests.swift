@@ -29,26 +29,6 @@ import TailorTesting
     NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
   }
   
-  func testSharedConnectionOpensSeparateConnectionInNewThread() {
-    let application = TestApplication.init()
-    application.start()
-    NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] = application
-    NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")
-    DatabaseConnection.openSharedConnection()
-    let expectation = expectationWithDescription("executes block in thread")
-    DatabaseConnection.sharedConnection()
-    NSOperationQueue().addOperationWithBlock {
-      expectation.fulfill()
-      let application = TestApplication.init()
-      application.start()
-      NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] = application
-      NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")
-      DatabaseConnection.sharedConnection()
-      self.assert(application.connectionCount, equals: 2, message: "creates two connections")
-    }
-    waitForExpectationsWithTimeout(1, handler: nil)
-  }
-  
   func testRowInitializationWithConvertibleValuesWrapsValues() {
     let row = DatabaseConnection.Row(rawData: ["name": "John", "height": 200])
     let name = row.data["name"]?.stringValue

@@ -21,3 +21,5 @@
 * Using JsonDictionaryConvertable instead of just calling toJson on the
   dictionary
 * Having separate throwing and non-throwing implementations of Dictionary.map
+* Having a pathFor / redirectTo method with fewer parameters instead of using
+  default parameters

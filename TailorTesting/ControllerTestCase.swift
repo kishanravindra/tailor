@@ -156,7 +156,7 @@ public class ControllerTestCase : TailorTestCase {
   
   //MARK: - Helpers
   
-  public func pathFor(controllerName: String? = nil, actionName: String, parameters: [String:String] = [:]) -> String? {
+  @available(*, deprecated) public func pathFor(controllerName: String?, actionName: String, parameters: [String:String] = [:]) -> String? {
     let name: String
     
     if let type = controllerType {
@@ -167,6 +167,16 @@ public class ControllerTestCase : TailorTestCase {
     }
     return RouteSet.shared().pathFor(name, actionName: actionName, parameters: parameters)
   }
+  
+  public func pathFor(actionName actionName: String, parameters: [String:String] = [:]) -> String? {
+    guard let type = controllerType else { return nil }
+    return RouteSet.shared().pathFor(type, actionName: actionName, parameters: parameters)
+  }
+  
+  public func pathFor(controllerType: ControllerType.Type, actionName: String, parameters: [String:String] = [:]) -> String? {
+    return RouteSet.shared().pathFor(controllerType, actionName: actionName, parameters: parameters)
+  }
+
 
   //MARK: - Calling Actions
   
@@ -179,7 +189,7 @@ public class ControllerTestCase : TailorTestCase {
     let routes = RouteSet.shared()
     
     guard let type = controllerType else { assert(false, message: "Did not have a controller type"); return }
-    let path = routes.pathFor(type.name, actionName: actionName, parameters: actionParams)
+    let path = routes.pathFor(type, actionName: actionName, parameters: actionParams)
     let method = routes.routes.filter {
       route in
       return route.controller == type && route.actionName == actionName

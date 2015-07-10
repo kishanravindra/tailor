@@ -495,45 +495,87 @@ class RouteSetTests: TailorTestCase {
   
   //MARK: - Generating URLs
   
-  func testPathForGetsSimplePath() {
+  @available(*, deprecated) func testPathForWithNameGetsSimplePath() {
     TestController.defineRoutes(routeSet)
     let url = routeSet.pathFor("TestController", actionName: "index")
     self.assert(url, equals: "/hats", message: "generates correct route")
   }
   
-  func testPathForGetsPathWithInterpolatedParameter() {
+  @available(*, deprecated) func testPathForWithNameGetsPathWithInterpolatedParameter() {
     TestController.defineRoutes(routeSet)
     let path = routeSet.pathFor("TestController", actionName: "show", parameters: ["id": "17"])
     self.assert(path, equals: "/hats/17", message: "generates correct route")
   }
   
-  func testPathForGetsPathWithQueryString() {
+  @available(*, deprecated) func testPathForWithNameGetsPathWithQueryString() {
     TestController.defineRoutes(routeSet)
     let path = routeSet.pathFor("TestController", actionName: "index", parameters: ["color": "black", "brimSize": "15"])
     assert(path, equals: "/hats?brimSize=15&color=black", message: "generates correct route")
   }
   
-  func testPathForWithDomainGetsUrl() {
+  @available(*, deprecated) func testPathForWithNameWithDomainGetsUrl() {
     TestController.defineRoutes(routeSet)
     let url = routeSet.pathFor("TestController", actionName: "index", domain: "haberdashery.com")
     assert(url, equals: "https://haberdashery.com/hats", message: "generates correct URL")
   }
   
-  func testPathForWithDomainAndHttpFlagGetsUrl() {
+  @available(*, deprecated) func testPathForWithNameWithDomainAndHttpFlagGetsUrl() {
     TestController.defineRoutes(routeSet)
     let url = routeSet.pathFor("TestController", actionName: "index", domain: "haberdashery.com", https: false)
     assert(url, equals: "http://haberdashery.com/hats", message: "generates correct URL")
   }
   
-  func testPathForReturnsNilForNonMatchingPath() {
+  @available(*, deprecated) func testPathForWithNameReturnsNilForNonMatchingPath() {
     TestController.defineRoutes(routeSet)
     let path = routeSet.pathFor("TestController", actionName: "new")
     assert(isNil: path)
   }
   
-  func testPathForReturnsNilForNonMatchingPathWithDomain() {
+  @available(*, deprecated) func testPathForWithNameReturnsNilForNonMatchingPathWithDomain() {
     TestController.defineRoutes(routeSet)
     let path = routeSet.pathFor("TestController", actionName: "new", domain: "haberdashery.com")
+    assert(isNil: path)
+  }
+  
+  func testPathForGetsSimplePath() {
+    TestController.defineRoutes(routeSet)
+    let url = routeSet.pathFor(TestController.self, actionName: "index")
+    self.assert(url, equals: "/hats", message: "generates correct route")
+  }
+  
+  func testPathForGetsPathWithInterpolatedParameter() {
+    TestController.defineRoutes(routeSet)
+    let path = routeSet.pathFor(TestController.self, actionName: "show", parameters: ["id": "17"])
+    self.assert(path, equals: "/hats/17", message: "generates correct route")
+  }
+  
+  func testPathForGetsPathWithQueryString() {
+    TestController.defineRoutes(routeSet)
+    let path = routeSet.pathFor(TestController.self, actionName: "index", parameters: ["color": "black", "brimSize": "15"])
+    assert(path, equals: "/hats?brimSize=15&color=black", message: "generates correct route")
+  }
+  
+  func testPathForWithDomainGetsUrl() {
+    TestController.defineRoutes(routeSet)
+    let url = routeSet.pathFor(TestController.self, actionName: "index", domain: "haberdashery.com")
+    assert(url, equals: "https://haberdashery.com/hats", message: "generates correct URL")
+  }
+  
+  func testPathForWithDomainAndHttpFlagGetsUrl() {
+    TestController.defineRoutes(routeSet)
+    let url = routeSet.pathFor(TestController.self, actionName: "index", domain: "haberdashery.com", https: false)
+    assert(url, equals: "http://haberdashery.com/hats", message: "generates correct URL")
+  }
+  
+  func testPathForReturnsNilForNonMatchingPath() {
+    TestController.defineRoutes(routeSet)
+    let path = routeSet.pathFor(TestController.self, actionName: "new")
+    assert(isNil: path)
+  }
+  
+  func testPathForReturnsNilForNonMatchingPathWithDomain() {
+    TestController.defineRoutes(routeSet)
+    let path = routeSet.pathFor(TestController.self, actionName: "new", domain: "haberdashery.com")
     assert(isNil: path)
   }
 }

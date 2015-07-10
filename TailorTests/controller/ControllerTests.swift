@@ -276,9 +276,13 @@ class ControllerTests: TailorTestCase {
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
 
+  @available(*, deprecated) func testPathForWithNameCanGetFullyQualifiedRoute() {
+    let path = self.controller.pathFor(TestController.name, actionName: "index", parameters: ["id": "5"])
+    assert(path, equals: "/route1?id=5", message: "gets the url for the controller and action")
+  }
   
   func testPathForCanGetFullyQualifiedRoute() {
-    let path = self.controller.pathFor(TestController.name, actionName: "index", parameters: ["id": "5"])
+    let path = self.controller.pathFor(TestController.self, actionName: "index", parameters: ["id": "5"])
     assert(path, equals: "/route1?id=5", message: "gets the url for the controller and action")
   }
   
@@ -292,8 +296,13 @@ class ControllerTests: TailorTestCase {
     assert(path, equals: "/route2?confirmed=1", message: "uses the same controller and action, but adds the parameters")
   }
   
-  func testPathForCanGetUrlWithDomain() {
+  @available(*, deprecated) func testPathWithNameForCanGetUrlWithDomain() {
     let path = self.controller.pathFor(TestController.name, actionName: "index", parameters: ["id": "5"], domain: "test.com")
+    assert(path, equals: "https://test.com/route1?id=5", message: "gets the url for the controller and action")
+  }
+  
+  func testPathForCanGetUrlWithDomain() {
+    let path = self.controller.pathFor(TestController.self, actionName: "index", parameters: ["id": "5"], domain: "test.com")
     assert(path, equals: "https://test.com/route1?id=5", message: "gets the url for the controller and action")
   }
   
@@ -302,7 +311,7 @@ class ControllerTests: TailorTestCase {
     XCTAssertNil(path, "gives a nil path")
   }
   
-  func testRedirectToWithControllerNameGeneratesRedirectResponse() {
+  @available(*, deprecated) func testRedirectToWithControllerNameGeneratesRedirectResponse() {
     let expectation = expectationWithDescription("callback called")
     self.callback = {
       response in
@@ -314,7 +323,7 @@ class ControllerTests: TailorTestCase {
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
-  func testRedirectToWithControllerNameWithSessionGeneratesRedirectResponse() {
+  @available(*, deprecated) func testRedirectToWithControllerNameWithSessionGeneratesRedirectResponse() {
     let expectation = expectationWithDescription("callback called")
     self.callback = {
       response in

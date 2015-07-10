@@ -171,7 +171,7 @@ class TemplateTypeTests: TailorTestCase {
     assert(template.contents, equals: "<p class=\"greeting\" data-hover=\"Hi\">Hello</p>")
   }
 
-  func testLinkPutsLinkTagInBuffer() {
+  @available(*, deprecated) func testLinkByControllerNamePutsLinkTagInBuffer() {
     struct InnerTestController: ControllerType {
       var state: ControllerState
       static func defineRoutes(routes: RouteSet) {
@@ -190,6 +190,30 @@ class TemplateTypeTests: TailorTestCase {
       callback: controller.callback
     )))
     template2.link("TestController", actionName: "index", parameters: ["id": "5"], attributes: ["class": "btn"]) {
+      template2.text("Click here")
+    }
+    assert(template2.contents, equals: "<a class=\"btn\" href=\"/test/path?id=5\">Click here</a>", message: "puts the tag in the buffer")
+  }
+  
+  func testLinkPutsLinkTagInBuffer() {
+    struct InnerTestController: ControllerType {
+      var state: ControllerState
+      static func defineRoutes(routes: RouteSet) {
+        
+      }
+    }
+    
+    RouteSet.load {
+      routes in
+      routes.route(.Get("test/path"), to: TestController.indexAction, name: "index")
+      ()
+    }
+    var template2 = EmptyTemplate(state: TemplateState(InnerTestController(
+      request: controller.request,
+      actionName: "show",
+      callback: controller.callback
+      )))
+    template2.link(TestController.self, actionName: "index", parameters: ["id": "5"], attributes: ["class": "btn"]) {
       template2.text("Click here")
     }
     assert(template2.contents, equals: "<a class=\"btn\" href=\"/test/path?id=5\">Click here</a>", message: "puts the tag in the buffer")

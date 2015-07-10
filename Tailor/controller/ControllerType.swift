@@ -274,24 +274,35 @@ extension ControllerType {
   
   /**
     This method generates a response with a redirect to a generated URL.
+  
+    This method has been deprecated in favor of the version that takes a
+    controller type.
     
     - parameter controllerName:   The controller to link to. This will default to
                                   the current controller.
     - parameter actionName:       The action to link to.
     - parameter parameters:       Additional parameters for the path.
-    - parameter session:    The session information for the response.
+    - parameter session:          The session information for the response.
   */
-  public func redirectTo(controllerName: String? = nil, actionName: String? = nil, parameters: [String:String] = [:], session: Session? = nil) {
+  @available(*, deprecated) public func redirectTo(controllerName: String?, actionName: String? = nil, parameters: [String:String] = [:], session: Session? = nil) {
     let path = self.pathFor(controllerName, actionName: actionName, parameters: parameters) ?? "/"
     self.redirectTo(path, session: session)
   }
   
+  
   /**
     This method generates a response with a redirect to a generated URL.
-    
-    This is a wrapper around the version that uses a controllerName. This
-    version provides a more concise syntax when redirecting to other
-    controllers.
+  
+    - parameter actionName:       The name of the action to link to.
+    - parameter parameters:       Additional parameters for the path.
+    - parameter session:          The session information for the response.
+    */
+  public func redirectTo(actionName actionName: String, parameters: [String:String] = [:], session: Session? = nil) {
+    self.redirectTo(self.dynamicType, actionName: actionName, parameters: parameters, session: session)
+  }
+
+  /**
+    This method generates a response with a redirect to a generated URL.
     
     - parameter controller:       The controller to link to. This will default
                                   to the current controller.
@@ -300,13 +311,8 @@ extension ControllerType {
     - parameter session:    The session information for the response.
   */
   public func redirectTo(controller: ControllerType.Type, actionName: String, parameters: [String:String] = [:], session: Session? = nil) {
-    self.redirectTo(
-      controller.name,
-      actionName: actionName,
-      parameters: parameters,
-      session: session
-    )
-  }
+    let path = self.pathFor(controller, actionName: actionName, parameters: parameters) ?? "/"
+    self.redirectTo(path, session: session)  }
   
   /**
     This method generates a response with a 404 page.
@@ -317,6 +323,64 @@ extension ControllerType {
       response.code = 404
       response.appendString("Page Not Found")
     }
+  }
+  
+  /**
+    This method gets the path for a route.
+    
+    It defaults to the current controller and action. It will also substitute
+    any of the current request's parameters into the new path, if they are part
+    of that path.
+  
+    This method has been deprecated in favor of the version that takes a
+    controller type.
+    
+    - parameter controllerName:   The controller to link to. This will default
+                                  to the current controller.
+    - parameter actionName:       The action to link to.
+    - parameter parameters:       Additional parameters for the path.
+    - parameter domain:           The domain to use for the URL. If this is
+                                  omitted, the result will just be the path part
+                                  of the URL.
+    - parameter https:            Whether the URL should be https or http. If
+                                  the domain is omitted, this is ignored.
+    - returns:                    The path
+  */
+  @available(*, deprecated) public func pathFor(controllerName: String?, actionName: String? = nil, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
+    var path = RouteSet.shared().pathFor(
+      controllerName ?? self.dynamicType.name,
+      actionName: actionName ?? self.actionName,
+      parameters: parameters,
+      domain: domain,
+      https: https
+    )
+    if path != nil {
+      for (key,value) in self.request.requestParameters {
+        if !key.isEmpty {
+          path = path?.stringByReplacingOccurrencesOfString(":\(key)", withString: value)
+        }
+      }
+    }
+    return path
+  }
+  
+  /**
+    This method gets the path for a route.
+    
+    It defaults to the current controller and action. It will also substitute
+    any of the current request's parameters into the new path, if they are part
+    of that path.
+  
+    - parameter parameters:       Additional parameters for the path.
+    - parameter domain:           The domain to use for the URL. If this is
+                                  omitted, the result will just be the path part
+                                  of the URL.
+    - parameter https:            Whether the URL should be https or http. If
+                                  the domain is omitted, this is ignored.
+    - returns:                    The path
+    */
+  public func pathFor(actionName actionName: String? = nil, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
+    return self.pathFor(self.dynamicType, actionName: actionName, parameters: parameters, domain: domain, https: https)
   }
   
   /**
@@ -336,10 +400,10 @@ extension ControllerType {
     - parameter https:            Whether the URL should be https or http. If
                                   the domain is omitted, this is ignored.
     - returns:                    The path
-  */
-  public func pathFor(controllerName: String? = nil, actionName: String? = nil, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
+    */
+  public func pathFor(controllerType: ControllerType.Type, actionName: String? = nil, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
     var path = RouteSet.shared().pathFor(
-      controllerName ?? self.dynamicType.name,
+      controllerType,
       actionName: actionName ?? self.actionName,
       parameters: parameters,
       domain: domain,
