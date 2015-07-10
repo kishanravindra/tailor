@@ -357,7 +357,7 @@ extension DatabaseValue: JsonConvertible {
     case let .Data(d): return .String(d.description)
     case let .Integer(i): return .Number(i)
     case let .Double(d): return .Number(d)
-    case let .Timestamp(t): return .String(t.format(TimeFormat.Database))
+    case let .Timestamp(t): return .String(t.inTimeZone(TimeZone.systemTimeZone()).format(TimeFormat.Database))
     case let .Time(t): return .String(t.today.format(TimeFormat.DatabaseTime))
     case let .Date(t): return .String(t.beginningOfDay().format(TimeFormat.DatabaseDate))
     }
