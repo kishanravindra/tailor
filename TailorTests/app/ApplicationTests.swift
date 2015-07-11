@@ -21,7 +21,6 @@ class ApplicationTests : TailorTestCase {
       address.2 == 0 &&
       address.3 == 0
       , "initalizes IP address to dummy address")
-    self.assert(application.port, equals: 8080, message: "initializes port to HTTP Alt")
   }
   
   @available(*, deprecated) func testInitializationSetsDateFormatters() {
@@ -51,6 +50,30 @@ class ApplicationTests : TailorTestCase {
     let application = TestApplication()
     self.assert(application.command, equals: "tailor.exit", message: "sets the command from the prompt")
     self.assert(application.flags, equals: ["a": "5"], message: "sets the flags from the prompt")
+  }
+  
+  func testPortGetsValueFromConfigurationSettings() {
+    application = Application()
+    application.configuration.set("application.port", value: "3000")
+    assert(application.port, equals: 3000)
+  }
+  
+  func testPortWithNoConfigurationSettingIs8080() {
+    application = Application()
+    assert(application.port, equals: 8080)
+  }
+  
+  func testPortWithNonNumericSettingsGets8080() {
+    application = Application()
+    application.configuration.set("application.port", value: "dead")
+    assert(application.port, equals: 8080)
+  }
+  
+  func testSettingPortChangesConfigurationSetting() {
+    application = Application()
+    application.port = 3000
+    assert(application.configuration.fetch("application.port"), equals: "3000")
+    assert(application.port, equals: 3000)
   }
   
   @available(*, deprecated) func testGettingRouteSetGetsSharedRouteSet() {

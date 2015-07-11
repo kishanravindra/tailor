@@ -14,7 +14,7 @@ class SessionTests: TailorTestCase {
       mergedData["_flash_\(key)"] = value
     }
     
-    let key = Application.sharedApplication().configuration["sessions.encryptionKey"] ?? ""
+    let key = Application.sharedApplication().configuration["application.encryptionKey"] ?? ""
     let jsonData: NSData
     do {
       jsonData = try NSJSONSerialization.dataWithJSONObject(mergedData, options: [])
@@ -61,6 +61,43 @@ class SessionTests: TailorTestCase {
     if notice != nil {
       assert(notice!, equals: "Success", message: "has the flash notice")
     }
+  }
+  
+  @available(*, deprecated) func testInitializationWithEncryptionKeyFromSessionsConfigurationSetsData() {
+    let string = createCookieString(
+      ["name": "John", "userId": "5"],
+      flashData: ["notice": "Success"]
+    )
+    
+    let application = Application.sharedApplication()
+    let key = application.configuration["application.encryptionKey"]
+    application.configuration["sessions.encryptionKey"] = key
+    application.configuration["application.encryptionKey"] = nil
+    
+    let request = Request(cookies: ["_session": string])
+    let session = Session(request: request)
+    
+    let name = session["name"]
+    XCTAssertNotNil(name, "has the name in the data")
+    if name != nil {
+      assert(name!, equals: "John", message: "has the name in the data")
+    }
+    
+    let userId = session["userId"]
+    XCTAssertNotNil(userId, "has the user id in the data")
+    if userId != nil {
+      assert(userId!, equals: "5", message: "has the user id in the data")
+    }
+    
+    XCTAssertNil(session["_flash_notice"], "does not have a flash notice in the main data")
+    
+    let notice = session.flash("notice")
+    XCTAssertNotNil(notice, "has the flash notice")
+    if notice != nil {
+      assert(notice!, equals: "Success", message: "has the flash notice")
+    }
+    
+    application.configuration["application.encryptionKey"] = key
   }
   
   func testInitializationWithWrongClientAddressLeavesDataEmpty() {
@@ -130,7 +167,7 @@ class SessionTests: TailorTestCase {
     var session = createSession(createCookieString(["name": "Joan"]))
     session.setFlash("notice", "Success")
     let string = session.cookieString()
-    let key = Application.sharedApplication().configuration["sessions.encryptionKey"]  ?? ""
+    let key = Application.sharedApplication().configuration["application.encryptionKey"]  ?? ""
     let decryptor = AesEncryptor(key: key)
     let cookieData = NSData(base64EncodedString: string, options: []) ?? NSData()
     XCTAssertNotEqual(cookieData.length, 0, "can base-64 decode the cookie data")

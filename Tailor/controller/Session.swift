@@ -33,7 +33,8 @@ public struct Session {
   public init(request: Request) {
     let cookies = request.cookies
     self.clientAddress = request.clientAddress
-    let key = Application.sharedApplication().configuration["sessions.encryptionKey"]
+    let key = Application.sharedApplication().configuration["application.encryptionKey"] ??
+      Application.sharedApplication().configuration["sessions.encryptionKey"]
     encryptor = AesEncryptor(key: key ?? "")
     if let encryptedDataString = cookies["_session"] {
       let encryptedData = NSData(base64EncodedString: encryptedDataString, options: []) ?? NSData()

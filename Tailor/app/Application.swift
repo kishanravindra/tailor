@@ -7,8 +7,20 @@ public class Application {
   /** The IP Address that the application listens on. */
   public var ipAddress = (0,0,0,0)
   
-  /** The port that the application listens on. */
-  public var port = 8080
+  /**
+    The port that the application listens on.
+  
+    This is deprecated. The port is now stored in the configuration settings, in
+    application.port
+    */
+  public var port: Int {
+    get {
+      return Int(self.configuration.fetch("application.port") ?? "8080") ?? 8080
+    }
+    @available(*, deprecated, message="This is deprecated. The port is now stored in the configuration")  set {
+      self.configuration.set("application.port", value: String(newValue))
+    }
+  }
   
   /**
     The routes that process requests for the app.
@@ -103,6 +115,7 @@ public class Application {
     }
     APPLICATION_ARGUMENTS = (self.command, self.flags)
     
+    self.loadConfigFromFile("application.plist")
     self.loadConfigFromFile("sessions.plist")
     self.loadConfigFromFile("database.plist")
     self.loadConfigFromFile("localization.plist")

@@ -10,7 +10,7 @@
 		5209E2891A50920C0044EE70 /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5209E2881A50920C0044EE70 /* ModelTests.swift */; };
 		520BD5021AA90E2600CBC3DC /* PropertyListLocalizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784C91A5CC1A40065C10D /* PropertyListLocalizationTests.swift */; };
 		5212E7581B483081000239DC /* database.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5212E7571B483081000239DC /* database.plist */; };
-		5212E75A1B4830A1000239DC /* sessions.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5212E7591B4830A1000239DC /* sessions.plist */; };
+		5212E75A1B4830A1000239DC /* application.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5212E7591B4830A1000239DC /* application.plist */; };
 		5212E75C1B4830F1000239DC /* CreateTestDatabaseAlteration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5212E75B1B4830F1000239DC /* CreateTestDatabaseAlteration.swift */; };
 		52135CA51B07FE0D00595794 /* TimeZoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52135CA41B07FE0D00595794 /* TimeZoneTests.swift */; };
 		5214B5D21AA38B0800624E9D /* ValidationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5214B5D11AA38B0800624E9D /* ValidationError.swift */; };
@@ -34,7 +34,7 @@
 		5233011D1B45FC1500C9E5EE /* PersistableEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233011C1B45FC1500C9E5EE /* PersistableEnums.swift */; };
 		5233011F1B45FC5B00C9E5EE /* PersistableEnumTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233011E1B45FC5B00C9E5EE /* PersistableEnumTests.swift */; };
 		5233019D1B46FBF400C9E5EE /* database.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5233019C1B46FBF400C9E5EE /* database.plist */; };
-		5233019F1B46FC1B00C9E5EE /* sessions.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5233019E1B46FC1B00C9E5EE /* sessions.plist */; };
+		5233019F1B46FC1B00C9E5EE /* application.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5233019E1B46FC1B00C9E5EE /* application.plist */; };
 		523301A11B46FC4D00C9E5EE /* CreateTestDatabaseAlteration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523301A01B46FC4D00C9E5EE /* CreateTestDatabaseAlteration.swift */; };
 		523D655B1A98CBEB000C686B /* DatabaseLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523D655A1A98CBEB000C686B /* DatabaseLocalization.swift */; };
 		523D655D1A98CC1B000C686B /* PropertyListLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523D655C1A98CC1B000C686B /* PropertyListLocalization.swift */; };
@@ -202,7 +202,7 @@
 		5205278E1AF6A3C400B02CCF /* Controller.xctemplate */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Controller.xctemplate; path = Tailor/ext/xcode_templates/Controller.xctemplate; sourceTree = SOURCE_ROOT; };
 		5209E2881A50920C0044EE70 /* ModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelTests.swift; sourceTree = "<group>"; };
 		5212E7571B483081000239DC /* database.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = database.plist; sourceTree = "<group>"; };
-		5212E7591B4830A1000239DC /* sessions.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = sessions.plist; sourceTree = "<group>"; };
+		5212E7591B4830A1000239DC /* application.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = application.plist; sourceTree = "<group>"; };
 		5212E75B1B4830F1000239DC /* CreateTestDatabaseAlteration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateTestDatabaseAlteration.swift; sourceTree = "<group>"; };
 		52135CA41B07FE0D00595794 /* TimeZoneTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeZoneTests.swift; sourceTree = "<group>"; };
 		5214B5D11AA38B0800624E9D /* ValidationError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidationError.swift; sourceTree = "<group>"; };
@@ -228,7 +228,7 @@
 		5233011C1B45FC1500C9E5EE /* PersistableEnums.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistableEnums.swift; sourceTree = "<group>"; };
 		5233011E1B45FC5B00C9E5EE /* PersistableEnumTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistableEnumTests.swift; sourceTree = "<group>"; };
 		5233019C1B46FBF400C9E5EE /* database.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = database.plist; sourceTree = "<group>"; };
-		5233019E1B46FC1B00C9E5EE /* sessions.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = sessions.plist; sourceTree = "<group>"; };
+		5233019E1B46FC1B00C9E5EE /* application.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = application.plist; sourceTree = "<group>"; };
 		523301A01B46FC4D00C9E5EE /* CreateTestDatabaseAlteration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateTestDatabaseAlteration.swift; sourceTree = "<group>"; };
 		523D655A1A98CBEB000C686B /* DatabaseLocalization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseLocalization.swift; sourceTree = "<group>"; };
 		523D655C1A98CC1B000C686B /* PropertyListLocalization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PropertyListLocalization.swift; sourceTree = "<group>"; };
@@ -475,7 +475,7 @@
 			isa = PBXGroup;
 			children = (
 				5233019C1B46FBF400C9E5EE /* database.plist */,
-				5233019E1B46FC1B00C9E5EE /* sessions.plist */,
+				5233019E1B46FC1B00C9E5EE /* application.plist */,
 			);
 			path = config;
 			sourceTree = "<group>";
@@ -616,7 +616,7 @@
 				5212E75B1B4830F1000239DC /* CreateTestDatabaseAlteration.swift */,
 				52B417C21B40B1F400B274F7 /* Info.plist */,
 				5212E7571B483081000239DC /* database.plist */,
-				5212E7591B4830A1000239DC /* sessions.plist */,
+				5212E7591B4830A1000239DC /* application.plist */,
 			);
 			path = TailorSqliteTests;
 			sourceTree = "<group>";
@@ -1040,7 +1040,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5212E7581B483081000239DC /* database.plist in Resources */,
-				5212E75A1B4830A1000239DC /* sessions.plist in Resources */,
+				5212E75A1B4830A1000239DC /* application.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1055,7 +1055,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5233019F1B46FC1B00C9E5EE /* sessions.plist in Resources */,
+				5233019F1B46FC1B00C9E5EE /* application.plist in Resources */,
 				526A23771B30E0A30033A094 /* TestConfig.plist in Resources */,
 				5233019D1B46FBF400C9E5EE /* database.plist in Resources */,
 			);

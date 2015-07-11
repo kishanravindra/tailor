@@ -23,3 +23,5 @@
 * Having separate throwing and non-throwing implementations of Dictionary.map
 * Having a pathFor / redirectTo method with fewer parameters instead of using
   default parameters
+* Supporting both application.encryptionKey and sessions.encryptionKey
+  when decoding sessions
