@@ -14,6 +14,10 @@ class AesEncryptorTests: TailorTestCase {
     assert(AesEncryptor.getHexString(198), equals: "C6", message: "gets multiple digits")
   }
   
+  func testGetHexStringWorksForMultipleUnpaddedDigits() {
+    assert(AesEncryptor.getHexString(198, pad: false), equals: "C6", message: "gets multiple digits")
+  }
+  
   func testGetHexWorksForSingleDigit() {
     let value1 = AesEncryptor.getHex("5")
     assert(value1, equals: UInt8(5), message: "gets single digit")

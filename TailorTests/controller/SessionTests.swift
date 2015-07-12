@@ -5,11 +5,11 @@ import TailorTesting
 class SessionTests: TailorTestCase {
   let session: Session! = nil
   
-  func createCookieString(data: [String:String] = [:], flashData: [String:String] = [:], clientAddress: String = "0.0.0.0", expirationDate: Timestamp = 1.hour.fromNow) -> String {
+  func createCookieString(data: [String:String] = [:], flashData: [String:String] = [:], clientAddress: String? = "0.0.0.0", expirationDate: Timestamp? = 1.hour.fromNow) -> String {
     var mergedData = data
     
     mergedData["clientAddress"] = clientAddress
-    mergedData["expirationDate"] = expirationDate.format(TimeFormat.Cookie)
+    mergedData["expirationDate"] = expirationDate?.format(TimeFormat.Cookie)
     for (key, value) in flashData {
       mergedData["_flash_\(key)"] = value
     }
@@ -100,6 +100,20 @@ class SessionTests: TailorTestCase {
     application.configuration["application.encryptionKey"] = key
   }
   
+  func testInitializationWithNoEncryptionKeyLeavesSessionEmpty() {
+    let string = createCookieString(
+      ["name": "John", "userId": "5"]
+    )
+    let request = Request(cookies: ["_session": string])
+    let application = Application.sharedApplication()
+    
+    let key = application.configuration["application.encryptionKey"]
+    application.configuration["application.encryptionKey"] = nil
+    let session = Session(request: request)
+    assert(session.isEmpty())
+    application.configuration["application.encryptionKey"] = key
+  }
+  
   func testInitializationWithWrongClientAddressLeavesDataEmpty() {
     let string = createCookieString(
       ["name": "John", "userId": "5"],
@@ -108,6 +122,16 @@ class SessionTests: TailorTestCase {
     let request = Request(cookies: ["_session": string], clientAddress: "0.0.0.0")
     let session = Session(request: request)
     XCTAssertTrue(session.isEmpty(), "has no data in session")
+  }
+  
+  func testInitializationWithNoClientAddressInSessionDataLeavesSessionEmpty() {
+    let string = createCookieString(
+      ["name": "John", "userId": "5"],
+      clientAddress: nil
+    )
+    let request = Request(cookies: ["_session": string])
+    let session = Session(request: request)
+    assert(session.isEmpty())
   }
   
   func testInitalizationWithExpiredDateLeavesDataEmpty() {
@@ -120,10 +144,46 @@ class SessionTests: TailorTestCase {
     XCTAssertTrue(session.isEmpty(), "has no data in session")
   }
   
+  func testInitializationWithNoExpirationDateLeavesDataEmpty() {
+    let string = createCookieString(
+      ["name": "John", "userId": "5"],
+      expirationDate: nil
+    )
+    let request = Request(cookies: ["_session": string])
+    let session = Session(request: request)
+    assert(session.isEmpty())
+  }
+  
   func testInitializationWithGarbageStringLeavesDataEmpty() {
     let request = Request(cookies: ["_session": "ABC-123"])
     let session = Session(request: request)
     XCTAssertTrue(session.isEmpty(), "has no data in session")
+  }
+  
+  func testInitializationWithNoSessionCookieLeavesDataEmpty() {
+    let request = Request()
+    let session = Session(request: request)
+    assert(session.isEmpty())
+  }
+  
+  func testInitializationWithNonJsonDataInCookieLeavesSesssionEmpty() {
+    let key = Application.sharedApplication().configuration["application.encryptionKey"]!
+    let data = NSData(bytes: [1,2,3,4])
+    let encryptedData = AesEncryptor(key: key)!.encrypt(data)
+    let string = encryptedData.base64EncodedStringWithOptions([])
+    let request = Request(cookies: ["_session": string])
+    let session = Session(request: request)
+    assert(session.isEmpty())
+  }
+  
+  func testInitializationWithIntegerDataInCookieLeavesSesssionEmpty() {
+    let key = Application.sharedApplication().configuration["application.encryptionKey"]!
+    let data = "{\"a\":5}".dataUsingEncoding(NSUTF8StringEncoding)!
+    let encryptedData = AesEncryptor(key: key)!.encrypt(data)
+    let string = encryptedData.base64EncodedStringWithOptions([])
+    let request = Request(cookies: ["_session": string])
+    let session = Session(request: request)
+    assert(session.isEmpty())
   }
   
   //MARK: - Serialization
@@ -183,6 +243,15 @@ class SessionTests: TailorTestCase {
     XCTAssertNotNil(jsonObject, "can get JSON object back")
     let keys = jsonObject.keys.sort()
     assert(keys, equals: ["_flash_notice", "clientAddress", "expirationDate", "name"], message: "has the expected keys in the flash")
+  }
+  
+  func testCookieStringWithoutEncryptorIsEmptyString() {
+    let application = Application.sharedApplication()
+    let key = application.configuration["application.encryptionKey"]
+    application.configuration["application.encryptionKey"] = nil
+    let session = createSession(createCookieString(["name": "Joan"]))
+    assert(session.cookieString(), equals: "")
+    application.configuration["application.encryptionKey"] = key
   }
   
   func testStoreInCookiesPutsCookieStringInFlash() {

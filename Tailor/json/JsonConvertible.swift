@@ -95,6 +95,15 @@ extension Dictionary where Value: JsonEncodable {
     }
     return .Dictionary(dictionary)
   }
+  
+  public func toJsonData() -> NSData {
+    do {
+      return try self.toJson().jsonData()
+    }
+    catch {
+      fatalError("Could not convert JSON dictionary to JSON. Something has changed in the JSON serialization rules")
+    }
+  }
 }
 /**
   This protocol describes a structure that can be converted into a dictionary

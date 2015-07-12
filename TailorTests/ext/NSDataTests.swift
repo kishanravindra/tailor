@@ -35,4 +35,19 @@ class NSDataTests: TailorTestCase {
       assert(components[1], equals: NSData(bytes: [95,10,13,179, 13, 10, 11, 54, 89]), message: "gets the second component")
     }
   }
+  
+  func testComponentsForEmptyDataReturnsArrayOfEmptyData() {
+    let data = NSData()
+    let components = data.componentsSeparatedByString("\r\n", limit: 2)
+    assert(components, equals: [data], message: "returns the data in an array")
+  }
+  
+  func testComponentsWithNonUtf8CompliantSeparatorReturnsOneComponent() {
+    let bytes : [UInt8] = [1,192,14,148,13,10,95,10,13,179,13,10,11,54,89]
+    let data = NSData(bytes: bytes)
+    let separator = NSString(data: NSData(bytes: [0x0D, 0x0A, 0xD8, 0x00]), encoding: NSUTF16BigEndianStringEncoding) as! String
+    let components = data.componentsSeparatedByString(separator)
+    assert(components, equals: [data])
+  }
+
 }

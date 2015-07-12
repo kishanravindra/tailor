@@ -103,7 +103,14 @@ class JsonConvertibleTests: TailorTestCase {
     )
   }
   
-  func testDictionaryConvertibleProviesJsonImplementation() {
+  func testDictionaryOfConvertiblesProvidesJsonDataWithDictionaryValues() {
+    let value = ["key1": "A", "key2": "B"]
+    let data = value.toJsonData()
+    let expectedString = "{\"key1\":\"A\",\"key2\":\"B\"}"
+    assert(data, equals: expectedString.dataUsingEncoding(NSUTF8StringEncoding)!)
+  }
+  
+  func testDictionaryConvertibleProvidesJsonImplementation() {
     struct MyStruct: JsonDictionaryConvertible {
       let key1: String
       let key2: String

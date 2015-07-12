@@ -50,7 +50,6 @@ public struct Session {
       let dateString = cookieData["expirationDate"] ?? ""
       
       self.expirationDate = TimeFormat.Cookie.parseTime(dateString) ?? 1.hour.fromNow
-      
       guard let address = cookieData["clientAddress"] else { return }
       guard address == clientAddress else { return }
       guard cookieData["expirationDate"] != nil else { return }
@@ -110,13 +109,7 @@ public struct Session {
       mergedData["_flash_\(key)"] = value
     }
     
-    let jsonData: NSData
-    do {
-      jsonData = try NSJSONSerialization.dataWithJSONObject(mergedData, options: [])
-    }
-    catch {
-      jsonData = NSData()
-    }
+    let jsonData = mergedData.toJsonData()
     let encryptedData = encryptor?.encrypt(jsonData) ?? NSData()
     let encryptedDataString = encryptedData.base64EncodedStringWithOptions([])
     return encryptedDataString

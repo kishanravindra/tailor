@@ -41,6 +41,9 @@ class ControllerTests: TailorTestCase {
   }
   
   struct SecondTestController : ControllerType {
+    static var name: String {
+      return "TailorTests.SecondTestController"
+    }
     var state: ControllerState
     static func defineRoutes(routes: RouteSet) {
       routes.route(.Get("route2"), to: indexAction, name: "index")
@@ -111,6 +114,17 @@ class ControllerTests: TailorTestCase {
       }
     )
     XCTAssertNil(controller.currentUser, "sets user to nil")
+  }
+  
+  func testInitializeStateWithAllFieldsSetsAllFields() {
+    let request = Request()
+    let session = Session(request: request)
+    let user = User(emailAddress: "test@test.com", password: "12341234").save()!
+    let state = ControllerState(request: request, callback: {_ in}, session: session, actionName: "show", currentUser: user, localization: PropertyListLocalization(locale: "es"))
+    assert(state.request, equals: request)
+    assert(state.actionName, equals: "show")
+    assert(state.currentUser, equals: user)
+    assert(state.localization.locale, equals: "es")
   }
   
   //MARK: - Responses
@@ -277,8 +291,26 @@ class ControllerTests: TailorTestCase {
   }
 
   @available(*, deprecated) func testPathForWithNameCanGetFullyQualifiedRoute() {
-    let path = self.controller.pathFor(TestController.name, actionName: "index", parameters: ["id": "5"])
-    assert(path, equals: "/route1?id=5", message: "gets the url for the controller and action")
+    let path = self.controller.pathFor(SecondTestController.name, actionName: "index", parameters: ["name": "John"])
+    assert(path, equals: "/route2?name=John", message: "gets the url for the controller and action")
+  }
+  
+  @available(*, deprecated) func testPathForWithNameWithOmittedInformationRoutesToCurrentPath() {
+    let path = self.controller.pathFor(nil, parameters: ["name": "John"])
+    assert(path, equals: "/route1?name=John", message: "gets the url for the controller and action")
+  }
+  
+  @available(*, deprecated) func testPathForWithNameWithParametersInPathReusesThoseParameters() {
+    controller = TestController(
+      request: Request(parameters: ["id": "10"]),
+      actionName: "show",
+      callback: {
+        response in
+        self.callback(response)
+      }
+    )
+    let path = self.controller.pathFor(TestController.name, actionName: "show")
+    assert(path, equals: "/route1/10", message: "gets the url for the controller and action")
   }
   
   func testPathForCanGetFullyQualifiedRoute() {
@@ -294,6 +326,19 @@ class ControllerTests: TailorTestCase {
     )
     let path = self.controller.pathFor(parameters: ["confirmed": "1"])
     assert(path, equals: "/route2?confirmed=1", message: "uses the same controller and action, but adds the parameters")
+  }
+  
+  func testPathForWithParametersInPathReusesParameters() {
+    controller = TestController(
+      request: Request(parameters: ["id": "10"]),
+      actionName: "show",
+      callback: {
+        response in
+        self.callback(response)
+      }
+    )
+    let path = self.controller.pathFor(TestController.self, actionName: "show")
+    assert(path, equals: "/route1/10", message: "gets the url for the controller and action")
   }
   
   @available(*, deprecated) func testPathWithNameForCanGetUrlWithDomain() {
@@ -341,7 +386,32 @@ class ControllerTests: TailorTestCase {
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
+  @available(*, deprecated) func testRedirectToWithControllerNameWithInvalidPathRedirectsToRootPath() {
+    let expectation = expectationWithDescription("callback called")
+    self.callback = {
+      response in
+      expectation.fulfill()
+      self.assert(response.code, equals: 302, message: "gives a 302 response")
+      self.assert(response.headers, equals: ["Location": "/"], message: "has a location header")
+    }
+    
+    self.controller.redirectTo(TestController.name, actionName: "foo")
+    waitForExpectationsWithTimeout(0.01, handler: nil)
+  }
+  
   func testRedirectToWithControllerTypeGeneratesRedirectResponse() {
+    let expectation = expectationWithDescription("callback called")
+    self.callback = {
+      response in
+      expectation.fulfill()
+      self.assert(response.code, equals: 302, message: "gives a 302 response")
+      self.assert(response.headers, equals: ["Location": "/route2"], message: "has a location header")
+    }
+    self.controller.redirectTo(SecondTestController.self, actionName: "index")
+    waitForExpectationsWithTimeout(0.01, handler: nil)
+  }
+  
+  func testRedirectToWithoutControllerTypeGeneratesRedirectToCurrentController() {
     let expectation = expectationWithDescription("callback called")
     self.callback = {
       response in
@@ -349,7 +419,7 @@ class ControllerTests: TailorTestCase {
       self.assert(response.code, equals: 302, message: "gives a 302 response")
       self.assert(response.headers, equals: ["Location": "/route1"], message: "has a location header")
     }
-    self.controller.redirectTo(TestController.self, actionName: "index")
+    self.controller.redirectTo(actionName: "index")
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
@@ -368,6 +438,18 @@ class ControllerTests: TailorTestCase {
     newSession["test3"] = "value3"
     
     self.controller.redirectTo(TestController.self, actionName: "index", session: newSession)
+    waitForExpectationsWithTimeout(0.01, handler: nil)
+  }
+  
+  func testRedirectToWithControllerTypeWithBadRouteGeneratesRedirectToRootPath() {
+    let expectation = expectationWithDescription("callback called")
+    self.callback = {
+      response in
+      expectation.fulfill()
+      self.assert(response.code, equals: 302, message: "gives a 302 response")
+      self.assert(response.headers, equals: ["Location": "/"], message: "has a location header")
+    }
+    self.controller.redirectTo(TestController.self, actionName: "foo")
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
@@ -414,6 +496,34 @@ class ControllerTests: TailorTestCase {
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
+  func testDefaultLayoutIsEmptyLayout() {
+    struct TestTemplate: TemplateType {
+      var state: TemplateState
+      mutating func body() {
+        text("Hello")
+      }
+    }
+    let expectation = expectationWithDescription("callback called")
+    self.callback = {
+      response in
+      expectation.fulfill()
+      self.assert(response.bodyString, equals: "Hello")
+    }
+    
+    
+    controller = SecondTestController(
+      request: Request(),
+      actionName: "index",
+      callback: {
+        response in
+        self.callback(response)
+      }
+    )
+
+    controller.respondWith(TestTemplate(state: TemplateState(controller)))
+    waitForExpectationsWithTimeout(0.01, handler: nil)
+  }
+  
   //MARK: - Authentication
   
   func testSignInSetsCurrentUserAndStoresIdInSession() {
@@ -422,6 +532,12 @@ class ControllerTests: TailorTestCase {
     let newSession = self.controller.signIn(user2)
     
     assert(newSession["userId"], equals: String(user2.id!), message: "sets userId in session")
+  }
+  
+  func testSignInWithNewUserSetsUserIdToZero() {
+    let user2 = User(emailAddress: "test2@test.com", password: "test")
+    let newSession = self.controller.signIn(user2)
+    assert(newSession["userId"], equals: "0", message: "sets userId to zero")
   }
   
   func testSignOutClearsCurrentUserAndIdInSession() {

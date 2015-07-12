@@ -37,7 +37,6 @@ public struct PasswordHasher {
     let encodedSalt = salt.base64EncodedStringWithOptions([])
     let saltedInput = encodedSalt + input
     let inputBytes = saltedInput.cStringUsingEncoding(NSUTF8StringEncoding) ?? []
-    
     let hashBytes = [UInt8](count: 64, repeatedValue: 0)
     CC_SHA512(UnsafePointer<Void>(inputBytes), UInt32(inputBytes.count), UnsafeMutablePointer<UInt8>(hashBytes))
     

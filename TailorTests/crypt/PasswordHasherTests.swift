@@ -34,4 +34,19 @@ class PasswordHasherTests: TailorTestCase {
     XCTAssertTrue(PasswordHasher.isMatch("test1", encryptedHash: value), "accepts correct value")
     XCTAssertFalse(PasswordHasher.isMatch("test2", encryptedHash: value), "rejects incorrect value")
   }
+  
+  func testEncryptorWithNonUtf8CompliantStringMatchsAnyOtherNonUtf8CompliantString() {
+    let data1 = NSData(bytes: [0xD8, 0x00])
+    let data2 = NSData(bytes: [0xD8, 0x00, 0x10])
+    let string1 = NSString(data: data1, encoding: NSUTF16BigEndianStringEncoding) as! String
+    let string2 = NSString(data: data2, encoding: NSUTF16BigEndianStringEncoding) as! String
+    let value = PasswordHasher().encrypt(string1)
+    assert(PasswordHasher.isMatch(string2, encryptedHash: value))
+  }
+  
+  func testIsMatchWithMalformedHashReturnsFalse() {
+    let encryptedHash = PasswordHasher().encrypt("test")
+    let badHash = "A" + encryptedHash.substringFromIndex(advance(encryptedHash.startIndex, 1))
+    assert(!PasswordHasher.isMatch("test", encryptedHash: badHash))
+  }
 }
