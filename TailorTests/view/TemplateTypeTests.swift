@@ -152,6 +152,12 @@ class TemplateTypeTests: TailorTestCase {
     assert(template.contents, equals: "<p class=\"warning\" style=\"font-weight: bold\">Stop</p>", message: "puts tag in the buffer")
   }
   
+  func testTagMethodWithNoContentsPutsTagInBuffer() {
+    template.tag("p")
+    assert(template.contents, equals: "<p></p>", message: "puts tag in the buffer")
+  }
+  
+  
   func testTagMethodWithoutAttributesPutsTagInBuffer() {
     template.tag("div", with: {
       self.template.tag("p", with: {
@@ -195,6 +201,85 @@ class TemplateTypeTests: TailorTestCase {
     assert(template2.contents, equals: "<a class=\"btn\" href=\"/test/path?id=5\">Click here</a>", message: "puts the tag in the buffer")
   }
   
+  @available(*, deprecated) func testLinkByControllerNameWithNoContentsPutsLinkTagInBuffer() {
+    struct InnerTestController: ControllerType {
+      var state: ControllerState
+      static func defineRoutes(routes: RouteSet) {
+        
+      }
+    }
+    
+    RouteSet.load {
+      routes in
+      routes.route(.Get("test/path"), to: TestController.indexAction, name: "index")
+      ()
+    }
+    var template2 = EmptyTemplate(state: TemplateState(InnerTestController(
+      request: controller.request,
+      actionName: "show",
+      callback: controller.callback
+      )))
+    template2.link("TestController", actionName: "index", parameters: ["id": "5"], attributes: ["class": "btn"])
+    assert(template2.contents, equals: "<a class=\"btn\" href=\"/test/path?id=5\"></a>", message: "puts the tag in the buffer")
+  }
+  
+  @available(*, deprecated) func testLinkByControllerNameWithNilPutsLinkToCurrentControllerInBuffer() {
+    struct InnerTestController: ControllerType {
+      var state: ControllerState
+      static func defineRoutes(routes: RouteSet) {
+        
+      }
+      
+      func indexAction() {
+        
+      }
+    }
+    
+    RouteSet.load {
+      routes in
+      routes.route(.Get("test/path"), to: TestController.indexAction, name: "index")
+      routes.route(.Get("test/path2"), to: InnerTestController.indexAction, name: "index")
+      ()
+    }
+    var template2 = EmptyTemplate(state: TemplateState(InnerTestController(
+      request: controller.request,
+      actionName: "show",
+      callback: controller.callback
+      )))
+    template2.link(nil, actionName: "index", parameters: ["id": "5"], attributes: ["class": "btn"]) {
+      template2.text("Click here")
+    }
+    assert(template2.contents, equals: "<a class=\"btn\" href=\"/test/path2?id=5\">Click here</a>", message: "puts the tag in the buffer")
+  }
+  
+  @available(*, deprecated) func testLinkByControllerNameWithInvalidPathPutsEmptyLinkInBuffer() {
+    struct InnerTestController: ControllerType {
+      var state: ControllerState
+      static func defineRoutes(routes: RouteSet) {
+        
+      }
+      
+      func indexAction() {
+        
+      }
+    }
+    
+    RouteSet.load {
+      routes in
+      routes.route(.Get("test/path"), to: TestController.indexAction, name: "index")
+      ()
+    }
+    var template2 = EmptyTemplate(state: TemplateState(InnerTestController(
+      request: controller.request,
+      actionName: "show",
+      callback: controller.callback
+      )))
+    template2.link(nil, actionName: "index", parameters: ["id": "5"], attributes: ["class": "btn"]) {
+      template2.text("Click here")
+    }
+    assert(template2.contents, equals: "<a class=\"btn\" href=\"\">Click here</a>", message: "puts the tag in the buffer")
+  }
+  
   func testLinkPutsLinkTagInBuffer() {
     struct InnerTestController: ControllerType {
       var state: ControllerState
@@ -217,6 +302,106 @@ class TemplateTypeTests: TailorTestCase {
       template2.text("Click here")
     }
     assert(template2.contents, equals: "<a class=\"btn\" href=\"/test/path?id=5\">Click here</a>", message: "puts the tag in the buffer")
+  }
+  
+  func testLinkPutsLinkWithNoContentsTagInBuffer() {
+    struct InnerTestController: ControllerType {
+      var state: ControllerState
+      static func defineRoutes(routes: RouteSet) {
+        
+      }
+    }
+    
+    RouteSet.load {
+      routes in
+      routes.route(.Get("test/path"), to: TestController.indexAction, name: "index")
+      ()
+    }
+    var template2 = EmptyTemplate(state: TemplateState(InnerTestController(
+      request: controller.request,
+      actionName: "show",
+      callback: controller.callback
+      )))
+    template2.link(TestController.self, actionName: "index", parameters: ["id": "5"], attributes: ["class": "btn"])
+    assert(template2.contents, equals: "<a class=\"btn\" href=\"/test/path?id=5\"></a>", message: "puts the tag in the buffer")
+  }
+  
+  func testLinkWithNoControllerTypePutsLinkToCurrentControllerInBuffer() {
+    struct InnerTestController: ControllerType {
+      var state: ControllerState
+      static func defineRoutes(routes: RouteSet) {
+        
+      }
+      func indexAction() {
+        
+      }
+    }
+    
+    RouteSet.load {
+      routes in
+      routes.route(.Get("test/path"), to: TestController.indexAction, name: "index")
+      routes.route(.Get("test/path2"), to: InnerTestController.indexAction, name: "index")
+      ()
+    }
+    var template2 = EmptyTemplate(state: TemplateState(InnerTestController(
+      request: controller.request,
+      actionName: "show",
+      callback: controller.callback
+      )))
+    template2.link(actionName: "index", parameters: ["id": "5"], attributes: ["class": "btn"]) {
+      template2.text("Click here")
+    }
+    assert(template2.contents, equals: "<a class=\"btn\" href=\"/test/path2?id=5\">Click here</a>", message: "puts the tag in the buffer")
+  }
+  
+  func testLinkWithNoControllerOrContentsPutsTagInBuffer() {
+    struct InnerTestController: ControllerType {
+      var state: ControllerState
+      static func defineRoutes(routes: RouteSet) {
+        
+      }
+      func indexAction() {
+        
+      }
+    }
+    
+    RouteSet.load {
+      routes in
+      routes.route(.Get("test/path"), to: TestController.indexAction, name: "index")
+      routes.route(.Get("test/path2"), to: InnerTestController.indexAction, name: "index")
+      ()
+    }
+    var template2 = EmptyTemplate(state: TemplateState(InnerTestController(
+      request: controller.request,
+      actionName: "show",
+      callback: controller.callback
+      )))
+    template2.link(actionName: "index", parameters: ["id": "5"], attributes: ["class": "btn"])
+    assert(template2.contents, equals: "<a class=\"btn\" href=\"/test/path2?id=5\"></a>", message: "puts the tag in the buffer")
+  }
+  
+  func testLinkWithInvalidRoutePutsEmptyLinkTagInBuffer() {
+    struct InnerTestController: ControllerType {
+      var state: ControllerState
+      static func defineRoutes(routes: RouteSet) {
+        
+      }
+    }
+    
+    RouteSet.load {
+      routes in
+      routes.route(.Get("test/path"), to: TestController.indexAction, name: "index")
+      ()
+    }
+    var template2 = EmptyTemplate(state: TemplateState(InnerTestController(
+      request: controller.request,
+      actionName: "show",
+      callback: controller.callback
+      )))
+    template2.link(InnerTestController.self, actionName: "index", parameters: ["id": "5"], attributes: ["class": "btn"]) {
+      template2.text("Click here")
+    }
+    assert(template2.contents, equals: "<a class=\"btn\" href=\"\">Click here</a>", message: "puts the tag in the buffer")
   }
   
   func testFormMethodBuildsForm() {
@@ -407,6 +592,13 @@ class TemplateTypeTests: TailorTestCase {
     let name1 = template.attributeName(Hat.self, "brimSize")
     assert(name1, equals: "Brim Size", message: "gets a capitalized name from a model")
     let name2 = template.attributeName(Shelf.self, "store")
+    assert(name2, equals: "Hat Store", message: "gets a capitalized name from the localization")
+  }
+  
+  @available(*, deprecated) func testAttributeNameWithModelNameGetsNameFromModel() {
+    let name1 = template.attributeName("hat", "brimSize")
+    assert(name1, equals: "Brim Size", message: "gets a capitalized name from a model")
+    let name2 = template.attributeName("shelf", "store")
     assert(name2, equals: "Hat Store", message: "gets a capitalized name from the localization")
   }
 }

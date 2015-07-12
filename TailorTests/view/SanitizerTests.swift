@@ -29,6 +29,20 @@ class SanitizerTests: TailorTestCase {
     XCTAssertTrue(testSanitizer.isSanitized(result), "flags text as sanitized")
   }
   
+  func testSanitizeMethodDoesNotRunReplacementsTwice() {
+    let testSanitizer = Sanitizer(["&": "&amp;"])
+    let result1 = testSanitizer.sanitize(SanitizedText(text: "you & I", sanitizers: []))
+    let result2 = testSanitizer.sanitize(result1)
+    assert(result2.text, equals: "you &amp; I", message: "only runs 1 replacement")
+  }
+  
+  func testAcceptMethodFlagsTextAsSanitizedWithoutModification() {
+    let result = testSanitizer.accept("olé")
+    assert(result.text, equals: "olé", message: "leaves text intact")
+    assert(testSanitizer.isSanitized(result), message: "flags text as sanitized")
+  }
+  
+  
   //MARK: - Built-in sanitizers
   
   func testHtmlSanitizerHasMappingForEscapeCharacters() {

@@ -57,6 +57,11 @@ class TemplateFormTests: TailorTestCase {
     assert(template.contents, equals: "<div><label>color</label><input maxLength=\"20\" name=\"hat[color]\" value=\"black\"></input></div>", message: "puts label and input in template")
   }
   
+  func testFormWithNeitherNameNorTypeHasNameModel() {
+    form = TemplateForm(controller: controller)
+    assert(form.name, equals: "model")
+  }
+  
   func testDropdownBuildsSelectTag() {
     form.dropdown("brimSize", values: [("", "None"), ("10", "Ten"), ("20", "Twenty")], attributes: ["multiple": "multiple"])
     assert(template.contents, equals: "<select multiple=\"multiple\" name=\"hat[brimSize]\"><option value=\"\">None</option><option value=\"10\">Ten</option><option value=\"20\">Twenty</option></select>")
@@ -80,5 +85,10 @@ class TemplateFormTests: TailorTestCase {
   func testRadioButtonWithSelectedValueSelectsValue() {
     form.radioButtons("brimSize", value: "10", values: ["10", "20"], attributes: ["extra-data": "hello"])
     assert(template.contents, equals: "<div><label>10</label><input checked=\"checked\" extra-data=\"hello\" name=\"hat[brimSize]\" type=\"radio\" value=\"10\"></input></div><div><label>20</label><input extra-data=\"hello\" name=\"hat[brimSize]\" type=\"radio\" value=\"20\"></input></div>")
+  }
+  
+  func testFormTemplateHasEmptyBody() {
+    form.template.generate()
+    assert(form.template.contents.isEmpty)
   }
 }

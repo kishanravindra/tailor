@@ -5,8 +5,6 @@ import Foundation
   been applied to sanitize it.
   */
 public struct SanitizedText : StringLiteralConvertible, Equatable {
-  public typealias ExtendedGraphemeClusterLiteralType = StringLiteralType
-  
   /** The text itself. */
   public let text: String
   
@@ -23,29 +21,29 @@ public struct SanitizedText : StringLiteralConvertible, Equatable {
     self.text = text
     self.sanitizers = sanitizers
   }
-
+  
+  /**
+    This initializer creates sanitized text from a string literal.
+    - parameter value:   The string literal value.
+  */
+  public init(stringLiteral value: String) {
+    self.init(text: value, sanitizers: [])
+  }
+  
+  /**
+    This initializer creates sanitized text from a string literal.
+    - parameter value:   The string literal value.
+  */
+  public init(extendedGraphemeClusterLiteral value: String) {
+    self.init(stringLiteral: value)
+  }
+  
   /**
     This initializer creates sanitized text from a string literal.
     - parameter value:   The string literal value.
     */
-  public init(unicodeScalarLiteral value: StringLiteralType) {
-    self.init(text: value, sanitizers: [])
-  }
-  
-  /**
-    This initializer creates sanitized text from a string literal.
-    - parameter value:   The string literal value.
-  */
-  public init(stringLiteral value: StringLiteralType) {
-    self.init(text: value, sanitizers: [])
-  }
-  
-  /**
-    This initializer creates sanitized text from a string literal.
-    - parameter value:   The string literal value.
-  */
-  public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
-    self.init(text: value, sanitizers: [])
+  public init(unicodeScalarLiteral value: String) {
+    self.init(stringLiteral: value)
   }
 }
 

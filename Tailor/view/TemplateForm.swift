@@ -35,10 +35,8 @@ public struct TemplateForm {
   
   /**
     The block that we use to build the input.
-
-    This can never be null, but if the
     */
-  public let inputBuilder: InputBuilder?
+  public let inputBuilder: InputBuilder
   
   /**
     This method creates a form builder.
@@ -105,7 +103,7 @@ public struct TemplateForm {
     */
   public mutating func input(key: String, _ value: String, attributes: [String: String] = [:]) {
     let errors = self.validationErrors.filter { $0.key == key }
-    self.template = self.inputBuilder?(form: self, key: key, value: value, attributes: attributes, errors: errors) ?? self.template
+    self.template = self.inputBuilder(form: self, key: key, value: value, attributes: attributes, errors: errors)
   }
   
   /**

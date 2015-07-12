@@ -30,6 +30,7 @@
 		522643261B06C7F40081D04E /* TimeZone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5226431F1B06C7F40081D04E /* TimeZone.swift */; };
 		522643271B06C7F40081D04E /* TimeZoneReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522643201B06C7F40081D04E /* TimeZoneReader.swift */; };
 		5226432A1B06C8CB0081D04E /* CalendarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522643291B06C8CB0081D04E /* CalendarTests.swift */; };
+		5227E1831B521071001D4BF6 /* LayoutTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5227E1821B521071001D4BF6 /* LayoutTypeTests.swift */; };
 		522B56CA1A18C849009BBE32 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522B56C91A18C849009BBE32 /* Array.swift */; };
 		5233011D1B45FC1500C9E5EE /* PersistableEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233011C1B45FC1500C9E5EE /* PersistableEnums.swift */; };
 		5233011F1B45FC5B00C9E5EE /* PersistableEnumTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233011E1B45FC5B00C9E5EE /* PersistableEnumTests.swift */; };
@@ -225,6 +226,7 @@
 		5226431F1B06C7F40081D04E /* TimeZone.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeZone.swift; sourceTree = "<group>"; };
 		522643201B06C7F40081D04E /* TimeZoneReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeZoneReader.swift; sourceTree = "<group>"; };
 		522643291B06C8CB0081D04E /* CalendarTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarTests.swift; sourceTree = "<group>"; };
+		5227E1821B521071001D4BF6 /* LayoutTypeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayoutTypeTests.swift; sourceTree = "<group>"; };
 		522B56C91A18C849009BBE32 /* Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
 		5233011C1B45FC1500C9E5EE /* PersistableEnums.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistableEnums.swift; sourceTree = "<group>"; };
 		5233011E1B45FC5B00C9E5EE /* PersistableEnumTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistableEnumTests.swift; sourceTree = "<group>"; };
@@ -524,6 +526,7 @@
 		528D6FA31A562D1F00783BE5 /* view */ = {
 			isa = PBXGroup;
 			children = (
+				5227E1821B521071001D4BF6 /* LayoutTypeTests.swift */,
 				52FC9E0D1B3B952E001F783B /* TemplateTypeTests.swift */,
 				528D6FA41A562D5900783BE5 /* FormBuilderTests.swift */,
 				52B417351B3E12E400B274F7 /* TemplateFormTests.swift */,
@@ -1208,6 +1211,7 @@
 				526ACD801B07922900CE0CC0 /* TimeFormatTests.swift in Sources */,
 				52E784BD1A5B596A0065C10D /* ArrayTests.swift in Sources */,
 				5209E2891A50920C0044EE70 /* ModelTests.swift in Sources */,
+				5227E1831B521071001D4BF6 /* LayoutTypeTests.swift in Sources */,
 				52A684541A3EFB1000F4AA47 /* CookieTests.swift in Sources */,
 				523D65681A99521E000C686B /* DatabaseLocalizationTests.swift in Sources */,
 				525F84601B3B65F40025CA38 /* LocalizationSourceTests.swift in Sources */,

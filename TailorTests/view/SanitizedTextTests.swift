@@ -9,6 +9,18 @@ class SanitizedTextTests: TailorTestCase {
     assert(text.sanitizers.isEmpty)
   }
   
+  func testCanInitializeWithGraphemeClusterLiteral() {
+    let text = SanitizedText(extendedGraphemeClusterLiteral: "abc")
+    assert(text.text, equals: "abc", message: "uses the string literal as the text")
+    assert(text.sanitizers.isEmpty)
+  }
+  
+  func testCanInitializeWithUnicodeScalarLiteral() {
+    let text = SanitizedText(unicodeScalarLiteral: "abc")
+    assert(text.text, equals: "abc", message: "uses the string literal as the text")
+    assert(text.sanitizers.isEmpty)
+  }
+  
   func testSanitizedTextWithSameInformationAreEqual() {
     let text1 = SanitizedText(text: "&lt;b&gt;", sanitizers: [Sanitizer.htmlSanitizer])
     let text2 = SanitizedText(text: "&lt;b&gt;", sanitizers: [Sanitizer.htmlSanitizer])
