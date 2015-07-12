@@ -52,6 +52,12 @@ class DatabaseDriverTests: TailorTestCase {
     assert(height, equals: 200)
   }
   
+  func testRowInitializationWithErrorSetsError() {
+    let row = DatabaseRow(error: "my error")
+    assert(row.error, equals: "my error")
+  }
+
+  
   //MARK: - Queries
   
   func testExecuteQueryWithVariadicArgumentsConvertsToData() {

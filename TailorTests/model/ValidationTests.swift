@@ -171,6 +171,13 @@ class ValidationTests: TailorTestCase {
     assert(result.errors, equals: [])
   }
   
+  func testValidateUniquenessWithNoFieldHasNoError() {
+    Hat(color: "red").save()
+    let hat2 = Hat(color: "red")
+    let result = Validation(Hat.self).validate(uniquenessOf: [:], on: hat2)
+    assert(result.errors, equals: [])
+  }
+  
   //MARK: - Error Access
   
   func testSubscriptReturnsErrorsWithMatchingKey() {

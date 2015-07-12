@@ -192,24 +192,27 @@ public enum DatabaseValue: Equatable, CustomStringConvertible {
   - returns:          Whether they are equal.
   */
 public func ==(lhs: DatabaseValue, rhs: DatabaseValue) -> Bool {
-  switch(lhs,rhs) {
-  case (let .String(string1), let .String(string2)):
-    return string1 == string2
-  case (let .Integer(int1), let .Integer(int2)):
-    return int1 == int2
-  case (let .Boolean(bool1), let .Boolean(bool2)):
-    return bool1 == bool2
-  case (let .Double(double1), let .Double(double2)):
-    return double1 == double2
-  case (let .Data(data1), let .Data(data2)):
-    return data1 == data2
-  case (let .Timestamp(timestamp1), let .Timestamp(timestamp2)):
-    return timestamp1 == timestamp2
-  case (.Null, .Null):
-    return true
-  default:
-    return false
+  switch(lhs) {
+  case let .String(string1):
+    if case let .String(string2) = rhs { return string1 == string2 }
+  case let .Integer(int1):
+    if case let .Integer(int2) = rhs { return int1 == int2 }
+  case let .Boolean(bool1):
+    if case let .Boolean(bool2) = rhs { return bool1 == bool2 }
+  case let .Double(double1):
+    if case let .Double(double2) = rhs { return double1 == double2 }
+  case let .Data(data1):
+    if case let .Data(data2) = rhs { return data1 == data2 }
+  case let .Timestamp(timestamp1):
+    if case let .Timestamp(timestamp2) = rhs { return timestamp1 == timestamp2 }
+  case let .Time(time1):
+    if case let .Time(time2) = rhs { return time1 == time2 }
+  case let .Date(date1):
+    if case let .Date(date2) = rhs { return date1 == date2 }
+  case .Null:
+    if case .Null = rhs { return true }
   }
+  return false
 }
 
 //MARK: - Conversion

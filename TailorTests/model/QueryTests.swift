@@ -73,6 +73,20 @@ class QueryTests: TailorTestCase {
     assert(query.joinClause.parameters, equals: baseQuery.joinClause.parameters, message: "copies join clause")
   }
   
+  func testFilterWithEmptyClauseReturnsOriginalQuery() {
+    let query = baseQuery.filter("")
+    
+    assert(query.selectClause, equals: baseQuery.selectClause, message: "copies select clause")
+    assert(query.whereClause.query, equals: baseQuery.whereClause.query, message: "sets where clause")
+    assert(query.whereClause.parameters, equals: baseQuery.whereClause.parameters, message: "sets where clause")
+    assert(query.orderClause.query, equals: baseQuery.orderClause.query, message: "copies order clause")
+    assert(query.orderClause.parameters, equals: baseQuery.orderClause.parameters, message: "copies order clause")
+    assert(query.limitClause.query, equals: baseQuery.limitClause.query, message: "copies limit clause")
+    assert(query.limitClause.parameters, equals: baseQuery.limitClause.parameters, message: "copies limit clause")
+    assert(query.joinClause.query, equals: baseQuery.joinClause.query, message: "copies join clause")
+    assert(query.joinClause.parameters, equals: baseQuery.joinClause.parameters, message: "copies join clause")
+  }
+  
   func testFilterWithConditionsCombinesClauses() {
     let query = baseQuery.filter(["color": "red"])
     
@@ -93,6 +107,20 @@ class QueryTests: TailorTestCase {
     assert(query.selectClause, equals: baseQuery.selectClause, message: "copies select clause")
     assert(query.whereClause.query, equals: "hats.store_id=? AND hats.color IS NULL", message: "sets where clause")
     assert(query.whereClause.parameters, equals: [5.databaseValue], message: "sets where clause")
+    assert(query.orderClause.query, equals: baseQuery.orderClause.query, message: "copies order clause")
+    assert(query.orderClause.parameters, equals: baseQuery.orderClause.parameters, message: "copies order clause")
+    assert(query.limitClause.query, equals: baseQuery.limitClause.query, message: "copies limit clause")
+    assert(query.limitClause.parameters, equals: baseQuery.limitClause.parameters, message: "copies limit clause")
+    assert(query.joinClause.query, equals: baseQuery.joinClause.query, message: "copies join clause")
+    assert(query.joinClause.parameters, equals: baseQuery.joinClause.parameters, message: "copies join clause")
+  }
+  
+  func testFilterWithMultipleConditionsCombinesClauses() {
+    let query = baseQuery.filter(["color": "red", "brim_size": "10"])
+    
+    assert(query.selectClause, equals: baseQuery.selectClause, message: "copies select clause")
+    assert(query.whereClause.query, equals: "hats.store_id=? AND hats.brim_size=? AND hats.color=?", message: "sets where clause")
+    assert(query.whereClause.parameters, equals: [5.databaseValue, "10".databaseValue, "red".databaseValue], message: "sets where clause")
     assert(query.orderClause.query, equals: baseQuery.orderClause.query, message: "copies order clause")
     assert(query.orderClause.parameters, equals: baseQuery.orderClause.parameters, message: "copies order clause")
     assert(query.limitClause.query, equals: baseQuery.limitClause.query, message: "copies limit clause")

@@ -29,6 +29,16 @@ import TailorTesting
     NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
   }
   
+  func testSharedConnectionOpensWhenConnectionIsUniset() {
+    let application = TestApplication.init()
+    application.start()
+    NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] = application
+    NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")
+    assert(NSStringFromClass(DatabaseConnection.sharedConnection().dynamicType), equals: NSStringFromClass(DatabaseConnection.self), message: "has a database connection as the shared connection")
+    assert(application.connectionCount, equals: 1, message: "increments the connection count")
+    NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
+  }
+  
   func testRowInitializationWithConvertibleValuesWrapsValues() {
     let row = DatabaseConnection.Row(rawData: ["name": "John", "height": 200])
     let name = row.data["name"]?.stringValue
@@ -85,6 +95,11 @@ import TailorTesting
     }
   }
   
+  func testExecuteQueryReturnsEmptyArray() {
+    let connection = DatabaseConnection(config: [:])
+    assert(connection.executeQuery("SELECT * FROM hats", parameters: []).count, equals: 0)
+  }
+  
   func testSanitizeColumnNameRemovesSpecialCharacters() {
     let sanitizedName = DatabaseConnection.sanitizeColumnName("color;brim_size")
     assert(sanitizedName, equals: "colorbrim_size", message: "removes special characters from column name")
@@ -107,5 +122,10 @@ import TailorTesting
         XCTFail("executes four queries")
       }
     }
+  }
+  
+  func testTableNamesAreEmpty() {
+    let connection = DatabaseConnection(config: [:])
+    assert(connection.tableNames(), equals: [])
   }
 }

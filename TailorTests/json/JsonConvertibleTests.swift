@@ -72,6 +72,17 @@ class JsonConvertibleTests: TailorTestCase {
     assert(int.toJson(), equals: .Number(19))
   }
   
+  func testPrimitiveConvertsToJsonAsItself() {
+    let primitive = JsonPrimitive.Number(19)
+    assert(primitive.toJson(), equals: primitive)
+  }
+  
+  func testPrimitiveInitializesWithJsonByCopying() {
+    let primitive = JsonPrimitive.Number(19)
+    let primitive2 = JsonPrimitive(json: primitive)
+    assert(primitive, equals: primitive2)
+  }
+  
   func testArrayOfConvertiblesConvertsToJsonAsArrayOfPrimitives() {
     let array = ["A", "B", "C"]
     let converted = array.toJson()

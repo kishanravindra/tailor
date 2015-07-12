@@ -38,7 +38,7 @@ public class User : Persistable {
     */
   public init(emailAddress: String, password: String) {
     self.emailAddress = emailAddress
-    self.encryptedPassword = PasswordHasher().encrypt(password) ?? ""
+    self.encryptedPassword = PasswordHasher().encrypt(password)
     self.id = nil
   }
   

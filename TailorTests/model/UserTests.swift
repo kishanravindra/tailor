@@ -20,6 +20,28 @@ class UserTests: TailorTestCase {
     XCTAssertTrue(PasswordHasher.isMatch("Monkey", encryptedHash: user.encryptedPassword), "sets encrypted password")
   }
   
+  func testInitializationWithValidDatabaseRowSetsFields() {
+    let user = User(databaseRow: ["email_address": "test@test.com".databaseValue, "encrypted_password": "12345".databaseValue, "id": 1.databaseValue])
+    assert(user?.emailAddress, equals: "test@test.com")
+    assert(user?.encryptedPassword, equals: "12345")
+    assert(user?.id, equals: 1)
+  }
+  
+  func testInitializationWithNoEmailAddressIsNil() {
+    let user = User(databaseRow: ["encrypted_password": "12345".databaseValue, "id": 1.databaseValue])
+    assert(isNil: user)
+  }
+  
+  func testInitializationWithNoPasswordIsNil() {
+    let user = User(databaseRow: ["email_address": "test@test.com".databaseValue, "id": 1.databaseValue])
+    assert(isNil: user)
+  }
+  
+  func testInitializationWithNoIdIsNil() {
+    let user = User(databaseRow: ["id": 1.databaseValue])
+    assert(isNil: user)
+  }
+  
   //MARK: - Authentication
   
   func testHasPasswordIsTrueForMatchingPassword() {

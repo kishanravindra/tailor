@@ -308,14 +308,90 @@ class DatabaseValueTests: TailorTestCase {
     assert(value1, equals: value2)
   }
   
-  func testComparisonWithUnequalDatesAreNotEqual() {
+  func testComparisonWithUnequalTimestampsAreNotEqual() {
     let value1 = DatabaseValue.Timestamp(Timestamp(epochSeconds: 1234512345))
     let value2 = DatabaseValue.Timestamp(Timestamp(epochSeconds: 1234512346))
     XCTAssertNotEqual(value1, value2)
   }
   
+  func testComparisonWithEqualTimesAreEqual() {
+    let value1 = DatabaseValue.Time(Timestamp(epochSeconds: 1234512345).time)
+    let value2 = DatabaseValue.Time(Timestamp(epochSeconds: 1234512345).time)
+    assert(value1, equals: value2)
+  }
+  
+  func testComparisonWithUnequalTimesAreNotEqual() {
+    let value1 = DatabaseValue.Time(Timestamp(epochSeconds: 1234512345).time)
+    let value2 = DatabaseValue.Time(Timestamp(epochSeconds: 1234512346).time)
+    XCTAssertNotEqual(value1, value2)
+  }
+  
+  func testComparisonWithEqualDatesAreEqual() {
+    let value1 = DatabaseValue.Date(Timestamp(epochSeconds: 1234512345).date)
+    let value2 = DatabaseValue.Date(Timestamp(epochSeconds: 1234512345).date)
+    assert(value1, equals: value2)
+  }
+  
+  func testComparisonWithUnequalDatesAreNotEqual() {
+    let value1 = DatabaseValue.Date(Timestamp(epochSeconds: 1234512345).date)
+    let value2 = DatabaseValue.Date(Timestamp(epochSeconds: 2234512345).date)
+    XCTAssertNotEqual(value1, value2)
+  }
+  
   func testComparisonWithNullsIsEqual() {
     assert(DatabaseValue.Null, equals: DatabaseValue.Null)
+  }
+  
+  //MARK: - Conformance In Basic Types
+  
+  func testStringConvertsToStringDatabaseValue() {
+    let value = "test"
+    assert(value.databaseValue, equals: DatabaseValue.String(value))
+  }
+  
+  func testBoolConvertsToBoolDatabaseValue() {
+    let value = false
+    assert(value.databaseValue, equals: DatabaseValue.Boolean(value))
+  }
+  
+  func testDataConvertsToDataDatabaseValue() {
+    let value = NSData(bytes: [1,2,3,4])
+    assert(value.databaseValue, equals: DatabaseValue.Data(value))
+  }
+  
+  func testIntConvertsToIntDatabaseValue() {
+    let value = 25
+    assert(value.databaseValue, equals: DatabaseValue.Integer(value))
+  }
+  
+  func testDoubleConvertsToDoubleDatabaseValue() {
+    let value = 1.75
+    assert(value.databaseValue, equals: DatabaseValue.Double(value))
+  }
+  
+  func testFoundationDateConvertsToTimestampDatabaseValue() {
+    let value = NSDate(timeIntervalSince1970: 1234512345)
+    assert(value.databaseValue, equals: DatabaseValue.Timestamp(Timestamp(epochSeconds: 1234512345)))
+  }
+  
+  func testTimestampConvertsToTimestampDatabaseValue() {
+    let value = Timestamp(epochSeconds: 1234512345)
+    assert(value.databaseValue, equals: DatabaseValue.Timestamp(value))
+  }
+  
+  func testTimeConvertsToTimeDatabaseValue() {
+    let value = Time(hour: 12, minute: 14, second: 3, nanosecond: 0)
+    assert(value.databaseValue, equals: DatabaseValue.Time(value))
+  }
+  
+  func testDateConvertsToDateDatabaseValue() {
+    let value = Date.today()
+    assert(value.databaseValue, equals: DatabaseValue.Date(value))
+  }
+  
+  func testDatabaseValueConvertsToItself() {
+    let value = DatabaseValue.String("test")
+    assert(value.databaseValue, equals: value)
   }
 
   //MARK: - JSON Serialization
