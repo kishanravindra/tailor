@@ -66,6 +66,12 @@ class ResponseTests: TailorTestCase {
     assert(string, equals: "You are being redirected. TestBody", message: "has the full body")
   }
   
+  func testResponseBodyStringWithNonUTF8DataIsEmptyString() {
+    setUpFullResponse()
+    response.appendData(NSData(bytes: [0xD8, 0x00]))
+    let string = response.bodyString
+    assert(string, equals: "")
+  }
   //MARK: - Comparisons
   
   func testResponsesAreEqualWithSameInformation() {

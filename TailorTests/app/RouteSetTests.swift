@@ -52,6 +52,8 @@ class RouteSetTests: TailorTestCase {
     return Request(clientAddress: "0.0.0.0", data: body.dataUsingEncoding(NSUTF8StringEncoding)!)
   }
   
+  //MARK: - Route Class
+  
   func testInitializationSetsFieldsFromParameters() {
     let route = createTestRoute("/test/route")
     assert(route.path.pathPattern, equals: "/test/route", message: "sets path pattern")
@@ -61,8 +63,6 @@ class RouteSetTests: TailorTestCase {
     let regex = try! NSRegularExpression(pattern: "^/test/route/?$", options: [])
     assert(route.regex, equals: regex, message: "sets path regex")
   }
-  
-  //MARK: - Route Class
   
   func testInitializationReplacesParameterSections() {
     let route = createTestRoute("/test/user/:id")
@@ -75,6 +75,39 @@ class RouteSetTests: TailorTestCase {
   func testInitializationAddsParameterToPathParameters() {
     let route = createTestRoute("/test/user/:id")
     assert(route.pathParameters, equals: ["id"], message: "puts id in the path parameters")
+  }
+  
+  func testInitializationHandlesInvalidPathPattern() {
+    let route = createTestRoute("/test/route/(")
+    assert(route.path.pathPattern, equals: "/test/route/(", message: "sets path pattern")
+    assert(route.path.methodName, equals: "GET", message: "sets method")
+    assert(route.description, equals: "test route")
+    
+    assert(isNil: route.regex)
+  }
+  
+  @available(*, deprecated) func testInitializationWithPathAndMethodSetsFields() {
+    let route = RouteSet.Route(pathPattern: "/test/route", method: "GET", handler: {
+      request, responseHandler in
+      }, description: "test route")
+    assert(route.path.pathPattern, equals: "/test/route", message: "sets path pattern")
+    assert(route.path.methodName, equals: "GET", message: "sets method")
+    assert(route.description, equals: "test route")
+    
+    let regex = try! NSRegularExpression(pattern: "^/test/route/?$", options: [])
+    assert(route.regex, equals: regex, message: "sets path regex")
+  }
+  
+  @available(*, deprecated) func testInitializationWithPathAndInvalidMethodSetsFields() {
+    let route = RouteSet.Route(pathPattern: "/test/route", method: "FOO", handler: {
+      request, responseHandler in
+      }, description: "test route")
+    assert(route.path.pathPattern, equals: "/test/route", message: "sets path pattern")
+    assert(route.path.methodName, equals: "GET", message: "sets method")
+    assert(route.description, equals: "test route")
+    
+    let regex = try! NSRegularExpression(pattern: "^/test/route/?$", options: [])
+    assert(route.regex, equals: regex, message: "sets path regex")
   }
   
   func testFullDescriptionContainsMethodPatternAndDescription() {
@@ -109,6 +142,18 @@ class RouteSetTests: TailorTestCase {
       expectation.fulfill()
       }, description: "test route")
     route.handleRequest(createTestRequest("/test/route/5")) {
+      response in
+    }
+    waitForExpectationsWithTimeout(0.01, handler: nil)
+  }
+  
+  func testHandleRequestWithBadRegexCallsHandler() {
+    let expectation = expectationWithDescription("handler called")
+    let route = RouteSet.Route(path: .Get("/test/route("), handler: {
+      request, responseHandler in
+      expectation.fulfill()
+      }, description: "test route")
+    route.handleRequest(createTestRequest("/test/route(")) {
       response in
     }
     waitForExpectationsWithTimeout(0.01, handler: nil)
@@ -177,6 +222,11 @@ class RouteSetTests: TailorTestCase {
     let path1 = RouteSet.RoutePath.Get("/test/1")
     let path2 = RouteSet.RoutePath.Post("/test/1")
     assert(path1, doesNotEqual: path2)
+  }
+  
+  func testWithPathPatternSwitchesPathPattern() {
+    assert(RouteSet.RoutePath.Get("/test/1").withPathPattern("/test/2"), equals: RouteSet.RoutePath.Get("/test/2"))
+    assert(RouteSet.RoutePath.Post("/test/1").withPathPattern("/test/2"), equals: RouteSet.RoutePath.Post("/test/2"))
   }
   
   //MARK: - Adding Routes
@@ -287,6 +337,31 @@ class RouteSetTests: TailorTestCase {
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
+  func testWithScopeWithFilterForWrongControllerTypeRenders404() {
+    struct TestControllerTwo: ControllerType {
+      let state: ControllerState
+      static func defineRoutes(routes: RouteSet) {
+        
+      }
+    }
+    let filter: (TestControllerTwo)->Void->Bool = {
+      controller in
+      return {
+        XCTFail("does not call filter")
+        return true
+      }
+    }
+    routeSet.withScope(filter: filter) {
+      self.routeSet.route(.Get("test"), to: TestController.indexAction, name: "index")
+      self.assert(self.getLatestRoute()?.path.pathPattern, equals: "/test", message: "includes normal path in route in block")
+    }
+    let route = getLatestRoute()
+    route?.handler(createTestRequest()) {
+      response in
+      self.assert(response.bodyString, equals: "Page Not Found")
+    }
+  }
+  
   func testWithScopeDoesNotCallFilterOnRouteOutsideBlock() {
     let filter: (TestController)->Void->Bool = {
       controller in
@@ -311,6 +386,29 @@ class RouteSetTests: TailorTestCase {
       response in
       self.assert(response.bodyString, equals: "Success")
     }
+  }
+  
+  func testWithScopeWithPathAndFilterAddsPathPrefix() {
+    let filter: (TestController)->Void->Bool = {
+      controller in
+      return {
+        XCTFail("does not call filter")
+        controller.render404()
+        return false
+      }
+    }
+    routeSet.withScope(path: "foo", filter: filter) {
+      self.routeSet.route(.Get("test"), to: TestController.indexAction, name: "index")
+      self.assert(self.getLatestRoute()?.path.pathPattern, equals: "/foo/test", message: "includes normal path in route in block")
+    }
+    self.routeSet.addRoute(.Get("test2"), handler: {
+      request, callback in
+      var response = Response()
+      response.appendString("Success")
+      callback(response)
+    })
+    let route = getLatestRoute()
+    assert(route?.path.pathPattern, equals: "/test2")
   }
   
   func testWithScopeWithMultipleRoutesCallsAllFilters() {
@@ -373,6 +471,37 @@ class RouteSetTests: TailorTestCase {
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
+  @available(*, deprecated) func testAddRouteWithSeparateComponentsWithInvalidMethodCreatesRoute() {
+    let expectation = expectationWithDescription("handler called")
+    routeSet.addRoute("path", method: "FOO", handler: {
+      request, callback in
+      expectation.fulfill()
+      }, description: "test route")
+    let route = self.getLatestRoute()
+    assert(route?.pathPattern, equals: "/path", message: "sets path pattern")
+    assert(route?.description, equals: "test route", message: "sets description")
+    assert(route?.method, equals: "GET", message: "sets method")
+    route?.handler(createTestRequest()) {
+      response in
+    }
+    waitForExpectationsWithTimeout(0.01, handler: nil)
+  }
+  
+  @available(*, deprecated) func testAddRouteWithSeparateComponentsWithInvalidMethodWithoutDescriptionCreatesRoute() {
+    let expectation = expectationWithDescription("handler called")
+    routeSet.addRoute("path", method: "FOO", handler: {
+      request, callback in
+      expectation.fulfill()
+      })
+    let route = self.getLatestRoute()
+    assert(route?.pathPattern, equals: "/path", message: "sets path pattern")
+    assert(route?.method, equals: "GET", message: "sets method")
+    route?.handler(createTestRequest()) {
+      response in
+    }
+    waitForExpectationsWithTimeout(0.01, handler: nil)
+  }
+  
   func testAddRouteCreatesRoute() {
     let expectation = expectationWithDescription("handler called")
     routeSet.addRoute(.Get("path"), handler: {
@@ -403,6 +532,22 @@ class RouteSetTests: TailorTestCase {
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
+  @available(*, deprecated) func testAddRouteWithControllerWithSeparateComponentsWithBadMethodBuildsHandlerForController() {
+    let action = TestController.indexAction
+    routeSet.addRoute("test", method: "FOO", actionName: "index", action: action)
+    let route = getLatestRoute()
+    assert(route?.controller?.name, equals: TestController.name)
+    let expectation = expectationWithDescription("handler called")
+    assert(route?.method, equals: "GET")
+    route?.handler(createTestRequest()) {
+      response in
+      expectation.fulfill()
+      let body = response.bodyString
+      self.assert(body, equals: "Test Controller: index", message: "calls controller's respond method")
+    }
+    waitForExpectationsWithTimeout(0.01, handler: nil)
+  }
+  
   func testAddRouteWithControllerBuildsHandlerForController() {
     let action = TestController.indexAction
     routeSet.route(.Get("test"), to: action, name: "index")
@@ -416,6 +561,24 @@ class RouteSetTests: TailorTestCase {
       self.assert(body, equals: "Test Controller: index", message: "calls controller's respond method")
     }
     waitForExpectationsWithTimeout(0.01, handler: nil)
+  }
+  
+  func testStaticAssetsGeneratesRoutesToAssets() {
+    routeSet.staticAssets(prefix: "assets", localPrefix: "", assets: ["TestConfig.plist"])
+    routeSet.handleRequest(createTestRequest("/assets/TestConfig.plist")) {
+      response in
+      self.assert(response.code, equals: 200)
+      let path = Application.sharedApplication().rootPath() + "/TestConfig.plist"
+      self.assert(response.body, equals: NSData(contentsOfFile: path)!)
+    }
+  }
+  
+  func testStaticAssetsWithMissingFileGenerates404Response() {
+    routeSet.staticAssets(prefix: "assets", localPrefix: "", assets: ["BadConfig.plist"])
+    routeSet.handleRequest(createTestRequest("/assets/BadConfig.plist")) {
+      response in
+      self.assert(response.code, equals: 404)
+    }
   }
   
   func testAddControllerRoutesAddsRoutesForControllers() {
@@ -578,4 +741,42 @@ class RouteSetTests: TailorTestCase {
     let path = routeSet.pathFor(TestController.self, actionName: "new", domain: "haberdashery.com")
     assert(isNil: path)
   }
+  
+  //MARK: - Shared Routes
+  
+  func testLoadSetsInfoOnSharedRouteSet() {
+    RouteSet.load {
+      (inout routeSet: RouteSet) -> Void in
+      routeSet.addRoute(.Get("sharedTest")) {
+        request, callback in
+      }
+    }
+    let routes = RouteSet.shared()
+    assert(routes.routes.count, equals: 1)
+    let route = routes.routes[0]
+    assert(route.path.pathPattern, equals: "/sharedTest")
+  }
+  
+  func testLoadErasesExistingRoutes() {
+    RouteSet.load {
+      (inout routeSet: RouteSet) -> Void in
+      routeSet.addRoute(.Get("sharedTest")) {
+        request, callback in
+      }
+    }
+    RouteSet.load {
+      (inout routeSet: RouteSet) -> Void in
+      routeSet.addRoute(.Get("sharedTest2")) {
+        request, callback in
+      }
+      routeSet.addRoute(.Get("sharedTest3")) {
+        request, callback in
+      }
+    }
+    let routes = RouteSet.shared()
+    assert(routes.routes.count, equals: 2)
+    let route = routes.routes[0]
+    assert(route.path.pathPattern, equals: "/sharedTest2")
+  }
+
 }

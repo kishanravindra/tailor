@@ -167,9 +167,22 @@ public class RouteSet {
     path.
     */
   public enum RoutePath: Equatable, CustomStringConvertible {
+    /** A Get request */
     case Get(String)
+    
+    /** A Post request */
     case Post(String)
     
+    /**
+      This method builds a route path dynamically.
+    
+      If the method name is not available, this will return nil. The method name
+      must be in all caps.
+
+      - parameter methodName:   The name of the method.
+      - parameter pathPattern:  The path
+      - returns:                The route path.
+      */
     public static func build(methodName: String, pathPattern: String) -> RoutePath? {
       switch(methodName) {
       case "GET": return .Get(pathPattern)
@@ -178,6 +191,9 @@ public class RouteSet {
       }
     }
     
+    /**
+      This method extracts the path pattern from the route.
+      */
     public var pathPattern: String {
       switch(self) {
       case let Get(pathPattern): return pathPattern
@@ -185,6 +201,10 @@ public class RouteSet {
       }
     }
     
+    /**
+      This method extracts the method name from the route.
+      This will be in all caps.
+      */
     public var methodName: String {
       switch(self) {
       case Get: return "GET"
@@ -192,8 +212,26 @@ public class RouteSet {
       }
     }
     
+    /**
+      This method gets a description of this route, which will contain the
+      method name and the path pattern.
+      */
     public var description: String {
       return "\(methodName) \(pathPattern)"
+    }
+    
+    /**
+      This method builds a new route path that uses this route path's HTTP
+      method and a different path.
+
+      - parameter pathPattern:    The pattern for the new path.
+      - returns:                  The new path.
+      */
+    public func withPathPattern(pathPattern: String) -> RoutePath {
+      switch(self) {
+      case .Get: return .Get(pathPattern)
+      case .Post: return .Post(pathPattern)
+      }
     }
   }
   
@@ -389,7 +427,7 @@ public class RouteSet {
     if !pathPattern.isEmpty {
       fullPattern += "/" + pathPattern
     }
-    let fullPath = RoutePath.build(path.methodName, pathPattern: fullPattern) ?? .Get(fullPattern)
+    let fullPath = path.withPathPattern(fullPattern)
     var route = Route(path: fullPath, handler: handler, description: description)
     route.controller = controller ?? currentController
     route.actionName = actionName
@@ -651,7 +689,7 @@ public class RouteSet {
         var hasQuery = false
         for (key, value) in parameters {
           if let range = path.rangeOfString(":" + key, options: [], range: nil, locale: nil) {
-            path = path.stringByReplacingCharactersInRange(range, withString: value.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding) ?? "")
+            path = path.stringByReplacingCharactersInRange(range, withString: value.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.alphanumericCharacterSet()) ?? "")
           }
           else {
             if hasQuery {
@@ -661,9 +699,9 @@ public class RouteSet {
               path += "?"
               hasQuery = true
             }
-            path += key.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding) ?? ""
+            path += key.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.alphanumericCharacterSet()) ?? ""
             path += "="
-            path += value.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding) ?? ""
+            path += value.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.alphanumericCharacterSet()) ?? ""
           }
         }
         matchingPath = path
@@ -702,7 +740,7 @@ public class RouteSet {
         var hasQuery = false
         for (key, value) in parameters {
           if let range = path.rangeOfString(":" + key, options: [], range: nil, locale: nil) {
-            path = path.stringByReplacingCharactersInRange(range, withString: value.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding) ?? "")
+            path = path.stringByReplacingCharactersInRange(range, withString: value.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.alphanumericCharacterSet()) ?? "")
           }
           else {
             if hasQuery {
@@ -712,9 +750,9 @@ public class RouteSet {
               path += "?"
               hasQuery = true
             }
-            path += key.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding) ?? ""
+            path += key.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.alphanumericCharacterSet()) ?? ""
             path += "="
-            path += value.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding) ?? ""
+            path += value.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.alphanumericCharacterSet()) ?? ""
           }
         }
         matchingPath = path

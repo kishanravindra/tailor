@@ -45,54 +45,28 @@ class RequestTests: TailorTestCase {
   
   func testInitializationSetsHeaders() {
     let headers = request.headers
-    let header1 = headers["X-Custom-Field"]
-    let header2 = headers["Referer"]
-    
-    XCTAssertNotNil(header1, "sets X-Custom-Field header")
-    if header1 != nil {
-      assert(header1!, equals: "header value", message: "sets X-Custom-Field header to correct value")
-    }
-    
-    
-    XCTAssertNotNil(header2, "sets Referer header")
-    if header2 != nil {
-      assert(headers["Referer"]!, equals: "searchtheweb.com", message: "sets Referer header to correct value")
-    }
+    assert(headers["X-Custom-Field"], equals: "header value", message: "sets X-Custom-Field header to correct value")
+    assert(headers["Referer"], equals: "searchtheweb.com", message: "sets Referer header to correct value")
   }
   
   func testInitializationSetsCookies() {
     let cookies = request.cookies
     
-    if let value = cookies["key1"] {
-      assert(value, equals: "value1", message: "sets cookie for key1")
-    }
-    else {
-      XCTFail("sets cookie for key1")
-    }
-    
-    if let value = cookies["key2"] {
-      assert(value, equals: "value2", message: "sets cookie for key2")
-    }
-    else {
-      XCTFail("sets cookie for key2")
-    }
-    
-    if let value = cookies["key3"] {
-      assert(value, equals: "value3", message: "sets cookie for key3")
-    }
-    else {
-      XCTFail("sets cookie for key3")
-    }
+    assert(cookies["key1"], equals: "value1", message: "sets cookie for key1")
+    assert(cookies["key2"], equals: "value2", message: "sets cookie for key2")
+    assert(cookies["key3"], equals: "value3", message: "sets cookie for key3")
   }
   
   func testInitializationSetsRequestParameters() {
     requestString = requestString.stringByReplacingOccurrencesOfString("/test/path", withString: "/test/path?count=5")
     let param = request.requestParameters["count"]
 
-    XCTAssertNotNil(param, "sets request parameter")
-    if param != nil {
-      assert(param!, equals: "5", message: "sets request parameter to correct value")
-    }
+    assert(param, equals: "5", message: "sets request parameter to correct value")
+  }
+  
+  func testInitializationWithBadlyEncodedDataSetsEmptyHeaders() {
+    let request = Request(clientAddress: clientAddress, data: NSData(bytes: [0xD8,0]))
+    assert(request.headers.isEmpty)
   }
   
   //MARK: - Body Parsing
@@ -101,23 +75,18 @@ class RequestTests: TailorTestCase {
     assert(request.bodyText, equals: "Request Body", message: "gets body text from the request")
   }
   
+  func testBodyTextWithBadlyEncodedDataIsBlank() {
+    let requestData = NSData(bytes: [0x0D, 0x0A, 0x0D, 0x0A, 0xD8, 0x00])
+    let request = Request(clientAddress: clientAddress, data: requestData)
+    assert(request.bodyText, equals: "")
+  }
+  
   func testParseRequestParametersGetsParametersFromQueryString() {
     requestString = requestString.stringByReplacingOccurrencesOfString("/test/path", withString: "/test/path?count=5&id=6")
     let params = request.requestParameters
     
-    if let value = params["count"] {
-      assert(value, equals: "5", message: "sets count parameter")
-    }
-    else {
-      XCTFail("sets count parameter")
-    }
-    
-    if let value = params["id"] {
-      assert(value, equals: "6", message: "sets id parameter")
-    }
-    else {
-      XCTFail("sets count parameter")
-    }
+    assert(params["count"], equals: "5", message: "sets count parameter")
+    assert(params["id"], equals: "6", message: "sets id parameter")
   }
   
   func testParseRequestParametersGetsParametersFromPostRequest() {
@@ -126,19 +95,8 @@ class RequestTests: TailorTestCase {
     requestString = requestString.stringByReplacingOccurrencesOfString("Request Body", withString: "count=5&id=6")
     let params = request.requestParameters
     
-    if let value = params["count"] {
-      assert(value, equals: "5", message: "sets count parameter")
-    }
-    else {
-      XCTFail("sets count parameter")
-    }
-    
-    if let value = params["id"] {
-      assert(value, equals: "6", message: "sets id parameter")
-    }
-    else {
-      XCTFail("sets id parameter")
-    }
+    assert(params["count"], equals: "5", message: "sets count parameter")
+    assert(params["id"], equals: "6", message: "sets id parameter")
   }
   
   func testParseRequestParametersGetsParametersFromMultipartForm() {
@@ -148,19 +106,17 @@ class RequestTests: TailorTestCase {
     requestString = requestString.stringByReplacingOccurrencesOfString("Request Body", withString: "--\(boundary)\r\nContent-Disposition: form-data; name=\"param1\"\r\n\r\nvalue1\r\n--\(boundary)\r\nContent-Disposition: form-data; name=\"param2\"\r\n\r\nvalue2\r\n--\(boundary)--")
     let params = request.requestParameters
 
-    if let value = params["param1"] {
-      assert(value, equals: "value1", message: "sets param1")
-    }
-    else {
-      XCTFail("sets param1")
-    }
-    
-    if let value = params["param2"] {
-      assert(value, equals: "value2", message: "sets param2")
-    }
-    else {
-      XCTFail("sets param2")
-    }
+    assert(params["param1"], equals: "value1", message: "sets param1")
+    assert(params["param2"], equals: "value2", message: "sets param2")
+  }
+  
+  func testParseRequestWithMultipartFormWithBoundariesGetsEmptyParameters() {
+    let boundary = "----TestFormBoundaryK7Slx2O95dkvjQ14"
+    requestString = requestString.stringByReplacingOccurrencesOfString("GET", withString: "POST")
+    requestString = requestString.stringByReplacingOccurrencesOfString("X-Custom-Field: header value", withString: "Content-Type: multipart/form-data")
+    requestString = requestString.stringByReplacingOccurrencesOfString("Request Body", withString: "--\(boundary)\r\nContent-Disposition: form-data; name=\"param1\"\r\n\r\nvalue1\r\n--\(boundary)\r\nContent-Disposition: form-data; name=\"param2\"\r\n\r\nvalue2\r\n--\(boundary)--")
+    let params = request.requestParameters
+    assert(params.isEmpty)
   }
   
   func testParseRequestParametersGetsFileFromMultipartForm() {
@@ -170,27 +126,13 @@ class RequestTests: TailorTestCase {
     requestString = requestString.stringByReplacingOccurrencesOfString("Request Body", withString: "--\(boundary)\r\nContent-Disposition: form-data; name=\"param1\"\r\n\r\nvalue1\r\n--\(boundary)\r\nContent-Disposition: form-data; name=\"param2\"; filename=\"record.log\"\r\nContent-Type: text/plain\r\n\r\nthis is a log\r\n--\(boundary)--")
     let params = request.requestParameters
     
-    if let value = params["param1"] {
-      assert(value, equals: "value1", message: "sets param1")
-    }
-    else {
-      XCTFail("sets param1")
-    }
+    assert(params["param1"], equals: "value1", message: "sets param1")
     
     if let file = request.uploadedFiles["param2"] {
-      if let value = file["contentType"] as? String {
-        assert(value, equals: "text/plain", message: "sets content type")
-      }
-      else {
-        XCTFail("sets content type")
-      }
-      if let value = file["data"] as? NSData {
-        let data = "this is a log".dataUsingEncoding(NSUTF8StringEncoding)!
-        assert(value, equals: data, message: "sets data")
-      }
-      else {
-        XCTFail("sets data")
-      }
+      assert(file["contentType"] as? String, equals: "text/plain", message: "sets content type")
+      
+      let data = "this is a log".dataUsingEncoding(NSUTF8StringEncoding)!
+      assert(file["data"] as? NSData, equals: data, message: "sets data")
     }
     else {
       XCTFail("sets param2")
@@ -211,42 +153,31 @@ class RequestTests: TailorTestCase {
     assert(matches.count, equals: 0, message: "gets no matches")
   }
   
+  func testExtractWithPatternWithInvalidPatternReturnsEmptyArray() {
+    let matches = Request.extractWithPattern(" Content-Type: text/plain", pattern: "^([\\w-]*): (.*")
+    assert(matches.count, equals: 0, message: "gets no matches")
+  }
+  
   func testDecodeQueryStringGetsParameters() {
     let queryString = "key1=value1&key2=value%3da+b"
     let decoded = Request.decodeQueryString(queryString)
     
-    if let value = decoded["key1"] {
-      assert(value, equals: "value1", message: "gets simple param")
-    }
-    else {
-      XCTFail("gets simple param")
-    }
-    
-    if let value = decoded["key2"] {
-      assert(value, equals: "value=a b", message: "decodes param with escapes")
-    }
-    else {
-      XCTFail("decodes param with escapes")
-    }
+    assert(decoded["key1"], equals: "value1", message: "gets simple param")
+    assert(decoded["key2"], equals: "value=a b", message: "decodes param with escapes")
   }
   
   func testDecodedStringGetsEmptyStringWithoutEqualSign() {
     let queryString = "key1&key2"
     let decoded = Request.decodeQueryString(queryString)
     
-    if let value = decoded["key1"] {
-      assert(value, equals: "", message: "gets key1")
-    }
-    else {
-      XCTFail("gets simple param")
-    }
-    
-    if let value = decoded["key2"] {
-      assert(value, equals: "", message: "gets key2")
-    }
-    else {
-      XCTFail("gets key2")
-    }
+    assert(decoded["key1"], equals: "", message: "gets key1")
+    assert(decoded["key2"], equals: "", message: "gets key2")
+  }
+  
+  func testDecodeQueryStringLeavesBadEscapeValueUnescaped() {
+    let queryString = "key1=1&key%1=2"
+    let decoded = Request.decodeQueryString(queryString)
+    assert(decoded.keys.array, equals: ["key1", "key%1"])
   }
   
   //MARK: - Test Helpers
@@ -273,6 +204,20 @@ class RequestTests: TailorTestCase {
     let cookieValue = request.cookies["tracker"]
     XCTAssertNotNil(cookieValue)
     if cookieValue != nil { assert(cookieValue!, equals: "test.com", message: "sets cookie value") }
+  }
+  
+  func testInitializeWithNonUtf8ParameterTranslatesToEmptyString() {
+    let data = NSData(bytes: [0xD8, 0x00])
+    let badString = NSString(data: data, encoding: NSUTF16BigEndianStringEncoding)! as String
+    let request = Request(parameters: ["key": badString])
+    assert(request.requestParameters["key"], equals: "")
+  }
+  
+  func testInitializeWithNonUtf8CookieGetsEmptyRequest() {
+    let data = NSData(bytes: [0xD8, 0x00])
+    let badString = NSString(data: data, encoding: NSUTF16BigEndianStringEncoding)! as String
+    let request = Request(cookies: ["key": badString])
+    assert(request.data, equals: NSData())
   }
   
   //MARK: - Equality

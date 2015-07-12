@@ -63,6 +63,14 @@ class CookieJarTests: TailorTestCase {
     assert(cookie.value, equals: "value1", message: "sets cookie value")
   }
   
+  func testSubscriptWithNilSetsBlankValue() {
+    cookieJar["key1"] = nil
+    assert(cookieJar.cookies.count, equals: 1, message: "creates the cookie")
+    let cookie = cookieJar.cookies[0]
+    assert(cookie.key, equals: "key1", message: "sets cookie key")
+    assert(cookie.value, equals: "", message: "sets cookie value")
+  }
+  
   func testCookieDictionaryGetsHashOfValues() {
     cookieJar.setCookie("key1", "value1")
     cookieJar.setCookie("key2", "value2")

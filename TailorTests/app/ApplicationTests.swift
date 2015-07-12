@@ -97,6 +97,13 @@ class ApplicationTests : TailorTestCase {
     assert(RouteSet.shared().routes.count, equals: 1)
   }
   
+  @available(*, deprecated) func testCanSetDateFormattersOnApplication() {
+    let application = Application()
+    let formatter = NSDateFormatter()
+    application.dateFormatters["test"] = formatter
+    assert(application.dateFormatters["test"], equals: formatter)
+  }
+  
   func testParseArgumentsRepeatedlyPromptsUntilValidTaskAppears() {
     class TestApplication: Application {
       var commands = ["tailor.exit a=7", "tailor.wait"]
@@ -124,11 +131,52 @@ class ApplicationTests : TailorTestCase {
     self.assert(application.flags, equals: ["a": "b + c", "d": "23"], message: "keeps the quoted flags together")
   }
   
+  func testParseArgumentsWithoutAssignmentSetsFlagToOne() {
+    class TestApplication: Application {
+      var commands = ["tailor.exit a=b c"]
+      override func promptForCommand() -> String {
+        return commands.removeLast()
+      }
+    }
+    
+    APPLICATION_ARGUMENTS = nil
+    let application = TestApplication()
+    self.assert(application.flags, equals: ["a": "b", "c": "1"])
+  }
+  
   func testSharedApplicationReusesApplication() {
     let application1 = Application.sharedApplication()
     application1.configuration["test.identity"] = "success"
     let application2 = Application.sharedApplication()
     self.assert(application2.configuration["test.identity"], equals: "success")
+  }
+  
+  func testStartMethodRunsTaskFromCommand() {
+    class TestTask: TaskType {
+      static let commandName: String = "application_test_task_1"
+      static var hasRun = false
+      static func runTask() {
+        hasRun = true
+      }
+    }
+    APPLICATION_ARGUMENTS = ("application_test_task_1", [:])
+    let application = Application()
+    application.start()
+    assert(TestTask.hasRun)
+  }
+  
+  func testClassStartMethodRunsTaskOnSharedApplication() {
+    NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
+    class TestTask: TaskType {
+      static let commandName: String = "application_test_task_2"
+      static var hasRun = false
+      static func runTask() {
+        hasRun = true
+      }
+    }
+    APPLICATION_ARGUMENTS = ("application_test_task_2", [:])
+    Application.start()
+    assert(TestTask.hasRun)
   }
   
   func testOpenDatabaseConnectionGetsConnectionFromConfig() {
@@ -201,5 +249,11 @@ class ApplicationTests : TailorTestCase {
     self.assert(localization.locale, equals: "en", message: "sets the localization")
     assert(isNotNil: localization as? DatabaseLocalization, message: "uses the class from the configuration")
     application.configuration["localization.class"] = "Tailor.PropertyListLocalization"
+  }
+  
+  func testLocalizationWithNoSettingIsPropertyListLocalization() {
+    application.configuration["localization.class"] = nil
+    let localization = application.localization("en")
+    assert(localization is PropertyListLocalization)
   }
 }

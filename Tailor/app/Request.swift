@@ -153,8 +153,10 @@ public struct Request: Equatable {
     */
   private mutating func parseMultipartForm() {
     guard let contentType = headers["Content-Type"] else { return }
+    
     let boundaryComponents = contentType.componentsSeparatedByString("boundary=")
     guard boundaryComponents.count > 1 else { return }
+    
     let boundary = boundaryComponents[1]
     let components = self.body.componentsSeparatedByString("--\(boundary)")
     for component in components {
@@ -234,7 +236,7 @@ public struct Request: Equatable {
     let simplifiedString = string.stringByReplacingOccurrencesOfString("+", withString: "%20")
     for param in simplifiedString.componentsSeparatedByString("&") {
       let components = param.componentsSeparatedByString("=").map {
-        $0.stringByReplacingPercentEscapesUsingEncoding(NSUTF8StringEncoding) ?? $0
+        $0.stringByRemovingPercentEncoding ?? $0
       }
       if components.count == 1 {
         params[components[0]] = ""
@@ -285,7 +287,8 @@ public struct Request: Equatable {
       if !queryString.isEmpty {
         queryString += "&"
       }
-      let convertedValue = value.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding) ?? ""
+      let convertedValue = value.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet()
+) ?? ""
       queryString += key + "=" + convertedValue
     }
     lines.append(queryString)

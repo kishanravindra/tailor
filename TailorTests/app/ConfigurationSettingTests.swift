@@ -58,7 +58,14 @@ class ConfigurationSettingTests: TailorTestCase {
   
   func testInitializerWithBadPathCreatesEmptySetting() {
     setting = ConfigurationSetting(contentsOfFile: "./badPath")
-    XCTAssertTrue(setting.isEmpty, "creates an empty setting")
+    assert(setting.isEmpty, message: "creates an empty setting")
+  }
+  
+  func testInitializerWithArrayPropertyListCreatesEmptySetting() {
+    let folderPath = NSBundle(forClass: self.dynamicType).resourcePath ?? "."
+    let fullPath = folderPath + "/TestConfig2.plist"
+    setting = ConfigurationSetting(contentsOfFile: fullPath)
+    assert(setting.isEmpty, message: "creates an empty setting")
   }
   
   func testInitializerWithNonPropertyListPathCreatesEmptySetting() {
@@ -147,6 +154,12 @@ class ConfigurationSettingTests: TailorTestCase {
     assert(result, equals: "6", message: "has the value that was set")
   }
   
+  func testSetMethodCanSetKeyPathWithList() {
+    setting.set(keys: ["a", "c"], value: "6")
+    let result = setting.fetch("a.c")
+    assert(result, equals: "6", message: "has the value that was set")
+  }
+  
   func testSubscriptCanFetchValue() {
     let result = setting["a.b"]
     assert(result, equals: "5", message: "has the right value")
@@ -198,6 +211,18 @@ class ConfigurationSettingTests: TailorTestCase {
     
     let value3 = setting["a.b"]
     assert(value3, equals: "5", message: "has the value for the third key")
+  }
+  
+  func testAddDictionarySkipsArrayKey() {
+    setting.addDictionary(["c": ["d": "1", "e": "2", "f": ["3","4"]]])
+    let value1 = setting["c.d"]
+    assert(value1, equals: "1", message: "has the value for the first key")
+    
+    let value2 = setting["c.e"]
+    assert(value2, equals: "2", message: "has the value for the second key")
+    
+    let value3 = setting["c.f"]
+    assert(isNil: value3, message: "has no value for the third key")
   }
 
   func testSetDefaultValueCanCreateNewValue() {
