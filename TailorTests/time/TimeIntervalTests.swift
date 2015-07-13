@@ -53,6 +53,12 @@ class TimeIntervalTests: TailorTestCase {
     assert(result.second, equals: 11)
   }
   
+  func testDescriptionIncludesNonZeroComponents() {
+    let interval = TimeInterval(months: 2, days: 1, hours: 14, nanoseconds: 1.25)
+    let description = interval.description
+    assert(description, equals: "2 months, 1 day, 14 hours, 1.25000 nanoseconds")
+  }
+  
   func testCanGetIntervalFromIntegerShorthand() {
     assert(5.years, equals: TimeInterval(years: 5))
     assert(11.months, equals: TimeInterval(months: 11))
@@ -69,7 +75,8 @@ class TimeIntervalTests: TailorTestCase {
     assert(1.minute, equals: TimeInterval(minutes: 1))
     assert(1.second, equals: TimeInterval(seconds: 1))
     assert(1.nanosecond, equals: TimeInterval(nanoseconds: 1))
-    assert(1.0.nanoseconds, equals: TimeInterval(nanoseconds: 1))
+    assert(1.0.nanosecond, equals: TimeInterval(nanoseconds: 1))
+    assert(1.1.nanoseconds, equals: TimeInterval(nanoseconds: 1.1))
   }
   
   func testFromNowGetsThatIntervalFromCurrentTime() {

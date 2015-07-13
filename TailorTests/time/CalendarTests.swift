@@ -126,6 +126,11 @@ class CalendarTests: TailorTestCase {
     assert(calendar.daysInMonth(12), equals: 31)
   }
   
+  func testGregorianCalendarGetsZeroForInvalidMonths() {
+    let calendar = GregorianCalendar(2013)
+    assert(calendar.daysInMonth(13), equals: 0)
+  }
+  
   func testGregorianCalendarGetsCorrectLocalTimes() {
     let timestamps = [-851843061.0, 814901765.0, -979057837.0, 479095593.0, 616307988.0]
     self.checkTimestamps(timestamps, foundationCalendar: NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!, calendar: GregorianCalendar(), zoneName: "UTC")

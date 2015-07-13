@@ -291,7 +291,7 @@ public struct Timestamp: Equatable, Comparable, CustomStringConvertible {
     let pastMonth = sign == -1 ? self.month : (self.month == 1 ? self.calendar.months : self.month - 1)
     limit(&days, toSign: sign, byIncreasing: &months, max: self.calendar.daysInMonth(pastMonth))
     limit(&months, toSign: sign, byIncreasing: &years, max: self.calendar.months)
-    return TimeInterval(years: years, months: months, days: days, hours: hours, minutes: minutes, seconds: seconds)
+    return TimeInterval(years: years, months: months, days: days, hours: hours, minutes: minutes, seconds: seconds, nanoseconds: nanoseconds)
   }
   
   /**
@@ -372,7 +372,7 @@ public struct Timestamp: Equatable, Comparable, CustomStringConvertible {
       }
     }
     
-    return (year: year, month: 0, day: 0, hour: 0, minute: 0, second: 0, nanosecond: nanosecond, weekDay: 0)
+    return (year: year, month: 1, day: 1, hour: 0, minute: 0, second: 0, nanosecond: nanosecond, weekDay: weekDay)
   }
   
   /**
@@ -433,7 +433,6 @@ public struct Timestamp: Equatable, Comparable, CustomStringConvertible {
     
     let newPolicy = timeZone.policy(timestamp: timestamp)
     let newOffset = Double(newPolicy.offset - originalOffset)
-    
     if newOffset != 0 && newPolicy.beginningTimestamp < timestamp - newOffset {
       timestamp -= newOffset
     }

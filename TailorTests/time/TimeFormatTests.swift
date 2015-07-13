@@ -62,6 +62,13 @@ class TimeFormatTests: TailorTestCase {
     assert(formatted, equals: "Jun")
   }
   
+  func testFormatComponentsWithMonthNameWithUntranslatedMonthGetsMonthNumber() {
+    let timestamp = self.timestamp.inCalendar(IslamicCalendar())
+    let formatter = TimeFormatComponent.MonthName(abbreviate: false)
+    let formatted = formatter.formatTime(timestamp)
+    assert(formatted, equals: "7")
+  }
+  
   func testFormatComponentWithTwoDigitMonthGetsTwoDigitMonth() {
     timestampSeconds += 86400 * 180
     formatter = TimeFormatComponent.Month
@@ -136,6 +143,13 @@ class TimeFormatTests: TailorTestCase {
   func testFormatComponentWithWeekDayNameGetsFullName() {
     formatter = TimeFormatComponent.WeekDayName(abbreviate: false)
     assert(formatted, equals: "Saturday")
+  }
+  
+  func testFormatComponentsWithWeekDayNameWithUntranslatedNameGetsNumber() {
+    let timestamp = self.timestamp.inCalendar(IslamicCalendar())
+    let formatter = TimeFormatComponent.WeekDayName(abbreviate: false)
+    let formatted = formatter.formatTime(timestamp)
+    assert(formatted, equals: "7")
   }
   
   func testFormatComponentWithAbbreviatedWeekDayNameGetsAbbreviatedName() {
@@ -238,6 +252,27 @@ class TimeFormatTests: TailorTestCase {
         assert(string, equals: foundationString, message: "Got right result for format \(format)")
       }
     }
+  }
+  
+  func testFormatWithStrftimeWithUnsupportedComponentsIsEmpty() {
+    let format = "%C%j%U%u%V%W%w%X%x%+%q"
+    let string = timestamp.format(TimeFormat(strftime: format))
+    assert(string, equals: format)
+  }
+  
+  func testFormatWithStringLiteralIsLiteral() {
+    formatter = TimeFormatComponent(stringLiteral: "abc")
+    assert(formatted, equals: "abc")
+  }
+  
+  func testFormatWithUnicodeScalarLiteralIsLiteral() {
+    formatter = TimeFormatComponent(unicodeScalarLiteral: "abc")
+    assert(formatted, equals: "abc")
+  }
+  
+  func testFormatWithExtendedGraphemeLiteralIsLiteral() {
+    formatter = TimeFormatComponent(extendedGraphemeClusterLiteral: "abc")
+    assert(formatted, equals: "abc")
   }
   
   //MARK: - Parsing
@@ -615,6 +650,19 @@ class TimeFormatTests: TailorTestCase {
     assert(result, equals: "nesday")
   }
   
+  func testParseTimeWithEpochSecondsReturnsNil() {
+    formatter = TimeFormatComponent.EpochSeconds
+    let result = formatter.parseTime(from: "12345", into: &timeComponents, calendar: calendar)
+    assert(timeComponents.year, equals: 0)
+    assert(timeComponents.month, equals: 0)
+    assert(timeComponents.day, equals: 0)
+    assert(timeComponents.hour, equals: 0)
+    assert(timeComponents.minute, equals: 0)
+    assert(timeComponents.second, equals: 0)
+    assert(timeComponents.nanosecond, equals: 0.0)
+    assert(isNil: result)
+  }
+  
   func testParseTimeWithTimeZoneDoesNotModifyTime() {
     formatter = TimeFormatComponent.TimeZone
     let result = formatter.parseTime(from: "EST ", into: &timeComponents, calendar: calendar)
@@ -693,6 +741,19 @@ class TimeFormatTests: TailorTestCase {
     assert(isNil: result)
   }
   
+  func testParseTimeWithTimeZoneOffsetWithNonNumericHourReturnsNil() {
+    formatter = TimeFormatComponent.TimeZoneOffset
+    let result = formatter.parseTime(from: "+AM:PM", into: &timeComponents, calendar: calendar)
+    assert(timeComponents.year, equals: 0)
+    assert(timeComponents.month, equals: 0)
+    assert(timeComponents.day, equals: 0)
+    assert(timeComponents.hour, equals: 0)
+    assert(timeComponents.minute, equals: 0)
+    assert(timeComponents.second, equals: 0)
+    assert(timeComponents.nanosecond, equals: 0.0)
+    assert(isNil: result)
+  }
+  
   func testParseTimeWithMeridianWithAMLeavesHourIntact() {
     timeComponents.hour = 11
     formatter = TimeFormatComponent.Meridian
@@ -725,6 +786,20 @@ class TimeFormatTests: TailorTestCase {
     timeComponents.hour = 11
     formatter = TimeFormatComponent.Meridian
     let result = formatter.parseTime(from: "FM Z", into: &timeComponents, calendar: calendar)
+    assert(timeComponents.year, equals: 0)
+    assert(timeComponents.month, equals: 0)
+    assert(timeComponents.day, equals: 0)
+    assert(timeComponents.hour, equals: 11)
+    assert(timeComponents.minute, equals: 0)
+    assert(timeComponents.second, equals: 0)
+    assert(timeComponents.nanosecond, equals: 0.0)
+    assert(isNil: result)
+  }
+  
+  func testParseTimeWithMeridianWithOneLetterReturnsNil() {
+    timeComponents.hour = 11
+    formatter = TimeFormatComponent.Meridian
+    let result = formatter.parseTime(from: "F", into: &timeComponents, calendar: calendar)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)

@@ -17,6 +17,21 @@ class TimestampTests: TailorTestCase {
     assert(timestamp.calendar is GregorianCalendar)
   }
   
+  func testInitializationWithEpochSecondsOfZeroGetsEpochTime() {
+    let timestamp = Timestamp(epochSeconds: 0, timeZone: TimeZone(name: "UTC"), calendar: GregorianCalendar())
+    assert(timestamp.epochSeconds, equals: 0)
+    assert(timestamp.year, equals: 1970)
+    assert(timestamp.month, equals: 1)
+    assert(timestamp.day, equals: 1)
+    assert(timestamp.hour, equals: 0)
+    assert(timestamp.minute, equals: 0)
+    assert(timestamp.second, equals: 0)
+    assert(timestamp.nanosecond, equals: 0)
+    assert(timestamp.weekDay, equals: 5)
+    assert(timestamp.timeZone.name, equals: "UTC")
+    assert(timestamp.calendar is GregorianCalendar)
+  }
+  
   func testInitializationWithNegativeSecondsSetsLocalComponents() {
     let timestamp = Timestamp(epochSeconds: -1127455774, timeZone: TimeZone(name: "Europe/Rome"))
     assert(timestamp.epochSeconds, equals: -1127455774)
@@ -78,6 +93,29 @@ class TimestampTests: TailorTestCase {
     assert(timestamp.calendar is GregorianCalendar)
   }
   
+  func testInitializationCanHandleJumpAroundDaylightSavingTime() {
+    let timestamp = Timestamp(
+      year: 2015,
+      month: 3,
+      day: 8,
+      hour: 3,
+      minute: 54,
+      second: 51,
+      nanosecond: 0,
+      timeZone: TimeZone(name: "US/Eastern")
+    )
+    assert(timestamp.year, equals: 2015)
+    assert(timestamp.month, equals: 3)
+    assert(timestamp.day, equals: 8)
+    assert(timestamp.hour, equals: 3)
+    assert(timestamp.minute, equals: 54)
+    assert(timestamp.second, equals: 51)
+    assert(timestamp.weekDay, equals: 1)
+    assert(timestamp.timeZone.name, equals: "US/Eastern")
+    assert(timestamp.epochSeconds, equals: 1425801291.0)
+    assert(timestamp.calendar is GregorianCalendar)
+  }
+  
   //MARK: - Transformations
   
   func testInTimeZoneWithTimeZoneDoesConversion() {
@@ -116,6 +154,14 @@ class TimestampTests: TailorTestCase {
     assert(timestamp2.minute, equals: 25)
     assert(timestamp2.second, equals: 6)
     assert(timestamp2.epochSeconds, equals: 1084969506)
+    let timestamp3 = timestamp1.change(hour: 13)
+    assert(timestamp3.year, equals: 2003)
+    assert(timestamp3.month, equals: 7)
+    assert(timestamp3.day, equals: 19)
+    assert(timestamp3.hour, equals: 13)
+    assert(timestamp3.minute, equals: 13)
+    assert(timestamp3.second, equals: 6)
+    assert(timestamp3.epochSeconds, equals: 1058620386)
   }
   
   func testAddingIntervalCanAddSimpleInterval() {
@@ -222,6 +268,20 @@ class TimestampTests: TailorTestCase {
     assert(timestamp2.inCalendar(GregorianCalendar()) + interval, equals: timestamp1)
   }
   
+  func testIntervalSinceCompensatesForHigherNanoseconds() {
+    let timestamp1 = Timestamp(epochSeconds: 1442736307.6, timeZone: TimeZone(name: "UTC"), calendar: GregorianCalendar())
+    let timestamp2 = Timestamp(epochSeconds: 1891353078.5, timeZone: TimeZone(name: "UTC"), calendar: GregorianCalendar())
+    let interval = timestamp1.intervalSince(timestamp2)
+    assert(interval.years, equals: -14)
+    assert(interval.months, equals: -2)
+    assert(interval.days, equals: -17)
+    assert(interval.hours, equals: -7)
+    assert(interval.minutes, equals: -46)
+    assert(interval.seconds, equals: -10)
+    assert(interval.nanoseconds, within: 100, of: -900000000)
+    assert(timestamp2 + interval, equals: timestamp1)
+  }
+  
   func testSubtractionGetsIntervalBetweenTimestamps() {
     let timestamp1 = Timestamp(epochSeconds: 1770009956, timeZone: TimeZone(name: "UTC"), calendar: GregorianCalendar())
     let timestamp2 = Timestamp(epochSeconds: 1733629141, timeZone: TimeZone(name: "UTC"), calendar: GregorianCalendar())
@@ -233,14 +293,19 @@ class TimestampTests: TailorTestCase {
     assert(interval.minutes, equals: 46)
     assert(interval.seconds, equals: 55)
     assert(timestamp2 + interval, equals: timestamp1)
-    
   }
   
   //MARK: - Formatting
   
   func testFormatMethodFormatsTime() {
     let timestamp = Timestamp(epochSeconds: 1427459650)
-    let formattedString = timestamp.format(TimeFormat.Database)
+    let formattedString = timestamp.format(TimeFormat.Full)
+    assert(formattedString, equals: TimeFormat.Full.formatTime(timestamp))
+  }
+  
+  func testDescriptionGetsDatabaseFormattedTime() {
+    let timestamp = Timestamp(epochSeconds: 1427459650)
+    let formattedString = timestamp.description
     assert(formattedString, equals: TimeFormat.Database.formatTime(timestamp))
   }
   

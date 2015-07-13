@@ -79,7 +79,7 @@ public struct TimeInterval: Equatable,CustomStringConvertible {
     This method gets a human readable description for a time interval.
     */
   public var description: String {
-    let components = [(years, "years"), (months, "months"), (days, "days"), (minutes, "minutes"), (seconds, "seconds")]
+    let components = [(years, "years"), (months, "months"), (days, "days"), (hours, "hours"), (minutes, "minutes"), (seconds, "seconds")]
     let textComponents = removeNils(components.map {
       (value, text) -> String? in
       if value == 0 {

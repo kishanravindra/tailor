@@ -25,9 +25,6 @@ import TailorTesting
       }
     }
   }
-  override func setUp() {
-    Application.start()
-  }
   
   func testInitializationSetsLocale() {
     let localization = Localization(locale: "en")

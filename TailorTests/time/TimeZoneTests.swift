@@ -135,7 +135,7 @@ class TimeZoneTests: TailorTestCase {
     assert(zone.policy(timestamp: 147167800), equals: TimeZone.Policy(beginningTimestamp: 167167800, abbreviation: "HKST", offset: 32400, isDaylightTime: true))
   }
   
-  func testPolicyWithTimestamAfterLastPolicyGetsLastPolicy() {
+  func testPolicyWithTimestampAfterLastPolicyGetsLastPolicy() {
     let zone = TimeZone(name: "Custom Zone", policies: [
       TimeZone.Policy(beginningTimestamp: 167167800, abbreviation: "HKST", offset: 32400, isDaylightTime: true),
       TimeZone.Policy(beginningTimestamp: 182889000, abbreviation: "HKT", offset: 28800, isDaylightTime: false),
@@ -157,6 +157,33 @@ class TimeZoneTests: TailorTestCase {
       TimeZone.Policy(beginningTimestamp: 309292200, abbreviation: "HKT", offset: 28800, isDaylightTime: false)
       ])
     assert(zone.policy(timestamp: 295385400), equals: TimeZone.Policy(beginningTimestamp: 295385400, abbreviation: "HKST", offset: 32400, isDaylightTime: true))
+  }
+  
+  func testPolicyWithIndicesAfterPolicyCountReturnsNil() {
+    let zone = TimeZone(name: "Custom Zone", policies: [
+      TimeZone.Policy(beginningTimestamp: 167167800, abbreviation: "HKST", offset: 32400, isDaylightTime: true),
+      TimeZone.Policy(beginningTimestamp: 182889000, abbreviation: "HKT", offset: 28800, isDaylightTime: false),
+      TimeZone.Policy(beginningTimestamp: 198617400, abbreviation: "HKST", offset: 32400, isDaylightTime: true),
+      TimeZone.Policy(beginningTimestamp: 214338600, abbreviation: "HKT", offset: 28800, isDaylightTime: false),
+      TimeZone.Policy(beginningTimestamp: 295385400, abbreviation: "HKST", offset: 32400, isDaylightTime: true),
+      TimeZone.Policy(beginningTimestamp: 309292200, abbreviation: "HKT", offset: 28800, isDaylightTime: false)
+      ])
+
+    assert(isNil: zone.policyBeforeTimestamp(310000000, startIndex: 6, endIndex: 6))
+  }
+
+  
+  func testPolicyWithForEmptyPolicyListGetsUtc() {
+    let zone = TimeZone(name: "Custom Zone", policies: [])
+    assert(zone.policy(timestamp: 295385400), equals: TimeZone.Policy(beginningTimestamp: 0, abbreviation: "UTC", offset: 0, isDaylightTime: false))
+  }
+  
+  func testDescriptionIncludesNameAndPolicies() {
+    let zone = TimeZone(name: "Custom Zone", policies: [
+      TimeZone.Policy(beginningTimestamp: 167167800, abbreviation: "HKST", offset: 32400, isDaylightTime: true),
+      TimeZone.Policy(beginningTimestamp: 182889000, abbreviation: "HKT", offset: 28800, isDaylightTime: false)
+    ])
+    assert(zone.description, equals: "Custom Zone: (167167800.0: UTC+32400 (HKST), 182889000.0: UTC+28800 (HKT))")
   }
   
   func testTimeZonesWithSameNameAndPoliciesAreEqual() {

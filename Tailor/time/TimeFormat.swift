@@ -572,15 +572,12 @@ public enum TimeFormatComponent: TimeFormatter {
   literal.
   */
 extension TimeFormatComponent: StringLiteralConvertible {
-  /** Required for protocol conformance. */
-  public typealias ExtendedGraphemeClusterLiteralType = StringLiteralType
-  
   /**
     This method initializes a time format component with a string literal.
     
     - parameter value:   The string literal.
     */
-  public init(stringLiteral value: StringLiteralType) {
+  public init(stringLiteral value: String) {
     self = .Literal(value)
   }
   
@@ -589,7 +586,7 @@ extension TimeFormatComponent: StringLiteralConvertible {
   
     - parameter value:   The string literal.
   */
-  public init(unicodeScalarLiteral value: StringLiteralType) {
+  public init(unicodeScalarLiteral value: String) {
     self = .Literal(value)
   }
   
@@ -598,7 +595,7 @@ extension TimeFormatComponent: StringLiteralConvertible {
   
     - parameter value:   The string literal.
   */
-  public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
+  public init(extendedGraphemeClusterLiteral value: String) {
     self = .Literal(value)
   }
 }

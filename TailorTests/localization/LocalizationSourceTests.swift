@@ -46,7 +46,12 @@ class LocalizationSourceTests: TailorTestCase {
     assert(locales, equals: ["es", "en"])
   }
   
-  func testFallbackLocalesWIthMultiplePartsHasAllAncestors() {
+  func testFallbackLocalesWithGlobalSpanishHasEnglish() {
+    let locales = TestLocalization(locale: "es").fallbackLocales()
+    assert(locales, equals: ["en"])
+  }
+  
+  func testFallbackLocalesWithMultiplePartsHasAllAncestors() {
     let locales = TestLocalization(locale: "en-gb-123").fallbackLocales()
     assert(locales, equals: ["en-gb", "en"])
   }

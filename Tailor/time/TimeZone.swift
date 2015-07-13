@@ -132,7 +132,7 @@ public struct TimeZone: Equatable,CustomStringConvertible {
         beginningTimestamp: 0,
         abbreviation: "UTC",
         offset: 0,
-        isDaylightTime: true
+        isDaylightTime: false
       )
     }
     else {
