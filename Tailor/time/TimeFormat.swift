@@ -649,4 +649,9 @@ public extension TimeFormat {
     US date and time formats.
     */
   public static let FullTimeUS = TimeFormat(.HourWith(twelveHour: true, padding: nil), ":", .Minute, ":", .Seconds, " ", .Meridian, " ", .TimeZone)
+  
+  /**
+    This gets a date in a format suitable for headers in emails.
+    */
+  public static let Rfc2822 = TimeFormat(.DayWith(padding: nil), " ", .MonthName(abbreviate: true), " ", .Year, " ", .Hour, ":", .Minute, ":", .Seconds, " ", .TimeZoneOffset)
 }

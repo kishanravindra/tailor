@@ -162,7 +162,7 @@ class TimeFormatTests: TailorTestCase {
     assert(formatted, equals: "1431788231")
   }
   
-  func testFormatComponentWIthTimeZoneGetsAbbreviation() {
+  func testFormatComponentWithTimeZoneGetsAbbreviation() {
     formatter = TimeFormatComponent.TimeZone
     assert(formatted, equals: "UTC")
     assert(formatter?.formatTime(timestamp.inTimeZone("US/Eastern")), equals: "EDT")
@@ -232,6 +232,12 @@ class TimeFormatTests: TailorTestCase {
     let timestamp = Timestamp(epochSeconds: 1377257661, timeZone: TimeZone(name: "UTC"))
     let formatted = TimeFormat.FullTimeUS.formatTime(timestamp)
     assert(formatted, equals: "11:34:21 AM UTC")
+  }
+  
+  func testFormatWithRfc2822GetsProperFormat() {
+    let timestamp = Timestamp(epochSeconds: 1412440809, timeZone: TimeZone(name: "US/Eastern"))
+    let formatted = TimeFormat.Rfc2822.formatTime(timestamp)
+    assert(formatted, equals: "4 Oct 2014 12:40:09 -0400")
   }
   
   func testFormatWithStrftimeUsesStrftimeFormat() {
