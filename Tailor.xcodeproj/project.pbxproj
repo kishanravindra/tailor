@@ -136,6 +136,12 @@
 		52C6252019EE12810024453F /* PasswordHasher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C6251F19EE12810024453F /* PasswordHasher.swift */; };
 		52DD44E81B57362800312923 /* Email.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DD44E71B57362800312923 /* Email.swift */; };
 		52DD44EB1B5736AE00312923 /* EmailTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DD44EA1B5736AE00312923 /* EmailTests.swift */; };
+		52DD44ED1B5C380500312923 /* EmailAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DD44EC1B5C380500312923 /* EmailAgent.swift */; };
+		52DD44EF1B5C3A1500312923 /* FileEmailAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DD44EE1B5C3A1500312923 /* FileEmailAgent.swift */; };
+		52DD44F11B5C3B8D00312923 /* FileEmailAgentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DD44F01B5C3B8D00312923 /* FileEmailAgentTests.swift */; };
+		52DD44F31B5C488400312923 /* MemoryEmailAgentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DD44F21B5C488400312923 /* MemoryEmailAgentTests.swift */; };
+		52DD44F51B5C48CE00312923 /* MemoryEmailAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DD44F41B5C48CE00312923 /* MemoryEmailAgent.swift */; };
+		52DD44F71B5C4C8800312923 /* EmailAgentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DD44F61B5C4C8800312923 /* EmailAgentTests.swift */; };
 		52DDCF011A538C5800D3A47E /* QueryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DDCF001A538C5800D3A47E /* QueryTests.swift */; };
 		52E784B51A59C12D0065C10D /* SessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784B41A59C12D0065C10D /* SessionTests.swift */; };
 		52E784B81A59F2030065C10D /* AesEncryptorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784B71A59F2030065C10D /* AesEncryptorTests.swift */; };
@@ -345,6 +351,12 @@
 		52C6251F19EE12810024453F /* PasswordHasher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordHasher.swift; sourceTree = "<group>"; };
 		52DD44E71B57362800312923 /* Email.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Email.swift; sourceTree = "<group>"; };
 		52DD44EA1B5736AE00312923 /* EmailTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailTests.swift; sourceTree = "<group>"; };
+		52DD44EC1B5C380500312923 /* EmailAgent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailAgent.swift; sourceTree = "<group>"; };
+		52DD44EE1B5C3A1500312923 /* FileEmailAgent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileEmailAgent.swift; sourceTree = "<group>"; };
+		52DD44F01B5C3B8D00312923 /* FileEmailAgentTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileEmailAgentTests.swift; sourceTree = "<group>"; };
+		52DD44F21B5C488400312923 /* MemoryEmailAgentTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemoryEmailAgentTests.swift; sourceTree = "<group>"; };
+		52DD44F41B5C48CE00312923 /* MemoryEmailAgent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemoryEmailAgent.swift; sourceTree = "<group>"; };
+		52DD44F61B5C4C8800312923 /* EmailAgentTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailAgentTests.swift; sourceTree = "<group>"; };
 		52DDCF001A538C5800D3A47E /* QueryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = QueryTests.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		52E758931AF68AE000EA7EEE /* ___PACKAGENAME___Routes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "___PACKAGENAME___Routes.swift"; sourceTree = "<group>"; };
 		52E758941AF68AE000EA7EEE /* database.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = database.plist; sourceTree = "<group>"; };
@@ -800,6 +812,9 @@
 			isa = PBXGroup;
 			children = (
 				52DD44E71B57362800312923 /* Email.swift */,
+				52DD44EC1B5C380500312923 /* EmailAgent.swift */,
+				52DD44EE1B5C3A1500312923 /* FileEmailAgent.swift */,
+				52DD44F41B5C48CE00312923 /* MemoryEmailAgent.swift */,
 			);
 			path = mail;
 			sourceTree = "<group>";
@@ -808,6 +823,9 @@
 			isa = PBXGroup;
 			children = (
 				52DD44EA1B5736AE00312923 /* EmailTests.swift */,
+				52DD44F61B5C4C8800312923 /* EmailAgentTests.swift */,
+				52DD44F01B5C3B8D00312923 /* FileEmailAgentTests.swift */,
+				52DD44F21B5C488400312923 /* MemoryEmailAgentTests.swift */,
 			);
 			path = mail;
 			sourceTree = "<group>";
@@ -1146,10 +1164,12 @@
 				52BD142C19E9DA1D006D72B0 /* RouteSet.swift in Sources */,
 				52B2B6EE19F3F75C0086261B /* Sanitizer.swift in Sources */,
 				52A95E311AE0A3B9001AED1F /* DatabaseValue.swift in Sources */,
+				52DD44EF1B5C3A1500312923 /* FileEmailAgent.swift in Sources */,
 				52EF127419F0A58400B61DF4 /* Localization.swift in Sources */,
 				526E8DE31B3783400040CA35 /* Controller.swift in Sources */,
 				522B56CA1A18C849009BBE32 /* Array.swift in Sources */,
 				523D65621A98D36D000C686B /* ConfigurationSetting.swift in Sources */,
+				52DD44ED1B5C380500312923 /* EmailAgent.swift in Sources */,
 				5233011D1B45FC1500C9E5EE /* PersistableEnums.swift in Sources */,
 				522643251B06C7F40081D04E /* FoundationTimes.swift in Sources */,
 				52BD144219E9DA1D006D72B0 /* Validation.swift in Sources */,
@@ -1179,6 +1199,7 @@
 				5262D14F1B4C8DF400101154 /* JsonConvertible.swift in Sources */,
 				52C5B47D1B47055000F4A5C5 /* Alteration.swift in Sources */,
 				522643241B06C7F40081D04E /* Timestamp.swift in Sources */,
+				52DD44F51B5C48CE00312923 /* MemoryEmailAgent.swift in Sources */,
 				52BD144319E9DA1D006D72B0 /* FormBuilder.swift in Sources */,
 				52BD143919E9DA1D006D72B0 /* NSString.swift in Sources */,
 				525F84621B3B85F50025CA38 /* TemplateType.swift in Sources */,
@@ -1215,6 +1236,7 @@
 				5262D14B1B4B5A3800101154 /* JsonErrorsTests.swift in Sources */,
 				52B417361B3E12E400B274F7 /* TemplateFormTests.swift in Sources */,
 				528D183F1A8FDD4A00A6E116 /* TailorTestHelpers.swift in Sources */,
+				52DD44F31B5C488400312923 /* MemoryEmailAgentTests.swift in Sources */,
 				5214B5D51AA3903800624E9D /* ValidationErrorTests.swift in Sources */,
 				52E784C51A5B6E2D0065C10D /* StringTests.swift in Sources */,
 				52E784CD1A5CC5A60065C10D /* TaskTests.swift in Sources */,
@@ -1230,6 +1252,7 @@
 				52A684541A3EFB1000F4AA47 /* CookieTests.swift in Sources */,
 				523D65681A99521E000C686B /* DatabaseLocalizationTests.swift in Sources */,
 				525F84601B3B65F40025CA38 /* LocalizationSourceTests.swift in Sources */,
+				52DD44F11B5C3B8D00312923 /* FileEmailAgentTests.swift in Sources */,
 				5262EE7B1AD0AC9B006F864D /* DictionaryTests.swift in Sources */,
 				520BD5021AA90E2600CBC3DC /* PropertyListLocalizationTests.swift in Sources */,
 				5262D11B1B4A06CC00101154 /* JsonPrimitiveTests.swift in Sources */,
@@ -1246,6 +1269,7 @@
 				52DDCF011A538C5800D3A47E /* QueryTests.swift in Sources */,
 				52135CA51B07FE0D00595794 /* TimeZoneTests.swift in Sources */,
 				52C10D031B08F4C9005D85D4 /* DateTests.swift in Sources */,
+				52DD44F71B5C4C8800312923 /* EmailAgentTests.swift in Sources */,
 				52DD44EB1B5736AE00312923 /* EmailTests.swift in Sources */,
 				523D655F1A98CD3C000C686B /* LocalizationTests.swift in Sources */,
 				52A95E331AE0A3E6001AED1F /* DatabaseValueTests.swift in Sources */,

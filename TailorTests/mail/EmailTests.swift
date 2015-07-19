@@ -1,4 +1,4 @@
-import Tailor
+@testable import Tailor
 import TailorTesting
 
 class EmailTests: TailorTestCase {
@@ -57,5 +57,60 @@ class EmailTests: TailorTestCase {
   func testEncodeWrapsAt76Characters() {
     let content = Email.encode("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
     assert(content, equals: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tem=\r\npor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, q=\r\nuis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo cons=\r\nequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillu=\r\nm dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non pr=\r\noident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
+  }
+  
+  func testDeliverDeliversEmailWithSharedAgent() {
+    SHARED_EMAIL_AGENT = MemoryEmailAgent([:])
+    MemoryEmailAgent.deliveries = []
+    let email = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com", subject: "Yo", body: "Yo dawg")
+    email.deliver()
+    assert(MemoryEmailAgent.deliveries, equals: [email])
+  }
+  
+  func testDeliverIgnoresErrors() {
+    final class FailingEmailAgent: EmailAgent {
+      init(_ config: [String:String]) {
+        
+      }
+      enum Errors: ErrorType {
+        case CannotDeliver
+      }
+      func deliver(email: Email) throws {
+        throw Errors.CannotDeliver
+      }
+    }
+    SHARED_EMAIL_AGENT = FailingEmailAgent([:])
+    let email = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com", subject: "Yo", body: "Yo dawg")
+    email.deliver()
+    assert(true, message: "Did not die")
+  }
+  
+  func testEmailsWithSameInformationAreEqual() {
+    let email1 = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com", subject: "Yo", body: "Yo dawg")
+    let email2 = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com", subject: "Yo", body: "Yo dawg")
+    assert(email1, equals: email2)
+  }
+  func testEmailsWithDifferentSendersAreNotEqual() {
+    let email1 = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com", subject: "Yo", body: "Yo dawg")
+    let email2 = Email(from: "test3@johnbrownlee.com", to: "test2@johnbrownlee.com", subject: "Yo", body: "Yo dawg")
+    assert(email1, doesNotEqual: email2)
+  }
+  
+  func testEmailsWithDifferentRecipientsAreNotEqual() {
+    let email1 = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com", subject: "Yo", body: "Yo dawg")
+    let email2 = Email(from: "test1@johnbrownlee.com", to: "test3@johnbrownlee.com", subject: "Yo", body: "Yo dawg")
+    assert(email1, doesNotEqual: email2)
+  }
+  
+  func testEmailsWithDifferentSubjectsAreNotEqual() {
+    let email1 = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com", subject: "Yo", body: "Yo dawg")
+    let email2 = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com", subject: "Yooo", body: "Yo dawg")
+    assert(email1, doesNotEqual: email2)
+  }
+  
+  func testEmailsWithDifferentContentsAreNotEqual() {
+    let email1 = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com", subject: "Yo", body: "Yo dawg")
+    let email2 = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com", subject: "Yo", body: "Yo buddy")
+    assert(email1, doesNotEqual: email2)
   }
 }
