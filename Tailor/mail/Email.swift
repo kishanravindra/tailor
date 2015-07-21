@@ -17,25 +17,32 @@ public struct Email: Equatable {
   /** The body of the message. */
   public let body: String
   
+  /** The templates that this email has rendered. */
+  public let renderedTemplates: [TemplateType]
+  
   /**
     This initializer creates an email.
 
-    - parameter from:     The email address that is sending the message.
-    - parameter to:       The email address that is receiving the message.
-    - parameter subject:  The subject line of the message.
-    - parameter body:     The body of the message.
+    - parameter from:       The email address that is sending the message.
+    - parameter to:         The email address that is receiving the message.
+    - parameter subject:    The subject line of the message.
+    - parameter body:       The body of the message.
+    - parameter template:   The template that we should render to provide the
+                            body. If this is provided, the body parameter is
+                            ignored.
     */
-  public init(from: String, to: String, subject: String, body: String) {
+  public init(from: String, to: String, subject: String, body: String = "", var template: TemplateType? = nil) {
     self.from = from
     self.to = to
     self.subject = subject
-    self.body = body
+    self.body = template?.generate() ?? body
+    self.renderedTemplates = removeNils([template])
   }
   
   /**
     This method gets the full encoded message.
     */
-  public var fullMessage: String {
+  public var fullMessage: NSData {
     var message = ""
     message += "From: \(from)\r\n"
     message += "To: \(to)\r\n"
@@ -46,8 +53,11 @@ public struct Email: Equatable {
     message += "Content-Transfer-Encoding: quoted-printable\r\n"
     message += "Subject: \(subject)\r\n"
     message += "\r\n"
-    message += Email.encode(body)
-    return message
+    
+    let messageData = NSMutableData()
+    messageData.appendData(message.dataUsingEncoding(NSASCIIStringEncoding) ?? NSData())
+    messageData.appendData(Email.encode(body))
+    return messageData
   }
   
   /**
@@ -55,7 +65,7 @@ public struct Email: Equatable {
   
     This will use the quoted-printable encoding.
     */
-  public static func encode(string: String) -> String {
+  public static func encode(string: String) -> NSData {
     var bytes = [UInt8]()
     var inEscape = false
     var lineLength = 0
@@ -96,10 +106,7 @@ public struct Email: Equatable {
       }
     }
     let data = NSData(bytes: bytes)
-    guard let string = NSString(data: data, encoding: NSUTF8StringEncoding) as? String else {
-      fatalError("Error in UTF-8 encoding in email")
-    }
-    return string
+    return data
   }
   
   /**

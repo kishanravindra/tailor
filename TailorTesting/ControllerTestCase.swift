@@ -120,40 +120,6 @@ public class ControllerTestCase : TailorTestCase {
     }
   }
   
-  
-  /**
-    This method asserts that a response rendered a template of a given type.
-    
-    - parameter response:           The response whose templates we are
-                                    checking.
-    - parameter renderedTemplate:   The type of template that we want to examine.
-    - parameter message:            A message to show if the assertion fails.
-    - parameter file:               The file that the assertion is coming from.
-                                    You should generally omit this, since it
-                                    will be provided automatically.
-    - parameter line:               The line that the assertion is coming from.
-                                    You should generally omit this, since it
-                                    will be provided automatically.
-    - parameter templateChecker:    A block that can perform additional checks
-                                    on the template.
-    */
-  public func assert<SpecificType: TemplateType>(response: Response, renderedTemplate: SpecificType.Type, message: String = "", file: String = __FILE__, line: UInt = __LINE__, _ templateChecker: (SpecificType)->() = {_ in}) {
-    var found = false
-    for template in response.renderedTemplates {
-      if let castTemplate = template as? SpecificType {
-        found = true
-        templateChecker(castTemplate)
-      }
-    }
-    if(!found) {
-      var failureMessage = "Did not render a matching template"
-      if !message.isEmpty {
-        failureMessage += " - \(message)"
-      }
-      self.recordFailureWithDescription(failureMessage, inFile: file, atLine: line, expected: true)
-    }
-  }
-  
   //MARK: - Helpers
   
   @available(*, deprecated) public func pathFor(controllerName: String?, actionName: String, parameters: [String:String] = [:]) -> String? {

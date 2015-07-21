@@ -202,4 +202,98 @@ public class TailorTestCase: XCTestCase {
       self.recordFailureWithDescription("Condition was false\(message)", inFile: file, atLine: line, expected: true)
     }
   }
+  
+  /**
+    This method asserts that a response includes a template
+    of a given type.
+    
+    - parameter response:           The response we are checking.
+    - parameter renderedTemplate:   The type of template that we want to examine.
+    - parameter message:            A message to show if the assertion fails.
+    - parameter file:               The file that the assertion is coming from.
+                                    You should generally omit this, since it
+                                    will be provided automatically.
+    - parameter line:               The line that the assertion is coming from.
+                                    You should generally omit this, since it
+                                    will be provided automatically.
+    - parameter templateChecker:    A block that can perform additional checks
+                                    on the template.
+    */
+  public func assert<SpecificType: TemplateType>(response: Response, renderedTemplate: SpecificType.Type, message: String = "", file: String = __FILE__, line: UInt = __LINE__, @noescape _ templateChecker: (SpecificType)->() = {_ in}) {
+    self.assert(response.renderedTemplates, renderedTemplate: renderedTemplate, message: message, file: file, line: line, templateChecker)
+  }
+  
+  /**
+    This method asserts that an email includes a template
+    of a given type.
+  
+    - parameter email:              The email we are checking.
+    - parameter renderedTemplate:   The type of template that we want to examine.
+    - parameter message:            A message to show if the assertion fails.
+    - parameter file:               The file that the assertion is coming from.
+                                    You should generally omit this, since it
+                                    will be provided automatically.
+    - parameter line:               The line that the assertion is coming from.
+                                    You should generally omit this, since it
+                                    will be provided automatically.
+    - parameter templateChecker:    A block that can perform additional checks
+                                    on the template.
+  */
+  public func assert<SpecificType: TemplateType>(email: Email, renderedTemplate: SpecificType.Type, message: String = "", file: String = __FILE__, line: UInt = __LINE__, @noescape _ templateChecker: (SpecificType)->() = {_ in}) {
+    self.assert(email.renderedTemplates, renderedTemplate: renderedTemplate, message: message, file: file, line: line, templateChecker)
+  }
+  
+  /**
+    This method asserts that a template includes a template
+    of a given type.
+  
+    - parameter template:           The template we are checking.
+    - parameter renderedTemplate:   The type of template that we want to examine.
+    - parameter message:            A message to show if the assertion fails.
+    - parameter file:               The file that the assertion is coming from.
+                                    You should generally omit this, since it
+                                    will be provided automatically.
+    - parameter line:               The line that the assertion is coming from.
+                                    You should generally omit this, since it
+                                    will be provided automatically.
+    - parameter templateChecker:    A block that can perform additional checks
+                                    on the template.
+  */
+  public func assert<SpecificType: TemplateType>(template: TemplateType, renderedTemplate: SpecificType.Type, message: String = "", file: String = __FILE__, line: UInt = __LINE__, @noescape _ templateChecker: (SpecificType)->() = {_ in}) {
+    self.assert(template.state.renderedTemplates, renderedTemplate: renderedTemplate, message: message, file: file, line: line, templateChecker)
+  }
+  
+  
+  /**
+    This method asserts that a list of templates includes a template
+    of a given type.
+  
+    - parameter templates:          The list of templates we are checking.
+    - parameter renderedTemplate:   The type of template that we want to examine.
+    - parameter message:            A message to show if the assertion fails.
+    - parameter file:               The file that the assertion is coming from.
+                                    You should generally omit this, since it
+                                    will be provided automatically.
+    - parameter line:               The line that the assertion is coming from.
+                                    You should generally omit this, since it
+                                    will be provided automatically.
+    - parameter templateChecker:    A block that can perform additional checks
+                                    on the template.
+    */
+  private func assert<SpecificType: TemplateType>(templates: [TemplateType], renderedTemplate: SpecificType.Type, message: String = "", file: String = __FILE__, line: UInt = __LINE__, @noescape _ templateChecker: (SpecificType)->() = {_ in}) {
+    var found = false
+    for template in templates {
+      if let castTemplate = template as? SpecificType {
+        found = true
+        templateChecker(castTemplate)
+      }
+    }
+    if(!found) {
+      var failureMessage = "Did not render a matching template"
+      if !message.isEmpty {
+        failureMessage += " - \(message)"
+      }
+      self.recordFailureWithDescription(failureMessage, inFile: file, atLine: line, expected: true)
+    }
+  }
 }

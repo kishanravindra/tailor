@@ -42,8 +42,7 @@ public final class FileEmailAgent: EmailAgent {
     - parameter email:    The email to deliver.
     */
   public func deliver(email: Email) throws {
-    let contents = email.fullMessage
-    let data = contents.dataUsingEncoding(NSASCIIStringEncoding)!
+    let data = email.fullMessage
     guard let stream = NSOutputStream(toFileAtPath: self.path, append: true) else {
       throw Errors.ErrorOpeningFile
     }

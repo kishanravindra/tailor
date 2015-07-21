@@ -2,6 +2,21 @@
 import TailorTesting
 
 class EmailTests: TailorTestCase {
+  struct TestTemplate: TemplateType {
+    var state: TemplateState
+    
+    init(state: TemplateState) {
+      self.state = state
+    }
+    init() {
+      self.init(state: TemplateState(EmptyController()))
+    }
+    
+    mutating func body() {
+      tag("p") { text("Hello") }
+    }
+  }
+
   func testInitializeSetsFields() {
     let email = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com", subject: "Yo", body: "Yo dawg")
     assert(email.from, equals: "test1@johnbrownlee.com")
@@ -10,10 +25,24 @@ class EmailTests: TailorTestCase {
     assert(email.body, equals: "Yo dawg")
   }
   
+  func testInitializeWithTemplateUsesTemplateBody() {
+    let template = TestTemplate()
+    let email = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com", subject: "Yo", template: template)
+    assert(email.body, equals: "<p>Hello</p>")
+  }
+  
+  
+  func testInitializeWithTemplateSetsTemplateOnEmail() {
+    let template = TestTemplate()
+    let email = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com", subject: "Yo", template: template)
+    assert(email, renderedTemplate: TestTemplate.self)
+  }
+  
   func testFullMessageContainsHeadersAndBody() {
     let email = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com", subject: "Yo", body: "Yo dawg")
     let date = Timestamp.now().format(TimeFormat.Rfc2822)
-    let message = email.fullMessage
+    let messageData = email.fullMessage
+    let message = NSString(data: messageData, encoding: NSASCIIStringEncoding) as? String ?? ""
     assert(message, contains: "From: test1@johnbrownlee.com\r\n")
     assert(message, contains: "To: test2@johnbrownlee.com\r\n")
     assert(message, contains: "Date: \(date)\r\n")
@@ -25,38 +54,38 @@ class EmailTests: TailorTestCase {
   
   func testFullMessageEncodesNonAsciiCharacters() {
     let email = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com", subject: "Yo", body: "Olé All")
-    let message = email.fullMessage
+    let message = NSString(data: email.fullMessage, encoding: NSASCIIStringEncoding) as! String
     assert(message, contains: "Ol=C3=A9 All")
   }
   
   func testEncodeEncodesNonAsciiCharacters() {
     let content = Email.encode("Olé All")
-    assert(content, equals: "Ol=C3=A9 All")
+    assert(content, equals: "Ol=C3=A9 All".dataUsingEncoding(NSASCIIStringEncoding)!)
   }
   
   func testEncodeEncodesEqualsSign() {
     let content = Email.encode("1+2=3")
-    assert(content, equals: "1+2=3D3")
+    assert(content, equals: "1+2=3D3".dataUsingEncoding(NSASCIIStringEncoding)!)
   }
   
   func testEncodeEncodesLineBreakWithCarriageReturnAndLineFeed() {
     let content = Email.encode("Lorem ipsum\ndolor sit amet")
-    assert(content, equals: "Lorem ipsum\r\ndolor sit amet")
+    assert(content, equals: "Lorem ipsum\r\ndolor sit amet".dataUsingEncoding(NSASCIIStringEncoding)!)
   }
   
   func testEncodeEncodesCarriageReturnAndLineFeedWithCarriageReturnAndLineFeed() {
     let content = Email.encode("Lorem ipsum\r\ndolor sit amet")
-    assert(content, equals: "Lorem ipsum\r\ndolor sit amet")
+    assert(content, equals: "Lorem ipsum\r\ndolor sit amet".dataUsingEncoding(NSASCIIStringEncoding)!)
   }
   
   func testEncodeEscapesSpaceBeforeLineBreak() {
     let content = Email.encode("Lorem ipsum  \ndolor sit amet")
-    assert(content, equals: "Lorem ipsum =20\r\ndolor sit amet")
+    assert(content, equals: "Lorem ipsum =20\r\ndolor sit amet".dataUsingEncoding(NSASCIIStringEncoding)!)
   }
   
   func testEncodeWrapsAt76Characters() {
     let content = Email.encode("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
-    assert(content, equals: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tem=\r\npor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, q=\r\nuis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo cons=\r\nequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillu=\r\nm dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non pr=\r\noident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
+    assert(content, equals: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tem=\r\npor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, q=\r\nuis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo cons=\r\nequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillu=\r\nm dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non pr=\r\noident, sunt in culpa qui officia deserunt mollit anim id est laborum.".dataUsingEncoding(NSASCIIStringEncoding)!)
   }
   
   func testDeliverDeliversEmailWithSharedAgent() {

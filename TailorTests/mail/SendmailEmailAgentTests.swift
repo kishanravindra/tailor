@@ -19,7 +19,7 @@ class SendmailEmailAgentTests: TailorTestCase {
     expectedData.appendData("MAIL FROM: test1@tailorframe.work\r\n".dataUsingEncoding(NSASCIIStringEncoding)!)
     expectedData.appendData("RCPT TO: test2@tailorframe.work\r\n".dataUsingEncoding(NSASCIIStringEncoding)!)
     expectedData.appendData("DATA\r\n".dataUsingEncoding(NSASCIIStringEncoding)!)
-    expectedData.appendData(email.fullMessage.dataUsingEncoding(NSASCIIStringEncoding)!)
+    expectedData.appendData(email.fullMessage)
     expectedData.appendData("\r\n.\r\n".dataUsingEncoding(NSASCIIStringEncoding)!)
     assert(data, equals: expectedData)
   }

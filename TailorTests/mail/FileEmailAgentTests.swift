@@ -19,10 +19,7 @@ class FileEmailAgentTests: TailorTestCase {
     }
     catch {}
     let email1 = Email(from: "test1@tailorframe.work", to: "test2@tailorframe.work", subject: "Exciting Offer", body: "<h1>Hi!</h1><p>I have an exciting offer for you</p>")
-    guard let contents1 = email1.fullMessage.dataUsingEncoding(NSASCIIStringEncoding) else {
-      assert(false, message: "Error generating test contents")
-      return
-    }
+    let contents1 = email1.fullMessage
     let expectedContents = NSMutableData()
     expectedContents.appendData(contents1)
     expectedContents.appendData(NSData(bytes: [13,10]))
@@ -44,14 +41,8 @@ class FileEmailAgentTests: TailorTestCase {
     catch {}
     let email1 = Email(from: "test1@tailorframe.work", to: "test2@tailorframe.work", subject: "Exciting Offer", body: "<h1>Hi!</h1><p>I have an exciting offer for you</p>")
     let email2 = Email(from: "test1@tailorframe.work", to: "test2@tailorframe.work", subject: "Exciting Offer", body: "<h1>Hello again!</h1><p>I have another exciting offer for you</p>")
-    guard let contents1 = email1.fullMessage.dataUsingEncoding(NSASCIIStringEncoding) else {
-      assert(false, message: "Error generating test contents")
-      return
-    }
-    guard let contents2 = email2.fullMessage.dataUsingEncoding(NSASCIIStringEncoding) else {
-      assert(false, message: "Error generating test contents")
-      return
-    }
+    let contents1 = email1.fullMessage
+    let contents2 = email2.fullMessage
     let expectedContents = NSMutableData()
     expectedContents.appendData(contents1)
     expectedContents.appendData(NSData(bytes: [13,10]))

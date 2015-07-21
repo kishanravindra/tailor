@@ -66,7 +66,6 @@
 		5262EE7B1AD0AC9B006F864D /* DictionaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784C61A5B72990065C10D /* DictionaryTests.swift */; };
 		5262EE7E1AD0AC9B006F864D /* ServerTaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784CE1A5CC6350065C10D /* ServerTaskTests.swift */; };
 		5262EEA41AD0BA3D006F864D /* Tailor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5262EEA21AD0BA3D006F864D /* Tailor.framework */; };
-		5262EEA51AD0BA3D006F864D /* TailorTesting.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5262EEA31AD0BA3D006F864D /* TailorTesting.framework */; };
 		526378D91B4A06600008B2E1 /* JsonPrimitive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526378D81B4A06600008B2E1 /* JsonPrimitive.swift */; };
 		526A23771B30E0A30033A094 /* TestConfig.plist in Resources */ = {isa = PBXBuildFile; fileRef = 526A23761B30E0A30033A094 /* TestConfig.plist */; };
 		526ACD801B07922900CE0CC0 /* TimeFormatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526ACD7F1B07922900CE0CC0 /* TimeFormatTests.swift */; };
@@ -144,6 +143,8 @@
 		52DD44F71B5C4C8800312923 /* EmailAgentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DD44F61B5C4C8800312923 /* EmailAgentTests.swift */; };
 		52DD44F91B5DB93500312923 /* SendmailEmailAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DD44F81B5DB93500312923 /* SendmailEmailAgent.swift */; };
 		52DD44FD1B5DC3A600312923 /* SendmailEmailAgentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DD44FC1B5DC3A600312923 /* SendmailEmailAgentTests.swift */; };
+		52DD44FF1B5ED2FC00312923 /* EmptyController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DD44FE1B5ED2FC00312923 /* EmptyController.swift */; };
+		52DD45001B5ED8E700312923 /* TailorTesting.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5262EEA31AD0BA3D006F864D /* TailorTesting.framework */; };
 		52DDCF011A538C5800D3A47E /* QueryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DDCF001A538C5800D3A47E /* QueryTests.swift */; };
 		52E784B51A59C12D0065C10D /* SessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784B41A59C12D0065C10D /* SessionTests.swift */; };
 		52E784B81A59F2030065C10D /* AesEncryptorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784B71A59F2030065C10D /* AesEncryptorTests.swift */; };
@@ -361,6 +362,7 @@
 		52DD44F61B5C4C8800312923 /* EmailAgentTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailAgentTests.swift; sourceTree = "<group>"; };
 		52DD44F81B5DB93500312923 /* SendmailEmailAgent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendmailEmailAgent.swift; sourceTree = "<group>"; };
 		52DD44FC1B5DC3A600312923 /* SendmailEmailAgentTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendmailEmailAgentTests.swift; sourceTree = "<group>"; };
+		52DD44FE1B5ED2FC00312923 /* EmptyController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptyController.swift; sourceTree = "<group>"; };
 		52DDCF001A538C5800D3A47E /* QueryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = QueryTests.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		52E758931AF68AE000EA7EEE /* ___PACKAGENAME___Routes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "___PACKAGENAME___Routes.swift"; sourceTree = "<group>"; };
 		52E758941AF68AE000EA7EEE /* database.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = database.plist; sourceTree = "<group>"; };
@@ -427,9 +429,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52DD45001B5ED8E700312923 /* TailorTesting.framework in Frameworks */,
 				52B417D61B423E2D00B274F7 /* TailorSqlite.framework in Frameworks */,
 				5262EEA41AD0BA3D006F864D /* Tailor.framework in Frameworks */,
-				5262EEA51AD0BA3D006F864D /* TailorTesting.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -747,6 +749,7 @@
 				52BD140B19E9DA1D006D72B0 /* ControllerType.swift */,
 				526E8DE21B3783400040CA35 /* Controller.swift */,
 				52BD140D19E9DA1D006D72B0 /* Session.swift */,
+				52DD44FE1B5ED2FC00312923 /* EmptyController.swift */,
 			);
 			path = controller;
 			sourceTree = "<group>";
@@ -1161,6 +1164,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52DD44FF1B5ED2FC00312923 /* EmptyController.swift in Sources */,
 				52BD143A19E9DA1D006D72B0 /* String.swift in Sources */,
 				52B2B69A19F1DCF10086261B /* Dictionary.swift in Sources */,
 				52C10D051B0927F3005D85D4 /* Time.swift in Sources */,

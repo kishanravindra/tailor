@@ -75,9 +75,19 @@ public final class SendmailEmailAgent: EmailAgent {
     */
   private func writeString(string: String) {
     if let data = string.dataUsingEncoding(NSASCIIStringEncoding) {
-      handleForWriting?.writeData(data)
-      handleForReading?.availableData
+      self.writeData(data)
     }
+  }
+  
+  /**
+    This method writes a string to the input for the sendmail task.
+    
+    This will also read data from the task's output, so that sendmail is ready
+    for the next command.
+    */
+  private func writeData(data: NSData) {
+    handleForWriting?.writeData(data)
+    handleForReading?.availableData
   }
   
   /**
@@ -121,7 +131,7 @@ public final class SendmailEmailAgent: EmailAgent {
     self.writeString("MAIL FROM: \(email.from)\r\n")
     self.writeString("RCPT TO: \(email.to)\r\n")
     self.writeString("DATA\r\n")
-    self.writeString(email.fullMessage)
+    self.writeData(email.fullMessage)
     self.writeString("\r\n.\r\n")
   }
 }

@@ -63,21 +63,7 @@ public class TemplateTestCase: TailorTestCase {
                                   the template.
     */
   public func assertRenderedTemplate<SpecificType: TemplateType>(templateType: SpecificType.Type, message: String = "", file: String = __FILE__, line: UInt = __LINE__, _ templateChecker: (SpecificType)->() = {_ in}) {
-    var found = false
-    for otherTemplate in template.state.renderedTemplates {
-      if let castTemplate = otherTemplate as? SpecificType {
-        templateChecker(castTemplate)
-        found = true
-        break
-      }
-    }
-    if(!found) {
-      var failureMessage = "Did not render a matching template"
-      if !message.isEmpty {
-        failureMessage += " - \(message)"
-      }
-      self.recordFailureWithDescription(failureMessage, inFile: file, atLine: line, expected: true)
-    }
+    self.assert(template, renderedTemplate: templateType, message: message, file: file, line: line, templateChecker)
   }
   
   /**
@@ -90,16 +76,16 @@ public class TemplateTestCase: TailorTestCase {
     the template at least once with details matching what the block is looking
     for.
   
-    - parameter templateType:      The type of template that are looking for.
-    - parameter message:           The message to show if the assertion fails.
-    - parameter file:              The file that the assertion is coming from. You
-                              should generally omit this, since it will be
-                              provided automatically.
-    - parameter line:              The line that the assertion is coming from. You
-                              should generally omit this, since it will be
-                              provided automatically.
-    - parameter templateChecker:   A block that determines if the template is the one
-                              we are looking for.
+    - parameter templateType:       The type of template that are looking for.
+    - parameter message:            The message to show if the assertion fails.
+    - parameter file:               The file that the assertion is coming from.
+                                    You should generally omit this, since it
+                                    will be provided automatically.
+    - parameter line:               The line that the assertion is coming from.
+                                    You should generally omit this, since it
+                                    will be provided automatically.
+    - parameter templateChecker:    A block that determines if the template is
+                                    the one we are looking for.
   */
   public func assertRenderedTemplate<SpecificType: TemplateType>(templateType: SpecificType.Type, message: String = "", file: String = __FILE__, line: UInt = __LINE__, _ templateChecker: (SpecificType)->(Bool)) {
     var found = false
