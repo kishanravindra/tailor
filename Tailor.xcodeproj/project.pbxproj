@@ -142,6 +142,8 @@
 		52DD44F31B5C488400312923 /* MemoryEmailAgentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DD44F21B5C488400312923 /* MemoryEmailAgentTests.swift */; };
 		52DD44F51B5C48CE00312923 /* MemoryEmailAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DD44F41B5C48CE00312923 /* MemoryEmailAgent.swift */; };
 		52DD44F71B5C4C8800312923 /* EmailAgentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DD44F61B5C4C8800312923 /* EmailAgentTests.swift */; };
+		52DD44F91B5DB93500312923 /* SendmailEmailAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DD44F81B5DB93500312923 /* SendmailEmailAgent.swift */; };
+		52DD44FD1B5DC3A600312923 /* SendmailEmailAgentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DD44FC1B5DC3A600312923 /* SendmailEmailAgentTests.swift */; };
 		52DDCF011A538C5800D3A47E /* QueryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DDCF001A538C5800D3A47E /* QueryTests.swift */; };
 		52E784B51A59C12D0065C10D /* SessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784B41A59C12D0065C10D /* SessionTests.swift */; };
 		52E784B81A59F2030065C10D /* AesEncryptorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784B71A59F2030065C10D /* AesEncryptorTests.swift */; };
@@ -357,6 +359,8 @@
 		52DD44F21B5C488400312923 /* MemoryEmailAgentTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemoryEmailAgentTests.swift; sourceTree = "<group>"; };
 		52DD44F41B5C48CE00312923 /* MemoryEmailAgent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemoryEmailAgent.swift; sourceTree = "<group>"; };
 		52DD44F61B5C4C8800312923 /* EmailAgentTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailAgentTests.swift; sourceTree = "<group>"; };
+		52DD44F81B5DB93500312923 /* SendmailEmailAgent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendmailEmailAgent.swift; sourceTree = "<group>"; };
+		52DD44FC1B5DC3A600312923 /* SendmailEmailAgentTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendmailEmailAgentTests.swift; sourceTree = "<group>"; };
 		52DDCF001A538C5800D3A47E /* QueryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = QueryTests.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		52E758931AF68AE000EA7EEE /* ___PACKAGENAME___Routes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "___PACKAGENAME___Routes.swift"; sourceTree = "<group>"; };
 		52E758941AF68AE000EA7EEE /* database.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = database.plist; sourceTree = "<group>"; };
@@ -815,6 +819,7 @@
 				52DD44EC1B5C380500312923 /* EmailAgent.swift */,
 				52DD44EE1B5C3A1500312923 /* FileEmailAgent.swift */,
 				52DD44F41B5C48CE00312923 /* MemoryEmailAgent.swift */,
+				52DD44F81B5DB93500312923 /* SendmailEmailAgent.swift */,
 			);
 			path = mail;
 			sourceTree = "<group>";
@@ -826,6 +831,7 @@
 				52DD44F61B5C4C8800312923 /* EmailAgentTests.swift */,
 				52DD44F01B5C3B8D00312923 /* FileEmailAgentTests.swift */,
 				52DD44F21B5C488400312923 /* MemoryEmailAgentTests.swift */,
+				52DD44FC1B5DC3A600312923 /* SendmailEmailAgentTests.swift */,
 			);
 			path = mail;
 			sourceTree = "<group>";
@@ -1170,6 +1176,7 @@
 				522B56CA1A18C849009BBE32 /* Array.swift in Sources */,
 				523D65621A98D36D000C686B /* ConfigurationSetting.swift in Sources */,
 				52DD44ED1B5C380500312923 /* EmailAgent.swift in Sources */,
+				52DD44F91B5DB93500312923 /* SendmailEmailAgent.swift in Sources */,
 				5233011D1B45FC1500C9E5EE /* PersistableEnums.swift in Sources */,
 				522643251B06C7F40081D04E /* FoundationTimes.swift in Sources */,
 				52BD144219E9DA1D006D72B0 /* Validation.swift in Sources */,
@@ -1235,6 +1242,7 @@
 				526254351AABC9A600D63024 /* MemoryCacheStoreTests.swift in Sources */,
 				5262D14B1B4B5A3800101154 /* JsonErrorsTests.swift in Sources */,
 				52B417361B3E12E400B274F7 /* TemplateFormTests.swift in Sources */,
+				52DD44FD1B5DC3A600312923 /* SendmailEmailAgentTests.swift in Sources */,
 				528D183F1A8FDD4A00A6E116 /* TailorTestHelpers.swift in Sources */,
 				52DD44F31B5C488400312923 /* MemoryEmailAgentTests.swift in Sources */,
 				5214B5D51AA3903800624E9D /* ValidationErrorTests.swift in Sources */,
