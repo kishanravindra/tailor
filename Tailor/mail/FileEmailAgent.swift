@@ -38,13 +38,13 @@ public final class FileEmailAgent: EmailAgent {
   /**
     This method delivers an email.
   
-    This can throw 
     - parameter email:    The email to deliver.
     */
-  public func deliver(email: Email) throws {
+  public func deliver(email: Email) {
     let data = email.fullMessage
     guard let stream = NSOutputStream(toFileAtPath: self.path, append: true) else {
-      throw Errors.ErrorOpeningFile
+      NSLog("Error opening email file")
+      return
     }
     var bytesWritten = 0
     let buffer = UnsafePointer<UInt8>(data.bytes)
@@ -52,12 +52,8 @@ public final class FileEmailAgent: EmailAgent {
     while bytesWritten < data.length {
       let newBytes = stream.write(buffer, maxLength: data.length - bytesWritten)
       if newBytes == -1 {
-        if let error = stream.streamError {
-          throw error
-        }
-        else {
-          throw Errors.ErrorWritingToFile
-        }
+        NSLog("Error writing to email file")
+        return
       }
       bytesWritten += newBytes
       advance(buffer, bytesWritten)

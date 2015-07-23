@@ -111,22 +111,12 @@ public struct Email: Equatable {
   
   /**
     This method delivers the email using the shared email agent.
-
-    This will catch any errors thrown by the email agent and log them rather
-    than handling or rethrowing them. If you want to be able to catch these
-    errors, you should use the deliver method on the email agent instead of
-    this method.
   
     You can get the shared email agent directly by calling
     `Application.sharedEmailAgent`.
     */
   public func deliver() {
-    do {
-      try Application.sharedEmailAgent().deliver(self)
-    }
-    catch let error {
-      NSLog("Error delivering email\n%@: %d\n%@",error._domain, error._code, self.fullMessage)
-    }
+    Application.sharedEmailAgent().deliver(self)
   }
 }
 

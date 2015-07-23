@@ -96,24 +96,6 @@ class EmailTests: TailorTestCase {
     assert(MemoryEmailAgent.deliveries, equals: [email])
   }
   
-  func testDeliverIgnoresErrors() {
-    final class FailingEmailAgent: EmailAgent {
-      init(_ config: [String:String]) {
-        
-      }
-      enum Errors: ErrorType {
-        case CannotDeliver
-      }
-      func deliver(email: Email) throws {
-        throw Errors.CannotDeliver
-      }
-    }
-    SHARED_EMAIL_AGENT = FailingEmailAgent([:])
-    let email = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com", subject: "Yo", body: "Yo dawg")
-    email.deliver()
-    assert(true, message: "Did not die")
-  }
-  
   func testEmailsWithSameInformationAreEqual() {
     let email1 = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com", subject: "Yo", body: "Yo dawg")
     let email2 = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com", subject: "Yo", body: "Yo dawg")

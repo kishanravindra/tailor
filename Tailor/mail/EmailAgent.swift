@@ -14,7 +14,7 @@ public protocol EmailAgent: class {
   
     - parameter email:    The email to deliver.
     */
-  func deliver(email: Email) throws
+  func deliver(email: Email)
 }
 
 extension Application {
