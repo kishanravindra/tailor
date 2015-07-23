@@ -182,7 +182,7 @@ extension ControllerType {
   }
   
   public static var name: String {
-    return reflect(self).summary
+    return typeName(self)
   }
   
   public static var layout: LayoutType.Type { return EmptyLayout.self }

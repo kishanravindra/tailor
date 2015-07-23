@@ -5,10 +5,14 @@
   `StringPersistableEnum` or `TablePersistableEnum`.
   */
 public protocol PersistableEnum: DatabaseValueConvertible {
+  /** The raw value for the case. */
+  var rawValue: String { get }
+  
   /**
     This method gets the name of a case of an enum.
   
-    The default value uses the underscored version of the literal for the case.
+    The default value uses the underscored version of the raw value for the
+    case.
     */
   var caseName: String { get }
   
@@ -28,7 +32,7 @@ public protocol PersistableEnum: DatabaseValueConvertible {
   This protocol describes an enum that can be persisted to a string value in
   the database.
 
-  This can only be implemented by enum types.
+  This can only be implemented by enum types that have strings as raw values.
 
   The only method you need to implement for the protocol is the `cases`
   method. The protocol provides the rest.
@@ -40,6 +44,8 @@ public protocol StringPersistableEnum: PersistableEnum {
   This protocol describes an enum that can be persisted to an integer value
   in the database, which will be mapped to a foreign key holding all the
   possible enum cases.
+
+  This can only be implemented by enum types that have strings as raw values.
 
   The only method you need to implement for the protocol is the `cases`
   method. The protocol provides the rest.
@@ -58,10 +64,7 @@ public protocol TablePersistableEnum: PersistableEnum, ModelType {
 
 public extension PersistableEnum {
   var caseName: String {
-    let fullName = reflect(self).summary
-    let components = fullName.componentsSeparatedByString(".")
-    let caseName = components[components.count - 1]
-    return caseName.underscored()
+    return self.rawValue.underscored()
   }
   
   /**

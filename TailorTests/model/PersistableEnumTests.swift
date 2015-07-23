@@ -2,14 +2,14 @@ import Tailor
 import TailorTesting
 
 class PersistableEnumTests: TailorTestCase {
-  enum Color: StringPersistableEnum {
+  enum Color: String, StringPersistableEnum {
     case Red
     case DarkBlue
     
     static var cases = [Color.Red, Color.DarkBlue]
   }
   
-  enum HatType: TablePersistableEnum {
+  enum HatType: String, TablePersistableEnum {
     case Feathered
     case WideBrim
     

@@ -64,7 +64,9 @@ public extension Application {
 }
 
 public extension AlterationScript {
-  public static var name: String { return reflect(self).summary }
+  public static var name: String {
+    return typeName(self)
+  }
   
   /**
     This method executes a database query.

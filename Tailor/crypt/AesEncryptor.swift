@@ -5,7 +5,7 @@ import Foundation
   */
 public final class AesEncryptor {
   /** The low-level key for the encryption. */
-  private let key: Unmanaged<SecKey>?
+  private let key: SecKey?
   
   //MARK: - Encodings
   
@@ -110,15 +110,6 @@ public final class AesEncryptor {
     self.key = SecKeyCreateFromData(keyParams, keyData, nil)
   }
   
-  /**
-    This method deinitializes the encryptor.
-
-    This will release our hold on the underlying security transforms.
-    */
-  deinit {
-    key?.release()
-  }
-  
   //MARK: - Encryption
 
   /**
@@ -128,9 +119,10 @@ public final class AesEncryptor {
     - returns:            The encrypted data.
     */
   public func encrypt(data: NSData) -> NSData {
-    let encryptor = SecEncryptTransformCreate(key?.takeUnretainedValue(), nil)
-    SecTransformSetAttribute(encryptor.takeUnretainedValue(), kSecTransformInputAttributeName, data, nil)
-    return (SecTransformExecute(encryptor.takeUnretainedValue(), nil) as? NSData) ?? NSData()
+    guard let key = self.key else { return NSData() }
+    let encryptor = SecEncryptTransformCreate(key, nil)
+    SecTransformSetAttribute(encryptor, kSecTransformInputAttributeName, data, nil)
+    return (SecTransformExecute(encryptor, nil) as? NSData) ?? NSData()
   }
   
   /**
@@ -140,9 +132,10 @@ public final class AesEncryptor {
     - returns:          The plaintext.
     */
   public func decrypt(data: NSData) -> NSData {
-    let decryptor = SecDecryptTransformCreate(key?.takeUnretainedValue(), nil)
-    SecTransformSetAttribute(decryptor.takeUnretainedValue(), kSecTransformInputAttributeName, data, nil)
-    return (SecTransformExecute(decryptor.takeUnretainedValue(), nil) as? NSData) ?? NSData()
+    guard let key = self.key else { return NSData() }
+    let decryptor = SecDecryptTransformCreate(key, nil)
+    SecTransformSetAttribute(decryptor, kSecTransformInputAttributeName, data, nil)
+    return (SecTransformExecute(decryptor, nil) as? NSData) ?? NSData()
   }
   
   //MARK: - Key Generation
@@ -157,23 +150,21 @@ public final class AesEncryptor {
       kSecAttrKeyType as NSString: kSecAttrKeyTypeAES as NSString,
       kSecAttrKeySizeInBits as NSString: NSNumber(int: 256)
     ]
-    let key = SecKeyGenerateSymmetric(keyParams, nil)
-    var dataContainer: Unmanaged<CFData>? = nil
-    SecItemExport(key.takeUnretainedValue(), UInt32(kSecFormatUnknown), 0, nil, &dataContainer)
+    guard let key = SecKeyGenerateSymmetric(keyParams, nil) else { return "" }
+    var dataContainer: CFData? = nil
+    SecItemExport(key, SecExternalFormat.FormatUnknown, SecItemImportExportFlags(), nil, &dataContainer)
     
     
     var keyString = ""
     
     if let container = dataContainer {
-      let data = container.takeUnretainedValue() as NSData
+      let data = container as NSData
       var bytes = [UInt8](count: data.length, repeatedValue: 0)
       data.getBytes(&bytes, length: data.length)
       for byte in bytes {
         keyString += self.getHexString(byte)
       }
-      container.release()
     }
-    key.release()
     return keyString
   }
 }

@@ -80,15 +80,13 @@ class CacheStoreTests: TailorTestCase {
   
   func testSharedCacheStoreReturnsWithNoConfigurationSettingReturnsMemoryCacheStore() {
     let store = Application.cache
-    let name = reflect(store).summary
-    assert(name, equals: "Tailor.MemoryCacheStore", message: "returns a memory cache store")
+    assert(store is MemoryCacheStore, message: "returns a memory cache store")
   }
   
   func testSharedCacheStoreWithConfigurationSettingReturnsThatType() {
     Application.sharedApplication().configuration["cache.class"] = "Tailor.CacheStore"
     let store = Application.cache
-    let name = reflect(store).summary
-    assert(name, equals: "Tailor.CacheStore", message: "returns a cache store with the specified type")
+    assert(typeName(store.dynamicType), equals: "Tailor.CacheStore", message: "returns a cache store with the specified type")
   }
   
   func testSharedCacheStoreOnlyCreatesOneStore() {

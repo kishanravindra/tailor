@@ -181,7 +181,6 @@ class ApplicationTests : TailorTestCase {
   
   func testOpenDatabaseConnectionGetsConnectionFromConfig() {
     let application = Application()
-    @objc(ApplicationTestConnection)
     final class ApplicationTestConnection: DatabaseDriver {
       let name: String
       let timeZone: TimeZone = TimeZone.systemTimeZone()
@@ -200,7 +199,7 @@ class ApplicationTests : TailorTestCase {
     }
     
     application.configuration.child("database").addDictionary([
-      "class": "ApplicationTestConnection",
+      "class": NSStringFromClass(ApplicationTestConnection.self),
       "name": "My Connection"
     ])
     

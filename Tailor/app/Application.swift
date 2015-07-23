@@ -399,7 +399,7 @@ public class Application {
       allClasses = advance(allClasses, 1)
       
       if matcher(type) {
-        let key = reflect(parentType).summary
+        let key = typeName(parentType)
         var subtypes = self.registeredSubtypes[key] ?? []
         subtypes.append(type)
         self.registeredSubtypes[key] = subtypes
@@ -432,7 +432,7 @@ public class Application {
     - returns:  The types.
     */
   public func registeredAlterations() -> [AlterationScript.Type] {
-    let description = reflect(AlterationScript.self).summary
+    let description = typeName(AlterationScript.self)
     let classes = self.registeredSubtypes[description] ?? []
     return removeNils(classes.map { $0 as? AlterationScript.Type })
   }
@@ -442,7 +442,7 @@ public class Application {
     - returns: The types.
     */
   public func registeredTasks() -> [TaskType.Type] {
-    let description = reflect(TaskType.self).summary
+    let description = typeName(TaskType.self)
     let classes = self.registeredSubtypes[description] ?? []
     return removeNils(classes.map { $0 as? TaskType.Type })
   }
@@ -470,7 +470,7 @@ public class Application {
     - returns:          The subclasses of the type.
   */
   public func registeredSubtypeList<ParentType>(type: ParentType.Type) -> [ParentType.Type] {
-    let description = reflect(ParentType).summary
+    let description = typeName(ParentType.self)
     let classes = self.registeredSubtypes[description] ?? []
     return removeNils(classes.map { $0 as? ParentType.Type })
   }

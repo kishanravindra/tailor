@@ -18,6 +18,6 @@ public protocol TaskType: class {
 
 extension TaskType {
   public static var commandName: String {
-    return reflect(self).summary.underscored().componentsSeparatedByString(".").last ?? ""
+    return typeName(self).underscored().componentsSeparatedByString(".").last ?? ""
   }
 }
