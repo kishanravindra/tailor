@@ -41,27 +41,6 @@ public final class SmtpEmailAgent: EmailAgent {
   }
   
   /**
-    This method gets the arguments that we pass to curl when delivering emails.
-
-    - parameter email:    The email that we are sending.
-    - returns:            The parameters that we will pass to curl.
-    */
-  internal func curlArguments(email: Email) -> [String] {
-    return [
-      "smtps://\(host)",
-      "--mail-from",
-      email.from,
-      "--mail-rcpt",
-      email.to,
-      "--ssl",
-      "-u",
-      "\(username):\(password)",
-      "-T",
-      "-"
-    ]
-  }
-  
-  /**
     This method delivers an email via SMTP.
 
     This will use curl to connect to the server. You must have curl installed in
@@ -73,27 +52,32 @@ public final class SmtpEmailAgent: EmailAgent {
     - parameter email:    The email that we are sending.
     */
   public func deliver(email: Email) {
-    let task = NSTask()
-    task.launchPath = "/usr/bin/curl"
-    task.arguments = self.curlArguments(email)
-    let input = NSPipe()
-    let output = NSPipe()
-    task.standardInput = input
-    task.standardOutput = output
-    task.standardError = output
-    task.launch()
-    
-    input.fileHandleForWriting.writeData(email.fullMessage)
-    input.fileHandleForWriting.writeData(NSData(bytes: [13, 10, 46, 13, 10]))
-    input.fileHandleForWriting.closeFile()
-    
-    task.terminationHandler = {
-      task in
-      if task.terminationStatus != 0 {
-        let data = output.fileHandleForReading.availableData.componentsSeparatedByString("curl:").last ?? NSData()
-        let response = NSString(data: data, encoding: NSASCIIStringEncoding) ?? ""
-        NSLog("Error sending email via SMTP: %@", response)
+    for recipient in email.allRecipients {
+      let arguments =  [
+        "smtps://\(host)",
+        "--mail-from",
+        email.sender,
+        "--mail-rcpt",
+        recipient,
+        "--ssl",
+        "-u",
+        "\(username):\(password)",
+        "-T",
+        "-"
+      ]
+      let process = ExternalProcess(launchPath: "/usr/bin/curl", arguments: arguments) {
+        terminationStatus, data in
+          if terminationStatus != 0 || true {
+            let lastLine = data.componentsSeparatedByString("curl:").last ?? NSData()
+            let response = NSString(data: lastLine, encoding: NSASCIIStringEncoding) ?? ""
+            NSLog("Error sending email via SMTP: %@", response)
+          }
       }
+      process.launch()
+      
+      process.writeData(email.fullMessage)
+      process.writeString("\r\n.\r\n")
+      process.closeInput()
     }
   }
 }

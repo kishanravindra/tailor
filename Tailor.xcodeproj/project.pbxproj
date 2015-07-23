@@ -33,6 +33,8 @@
 		5227E1831B521071001D4BF6 /* LayoutTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5227E1821B521071001D4BF6 /* LayoutTypeTests.swift */; };
 		522B56CA1A18C849009BBE32 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522B56C91A18C849009BBE32 /* Array.swift */; };
 		5232ACAE1B6066F10043F9A2 /* AnyType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5232ACAD1B6066F10043F9A2 /* AnyType.swift */; };
+		5232ACC41B618FBF0043F9A2 /* ExternalProcess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5232ACC31B618FBF0043F9A2 /* ExternalProcess.swift */; };
+		5232ACC61B6198730043F9A2 /* ExternalProcessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5232ACC51B6198730043F9A2 /* ExternalProcessTests.swift */; };
 		5233011D1B45FC1500C9E5EE /* PersistableEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233011C1B45FC1500C9E5EE /* PersistableEnums.swift */; };
 		5233011F1B45FC5B00C9E5EE /* PersistableEnumTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233011E1B45FC5B00C9E5EE /* PersistableEnumTests.swift */; };
 		5233019D1B46FBF400C9E5EE /* database.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5233019C1B46FBF400C9E5EE /* database.plist */; };
@@ -243,6 +245,8 @@
 		5227E1821B521071001D4BF6 /* LayoutTypeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayoutTypeTests.swift; sourceTree = "<group>"; };
 		522B56C91A18C849009BBE32 /* Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
 		5232ACAD1B6066F10043F9A2 /* AnyType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnyType.swift; sourceTree = "<group>"; };
+		5232ACC31B618FBF0043F9A2 /* ExternalProcess.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExternalProcess.swift; sourceTree = "<group>"; };
+		5232ACC51B6198730043F9A2 /* ExternalProcessTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExternalProcessTests.swift; sourceTree = "<group>"; };
 		5233011C1B45FC1500C9E5EE /* PersistableEnums.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistableEnums.swift; sourceTree = "<group>"; };
 		5233011E1B45FC5B00C9E5EE /* PersistableEnumTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistableEnumTests.swift; sourceTree = "<group>"; };
 		5233019C1B46FBF400C9E5EE /* database.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = database.plist; sourceTree = "<group>"; };
@@ -779,6 +783,7 @@
 				52BD141819E9DA1D006D72B0 /* String.swift */,
 				52B2B69919F1DCF10086261B /* Dictionary.swift */,
 				5232ACAD1B6066F10043F9A2 /* AnyType.swift */,
+				5232ACC31B618FBF0043F9A2 /* ExternalProcess.swift */,
 				52B2B6DD19F365130086261B /* xcode_templates */,
 			);
 			path = ext;
@@ -865,6 +870,7 @@
 				52E784C21A5B6BFA0065C10D /* NSStringTests.swift */,
 				52E784C41A5B6E2D0065C10D /* StringTests.swift */,
 				52E784C61A5B72990065C10D /* DictionaryTests.swift */,
+				5232ACC51B6198730043F9A2 /* ExternalProcessTests.swift */,
 			);
 			path = ext;
 			sourceTree = "<group>";
@@ -1223,6 +1229,7 @@
 				522643241B06C7F40081D04E /* Timestamp.swift in Sources */,
 				52DD44F51B5C48CE00312923 /* MemoryEmailAgent.swift in Sources */,
 				52BD144319E9DA1D006D72B0 /* FormBuilder.swift in Sources */,
+				5232ACC41B618FBF0043F9A2 /* ExternalProcess.swift in Sources */,
 				52BD143919E9DA1D006D72B0 /* NSString.swift in Sources */,
 				525F84621B3B85F50025CA38 /* TemplateType.swift in Sources */,
 				522643271B06C7F40081D04E /* TimeZoneReader.swift in Sources */,
@@ -1279,6 +1286,7 @@
 				5262EE7B1AD0AC9B006F864D /* DictionaryTests.swift in Sources */,
 				520BD5021AA90E2600CBC3DC /* PropertyListLocalizationTests.swift in Sources */,
 				5262D11B1B4A06CC00101154 /* JsonPrimitiveTests.swift in Sources */,
+				5232ACC61B6198730043F9A2 /* ExternalProcessTests.swift in Sources */,
 				526ACD821B07A9FD00CE0CC0 /* TimeIntervalTests.swift in Sources */,
 				523F29351A583EEB00C1BBC0 /* SanitizerTests.swift in Sources */,
 				52ACAC781A56059200E875D9 /* UserTests.swift in Sources */,

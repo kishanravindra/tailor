@@ -19,10 +19,25 @@ class EmailTests: TailorTestCase {
 
   func testInitializeSetsFields() {
     let email = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com", subject: "Yo", body: "Yo dawg")
-    assert(email.from, equals: "test1@johnbrownlee.com")
-    assert(email.to, equals: "test2@johnbrownlee.com")
+    assert(email.sender, equals: "test1@johnbrownlee.com")
+    assert(email.recipients, equals: ["test2@johnbrownlee.com"])
     assert(email.subject, equals: "Yo")
     assert(email.body, equals: "Yo dawg")
+  }
+  
+  func testInitializeWithRecipientListSetsRecipients() {
+    let email = Email(from: "test1@johnbrownlee.com", recipients: ["test2@johnbrownlee.com", "test3@johnbrownlee.com"], subject: "Yo", body: "Yo dawg")
+    assert(email.recipients, equals: ["test2@johnbrownlee.com","test3@johnbrownlee.com"])
+  }
+  
+  func testInitializeWithRecipientListAndSingleRecipientSetsAllRecipients() {
+    let email = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com", recipients: ["test3@johnbrownlee.com", "test4@johnbrownlee.com"], subject: "Yo", body: "Yo dawg")
+    assert(email.recipients, equals: ["test2@johnbrownlee.com","test3@johnbrownlee.com","test4@johnbrownlee.com"])
+  }
+  
+  func testInitializeWithEmptyRecipientListSetsNoRecipients() {
+    let email = Email(from: "test1@johnbrownlee.com", subject: "Yo", body: "Yo dawg")
+    assert(email.recipients, equals: [])
   }
   
   func testInitializeWithTemplateUsesTemplateBody() {
@@ -39,12 +54,12 @@ class EmailTests: TailorTestCase {
   }
   
   func testFullMessageContainsHeadersAndBody() {
-    let email = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com", subject: "Yo", body: "Yo dawg")
+    let email = Email(from: "test1@johnbrownlee.com", recipients: ["test2@johnbrownlee.com","test3@johnbrownlee.com"], subject: "Yo", body: "Yo dawg")
     let date = Timestamp.now().format(TimeFormat.Rfc2822)
     let messageData = email.fullMessage
     let message = NSString(data: messageData, encoding: NSASCIIStringEncoding) as? String ?? ""
     assert(message, contains: "From: test1@johnbrownlee.com\r\n")
-    assert(message, contains: "To: test2@johnbrownlee.com\r\n")
+    assert(message, contains: "To: test2@johnbrownlee.com,test3@johnbrownlee.com\r\n")
     assert(message, contains: "Date: \(date)\r\n")
     assert(message, contains: "Content-Type: text/html; charset=UTF-8\r\n")
     assert(message, contains: "Content-Transfer-Encoding: quoted-printable\r\n")

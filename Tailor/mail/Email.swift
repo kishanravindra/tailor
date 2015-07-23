@@ -6,10 +6,10 @@
   */
 public struct Email: Equatable {
   /** The email address that is sending the message. */
-  public let from: String
+  public let sender: String
   
-  /** The email address that is receiving the message. */
-  public let to: String
+  /** The email addresses that are receiving the message. */
+  public let recipients: [String]
   
   /** The subject of the message. */
   public let subject: String
@@ -19,6 +19,15 @@ public struct Email: Equatable {
   
   /** The templates that this email has rendered. */
   public let renderedTemplates: [TemplateType]
+  
+  /**
+    The full list of addresses that will recieve the message.
+
+    This includes direct recipients, CCs, and BCCs.
+    */
+  public var allRecipients: [String] {
+    return recipients
+  }
   
   /**
     This initializer creates an email.
@@ -31,9 +40,13 @@ public struct Email: Equatable {
                             body. If this is provided, the body parameter is
                             ignored.
     */
-  public init(from: String, to: String, subject: String, body: String = "", var template: TemplateType? = nil) {
-    self.from = from
-    self.to = to
+  public init(from sender: String, to recipient: String? = nil, recipients: [String] = [], subject: String, body: String = "", var template: TemplateType? = nil) {
+    self.sender = sender
+    var recipients = recipients
+    if let recipient = recipient {
+      recipients.insert(recipient, atIndex: 0)
+    }
+    self.recipients = recipients
     self.subject = subject
     self.body = template?.generate() ?? body
     self.renderedTemplates = removeNils([template])
@@ -44,8 +57,10 @@ public struct Email: Equatable {
     */
   public var fullMessage: NSData {
     var message = ""
-    message += "From: \(from)\r\n"
-    message += "To: \(to)\r\n"
+    message += "From: \(sender)\r\n"
+    
+    let recipientList = ",".join(recipients)
+    message += "To: \(recipientList)\r\n"
     
     let date = Timestamp.now().format(TimeFormat.Rfc2822)
     message += "Date: \(date)\r\n"
@@ -132,6 +147,7 @@ public struct Email: Equatable {
 public func ==(lhs: Email, rhs: Email) -> Bool {
   return lhs.subject == rhs.subject &&
     lhs.body == rhs.body &&
-    lhs.to == rhs.to &&
-    lhs.from == rhs.from
+    lhs.sender == rhs.sender &&
+    lhs.recipients == rhs.recipients &&
+    lhs.subject == rhs.subject
 }
