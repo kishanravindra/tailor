@@ -64,7 +64,6 @@ class SmptEmailAgentTests: TailorTestCase {
     ])
     let expectedData = NSMutableData()
     expectedData.appendData(email.fullMessage)
-    expectedData.appendData("\r\n.\r\n".dataUsingEncoding(NSASCIIStringEncoding)!)
     assert(process.writtenData, equals: expectedData)
   }
   
@@ -76,43 +75,31 @@ class SmptEmailAgentTests: TailorTestCase {
       "ssl": "false",
       "port": "123"
       ])
-    let email = Email(from: "jim+mail@tailorframe.work", recipients: ["jane@gmail.com", "john@gmail.com"], subject: "Greetings", body: "How are you doing?")
+    let email = Email(from: "jim+mail@tailorframe.work", recipients: ["jane@gmail.com", "john@gmail.com"], ccs: ["george@tailorframe.work", "bob@tailorframe.work"], bccs: ["alice@tailorframe.work"], subject: "Greetings", body: "How are you doing?")
     agent.deliver(email)
-    assert(ExternalProcess.stubs.count, equals: 2, message: "creates a single process")
-    guard let process1 = ExternalProcess.stubs.first else { return }
-    guard let process2 = ExternalProcess.stubs.last else { return }
+    let recipients = ["jane@gmail.com", "john@gmail.com", "george@tailorframe.work", "bob@tailorframe.work", "alice@tailorframe.work"]
+    assert(ExternalProcess.stubs.count, equals: recipients.count, message: "creates a process for each recipient")
     
-    assert(process1.launchPath, equals: "/usr/bin/curl")
-    assert(process1.arguments ?? [], equals: [
-      "smtps://tailorframe.work",
-      "--mail-from",
-      "jim+mail@tailorframe.work",
-      "--mail-rcpt",
-      "jane@gmail.com",
-      "--ssl",
-      "-u",
-      "jim:Monkey",
-      "-T",
-      "-"
-      ])
-    let expectedData = NSMutableData()
-    expectedData.appendData(email.fullMessage)
-    expectedData.appendData("\r\n.\r\n".dataUsingEncoding(NSASCIIStringEncoding)!)
-    assert(process1.writtenData, equals: expectedData)
+    for (index,recipient) in recipients.enumerate() {
+      let process = ExternalProcess.stubs[index]
     
-    assert(process2.launchPath, equals: "/usr/bin/curl")
-    assert(process2.arguments ?? [], equals: [
-      "smtps://tailorframe.work",
-      "--mail-from",
-      "jim+mail@tailorframe.work",
-      "--mail-rcpt",
-      "john@gmail.com",
-      "--ssl",
-      "-u",
-      "jim:Monkey",
-      "-T",
-      "-"
+      assert(process.launchPath, equals: "/usr/bin/curl")
+      assert(process.arguments ?? [], equals: [
+        "smtps://tailorframe.work",
+        "--mail-from",
+        "jim+mail@tailorframe.work",
+        "--mail-rcpt",
+        recipient,
+        "--ssl",
+        "-u",
+        "jim:Monkey",
+        "-T",
+        "-"
       ])
-    assert(process2.writtenData, equals: expectedData)
+      
+      let expectedData = NSMutableData()
+      expectedData.appendData(email.fullMessage)
+      assert(process.writtenData, equals: expectedData)
+    }
   }
 }

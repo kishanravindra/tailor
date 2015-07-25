@@ -67,7 +67,7 @@ public final class SmtpEmailAgent: EmailAgent {
       ]
       let process = ExternalProcess(launchPath: "/usr/bin/curl", arguments: arguments) {
         terminationStatus, data in
-          if terminationStatus != 0 || true {
+          if terminationStatus != 0 {
             let lastLine = data.componentsSeparatedByString("curl:").last ?? NSData()
             let response = NSString(data: lastLine, encoding: NSASCIIStringEncoding) ?? ""
             NSLog("Error sending email via SMTP: %@", response)
@@ -76,7 +76,6 @@ public final class SmtpEmailAgent: EmailAgent {
       process.launch()
       
       process.writeData(email.fullMessage)
-      process.writeString("\r\n.\r\n")
       process.closeInput()
     }
   }

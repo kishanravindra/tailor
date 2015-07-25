@@ -30,7 +30,7 @@ class SendmailEmailAgentTests: TailorTestCase {
   }
   
   func testSendmailAgentSendsSeparateEmailsForMultipleRecipients() {
-    let email = Email(from: "test1@tailorframe.work", recipients: ["test2@tailorframe.work", "test3@tailorframe.work"], subject: "Hello", body: "Greetings")
+    let email = Email(from: "test1@tailorframe.work", recipients: ["test2@tailorframe.work", "test3@tailorframe.work"], ccs: ["test4@tailorframe.work"], bccs: ["test5@tailorframe.work"], subject: "Hello", body: "Greetings")
     
     let agent = SendmailEmailAgent([:])
     agent.deliver(email)
@@ -53,6 +53,16 @@ class SendmailEmailAgentTests: TailorTestCase {
     expectedData.appendData("\r\n.\r\n".dataUsingEncoding(NSASCIIStringEncoding)!)
     expectedData.appendData("MAIL FROM: test1@tailorframe.work\r\n".dataUsingEncoding(NSASCIIStringEncoding)!)
     expectedData.appendData("RCPT TO: test3@tailorframe.work\r\n".dataUsingEncoding(NSASCIIStringEncoding)!)
+    expectedData.appendData("DATA\r\n".dataUsingEncoding(NSASCIIStringEncoding)!)
+    expectedData.appendData(email.fullMessage)
+    expectedData.appendData("\r\n.\r\n".dataUsingEncoding(NSASCIIStringEncoding)!)
+    expectedData.appendData("MAIL FROM: test1@tailorframe.work\r\n".dataUsingEncoding(NSASCIIStringEncoding)!)
+    expectedData.appendData("RCPT TO: test4@tailorframe.work\r\n".dataUsingEncoding(NSASCIIStringEncoding)!)
+    expectedData.appendData("DATA\r\n".dataUsingEncoding(NSASCIIStringEncoding)!)
+    expectedData.appendData(email.fullMessage)
+    expectedData.appendData("\r\n.\r\n".dataUsingEncoding(NSASCIIStringEncoding)!)
+    expectedData.appendData("MAIL FROM: test1@tailorframe.work\r\n".dataUsingEncoding(NSASCIIStringEncoding)!)
+    expectedData.appendData("RCPT TO: test5@tailorframe.work\r\n".dataUsingEncoding(NSASCIIStringEncoding)!)
     expectedData.appendData("DATA\r\n".dataUsingEncoding(NSASCIIStringEncoding)!)
     expectedData.appendData(email.fullMessage)
     expectedData.appendData("\r\n.\r\n".dataUsingEncoding(NSASCIIStringEncoding)!)
