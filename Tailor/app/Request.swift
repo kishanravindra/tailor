@@ -293,7 +293,7 @@ public struct Request: Equatable {
     }
     lines.append(queryString)
     let stringData = lines.reduce("") { buffer, element in buffer.isEmpty ? element : buffer + "\r\n" + element }
-    let data = stringData.dataUsingEncoding(NSUTF8StringEncoding) ?? NSData()
+    let data = NSData(bytes: stringData.utf8)
     self.init(clientAddress: clientAddress, data: data)
   }
 }

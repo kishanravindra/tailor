@@ -213,13 +213,6 @@ class RequestTests: TailorTestCase {
     assert(request.requestParameters["key"], equals: "")
   }
   
-  func testInitializeWithNonUtf8CookieGetsEmptyRequest() {
-    let data = NSData(bytes: [0xD8, 0x00])
-    let badString = NSString(data: data, encoding: NSUTF16BigEndianStringEncoding)! as String
-    let request = Request(cookies: ["key": badString])
-    assert(request.data, equals: NSData())
-  }
-  
   //MARK: - Equality
   
   func testRequestsAreEqualWithSameData() {

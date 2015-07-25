@@ -6,8 +6,15 @@ public extension NSData {
 
     - parameter bytes:   The array of bytes.
     */
-  public convenience init(bytes: [UInt8]) {
-    self.init(bytes: UnsafePointer(bytes), length: sizeof(UInt8) * bytes.count)
+  public convenience init<T: CollectionType where T.Generator.Element == UInt8, T.Index.Distance == Int>(bytes: T) {
+    let length = bytes.count
+    let buffer: UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(malloc(length))
+    for (index,byte) in bytes.enumerate() {
+      buffer[index] = byte
+    }
+    self.init(bytes: buffer, length: length)
+    free(buffer)
+    
   }
   
   /**

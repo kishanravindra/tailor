@@ -36,9 +36,9 @@ public struct PasswordHasher {
   public func encrypt(input: String) -> String {
     let encodedSalt = salt.base64EncodedStringWithOptions([])
     let saltedInput = encodedSalt + input
-    let inputBytes = saltedInput.cStringUsingEncoding(NSUTF8StringEncoding) ?? []
+    let inputBytes = NSData(bytes: saltedInput.utf8)
     let hashBytes = [UInt8](count: 64, repeatedValue: 0)
-    CC_SHA512(UnsafePointer<Void>(inputBytes), UInt32(inputBytes.count), UnsafeMutablePointer<UInt8>(hashBytes))
+    CC_SHA512(inputBytes.bytes, UInt32(inputBytes.length), UnsafeMutablePointer<UInt8>(hashBytes))
     
     let encodedHash = NSData(bytes: hashBytes).base64EncodedStringWithOptions([])
     let countString = NSString(format: "%02i", encodedSalt.characters.count) as String

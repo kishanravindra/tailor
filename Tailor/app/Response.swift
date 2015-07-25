@@ -34,9 +34,7 @@ public struct Response: Equatable {
     - parameter string:  The string to add
     */
   public mutating func appendString(string: String) {
-    if let data = string.dataUsingEncoding(NSUTF8StringEncoding) {
-      self.appendData(data)
-    }
+    self.appendData(NSData(bytes: string.utf8))
   }
   
   /**
@@ -55,17 +53,15 @@ public struct Response: Equatable {
   public var data : NSData { get {
     let data = NSMutableData()
     
-    func add(string: String) {
-      if let newData = string.dataUsingEncoding(NSUTF8StringEncoding) {
-        data.appendData(newData)
-      }
+    func add(string: NSString) {
+      data.appendData(NSData(bytes: (string as String).utf8))
     }
     
-    add(NSString(format: "HTTP/1.1 %d\n", code) as String)
-    add(NSString(format: "Content-Length: %d\n", bodyData.length) as String)
+    add(NSString(format: "HTTP/1.1 %d\n", code))
+    add(NSString(format: "Content-Length: %d\n", bodyData.length))
     
     for (key,value) in self.headers {
-      add(NSString(format: "%@: %@\n", key, value) as String)
+      add(NSString(format: "%@: %@\n", key, value))
     }
     add(cookies.headerStringForChanges)
     add("\n")
