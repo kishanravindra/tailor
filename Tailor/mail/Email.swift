@@ -5,6 +5,33 @@
   it so that it can be given to an EmailDeliverer to send out.
   */
 public struct Email: Equatable {
+  /**
+    This structure represents an attachment to an email.
+    */
+  public struct Attachment: Equatable {
+    /** The MIME type for the file. */
+    public let type: String
+    
+    /** The name for the file. */
+    public let filename: String
+    
+    /** The contents of the file. */
+    public let data: NSData
+    
+    /**
+      This initializer creates an email attachment.
+
+      - parameter type:       The MIME type for the file.
+      - parameter filename:   The name for the file.
+      - parameter data:       The contents of the file.
+      */
+    public init(type: String, filename: String, data: NSData) {
+      self.type = type
+      self.filename = filename
+      self.data = data
+    }
+  }
+  
   /** The email address that is sending the message. */
   public let sender: String
   
@@ -48,8 +75,14 @@ public struct Email: Equatable {
   /** ASCII data for ?= */
   public static let headerQuoteSuffix = NSData(bytes: [0x3F, 0x3D])
   
+  /** ASCII data for -- */
+  public static let boundaryMarker = NSData(bytes: [0x2D, 0x2D])
+  
   /** The maximum length of a line in the encoded email data. */
   public static let maxLineLength = 78
+  
+  /** The attachments to the email. */
+  public var attachments: [Attachment]
   
   /**
     This initializer creates an email.
@@ -61,8 +94,9 @@ public struct Email: Equatable {
     - parameter template:   The template that we should render to provide the
                             body. If this is provided, the body parameter is
                             ignored.
+    - parameter attachments:    The attachments to the email.
     */
-  public init(from sender: String, to recipient: String? = nil, recipients: [String] = [], ccs: [String] = [], bccs: [String] = [], subject: String, body: String = "", var template: TemplateType? = nil) {
+  public init(from sender: String, to recipient: String? = nil, recipients: [String] = [], ccs: [String] = [], bccs: [String] = [], subject: String, body: String = "", var template: TemplateType? = nil, attachments: [Attachment] = []) {
     self.sender = sender
     var recipients = recipients
     if let recipient = recipient {
@@ -74,6 +108,98 @@ public struct Email: Equatable {
     self.subject = subject
     self.body = template?.generate() ?? body
     self.renderedTemplates = removeNils([template])
+    self.attachments = attachments
+  }
+  
+  /**
+    This method gets the message data for the body text, including the content
+    headers.
+    
+    - returns:  The data.
+    */
+  private func bodyMessageData() -> NSData {
+    let data = NSMutableData()
+    appendHeader(data, label: "Content-Type", value: "text/html; charset=UTF-8")
+    appendHeader(data, label: "Content-Transfer-Encoding", value: "quoted-printable")
+    data.appendData(Email.newline)
+    data.appendData(Email.encode(body))
+    return data
+  }
+  
+  /**
+    This method gets the message data for an attachment, including the content
+    headers.
+
+    - returns:  The data
+    */
+  private func attachmentMessageData(attachment: Attachment) -> NSData {
+    let data = NSMutableData()
+    appendHeader(data, label: "Content-Type", value: attachment.type)
+    appendHeader(data, label: "Content-Transfer-Encoding", value: "base64")
+    appendHeader(data, label: "Content-Disposition", value: "attachment; filename=\"\(attachment.filename)\"")
+    data.appendData(Email.newline)
+    data.appendData(attachment.data.base64EncodedDataWithOptions([.Encoding76CharacterLineLength]))
+    return data
+  }
+  
+  /**
+    This method creates a boundary for separating components in a message body.
+
+    The boundary will start with a lowercase b and will not appear anywhere in
+    any of the components.
+    */
+  private func createBoundary(components: [NSData]) -> NSData {
+    let boundary = NSMutableData(bytes: [0x62])
+    while true {
+      for component in components {
+        let range = component.rangeOfData(component, options: [], range: NSMakeRange(0, component.length))
+        if range.location != NSNotFound {
+          var newByte = 0x30 + rand() % 66
+          if newByte > 0x39 {
+            newByte += 6
+          }
+          if newByte > 0x5A {
+            newByte += 6
+          }
+          boundary.appendBytes(&newByte, length: 1)
+          continue
+        }
+      }
+      break
+    }
+    return boundary
+  }
+  
+  /**
+    This method gets a multipart message body.
+
+    - parameter components:   The data for the parts of the multipart body.
+    - parameter type:         The sub-content-type for the multipart entity.
+                              This does not include the "multipart" prefix, so
+                              for a content-type of multipart/mixed, this should
+                              be mixed.
+    - returns:                The full multipart data, including the outer
+                              headers and the components themselves.
+    */
+  private func multipartMessageData(components: [NSData], type: String) -> NSData {
+    let data = NSMutableData()
+    let boundary = createBoundary(components)
+    guard let boundaryString = NSString(data: boundary, encoding: NSASCIIStringEncoding) else {
+      fatalError("Email boundary is statically guaranteed to be ASCII-safe, but could not be encoded")
+    }
+    appendHeader(data, label: "Content-Type", value: "multipart/\(type); boundary=\"\(boundaryString)\"")
+    data.appendData(Email.newline)
+    for component in components {
+      data.appendData(Email.boundaryMarker)
+      data.appendData(boundary)
+      data.appendData(Email.newline)
+      data.appendData(component)
+      data.appendData(Email.newline)
+    }
+    data.appendData(Email.boundaryMarker)
+    data.appendData(boundary)
+    data.appendData(Email.boundaryMarker)
+    return data
   }
   
   /**
@@ -95,12 +221,15 @@ public struct Email: Equatable {
     let date = Timestamp.now().format(TimeFormat.Rfc2822)
     appendHeader(messageData, label: "Date", value: date)
     
-    appendHeader(messageData, label: "Content-Type", value: "text/html; charset=UTF-8")
-    appendHeader(messageData, label: "Content-Transfer-Encoding", value: "quoted-printable")
     appendHeader(messageData, label: "Subject", value: subject)
-    messageData.appendData(Email.newline)
     
-    messageData.appendData(Email.encode(body))
+    if attachments.isEmpty {
+      messageData.appendData(self.bodyMessageData())
+    }
+    else {
+      let components = [self.bodyMessageData()] + attachments.map { self.attachmentMessageData($0) }
+      messageData.appendData(multipartMessageData(components, type: "mixed"))
+    }
     return messageData
   }
   
@@ -120,7 +249,7 @@ public struct Email: Equatable {
     let fullHeader = label + ": " + value
     
     if let asciiData = fullHeader.dataUsingEncoding(NSASCIIStringEncoding) {
-      if asciiData.length < Email.maxLineLength {
+      if asciiData.length < Email.maxLineLength || label != "Subject" {
         data.appendData(asciiData)
         data.appendData(Email.newline)
         return
@@ -135,7 +264,6 @@ public struct Email: Equatable {
     data.appendData(Email.headerQuoteSuffix)
     data.appendData(Email.newline)
   }
-  
   
   /**
     This method encodes text so that it can be put in an email message.
@@ -235,4 +363,15 @@ public func ==(lhs: Email, rhs: Email) -> Bool {
     lhs.sender == rhs.sender &&
     lhs.recipients == rhs.recipients &&
     lhs.subject == rhs.subject
+}
+
+/**
+  This method determines if two email attachments are equal.
+
+  - parameter lhs:    The left-hand side of the comparison.
+  - parameter rhs:    The right-hand side of the comparison.
+  - returns:          Whether the two email attachments are equal.
+  */
+public func ==(lhs: Email.Attachment, rhs: Email.Attachment) -> Bool {
+  return lhs.type == rhs.type && lhs.filename == rhs.filename && lhs.data == rhs.data
 }
