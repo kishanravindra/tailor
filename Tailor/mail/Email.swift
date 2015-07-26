@@ -7,7 +7,8 @@
   NOTE: This system does not do any validation on the data in the email address
   fields. It will be passed directly to the email agent. If any of the address
   sections (sender, recipients, ccs, bccs) contains non-ASCII data, that entire
-  section will be left empty.
+  section may be encoded in a way that causes them to get rejected by their
+  recipients.
   */
 public struct Email: Equatable {
   /**
