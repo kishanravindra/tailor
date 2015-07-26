@@ -22,10 +22,13 @@ public final class MemoryEmailAgent: EmailAgent {
   /**
     This method delivers an email.
 
-    - parameter email:  The email to deliver.
+    - parameter email:      The email to deliver.
+    - parameter callback:   A callback to call with the result of trying to
+                            deliver the email.
     */
-  public func deliver(email: Email) {
+  public func deliver(email: Email, callback: Email.ResultHandler) {
     MemoryEmailAgent.deliveries.append(email)
+    callback(success: true, code: 0, message: "")
   }
   
   /** The emails that have been delivered with this agent. */

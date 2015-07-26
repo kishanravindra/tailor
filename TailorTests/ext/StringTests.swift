@@ -62,4 +62,19 @@ class StringTests: TailorTestCase {
     let pattern = "[a-z]*\\.[a-z]{3}"
     XCTAssertTrue(string.matches(pattern, allowPartial: true), "finds a match")
   }
+  
+  func testLastComponentWithMultipleMatchesGetsLastMatch() {
+    let string = "abc123def123gef"
+    assert(string.lastComponent(separator: "123"), equals: "gef")
+  }
+  
+  func testLastComponentWithMultipleMatchesWithNoMatchesGetsEntireString() {
+    let string = "abcdef"
+    assert(string.lastComponent(separator: "123"), equals: "abcdef")
+  }
+  
+  func testLastComponentWithEmptyStringGetsEmptyString() {
+    let string = ""
+    assert(string.lastComponent(separator: "123"), equals: "")
+  }
 }

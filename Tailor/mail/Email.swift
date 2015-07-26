@@ -3,8 +3,23 @@
 
   It is responsible for capturing the information about an email and formatting
   it so that it can be given to an EmailDeliverer to send out.
+
+  NOTE: This system does not do any validation on the data in the email address
+  fields. It will be passed directly to the email agent. If any of the address
+  sections (sender, recipients, ccs, bccs) contains non-ASCII data, that entire
+  section will be left empty.
   */
 public struct Email: Equatable {
+  /**
+    A handler for processing results from the email agent.
+  
+    - parameter success:    Whether the email was sent successfully.
+    - parameter code:       An error code identifying the problem.
+    - parameter message:    An error message describing the problem sending the
+                            email.
+    */
+  public typealias ResultHandler = (success: Bool, code: Int, message: String)->Void
+  
   /**
     This structure represents an attachment to an email.
     */
@@ -339,12 +354,24 @@ public struct Email: Equatable {
   
   /**
     This method delivers the email using the shared email agent.
-  
-    You can get the shared email agent directly by calling
-    `Application.sharedEmailAgent`.
+    
+    - parameter callback:   A callback that will be called with the result of
+                            sending the email. If this is not provided, we will
+                            log any failures and ignore any successes.
     */
-  public func deliver() {
-    Application.sharedEmailAgent().deliver(self)
+  public func deliver(callback: ResultHandler? = nil) {
+    let agent = Application.sharedEmailAgent()
+    if let callback = callback {
+      agent.deliver(self, callback: callback)
+    }
+    else {
+      agent.deliver(self) {
+        (success: Bool, code: Int, message: String)->Void in
+        if success == false {
+          NSLog("Error delivering email: \(code) \(message)")
+        }
+      }
+    }
   }
 }
 

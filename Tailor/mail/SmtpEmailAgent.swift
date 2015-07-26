@@ -46,12 +46,13 @@ public final class SmtpEmailAgent: EmailAgent {
     This will use curl to connect to the server. You must have curl installed in
     /usr/bin/curl.
 
-    The delivery will be done asynchronously. Any errors will be logged to the
-    standard log.
+    The delivery will be done asynchronously.
 
-    - parameter email:    The email that we are sending.
+    - parameter email:      The email that we are sending.
+    - parameter callback:   A callback to call with the result of trying to
+                            deliver the message.
     */
-  public func deliver(email: Email) {
+  public func deliver(email: Email, callback: Email.ResultHandler) {
     for recipient in email.allRecipients {
       let arguments =  [
         "smtps://\(host)",
@@ -67,11 +68,15 @@ public final class SmtpEmailAgent: EmailAgent {
       ]
       let process = ExternalProcess(launchPath: "/usr/bin/curl", arguments: arguments) {
         terminationStatus, data in
-          if terminationStatus != 0 {
-            let lastLine = data.componentsSeparatedByString("curl:").last ?? NSData()
-            let response = NSString(data: lastLine, encoding: NSASCIIStringEncoding) ?? ""
-            NSLog("Error sending email via SMTP: %@", response)
-          }
+        
+        let fullResponse = NSString(data: data, encoding: NSUTF8StringEncoding) as? String ?? ""
+        let lastLine = fullResponse.lastComponent(separator: "curl:")
+        if terminationStatus == 0 {
+          callback(success: true, code: terminationStatus, message: "")
+        }
+        else {
+          callback(success: false, code: terminationStatus, message: lastLine)
+        }
       }
       process.launch()
       

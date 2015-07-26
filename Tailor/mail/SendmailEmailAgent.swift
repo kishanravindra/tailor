@@ -20,10 +20,18 @@ public final class SendmailEmailAgent: EmailAgent {
     This will run a sendmail command andfeed it the email over its standard
     input.
     
-    - parameter email:    The email to deliver.
+    - parameter email:      The email to deliver.
+    - parameter callback:   A callback to call with the result of trying to
+                            deliver the email.
     */
-  public func deliver(email: Email) {
-    let process = ExternalProcess(launchPath: "/usr/sbin/sendmail", arguments: ["-bs"])
+  public func deliver(email: Email, callback: Email.ResultHandler) {
+    let process = ExternalProcess(launchPath: "/usr/sbin/sendmail", arguments: ["-bs"]) {
+      code, data in
+      let response = NSString(data: data, encoding: NSUTF8StringEncoding) as? String ?? ""
+      let lastLine = response.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()) .lastComponent(separator: "\n")
+      let success = lastLine.hasPrefix("250")
+      callback(success: success, code: (success ? 0 : 1), message: response)
+    }
     process.launch()
 
     for recipient in email.allRecipients {
@@ -33,5 +41,6 @@ public final class SendmailEmailAgent: EmailAgent {
       process.writeData(email.fullMessage)
       process.writeString("\r\n.\r\n")
     }
+    process.closeInput()
   }
 }

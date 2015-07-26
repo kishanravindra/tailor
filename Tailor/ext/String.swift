@@ -60,4 +60,23 @@ public extension String {
     let results = expression.numberOfMatchesInString(self, options: [], range: range)
     return results > 0
   }
+  
+  /**
+    This method gets the last component of this string, once it is separated by
+    a separator.
+  
+    If the separator does not occur in the string, this will return the entire
+    string.
+
+    - parameter separator:    The string to use as a separator.
+    - returns:                The last component
+    */
+  public func lastComponent(separator separator: String) -> String {
+    if let range = self.rangeOfString(separator, options: [.BackwardsSearch], range: nil, locale: nil) {
+      return self.substringFromIndex(range.endIndex)
+    }
+    else {
+      return self
+    }
+  }
 }

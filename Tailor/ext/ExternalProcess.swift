@@ -39,9 +39,20 @@ internal struct ExternalProcess: Equatable {
     self.callback = callback
   }
   
+  /**
+    This method launches the process.
+
+    In stub mode, this will add this process to the list of stubbed processes
+    and call the callback with the global stubResult.
+
+    In non-stub mode, this will call the actual process, and call the callback
+    later on with the results of that process.
+    */
   internal func launch() {
     if ExternalProcess.stubbing {
       EXTERNAL_PROCESS_STUBS.append(self)
+      let result = ExternalProcess.stubResult
+      self.callback(result.0, result.1)
     }
     else {
       let task = NSTask()
@@ -142,6 +153,18 @@ internal struct ExternalProcess: Equatable {
   internal static var stubs: [ExternalProcess] {
     return EXTERNAL_PROCESS_STUBS
   }
+  
+  /**
+    The result of a stubbed process.
+    */
+  internal static var stubResult: (Int,NSData) {
+    get {
+      return EXTERNAL_PROCESS_STUB_RESULT
+    }
+    set {
+      EXTERNAL_PROCESS_STUB_RESULT = newValue
+    }
+  }
 }
 
 /**
@@ -163,3 +186,6 @@ private var EXTERNAL_PROCESS_STUB_MODE = false
 
 /** The processes that have been launched since we started stubbing. */
 private var EXTERNAL_PROCESS_STUBS = [ExternalProcess]()
+
+/** The values that should provide as the result of the process. */
+private var EXTERNAL_PROCESS_STUB_RESULT = (0, NSData())

@@ -1,5 +1,6 @@
 @testable import Tailor
 import TailorTesting
+import XCTest
 
 class EmailTests: TailorTestCase {
   struct TestTemplate: TemplateType {
@@ -239,6 +240,42 @@ class EmailTests: TailorTestCase {
     let email = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com", subject: "Yo", body: "Yo dawg")
     email.deliver()
     assert(MemoryEmailAgent.deliveries, equals: [email])
+  }
+  
+  func testDeliverWithNoCallbackLogsError() {
+    class TestEmailAgent: EmailAgent {
+      convenience init() { self.init([:]) }
+      required init(_ config: [String:String]) {}
+      func deliver(email: Email, callback: Email.ResultHandler) {
+        callback(success: false, code: 123, message: "bad")
+      }
+    }
+    
+    SHARED_EMAIL_AGENT = TestEmailAgent()
+    let email = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com", subject: "Yo", body: "Yo dawg")
+    email.deliver()
+  }
+  
+  func testDeliverGivesCallbackToEmailAgent() {
+    class TestEmailAgent: EmailAgent {
+      convenience init() { self.init([:]) }
+      required init(_ config: [String:String]) {}
+      func deliver(email: Email, callback: Email.ResultHandler) {
+        callback(success: false, code: 123, message: "bad")
+      }
+    }
+    
+    SHARED_EMAIL_AGENT = TestEmailAgent()
+    let email = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com", subject: "Yo", body: "Yo dawg")
+    let expectation = expectationWithDescription("callback called")
+    email.deliver() {
+      success, code, message in
+      expectation.fulfill()
+      XCTAssertFalse(success)
+      XCTAssertEqual(code, 123)
+      XCTAssertEqual(message, "bad")
+    }
+    waitForExpectationsWithTimeout(0.1, handler: nil)
   }
   
   func testEmailsWithSameInformationAreEqual() {

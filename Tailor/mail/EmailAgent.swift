@@ -12,9 +12,11 @@ public protocol EmailAgent: class {
   /**
     This method delivers an email.
   
-    - parameter email:    The email to deliver.
+    - parameter email:      The email to deliver.
+    - parameter callback:   A callback that will be called with the result of
+                            trying to deliver the email.
     */
-  func deliver(email: Email)
+  func deliver(email: Email, callback: Email.ResultHandler)
 }
 
 extension Application {

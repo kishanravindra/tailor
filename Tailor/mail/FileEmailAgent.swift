@@ -25,25 +25,14 @@ public final class FileEmailAgent: EmailAgent {
   }
   
   /**
-    This enum captures the errors that can be thrown when deliverying email.
-    */
-  public enum Errors: ErrorType {
-    /** An error creating the stream. */
-    case ErrorOpeningFile
-    
-    /** An unknown error writing to the stream. */
-    case ErrorWritingToFile
-  }
-  
-  /**
     This method delivers an email.
   
     - parameter email:    The email to deliver.
     */
-  public func deliver(email: Email) {
+  public func deliver(email: Email, callback: Email.ResultHandler) {
     let data = email.fullMessage
     guard let stream = NSOutputStream(toFileAtPath: self.path, append: true) else {
-      NSLog("Error opening email file")
+      callback(success: false, code: 1, message: "Error opening email file")
       return
     }
     var bytesWritten = 0
@@ -52,7 +41,7 @@ public final class FileEmailAgent: EmailAgent {
     while bytesWritten < data.length {
       let newBytes = stream.write(buffer, maxLength: data.length - bytesWritten)
       if newBytes == -1 {
-        NSLog("Error writing to email file")
+        callback(success: false, code: 1, message: "Error writing to email file")
         return
       }
       bytesWritten += newBytes
@@ -61,5 +50,6 @@ public final class FileEmailAgent: EmailAgent {
     var closingBytes: [UInt8] = [13, 10]
     stream.write(&closingBytes, maxLength: 2)
     stream.close()
+    callback(success: true, code: 0, message: "")
   }
 }

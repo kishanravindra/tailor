@@ -24,6 +24,22 @@ class ExternalProcessTests: TailorTestCase {
     assert(ExternalProcess.stubs, equals: [process])
   }
   
+  func testLaunchInStubModeCallsCallbackWithStubResult() {
+    ExternalProcess.startStubbing()
+    let path = "/tmp/stub_test.txt"
+    do { try NSFileManager.defaultManager().removeItemAtPath(path) } catch {}
+    ExternalProcess.stubResult = (123, NSData(bytes: [1,2,3,4]))
+    let expectation = expectationWithDescription("callback called")
+    let process = ExternalProcess(launchPath: "/usr/bin/touch", arguments: [path]) {
+      code,data in
+      expectation.fulfill()
+      XCTAssertEqual(code, 123)
+      XCTAssertEqual(data, NSData(bytes: [1,2,3,4]))
+    }
+    process.launch()
+    waitForExpectationsWithTimeout(0.1, handler: nil)
+  }
+  
   func testLaunchInStubModeDoesNotLaunchTask() {
     ExternalProcess.startStubbing()
     let path = "/tmp/stub_test.txt"
