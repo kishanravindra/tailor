@@ -1,14 +1,7 @@
 /**
   This protocol describes a system for delivering email.
   */
-public protocol EmailAgent: class {
-  /**
-    This initializer creates an email deliverer.
-  
-    - parameter config:   The application configuration for email delivery.
-    */
-  init(_: [String:String])
-  
+public protocol EmailAgent {
   /**
     This method delivers an email.
   
@@ -36,9 +29,7 @@ extension Application {
     */
   public static func sharedEmailAgent() -> EmailAgent {
     guard let agent = SHARED_EMAIL_AGENT else {
-      let config = self.sharedApplication().configuration.child("email").toDictionary() as? [String:String] ?? [:]
-      let klass = NSClassFromString(config["klass"] ?? "") as? EmailAgent.Type ?? FileEmailAgent.self
-      let agent = klass.init(config)
+      let agent = Application.configuration.emailAgent()
       SHARED_EMAIL_AGENT = agent
       return agent
     }

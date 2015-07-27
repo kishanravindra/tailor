@@ -9,13 +9,13 @@ class SmptEmailAgentTests: TailorTestCase {
   }
   
   func testInitializeWithAllFieldsSetsFields() {
-    let agent = SmtpEmailAgent([
-      "host": "tailorframe.work",
-      "username": "jim",
-      "password": "Monkey",
-      "ssl": "false",
-      "port": "123"
-    ])
+    let agent = SmtpEmailAgent(
+      host: "tailorframe.work",
+      username: "jim",
+      password: "Monkey",
+      ssl: false,
+      port: 123
+    )
     assert(agent.host, equals: "tailorframe.work")
     assert(agent.username, equals: "jim")
     assert(agent.password, equals: "Monkey")
@@ -23,29 +23,12 @@ class SmptEmailAgentTests: TailorTestCase {
     assert(agent.port, equals: 123)
   }
   
-  func testInitializeWithNoFieldsSetsDefaults() {
-    let agent = SmtpEmailAgent([:])
-    assert(agent.host, equals: "")
-    assert(agent.username, equals: "")
-    assert(agent.password, equals: "")
-    assert(agent.port, equals: 465)
-    assert(agent.ssl, equals: true)
-  }
-  
-  func testInitializeWithNoPortWithoutSslUsesCorrectPort() {
-    let agent = SmtpEmailAgent(["ssl": "false"])
-    assert(agent.ssl, equals: false)
-    assert(agent.port, equals: 587)
-  }
-  
   func testDeliverWithSingleRecipientCallsCurl() {
-    let agent = SmtpEmailAgent([
-      "host": "tailorframe.work",
-      "username": "jim",
-      "password": "Monkey",
-      "ssl": "false",
-      "port": "123"
-      ])
+    let agent = SmtpEmailAgent(
+      host: "tailorframe.work",
+      username: "jim",
+      password: "Monkey"
+    )
     let email = Email(from: "jim+mail@tailorframe.work", to: "jane@gmail.com", subject: "Greetings", body: "How are you doing?")
     agent.deliver(email) {
       _,_,_ in
@@ -71,13 +54,11 @@ class SmptEmailAgentTests: TailorTestCase {
   }
   
   func testDeliverWithMultipleRecipientCallsCurlMultipleTimes() {
-    let agent = SmtpEmailAgent([
-      "host": "tailorframe.work",
-      "username": "jim",
-      "password": "Monkey",
-      "ssl": "false",
-      "port": "123"
-      ])
+    let agent = SmtpEmailAgent(
+      host: "tailorframe.work",
+      username: "jim",
+      password: "Monkey"
+      )
     let email = Email(from: "jim+mail@tailorframe.work", recipients: ["jane@gmail.com", "john@gmail.com"], ccs: ["george@tailorframe.work", "bob@tailorframe.work"], bccs: ["alice@tailorframe.work"], subject: "Greetings", body: "How are you doing?")
     agent.deliver(email){
       _,_,_ in
@@ -109,7 +90,11 @@ class SmptEmailAgentTests: TailorTestCase {
   }
   
   func testDeliverWithSuccessfulResponseGivesSuccessfulResponse() {
-    let agent = SmtpEmailAgent([:])
+    let agent = SmtpEmailAgent(
+      host: "tailorframe.work",
+      username: "jim",
+      password: "Monkey"
+    )
     let email = Email(from: "jim+mail@tailorframe.work", to: "jane@gmail.com", subject: "Greetings", body: "How are you doing?")
     ExternalProcess.stubResult = (0, NSData(bytes: "Sending info\ncurl:All cool".utf8))
     let expectation = expectationWithDescription("callback called")
@@ -124,7 +109,11 @@ class SmptEmailAgentTests: TailorTestCase {
   }
   
   func testDeliverWithUnsuccessfulResponseGivesUnsuccessfulResponse() {
-    let agent = SmtpEmailAgent([:])
+    let agent = SmtpEmailAgent(
+      host: "tailorframe.work",
+      username: "jim",
+      password: "Monkey"
+    )
     let email = Email(from: "jim+mail@tailorframe.work", to: "jane@gmail.com", subject: "Greetings", body: "How are you doing?")
     ExternalProcess.stubResult = (1, NSData(bytes: "Sending info\ncurl:No can do".utf8))
     let expectation = expectationWithDescription("callback called")
@@ -139,7 +128,11 @@ class SmptEmailAgentTests: TailorTestCase {
   }
   
   func testDeliverWithNonAsciiResponseGivesEmptyStringForResponse() {
-    let agent = SmtpEmailAgent([:])
+    let agent = SmtpEmailAgent(
+      host: "tailorframe.work",
+      username: "jim",
+      password: "Monkey"
+    )
     let email = Email(from: "jim+mail@tailorframe.work", to: "jane@gmail.com", subject: "Greetings", body: "How are you doing?")
     ExternalProcess.stubResult = (0, NSData(bytes: [0xff]))
     let expectation = expectationWithDescription("callback called")

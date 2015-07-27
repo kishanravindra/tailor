@@ -84,9 +84,18 @@ class CacheStoreTests: TailorTestCase {
   }
   
   func testSharedCacheStoreWithConfigurationSettingReturnsThatType() {
-    Application.sharedApplication().configuration["cache.class"] = "Tailor.CacheStore"
+    class MyCacheStore: CacheImplementation {
+      required init() {}
+      func read(key: String) -> String? {
+        return nil
+      }
+      func write(key: String, value: String, expireIn: TimeInterval?) {}
+      func clear(key: String) {}
+      func clear() {}
+    }
+    Application.configuration.cacheStore = { return MyCacheStore() }
     let store = Application.cache
-    assert(typeName(store.dynamicType), equals: "Tailor.CacheStore", message: "returns a cache store with the specified type")
+    assert(store is MyCacheStore)
   }
   
   func testSharedCacheStoreOnlyCreatesOneStore() {

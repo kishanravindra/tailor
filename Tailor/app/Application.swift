@@ -36,6 +36,12 @@ public class Application {
       */
     public var databaseDriver: (Void->DatabaseDriver)? = nil
     
+    /** A function for creating the cache store for the application. */
+    public var cacheStore: (Void->CacheImplementation) = { MemoryCacheStore() }
+    
+    /** A function for creating the email agent for the application. */
+    public var emailAgent: (Void->EmailAgent) = { FileEmailAgent() }
+    
     /**
       This initializer creates a configuration setting object with the default
       values.

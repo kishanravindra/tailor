@@ -4,16 +4,13 @@
   This assumes that you have sendmail defined at `/usr/sbin/sendmail`. If you
   don't, this will cause a fatal error.
   */
-public final class SendmailEmailAgent: EmailAgent {
+public struct SendmailEmailAgent: EmailAgent {
   /**
-    This initializer creates a sendmail agent.
-
-    - parameter config:   The application's mail config.
+    This initializer creates an email agent.
     */
-  public init(_ config: [String: String]) {
+  public init() {
   }
-  
-  
+
   /**
     This method delivers an email with sendmail.
 

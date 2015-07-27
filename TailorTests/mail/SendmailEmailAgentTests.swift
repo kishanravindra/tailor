@@ -10,7 +10,7 @@ class SendmailEmailAgentTests: TailorTestCase {
   
   func testSendmailAgentSendsSmtpCommandsToTask() {
     let email = Email(from: "test1@tailorframe.work", to: "test2@tailorframe.work", subject: "Hello", body: "Greetings")
-    let agent = SendmailEmailAgent([:])
+    let agent = SendmailEmailAgent()
     agent.deliver(email){
       _,_,_ in
     }
@@ -35,7 +35,7 @@ class SendmailEmailAgentTests: TailorTestCase {
   func testSendmailAgentSendsSeparateEmailsForMultipleRecipients() {
     let email = Email(from: "test1@tailorframe.work", recipients: ["test2@tailorframe.work", "test3@tailorframe.work"], ccs: ["test4@tailorframe.work"], bccs: ["test5@tailorframe.work"], subject: "Hello", body: "Greetings")
     
-    let agent = SendmailEmailAgent([:])
+    let agent = SendmailEmailAgent()
     agent.deliver(email){
       _,_,_ in
     }
@@ -77,7 +77,7 @@ class SendmailEmailAgentTests: TailorTestCase {
   
   func testSendmailAgentCallsWithOkResponseGivesSuccessfulResult() {
     let email = Email(from: "test1@tailorframe.work", to: "test2@tailorframe.work", subject: "Hello", body: "Greetings")
-    let agent = SendmailEmailAgent([:])
+    let agent = SendmailEmailAgent()
     let expectation = expectationWithDescription("callback called")
     let message = "250 2.1.0 Ok\r\n250 2.1.5 Ok\r\n354 End data with <CR><LF>.<CR><LF>\r\n250 2.0.0 Ok: queued as 8139FC52951"
     ExternalProcess.stubResult = (0, NSData(bytes: message.utf8))
@@ -94,7 +94,7 @@ class SendmailEmailAgentTests: TailorTestCase {
   
   func testSendmailAgentCallsWithOkResponseWithStrayNewlineGivesSuccessfulResult() {
     let email = Email(from: "test1@tailorframe.work", to: "test2@tailorframe.work", subject: "Hello", body: "Greetings")
-    let agent = SendmailEmailAgent([:])
+    let agent = SendmailEmailAgent()
     let expectation = expectationWithDescription("callback called")
     let message = "250 2.1.0 Ok\r\n250 2.1.5 Ok\r\n354 End data with <CR><LF>.<CR><LF>\r\n250 2.0.0 Ok: queued as 8139FC52951\n"
     ExternalProcess.stubResult = (0, NSData(bytes: message.utf8))
@@ -111,7 +111,7 @@ class SendmailEmailAgentTests: TailorTestCase {
   
   func testSendmailAgentCallsWithErrorResponseGivesUnsuccessfulResult() {
     let email = Email(from: "test1@tailorframe.work", to: "test2@tailorframe.work", subject: "Hello", body: "Greetings")
-    let agent = SendmailEmailAgent([:])
+    let agent = SendmailEmailAgent()
     let expectation = expectationWithDescription("callback called")
     let message = "250 2.1.0 Ok\r\n554 5.5.1 Error: no valid recipients\r\n221 2.7.0 Error: I can break rules, too. Goodbye."
     ExternalProcess.stubResult = (0, NSData(bytes: message.utf8))
@@ -128,7 +128,7 @@ class SendmailEmailAgentTests: TailorTestCase {
   
   func testSendmailAgentWithNonUtf8ResponseHasEmptyMessage() {
     let email = Email(from: "test1@tailorframe.work", to: "test2@tailorframe.work", subject: "Hello", body: "Greetings")
-    let agent = SendmailEmailAgent([:])
+    let agent = SendmailEmailAgent()
     let expectation = expectationWithDescription("callback called")
     ExternalProcess.stubResult = (1, NSData(bytes: [0xFF]))
     agent.deliver(email) {

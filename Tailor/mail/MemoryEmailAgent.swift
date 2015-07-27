@@ -1,5 +1,3 @@
-import Foundation
-
 /**
   This class provides an email system that stores emails in a global list in
   memory.
@@ -7,16 +5,11 @@ import Foundation
   This can be useful in testing, since it allows you to easily confirm that an
   email has been sent.
   */
-public final class MemoryEmailAgent: EmailAgent {
+public struct MemoryEmailAgent: EmailAgent {
   /**
     This initializer creates an email agent.
-  
-    It does not use any configuration settings.
-  
-    - parameter config:   The application configuration.
     */
-  public init(_ config: [String:String]) {
-    
+  public init() {
   }
   
   /**

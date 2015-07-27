@@ -5,7 +5,7 @@ import XCTest
 class MemoryEmailAgentTests: TailorTestCase {
   func testDeliverAddsEmailToDeliveries() {
     let email = Email(from: "test1@tailorframe.work", to: "test2@tailorframe.work", subject: "Welcome", body: "Welcome to our site")
-    let agent = MemoryEmailAgent([:])
+    let agent = MemoryEmailAgent()
     MemoryEmailAgent.deliveries = []
     agent.deliver(email) {
       result,code,message in
@@ -19,7 +19,7 @@ class MemoryEmailAgentTests: TailorTestCase {
   func testDeliverAppendsEmails() {
     let email1 = Email(from: "test1@tailorframe.work", to: "test2@tailorframe.work", subject: "Welcome", body: "Welcome to our site")
     let email2 = Email(from: "test1@tailorframe.work", to: "test2@tailorframe.work", subject: "Goodbye", body: "Sorry you are leaving our site")
-    let agent = MemoryEmailAgent([:])
+    let agent = MemoryEmailAgent()
     MemoryEmailAgent.deliveries = []
     agent.deliver(email1) {_,_,_ in}
     agent.deliver(email2) {_,_,_ in}

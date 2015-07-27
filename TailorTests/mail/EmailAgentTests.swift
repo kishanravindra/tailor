@@ -4,64 +4,27 @@ import XCTest
 
 class EmailAgentTests: TailorTestCase {
   func testSharedEmailAgentCreatesEmailAgentBasedOnConfiguration() {
-    final class MyAgent: EmailAgent {
-      init(_ config: [String:String]) {
-        if let value = config["testKey"] {
-          XCTAssertEqual(value, "testValue")
-        }
-        else {
-          XCTFail("Did not send a configuration key for testKey")
-        }
-      }
+    struct MyAgent: EmailAgent {
       func deliver(email: Email, callback: Email.ResultHandler) {
         
       }
     }
     SHARED_EMAIL_AGENT = nil
-    Application.sharedApplication().configuration.child("email").addDictionary([
-      "klass": NSStringFromClass(MyAgent),
-      "testKey": "testValue"
-    ])
+    Application.configuration.emailAgent = { MyAgent() }
     let emailAgent = Application.sharedEmailAgent()
     assert(emailAgent is MyAgent)
   }
   
   func testSharedEmailAgentDefaultsToFileEmailAgent() {
     SHARED_EMAIL_AGENT = nil
-    Application.sharedApplication().configuration["email"] = nil
-    let emailAgent = Application.sharedEmailAgent()
-    assert(emailAgent is FileEmailAgent)
-  }
-  
-  func testSharedEmailAgentWithIllFormattedDictioanryDefaultsToFileEmailAgent() {
-    SHARED_EMAIL_AGENT = nil
-    final class MyAgent: EmailAgent {
-      init(_ config: [String:String]) {
-        if let value = config["testKey"] {
-          XCTAssertEqual(value, "testValue")
-        }
-        else {
-          XCTFail("Did not send a configuration key for testKey")
-        }
-      }
-      func deliver(email: Email, callback: Email.ResultHandler) {
-        
-      }
-    }
-    Application.sharedApplication().configuration.child("email").addDictionary([
-      "klass": NSStringFromClass(MyAgent),
-      "testKey": [
-        "a": "b",
-        "c": "d"
-      ]])
     let emailAgent = Application.sharedEmailAgent()
     assert(emailAgent is FileEmailAgent)
   }
   
   func testSharedEmailAgentStoresValuesForSubsequentCalls() {
-    final class MyAgent: EmailAgent {
+    struct MyAgent: EmailAgent {
       static var calls = 0
-      init(_ config: [String:String]) {
+      init() {
         MyAgent.calls += 1
       }
       func deliver(email: Email, callback: Email.ResultHandler) {
@@ -69,10 +32,7 @@ class EmailAgentTests: TailorTestCase {
       }
     }
     SHARED_EMAIL_AGENT = nil
-    Application.sharedApplication().configuration.child("email").addDictionary([
-      "klass": NSStringFromClass(MyAgent),
-      "testKey": "testValue"
-      ])
+    Application.configuration.emailAgent = { return MyAgent() }
     _ = Application.sharedEmailAgent()
     _ = Application.sharedEmailAgent()
     assert(MyAgent.calls, equals: 1)

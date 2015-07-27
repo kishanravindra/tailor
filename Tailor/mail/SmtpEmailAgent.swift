@@ -1,7 +1,7 @@
 /**
   This class provides an agent for delivering email via SMTP.
   */
-public final class SmtpEmailAgent: EmailAgent {
+public struct SmtpEmailAgent: EmailAgent {
   /** The sender's email host. */
   public let host: String
   
@@ -19,25 +19,19 @@ public final class SmtpEmailAgent: EmailAgent {
   
   /**
     This initializer creates an SMTP email agent.
-
-    This accepts the following config keys:
-
-    - host: The sender's email host. The default is an empty string.
-    - username: The sender's username. The default is an empty string.
-    - password: The sender's password. The default is an empty string.
-    - ssl: Whether to connect over ssl. This must be either "true" or "false".
-    - port: The port to connect on. The default is 465 for SSL connections and
-      587 for non-SSL connections.
-
-    - parameter config:   The application's email configuration.
+  
+    - parameter host:     The sender's email host.
+    - parameter username: The sender's username.
+    - parameter password: The sender's password.
+    - parameter ssl:      Whether to connect over ssl.
+    - parameter port:     The port to connect on.
     */
-  public init(_ config: [String:String]) {
-    host = config["host"] ?? ""
-    username = config["username"] ?? ""
-    password = config["password"] ?? ""
-    let ssl = config["ssl"] ?? "true" == "true"
+  public init(host: String, username: String, password: String, ssl: Bool = true, port: Int = 465) {
+    self.host = host
+    self.username = username
+    self.password = password
     self.ssl = ssl
-    port = Int(config["port"] ?? "") ?? (ssl ? 465 : 587)
+    self.port = port
   }
   
   /**

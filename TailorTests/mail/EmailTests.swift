@@ -235,7 +235,7 @@ class EmailTests: TailorTestCase {
   }
   
   func testDeliverDeliversEmailWithSharedAgent() {
-    SHARED_EMAIL_AGENT = MemoryEmailAgent([:])
+    SHARED_EMAIL_AGENT = MemoryEmailAgent()
     MemoryEmailAgent.deliveries = []
     let email = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com", subject: "Yo", body: "Yo dawg")
     email.deliver()

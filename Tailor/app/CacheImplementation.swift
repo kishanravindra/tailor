@@ -115,9 +115,7 @@ extension Application {
     */
   public static var cache: CacheImplementation {
     guard let store = SHARED_CACHE_STORE else {
-      let name = Application.sharedApplication().configuration["cache.class"] ?? "MemoryCacheStore"
-      let type = NSClassFromString(name) as? CacheImplementation.Type ?? MemoryCacheStore.self
-      let store = type.init()
+      let store = Application.configuration.cacheStore()
       SHARED_CACHE_STORE = store
       return store
     }

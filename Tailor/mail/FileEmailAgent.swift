@@ -6,22 +6,17 @@
   real email addresses is likely undesireable. It is the default delivery
   system.
   */
-public final class FileEmailAgent: EmailAgent {
+public struct FileEmailAgent: EmailAgent {
   /** The path to the file where this agent will store the email contents. */
   public let path: String
   
   /**
-    This initializer creates an email deliverer from the application
-    configuration.
-
-    This looks for the following configuration settings:
-
-    * +path+: The path to the file to store the emails in.
-
-    - parameter config: The application configuration
+    This initializer creates an email agent for storing emails in a file.
+  
+    - parameter path: The path to the file to store the emails in.
     */
-  public init(_ config: [String:String]) {
-    self.path = config["path"] ?? "/tmp/mail.txt"
+  public init(path: String = "/tmp/mail.txt") {
+    self.path = path
   }
   
   /**

@@ -4,17 +4,17 @@ import XCTest
 
 class FileEmailAgentTests: TailorTestCase {
   func testInitializationWithFullConfigSetsFields() {
-    let agent = FileEmailAgent(["path": "/tmp/test_mail.txt"])
+    let agent = FileEmailAgent(path: "/tmp/test_mail.txt")
     assert(agent.path, equals: "/tmp/test_mail.txt")
   }
   
   func testInitializationWithoutPathSetsDefaultPath() {
-    let agent = FileEmailAgent([:])
+    let agent = FileEmailAgent()
     assert(agent.path, equals: "/tmp/mail.txt")
   }
   
   func testDeliverWithValidPathStoresContentsInFile() {
-    let agent = FileEmailAgent([:])
+    let agent = FileEmailAgent()
     do {
       try NSFileManager.defaultManager().removeItemAtPath(agent.path)
     }
@@ -38,7 +38,7 @@ class FileEmailAgentTests: TailorTestCase {
   }
   
   func testDeliverAppendsMultipleMessagesToOneFile() {
-    let agent = FileEmailAgent([:])
+    let agent = FileEmailAgent()
     do {
       try NSFileManager.defaultManager().removeItemAtPath(agent.path)
     }
@@ -74,7 +74,7 @@ class FileEmailAgentTests: TailorTestCase {
   }
   
   func testDeliverWithInvalidPathCallsCallbackWithError() {
-    let agent = FileEmailAgent(["path": "/rootfile"])
+    let agent = FileEmailAgent(path: "/rootfile")
     let email1 = Email(from: "test1@tailorframe.work", to: "test2@tailorframe.work", subject: "Exciting Offer", body: "<h1>Hi!</h1><p>I have an exciting offer for you</p>")
     let expectation = expectationWithDescription("callback called")
     agent.deliver(email1) {
