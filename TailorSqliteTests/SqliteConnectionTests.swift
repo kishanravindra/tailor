@@ -6,6 +6,11 @@ import XCTest
 class SqliteConnectionTests: TailorTestCase {
   lazy var connection: SqliteConnection = Application.sharedDatabaseConnection() as! SqliteConnection
   
+  @available(*, deprecated) func testInitializationWithConfigCreatesConnection() {
+    let connection = SqliteConnection(config: ["path": "sqlite_testing.sqlite"])
+    let results = connection.tableNames()
+    assert(!results.isEmpty)
+  }
   //MARK: - Executing Query
   
   func testCanExecuteInsertQuery() {

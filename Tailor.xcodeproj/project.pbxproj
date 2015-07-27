@@ -9,8 +9,6 @@
 /* Begin PBXBuildFile section */
 		5209E2891A50920C0044EE70 /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5209E2881A50920C0044EE70 /* ModelTests.swift */; };
 		520BD5021AA90E2600CBC3DC /* PropertyListLocalizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784C91A5CC1A40065C10D /* PropertyListLocalizationTests.swift */; };
-		5212E7581B483081000239DC /* database.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5212E7571B483081000239DC /* database.plist */; };
-		5212E75A1B4830A1000239DC /* application.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5212E7591B4830A1000239DC /* application.plist */; };
 		5212E75C1B4830F1000239DC /* CreateTestDatabaseAlteration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5212E75B1B4830F1000239DC /* CreateTestDatabaseAlteration.swift */; };
 		52135CA51B07FE0D00595794 /* TimeZoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52135CA41B07FE0D00595794 /* TimeZoneTests.swift */; };
 		5214B5D21AA38B0800624E9D /* ValidationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5214B5D11AA38B0800624E9D /* ValidationError.swift */; };
@@ -112,6 +110,7 @@
 		52B710061B65C85C0003A6DF /* localization3.plist in Resources */ = {isa = PBXBuildFile; fileRef = 52B710051B65C85C0003A6DF /* localization3.plist */; };
 		52B710081B65C8710003A6DF /* localization4.plist in Resources */ = {isa = PBXBuildFile; fileRef = 52B710071B65C8710003A6DF /* localization4.plist */; };
 		52B7100A1B66D6000003A6DF /* DeprecationShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B710091B66D6000003A6DF /* DeprecationShims.swift */; settings = {COMPILER_FLAGS = "-Wno-deprecated-declarations"; }; };
+		52B7100C1B66E9CC0003A6DF /* TailorSqliteTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B7100B1B66E9CC0003A6DF /* TailorSqliteTestHelpers.swift */; };
 		52BD13A319E9D7E4006D72B0 /* Tailor.h in Headers */ = {isa = PBXBuildFile; fileRef = 52BD13A219E9D7E4006D72B0 /* Tailor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52BD142619E9DA1D006D72B0 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140119E9DA1D006D72B0 /* Application.swift */; };
 		52BD142719E9DA1D006D72B0 /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD140219E9DA1D006D72B0 /* Connection.swift */; };
@@ -224,8 +223,6 @@
 		520526E91AF69DCC00B02CCF /* Model.xctemplate */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Model.xctemplate; sourceTree = "<group>"; };
 		5205278E1AF6A3C400B02CCF /* Controller.xctemplate */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Controller.xctemplate; path = Tailor/ext/xcode_templates/Controller.xctemplate; sourceTree = SOURCE_ROOT; };
 		5209E2881A50920C0044EE70 /* ModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelTests.swift; sourceTree = "<group>"; };
-		5212E7571B483081000239DC /* database.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = database.plist; sourceTree = "<group>"; };
-		5212E7591B4830A1000239DC /* application.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = application.plist; sourceTree = "<group>"; };
 		5212E75B1B4830F1000239DC /* CreateTestDatabaseAlteration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateTestDatabaseAlteration.swift; sourceTree = "<group>"; };
 		52135CA41B07FE0D00595794 /* TimeZoneTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeZoneTests.swift; sourceTree = "<group>"; };
 		5214B5D11AA38B0800624E9D /* ValidationError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidationError.swift; sourceTree = "<group>"; };
@@ -334,6 +331,7 @@
 		52B710051B65C85C0003A6DF /* localization3.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = localization3.plist; sourceTree = "<group>"; };
 		52B710071B65C8710003A6DF /* localization4.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = localization4.plist; sourceTree = "<group>"; };
 		52B710091B66D6000003A6DF /* DeprecationShims.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeprecationShims.swift; sourceTree = "<group>"; };
+		52B7100B1B66E9CC0003A6DF /* TailorSqliteTestHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TailorSqliteTestHelpers.swift; sourceTree = "<group>"; };
 		52BD139D19E9D7E4006D72B0 /* Tailor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Tailor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52BD13A219E9D7E4006D72B0 /* Tailor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Tailor.h; sourceTree = "<group>"; };
 		52BD13A819E9D7E4006D72B0 /* TailorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TailorTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -667,10 +665,9 @@
 			isa = PBXGroup;
 			children = (
 				52B417C01B40B1F400B274F7 /* SqliteConnectionTests.swift */,
+				52B7100B1B66E9CC0003A6DF /* TailorSqliteTestHelpers.swift */,
 				5212E75B1B4830F1000239DC /* CreateTestDatabaseAlteration.swift */,
 				52B417C21B40B1F400B274F7 /* Info.plist */,
-				5212E7571B483081000239DC /* database.plist */,
-				5212E7591B4830A1000239DC /* application.plist */,
 			);
 			path = TailorSqliteTests;
 			sourceTree = "<group>";
@@ -1116,8 +1113,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5212E7581B483081000239DC /* database.plist in Resources */,
-				5212E75A1B4830A1000239DC /* application.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1190,6 +1185,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				52B417C11B40B1F400B274F7 /* SqliteConnectionTests.swift in Sources */,
+				52B7100C1B66E9CC0003A6DF /* TailorSqliteTestHelpers.swift in Sources */,
 				5212E75C1B4830F1000239DC /* CreateTestDatabaseAlteration.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1442,6 +1438,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
+				GCC_GENERATE_TEST_COVERAGE_FILES = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/TailorSqlite";
 				INFOPLIST_FILE = TailorSqlite/Info.plist;
@@ -1465,6 +1462,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
+				GCC_GENERATE_TEST_COVERAGE_FILES = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/TailorSqlite";
 				INFOPLIST_FILE = TailorSqlite/Info.plist;
@@ -1598,7 +1596,6 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
 				GCC_GENERATE_TEST_COVERAGE_FILES = YES;
-				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				INFOPLIST_FILE = Tailor/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.johnbrownlee.$(PRODUCT_NAME:rfc1034identifier)";
@@ -1618,7 +1615,6 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
 				GCC_GENERATE_TEST_COVERAGE_FILES = YES;
-				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				INFOPLIST_FILE = Tailor/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.johnbrownlee.$(PRODUCT_NAME:rfc1034identifier)";

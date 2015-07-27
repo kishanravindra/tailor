@@ -8,8 +8,12 @@ import XCTest
   well as matchers that will be generally useful in test cases.
   */
 public class TailorTestCase: XCTestCase {
-  public override func setUp() {
+  public dynamic func configure() {
     Application.configuration = .init()
+  }
+  
+  public override func setUp() {
+    configure()
     NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] = Application(testing: true)
     AlterationsTask.runTask()
     Application.truncateTables()
