@@ -6,6 +6,7 @@ import Foundation
 
   This has been deprecated in favor of the Application.Configuration structure.
   */
+@available(*, deprecated, message="This has been deprecated in favor of the Application.Configuration structure")
 public final class ConfigurationSetting: Equatable {
   /** The raw value in the node. */
   private var _value: String?
@@ -33,7 +34,6 @@ public final class ConfigurationSetting: Equatable {
     The key paths that are now handled in the global configuration variable
     will be automatically mapped by this function.
     */
-  @available(*, deprecated, message="This has been deprecated in favor of the Application.Configuration structure")
   public var value: String? {
     get {
       guard let path = self.keyPath else { return _value }
@@ -46,14 +46,19 @@ public final class ConfigurationSetting: Equatable {
       case "localization.class":
         return NSStringFromClass(Application.configuration.localization("en").dynamicType)
       case "database.class":
-        if let klass = Application.configuration.databaseDriver?().dynamicType {
+        if let klass = Application.configuration.databaseDriver?().dynamicType as? AnyClass {
           return NSStringFromClass(klass)
         }
         else {
           return nil
         }
       case "cache.class":
-        return NSStringFromClass(Application.configuration.cacheStore().dynamicType)
+        if let klass = Application.configuration.cacheStore().dynamicType as? AnyClass {
+          return NSStringFromClass(klass)
+        }
+        else {
+          return nil
+        }
       case "sessions.encryptionKey":
         return Application.configuration.sessionEncryptionKey
       default:
@@ -127,7 +132,6 @@ public final class ConfigurationSetting: Equatable {
     - parameter dictionary:    The data for the settings.
     - parameter parent:   The parent node of this setting.
     */
-  @available(*, deprecated, message="This has been deprecated in favor of the Application.Configuration structure")
   public convenience init(dictionary: NSDictionary, key: String? = nil, parent: ConfigurationSetting? = nil) {
     self.init(key: key, parent: parent)
     for (key,value) in dictionary {
@@ -155,7 +159,6 @@ public final class ConfigurationSetting: Equatable {
     - parameter path:  The path to the file.
     - parameter parent:   The parent node of this setting.
     */
-  @available(*, deprecated, message="This has been deprecated in favor of the Application.Configuration structure")
   public convenience init(contentsOfFile path: String, key: String? = nil, parent: ConfigurationSetting? = nil) {
     let data = NSData(contentsOfFile: path) ?? NSData()
     let propertyList: NSDictionary
@@ -178,7 +181,6 @@ public final class ConfigurationSetting: Equatable {
     - parameter keyPath:    The key path for the child.
     - returns:              The configuration setting.
     */
-  @available(*, deprecated, message="This has been deprecated in favor of the Application.Configuration structure")
   public func child(keyPath: String) -> ConfigurationSetting {
     let keys = keyPath.componentsSeparatedByString(".")
     if keys.count == 1 {
@@ -203,7 +205,6 @@ public final class ConfigurationSetting: Equatable {
     - parameter keys:     The keys to fetch
     - returns:            The setting at the end of the path.
     */
-  @available(*, deprecated, message="This has been deprecated in favor of the Application.Configuration structure")
   public func child(keys  keys: [String]) -> ConfigurationSetting {
     var setting = self
     for key in keys {
@@ -217,7 +218,6 @@ public final class ConfigurationSetting: Equatable {
   /**
     Whether the setting is empty, which means that it has no value or children.
     */
-  @available(*, deprecated, message="This has been deprecated in favor of the Application.Configuration structure")
   public var isEmpty: Bool {
     return self.value == nil && self.children.isEmpty
   }
@@ -228,7 +228,6 @@ public final class ConfigurationSetting: Equatable {
     - parameter keyPath:    The dot-separated key path.
     - returns:              The value for the setting.
     */
-  @available(*, deprecated, message="This has been deprecated in favor of the Application.Configuration structure")
   public func fetch(keyPath: String) -> String? {
     return self.fetch(keys: keyPath.componentsSeparatedByString("."))
   }
@@ -239,7 +238,6 @@ public final class ConfigurationSetting: Equatable {
     - parameter keys:     The keys in the key path.
     - returns:            The value for the setting.
     */
-  @available(*, deprecated, message="This has been deprecated in favor of the Application.Configuration structure")
   public func fetch(keys  keys: [String]) -> String? {
     return self.child(keys: keys).value
   }
@@ -250,7 +248,6 @@ public final class ConfigurationSetting: Equatable {
     - parameter keyPath:   The dot-separated key path.
     - parameter value:     The value to set.
     */
-  @available(*, deprecated, message="This has been deprecated in favor of the Application.Configuration structure")
   public func set(keyPath: String, value: String?) {
     self.child(keyPath).value = value
   }
@@ -261,7 +258,6 @@ public final class ConfigurationSetting: Equatable {
     - parameter keys:    The keys in the key path.
     - parameter value:   The value to set.
     */
-  @available(*, deprecated, message="This has been deprecated in favor of the Application.Configuration structure")
   public func set(keys  keys: [String], value: String?) {
     self.child(keys: keys).value = value
   }
@@ -271,7 +267,6 @@ public final class ConfigurationSetting: Equatable {
 
     If another value has already been set, this will do nothing.
     */
-  @available(*, deprecated, message="This has been deprecated in favor of the Application.Configuration structure")
   public func setDefaultValue(keyPath: String, value: String) {
     let setting = self.child(keyPath)
     if setting.value == nil {
@@ -285,7 +280,6 @@ public final class ConfigurationSetting: Equatable {
     - parameter keyPath:    The key path for the setting.
     - returns:              The value for that setting.
     */
-  @available(*, deprecated, message="This has been deprecated in favor of the Application.Configuration structure")
   public subscript(keyPath: String) -> String? {
     get {
       return self.fetch(keyPath)
@@ -300,7 +294,6 @@ public final class ConfigurationSetting: Equatable {
     
     - returns:   The dictionary
     */
-  @available(*, deprecated, message="This has been deprecated in favor of the Application.Configuration structure")
   public func toDictionary() -> [String:AnyObject] {
     var dictionary = [String:AnyObject]()
     for (key,child) in self.children {
@@ -322,7 +315,6 @@ public final class ConfigurationSetting: Equatable {
 
     It will not include any auto-generated values or nested values.
     */
-  @available(*, deprecated)
   private func parentDictionary() -> [String:String] {
     var results = [String:String]()
     guard let children = parent?.children else { return [:] }
@@ -339,7 +331,6 @@ public final class ConfigurationSetting: Equatable {
 
     - parameter dictionary:    The dictionary of values to add.
     */
-  @available(*, deprecated, message="This has been deprecated in favor of the Application.Configuration structure")
   public func addDictionary(dictionary: [String:AnyObject]) {
     for (key,value) in dictionary {
       switch(value) {

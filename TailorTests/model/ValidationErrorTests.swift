@@ -5,7 +5,6 @@ import TailorTesting
 class ValidationErrorTests: TailorTestCase {
   let error = ValidationError(modelName: "hat", key: "height", message: "tooLow", data: ["value": "7"])
   let localization = PropertyListLocalization(locale: "en")
-  var content: ConfigurationSetting!
   
   override func setUp() {
     super.setUp()

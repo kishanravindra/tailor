@@ -11,8 +11,11 @@ public protocol DatabaseDriver: class {
   
     This must open the connection and do everything necessary to prepare for
     query execution.
+  
+    This has been deprecated. Database drivers are encouraged to now provide
+    initializers with explicit arguments.
     */
-  init(config: [String:String])
+  @available(*, deprecated) init(config: [String:String])
   
   /**
     This method executes a query and returns a result set.

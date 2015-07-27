@@ -4,11 +4,15 @@ import Foundation
   This protocol describes a cache store, which is responsible for caching
   information across requests.
   */
-public protocol CacheImplementation: class {
+public protocol CacheImplementation {
   /**
     This method initializes an empty cache store.
+  
+    This has been deprecated. Cache implementations are no longer required to
+    provide any specific initializer, since they will be initialized with the
+    specific type and initializer in the configuration settings.
     */
-  init()
+  @available(*, deprecated) init()
   
   
   /**

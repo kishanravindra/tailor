@@ -219,13 +219,6 @@ public class Application {
   /**
     The configuration settings for the application.
   
-    This has been deprecated in favor of the static configuration variable.
-    */
-  @available(*, deprecated, message="This has been deprecated in favor of the static configuration variable") public let configuration = ConfigurationSetting()
-  
-  /**
-    The configuration settings for the application.
-  
     We don't guarantee thread safety for setting this, so it is best to only
     change this variables on the main thread, before starting the application.
     */
@@ -274,44 +267,7 @@ public class Application {
     }
     APPLICATION_ARGUMENTS = (self.command, self.flags)
     
-    func propertyList(section: String) -> NSDictionary {
-      let file = self.rootPath() + "/" + section + ".plist"
-      if let data = NSData(contentsOfFile: file) {
-        do {
-          let plist = try NSPropertyListSerialization.propertyListWithData(data, options: [.Immutable], format: nil)
-          if let dictionary = plist as? NSDictionary {
-            return dictionary
-          }
-        }
-        catch {
-          
-        }
-      }
-      return NSDictionary()
-    }
-    
-    if Application.configuration.staticContent.isEmpty {
-      Application.configuration.staticContent = Application.Configuration.contentFromLocalizationPlist()
-    }
-    
-    let localizationConfig = propertyList("localization")
-    if let className = localizationConfig["class"] as? String {
-      if let klass = NSClassFromString(className) as? LocalizationSource.Type {
-        Application.configuration.localization = { return klass.init(locale: $0) }
-      }
-    }
-    
-    let databaseConfig = propertyList("database")
-    if let className = databaseConfig["class"] as? String,
-      let databaseOptions = databaseConfig as? [String:String],
-      let klass = NSClassFromString(className) as? DatabaseDriver.Type {
-        Application.configuration.databaseDriver = { return klass.init(config: databaseOptions) }
-    }
-    
-    let sessionConfig = propertyList("sessions")
-    if let key = sessionConfig["encryptionKey"] as? String {
-      Application.configuration.sessionEncryptionKey = key
-    }
+    DeprecationShims().performSelector(Selector("loadLegacyConfigurationSettings:"), withObject: DeprecationShims.ApplicationWrapper(self))
     
     Application.configuration.setDefaultContent("en.model.errors.blank", value: "cannot be blank")
     Application.configuration.setDefaultContent("en.model.errors.blank", value: "cannot be blank")
