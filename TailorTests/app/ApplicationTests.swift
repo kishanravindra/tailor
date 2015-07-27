@@ -12,6 +12,15 @@ class ApplicationTests : TailorTestCase {
     application = Application.sharedApplication()
   }
   
+  @available(*, deprecated) func testInitializationSetsStaticContentFromLocalizationFile() {
+    self.assert(Application.configuration.staticContent["en.key1"], equals: "value1")
+    self.assert(Application.configuration.staticContent["en.key2.key3"], equals: "value3")
+  }
+  
+  @available(*, deprecated) func testInitializationSetsLocalizationClassFromLocalizationFile() {
+    self.assert(Application.configuration.localization("en") is DatabaseLocalization)
+  }
+  
   @available(*, deprecated) func testInitializationSetsDateFormatters() {
     self.assert(application.dateFormatters["short"]?.dateFormat, equals: "hh:mm Z", message: "sets the short time format properly")
     self.assert(application.dateFormatters["long"]?.dateFormat, equals: "dd MMMM, yyyy, hh:mm z", message: "sets a long time format properly")
@@ -41,6 +50,130 @@ class ApplicationTests : TailorTestCase {
     self.assert(application.flags, equals: ["a": "5"], message: "sets the flags from the prompt")
   }
   
+  func testDefaultConfigurationHasDefaultIpAddress() {
+    let address = Application.Configuration().ipAddress
+    assert(address.0, equals: 0)
+    assert(address.1, equals: 0)
+    assert(address.2, equals: 0)
+    assert(address.3, equals: 0)
+  }
+  
+  func testDefaultConfigurationHasDefaultPort() {
+    assert(Application.Configuration().port, equals: 8080)
+  }
+  
+  func testDefaultConfigurationHasPropertyListLocalization() {
+    assert(Application.Configuration().localization("en") is PropertyListLocalization)
+  }
+  
+  func testDefaultConfigurationHasNoStaticContent() {
+    assert(Application.Configuration().staticContent, equals: [:])
+  }
+  
+  func testFlattenDictionaryCombinesStringKeys() {
+    let result = Application.Configuration.flattenDictionary([
+      "key1": "value1",
+      "key2": [
+        "key3": "value3",
+        "key4": "value4"
+      ]
+    ])
+    assert(result, equals: [
+      "key1": "value1",
+      "key2.key3": "value3",
+      "key2.key4": "value4"
+    ])
+  }
+  
+  func testFlattenDictionaryIgnoresArray() {
+    let result = Application.Configuration.flattenDictionary([
+      "key1": "value1",
+      "key2": ["value2", "value4"]
+      ])
+    assert(result, equals: [
+      "key1": "value1"
+      ])
+    
+  }
+  
+  func testFlattenDictionaryIgnoresNonStringKeys() {
+    let result = Application.Configuration.flattenDictionary([
+      "key1": "value1",
+      2: "value2"
+      ])
+    assert(result, equals: [
+      "key1": "value1"
+      ])
+  }
+  
+  func testSetDefaultContentSetsValueInContent() {
+    var configuration = Application.Configuration()
+    configuration.setDefaultContent("en.key1", value: "value1")
+    assert(configuration.staticContent["en.key1"], equals: "value1")
+  }
+  
+  func testSetDefaultContentKeepsExistingValue() {
+    var configuration = Application.Configuration()
+    configuration.staticContent["en.key1"] = "value1"
+    configuration.setDefaultContent("en.key1", value: "value2")
+    assert(configuration.staticContent["en.key1"], equals: "value1")
+  }
+  
+  func testContentFromLocalizationPlistGetsContentFromFile() {
+    let content = Application.Configuration.contentFromLocalizationPlist()
+    assert(content, equals: [
+      "en.key1": "value1",
+      "en.key2.key3": "value3"
+    ])
+  }
+  
+  func testContentFromLocalizationPlistWithMissingFileGetsEmptyDictionary() {
+    let content = Application.Configuration.contentFromLocalizationPlist("./badPath.plist")
+    assert(content.isEmpty)
+  }
+  
+  func testContentFromLocalizationPlistWithNonPlistFileGetsEmptyDictionary() {
+    var bundlePath = ""
+    for bundle in NSBundle.allBundles() {
+      bundlePath = bundle.resourcePath ?? "."
+      bundlePath += "/localization2.txt"
+      if NSFileManager.defaultManager().fileExistsAtPath(bundlePath) {
+        break
+      }
+    }
+    
+    let content = Application.Configuration.contentFromLocalizationPlist(bundlePath)
+    assert(content.isEmpty)
+  }
+  
+  func testContentFromLocalizationPlistWithNonDictionaryFileGetsEmptyDictionary() {
+    var bundlePath = ""
+    for bundle in NSBundle.allBundles() {
+      bundlePath = bundle.resourcePath ?? "."
+      bundlePath += "/localization3.plist"
+      if NSFileManager.defaultManager().fileExistsAtPath(bundlePath) {
+        break
+      }
+    }
+    
+    let content = Application.Configuration.contentFromLocalizationPlist(bundlePath)
+    assert(content.isEmpty)
+  }
+  
+  func testContentFromLocalizationPlistWithNoContentDictionaryGetsEmptyDictionary() {
+    var bundlePath = ""
+    for bundle in NSBundle.allBundles() {
+      bundlePath = bundle.resourcePath ?? "."
+      bundlePath += "/localization4.plist"
+      if NSFileManager.defaultManager().fileExistsAtPath(bundlePath) {
+        break
+      }
+    }
+    
+    let content = Application.Configuration.contentFromLocalizationPlist(bundlePath)
+    assert(content.isEmpty)
+  }
+
   @available(*, deprecated) func testIpAddressGetsValueFromConfigurationSettings() {
     application = Application()
     Application.configuration.ipAddress = (127,0,0,1)
@@ -147,9 +280,8 @@ class ApplicationTests : TailorTestCase {
   
   func testSharedApplicationReusesApplication() {
     let application1 = Application.sharedApplication()
-    application1.configuration["test.identity"] = "success"
     let application2 = Application.sharedApplication()
-    self.assert(application2.configuration["test.identity"], equals: "success")
+    self.assert(application1 === application2)
   }
   
   func testStartMethodRunsTaskFromCommand() {
@@ -237,22 +369,22 @@ class ApplicationTests : TailorTestCase {
   
   //MARK: - Configuration
   
-  func testLoadConfigPutsContentsInConfiguration() {
+  @available(*, deprecated) func testLoadConfigPutsContentsInConfiguration() {
     application.loadConfigFromFile("TestConfig.plist")
     let value = application.configuration["TestConfig.test_key"]
     self.assert(value, equals: "test_value", message: "has the setting from the file")
   }
   
-  func testLocalizationBuildsLocalizationFromClassName() {
-    application.configuration["localization.class"] = "Tailor.DatabaseLocalization"
+  func testLocalizationBuildsLocalizationFromFunctionInConfiguration() {
+    Application.configuration.localization = { DatabaseLocalization(locale: $0) }
     let localization = application.localization("en")
     self.assert(localization.locale, equals: "en", message: "sets the localization")
     assert(isNotNil: localization as? DatabaseLocalization, message: "uses the class from the configuration")
-    application.configuration["localization.class"] = "Tailor.PropertyListLocalization"
+    Application.configuration = .init()
   }
   
   func testLocalizationWithNoSettingIsPropertyListLocalization() {
-    application.configuration["localization.class"] = nil
+    Application.configuration = Application.Configuration()
     let localization = application.localization("en")
     assert(localization is PropertyListLocalization)
   }

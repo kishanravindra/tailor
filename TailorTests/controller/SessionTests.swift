@@ -32,6 +32,10 @@ class SessionTests: TailorTestCase {
     return Session(request: Request(cookies: ["_session": cookieString]))
   }
   
+  override func setUp() {
+    super.setUp()
+    Application.configuration.localization = { PropertyListLocalization(locale: $0) }
+  }
   //MARK: - Creation
   
   func testInitializationWithValidSessionKeySetsData() {

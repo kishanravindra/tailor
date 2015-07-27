@@ -14,12 +14,104 @@ public class Application {
     /** The IP address that the application listens on. */
     public var ipAddress = (0,0,0,0)
     
+    /** A function for creating the localization for a given locale. */
+    public var localization: (String->LocalizationSource) = { PropertyListLocalization(locale: $0) }
+    
+    /** The static content for a property list localization. */
+    public var staticContent = [String:String]()
+    
     /**
       This initializer creates a configuration setting object with the default
       values.
       */
     public init() {
       
+    }
+    
+    /**
+      This method flattens a nested dictionary of strings into a flat dictionary
+      of strings.
+    
+      The key components for nested levels will be separated by dots, forming
+      key paths.
+    
+      Anything in the dictionary that is not a string or a dictionary will be
+      ignored.
+    
+      - parameter dictionary:   The nested dictionary
+      - returns:                The flattened dictionary.
+      */
+    public static func flattenDictionary(dictionary: NSDictionary) -> [String:String] {
+      var result = [String:String]()
+      for (key,value) in dictionary {
+        guard let keyString = key as? String else { continue }
+        switch(value) {
+        case let s as String:
+          result[keyString] = s
+        case let d as NSDictionary:
+          for (innerKey, innerValue) in flattenDictionary(d) {
+            result[keyString + "." + innerKey] = innerValue
+          }
+        default:
+          continue
+        }
+      }
+      return result
+    }
+    
+    /**
+      This method sets a default value for a key in the static content.
+
+      If there is already a value for the key, this will do nothing.
+  
+      - parameter key:    The key to set content for
+      - parameter value:  The content to set.
+      */
+    public mutating func setDefaultContent(key: String, value: String) {
+      self.staticContent[key] = self.staticContent[key] ?? value
+    }
+    
+    /**
+      This method gets the content from a localization plist file.
+
+      The plist file must contain a dictionary with a key "content". That key
+      must map to a dictionary containing the content. If the dictionary has
+      nested dictionaries within it, they will be collapsed into a single
+      dictionary by combining the keys into a key path with a period as the
+      separator.
+
+      If a path is not provided, this will look through the bundles for the
+      application for one that has a "localization.plist" file, and then use
+      that file for the content.
+
+      - parameter path:   The full path to the plist file.
+      - returns:          The flattened content dictionary.
+      */
+    public static func contentFromLocalizationPlist(path: String? = nil) -> [String:String] {
+      let path = path ?? {
+        for bundle in NSBundle.allBundles() {
+          var bundlePath = bundle.resourcePath ?? "."
+          bundlePath += "/localization.plist"
+          if NSFileManager.defaultManager().fileExistsAtPath(bundlePath) {
+            return bundlePath
+          }
+        }
+        return "."
+      }()
+      
+      if let data = NSData(contentsOfFile: path) {
+        do {
+         let plist = try NSPropertyListSerialization.propertyListWithData(data, options: [.Immutable], format: nil)
+          if let dictionary = plist as? NSDictionary,
+            let contentDictionary = dictionary["content"] as? NSDictionary {
+              return flattenDictionary(contentDictionary)
+          }
+        }
+        catch {
+          
+        }
+      }
+      return [:]
     }
   }
   /**
@@ -126,6 +218,11 @@ public class Application {
     and registers all the subclasses of Task and AlterationScript for use in
     running scripts.
   
+    This also loads configuration settings in the old format from the
+    localization, sessions, and database plist files. This behavior is
+    deprecated, and will be removed in a future release. Instead, you should
+    set configuration in code prior to starting the application.
+  
     - parameter testing:    Whether this application is being loaded as part of
                             a test bundle. This is set to true in test cases
                             that subclass TailorTestCase.
@@ -154,54 +251,80 @@ public class Application {
     }
     APPLICATION_ARGUMENTS = (self.command, self.flags)
     
+    func propertyList(section: String) -> NSDictionary {
+      let file = self.rootPath() + "/" + section + ".plist"
+      if let data = NSData(contentsOfFile: file) {
+        do {
+          let plist = try NSPropertyListSerialization.propertyListWithData(data, options: [.Immutable], format: nil)
+          if let dictionary = plist as? NSDictionary {
+            return dictionary
+          }
+        }
+        catch {
+          
+        }
+      }
+      return NSDictionary()
+    }
+    
+    if Application.configuration.staticContent.isEmpty {
+      Application.configuration.staticContent = Application.Configuration.contentFromLocalizationPlist()
+    }
     self.loadConfigFromFile("application.plist")
     self.loadConfigFromFile("sessions.plist")
     self.loadConfigFromFile("database.plist")
-    self.loadConfigFromFile("localization.plist")
-    self.configuration.setDefaultValue("localization.class", value: "Tailor.PropertyListLocalization")
-    self.configuration.setDefaultValue("localization.content.en.model.errors.blank", value: "cannot be blank")
-    self.configuration.setDefaultValue("localization.content.en.model.errors.too_high", value: "cannot be more than \\(max)")
-    self.configuration.setDefaultValue("localization.content.en.model.errors.too_low", value: "cannot be less than \\(min)")
-    self.configuration.setDefaultValue("localization.content.en.model.errors.non_numeric", value: "must be a number")
-    self.configuration.setDefaultValue("localization.content.en.model.errors.taken", value: "is already taken")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.month_names.full.1", value: "January")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.month_names.full.2", value: "February")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.month_names.full.3", value: "March")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.month_names.full.4", value: "April")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.month_names.full.5", value: "May")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.month_names.full.6", value: "June")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.month_names.full.7", value: "July")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.month_names.full.8", value: "August")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.month_names.full.9", value: "September")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.month_names.full.10", value: "October")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.month_names.full.11", value: "November")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.month_names.full.12", value: "December")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.month_names.abbreviated.1", value: "Jan")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.month_names.abbreviated.2", value: "Feb")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.month_names.abbreviated.3", value: "Mar")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.month_names.abbreviated.4", value: "Apr")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.month_names.abbreviated.5", value: "May")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.month_names.abbreviated.6", value: "Jun")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.month_names.abbreviated.7", value: "Jul")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.month_names.abbreviated.8", value: "Aug")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.month_names.abbreviated.9", value: "Sep")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.month_names.abbreviated.10", value: "Oct")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.month_names.abbreviated.11", value: "Nov")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.month_names.abbreviated.12", value: "Dec")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.week_day_names.full.1", value: "Sunday")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.week_day_names.full.2", value: "Monday")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.week_day_names.full.3", value: "Tuesday")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.week_day_names.full.4", value: "Wednesday")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.week_day_names.full.5", value: "Thursday")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.week_day_names.full.6", value: "Friday")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.week_day_names.full.7", value: "Saturday")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.week_day_names.abbreviated.1", value: "Sun")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.week_day_names.abbreviated.2", value: "Mon")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.week_day_names.abbreviated.3", value: "Tue")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.week_day_names.abbreviated.4", value: "Wed")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.week_day_names.abbreviated.5", value: "Thu")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.week_day_names.abbreviated.6", value: "Fri")
-    self.configuration.setDefaultValue("localization.content.en.dates.gregorian.week_day_names.abbreviated.7", value: "Sat")
+    
+    let localizationConfig = propertyList("localization")
+    if let className = localizationConfig["class"] as? String {
+      if let klass = NSClassFromString(className) as? LocalizationSource.Type {
+        Application.configuration.localization = { return klass.init(locale: $0) }
+      }
+    }
+    
+    Application.configuration.setDefaultContent("en.model.errors.blank", value: "cannot be blank")
+    Application.configuration.setDefaultContent("en.model.errors.blank", value: "cannot be blank")
+    Application.configuration.setDefaultContent("en.model.errors.too_high", value: "cannot be more than \\(max)")
+    Application.configuration.setDefaultContent("en.model.errors.too_low", value: "cannot be less than \\(min)")
+    Application.configuration.setDefaultContent("en.model.errors.non_numeric", value: "must be a number")
+    Application.configuration.setDefaultContent("en.model.errors.taken", value: "is already taken")
+    Application.configuration.setDefaultContent("en.dates.gregorian.month_names.full.1", value: "January")
+    Application.configuration.setDefaultContent("en.dates.gregorian.month_names.full.2", value: "February")
+    Application.configuration.setDefaultContent("en.dates.gregorian.month_names.full.3", value: "March")
+    Application.configuration.setDefaultContent("en.dates.gregorian.month_names.full.4", value: "April")
+    Application.configuration.setDefaultContent("en.dates.gregorian.month_names.full.5", value: "May")
+    Application.configuration.setDefaultContent("en.dates.gregorian.month_names.full.6", value: "June")
+    Application.configuration.setDefaultContent("en.dates.gregorian.month_names.full.7", value: "July")
+    Application.configuration.setDefaultContent("en.dates.gregorian.month_names.full.8", value: "August")
+    Application.configuration.setDefaultContent("en.dates.gregorian.month_names.full.9", value: "September")
+    Application.configuration.setDefaultContent("en.dates.gregorian.month_names.full.10", value: "October")
+    Application.configuration.setDefaultContent("en.dates.gregorian.month_names.full.11", value: "November")
+    Application.configuration.setDefaultContent("en.dates.gregorian.month_names.full.12", value: "December")
+    Application.configuration.setDefaultContent("en.dates.gregorian.month_names.abbreviated.1", value: "Jan")
+    Application.configuration.setDefaultContent("en.dates.gregorian.month_names.abbreviated.2", value: "Feb")
+    Application.configuration.setDefaultContent("en.dates.gregorian.month_names.abbreviated.3", value: "Mar")
+    Application.configuration.setDefaultContent("en.dates.gregorian.month_names.abbreviated.4", value: "Apr")
+    Application.configuration.setDefaultContent("en.dates.gregorian.month_names.abbreviated.5", value: "May")
+    Application.configuration.setDefaultContent("en.dates.gregorian.month_names.abbreviated.6", value: "Jun")
+    Application.configuration.setDefaultContent("en.dates.gregorian.month_names.abbreviated.7", value: "Jul")
+    Application.configuration.setDefaultContent("en.dates.gregorian.month_names.abbreviated.8", value: "Aug")
+    Application.configuration.setDefaultContent("en.dates.gregorian.month_names.abbreviated.9", value: "Sep")
+    Application.configuration.setDefaultContent("en.dates.gregorian.month_names.abbreviated.10", value: "Oct")
+    Application.configuration.setDefaultContent("en.dates.gregorian.month_names.abbreviated.11", value: "Nov")
+    Application.configuration.setDefaultContent("en.dates.gregorian.month_names.abbreviated.12", value: "Dec")
+    Application.configuration.setDefaultContent("en.dates.gregorian.week_day_names.full.1", value: "Sunday")
+    Application.configuration.setDefaultContent("en.dates.gregorian.week_day_names.full.2", value: "Monday")
+    Application.configuration.setDefaultContent("en.dates.gregorian.week_day_names.full.3", value: "Tuesday")
+    Application.configuration.setDefaultContent("en.dates.gregorian.week_day_names.full.4", value: "Wednesday")
+    Application.configuration.setDefaultContent("en.dates.gregorian.week_day_names.full.5", value: "Thursday")
+    Application.configuration.setDefaultContent("en.dates.gregorian.week_day_names.full.6", value: "Friday")
+    Application.configuration.setDefaultContent("en.dates.gregorian.week_day_names.full.7", value: "Saturday")
+    Application.configuration.setDefaultContent("en.dates.gregorian.week_day_names.abbreviated.1", value: "Sun")
+    Application.configuration.setDefaultContent("en.dates.gregorian.week_day_names.abbreviated.2", value: "Mon")
+    Application.configuration.setDefaultContent("en.dates.gregorian.week_day_names.abbreviated.3", value: "Tue")
+    Application.configuration.setDefaultContent("en.dates.gregorian.week_day_names.abbreviated.4", value: "Wed")
+    Application.configuration.setDefaultContent("en.dates.gregorian.week_day_names.abbreviated.5", value: "Thu")
+    Application.configuration.setDefaultContent("en.dates.gregorian.week_day_names.abbreviated.6", value: "Fri")
+    Application.configuration.setDefaultContent("en.dates.gregorian.week_day_names.abbreviated.7", value: "Sat")
   }
   
   /** The application that we are running. */
@@ -567,8 +690,7 @@ public class Application {
     - returns:              The localization
     */
    public func localization(locale: String) -> LocalizationSource {
-    let klass = NSClassFromString(self.configuration["localization.class"] ?? "") as? LocalizationSource.Type ?? PropertyListLocalization.self
-    return klass.init(locale: locale)
+    return Application.configuration.localization(locale)
   }
 }
 

@@ -9,6 +9,7 @@ import XCTest
   */
 public class TailorTestCase: XCTestCase {
   public override func setUp() {
+    Application.configuration = .init()
     NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] = Application(testing: true)
     AlterationsTask.runTask()
     Application.truncateTables()

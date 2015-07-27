@@ -8,6 +8,10 @@ class TimeFormatTests: TailorTestCase {
   var formatter: TimeFormatter! = nil
   var formatted: String? { return formatter?.formatTime(timestamp) }
   
+  override func setUp() {
+    super.setUp()
+    Application.configuration.localization = { PropertyListLocalization(locale: $0) }
+  }
   //MARK: - Time Format Components
   
   func testTimeFormatComponentWithLiteralGetsLiteral() {

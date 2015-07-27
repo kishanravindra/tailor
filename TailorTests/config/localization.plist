@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>class</key>
+	<string>Tailor.DatabaseLocalization</string>
+	<key>content</key>
+	<dict>
+		<key>en</key>
+		<dict>
+			<key>key1</key>
+			<string>value1</string>
+			<key>key2</key>
+			<dict>
+				<key>key3</key>
+				<string>value3</string>
+			</dict>
+		</dict>
+	</dict>
+</dict>
+</plist>

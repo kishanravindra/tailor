@@ -33,11 +33,9 @@ class TemplateTypeTests: TailorTestCase {
       callback: callback
     )
     self.controller.state.localization = PropertyListLocalization(locale: "en")
-    Application.sharedApplication().configuration.child("localization.content.en").addDictionary([
-      "template.test": "Localized Text",
-      "template.test_raw": "<b>Hello</b>",
-      "record.shelf.attributes.store": "hat store"
-    ])
+    Application.configuration.staticContent["en.template.test"] = "Localized Text"
+    Application.configuration.staticContent["en.template.test_raw"] = "<b>Hello</b>"
+    Application.configuration.staticContent["en.record.shelf.attributes.store"] = "hat store"
     template = EmptyTemplate(state: TemplateState(controller))
   }
   
@@ -93,7 +91,7 @@ class TemplateTypeTests: TailorTestCase {
   }
   
   func testLocalizeMethodPrependsPrefixForKeyWithDot() {
-    Application.sharedApplication().configuration["localization.content.en.tailor_tests.template_type_tests.empty_template.prefix_test"] = "Localized Text with Prefix"
+    Application.configuration.staticContent["en.tailor_tests.template_type_tests.empty_template.prefix_test"] = "Localized Text with Prefix"
     let result = template.localize(".prefix_test")
     assert(result, equals: "Localized Text with Prefix", message: "gets the text that ")
   }

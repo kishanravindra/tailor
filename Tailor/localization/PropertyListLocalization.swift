@@ -26,6 +26,6 @@ public final class PropertyListLocalization: LocalizationSource {
     - returns:          The content.
     */
   public func fetch(key: String, inLocale locale: String) -> String? {
-    return Application.sharedApplication().configuration.fetch("localization.content.\(locale).\(key)")
+    return Application.configuration.staticContent["\(locale).\(key)"]
   }
 }

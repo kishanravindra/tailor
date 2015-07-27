@@ -9,12 +9,11 @@ class ValidationErrorTests: TailorTestCase {
   
   override func setUp() {
     super.setUp()
-    content = Application.sharedApplication().configuration.child("localization.content.en")
-    content.addDictionary([
-      "hat.errors.height.too_low": "is too short",
-      "hat.errors.too_low": "is too low",
-      "model.errors.height.too_low": "is way too short",
-      "model.errors.too_low": "is way too low"
+    Application.configuration.staticContent = merge(Application.configuration.staticContent, [
+      "en.hat.errors.height.too_low": "is too short",
+      "en.hat.errors.too_low": "is too low",
+      "en.model.errors.height.too_low": "is way too short",
+      "en.model.errors.too_low": "is way too low"
     ])
   }
   func testEqualityAcceptsErrorsWithSameInformation() {
@@ -53,39 +52,39 @@ class ValidationErrorTests: TailorTestCase {
   }
   
   func testLocalizeCanFindContentForModel() {
-    content["hat.errors.height.too_low"] = nil
+    Application.configuration.staticContent["en.hat.errors.height.too_low"] = nil
     assert(error.localize(localization), equals: "is too low")
   }
   
   func testLocalizeCanFindContentForKey() {
-    content["hat.errors.height.too_low"] = nil
-    content["hat.errors.too_low"] = nil
+    Application.configuration.staticContent["en.hat.errors.height.too_low"] = nil
+    Application.configuration.staticContent["en.hat.errors.too_low"] = nil
     assert(error.localize(localization), equals: "is way too short")
   }
   
   func testLocalizeCanFindTopLevelContent() {
-    content["hat.errors.height.too_low"] = nil
-    content["hat.errors.too_low"] = nil
-    content["model.errors.height.too_low"] = nil
+    Application.configuration.staticContent["en.hat.errors.height.too_low"] = nil
+    Application.configuration.staticContent["en.hat.errors.too_low"] = nil
+    Application.configuration.staticContent["en.model.errors.height.too_low"] = nil
     assert(error.localize(localization), equals: "is way too low")
   }
   
   func testLocalizeCanFallBackToRawMessage() {
-    content["hat.errors.height.too_low"] = nil
-    content["hat.errors.too_low"] = nil
-    content["model.errors.height.too_low"] = nil
-    content["model.errors.too_low"] = nil
+    Application.configuration.staticContent["en.hat.errors.height.too_low"] = nil
+    Application.configuration.staticContent["en.hat.errors.too_low"] = nil
+    Application.configuration.staticContent["en.model.errors.height.too_low"] = nil
+    Application.configuration.staticContent["en.model.errors.too_low"] = nil
     assert(error.localize(localization), equals: "tooLow")
   }
   
   func testLocalizeCanUnderscoreKey() {
-    content["hat.errors.brim_size.too_low"] = "test"
+    Application.configuration.staticContent["en.hat.errors.brim_size.too_low"] = "test"
     let error = ValidationError(modelName: "hat", key: "brimSize", message: "tooLow", data: [:])
     assert(error.localize(localization), equals: "test")
   }
   
   func testLocalizeCanInterpolateData() {
-    content["hat.errors.height.too_low"] = "must be at least \\(height)"
+    Application.configuration.staticContent["en.hat.errors.height.too_low"] = "must be at least \\(height)"
     let error = ValidationError(modelName: "hat", key: "height", message: "tooLow", data: ["height": "10"])
     assert(error.localize(localization), equals: "must be at least 10")
   }

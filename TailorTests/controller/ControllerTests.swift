@@ -61,6 +61,7 @@ class ControllerTests: TailorTestCase {
   
   override func setUp() {
     super.setUp()
+    Application.configuration = .init()
     
     user = User(emailAddress: "test@test.com", password: "test").save()!
     
@@ -567,7 +568,7 @@ class ControllerTests: TailorTestCase {
   }
   
   func testLocalizeWithNoLocaleUsesLocalization() {
-    Application.sharedApplication().configuration["localization.content.en.controller.test.message"] = "Hello"
+    Application.configuration.staticContent["en.controller.test.message"] = "Hello"
     let string = controller.localize("controller.test.message")
     assert(string, equals: "Hello", message: "returns the string from the localization")
   }
@@ -575,13 +576,13 @@ class ControllerTests: TailorTestCase {
   func testLocalizeWithDotPrependsPrefix() {
     let key = ".test.message"
     let fullKey = controller.localizationPrefix + key
-    Application.sharedApplication().configuration["localization.content.en.\(fullKey)"] = "Hello 2"
+    Application.configuration.staticContent["en.\(fullKey)"] = "Hello 2"
     let string = controller.localize(key)
     assert(string, equals: "Hello 2", message: "returns the string from the localization")
   }
   
   func testLocalizeWithLocaleSwitchesToThatLanguage() {
-    Application.sharedApplication().configuration["localization.content.es.controller.test.message"] = "Hola"
+    Application.configuration.staticContent["es.controller.test.message"] = "Hola"
     let string = controller.localize("controller.test.message", locale: "es")
     assert(string, equals: "Hola", message: "returns the string from the localization")
   }
