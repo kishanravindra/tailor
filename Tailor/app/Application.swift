@@ -17,15 +17,24 @@ public class Application {
     /** A function for creating the localization for a given locale. */
     public var localization: (String->LocalizationSource) = { PropertyListLocalization(locale: $0) }
     
+    /** The static content for a property list localization. */
+    public var staticContent = [String:String]()
+    
+    /**
+      The encryption key used for session information.
+    
+      You must set this before starting the application. The best practice is
+      to store this in a special configuration file that is not under source
+      control.
+      */
+    public var sessionEncryptionKey = ""
+    
     /**
       A function for creating the database driver for the application.
 
       You must set this yourself if you are going to make any database queries.
       */
     public var databaseDriver: (Void->DatabaseDriver)? = nil
-    
-    /** The static content for a property list localization. */
-    public var staticContent = [String:String]()
     
     /**
       This initializer creates a configuration setting object with the default
@@ -278,8 +287,6 @@ public class Application {
     if Application.configuration.staticContent.isEmpty {
       Application.configuration.staticContent = Application.Configuration.contentFromLocalizationPlist()
     }
-    self.loadConfigFromFile("application.plist")
-    self.loadConfigFromFile("sessions.plist")
     
     let localizationConfig = propertyList("localization")
     if let className = localizationConfig["class"] as? String {
@@ -293,6 +300,11 @@ public class Application {
       let databaseOptions = databaseConfig as? [String:String],
       let klass = NSClassFromString(className) as? DatabaseDriver.Type {
         Application.configuration.databaseDriver = { return klass.init(config: databaseOptions) }
+    }
+    
+    let sessionConfig = propertyList("sessions")
+    if let key = sessionConfig["encryptionKey"] as? String {
+      Application.configuration.sessionEncryptionKey = key
     }
     
     Application.configuration.setDefaultContent("en.model.errors.blank", value: "cannot be blank")

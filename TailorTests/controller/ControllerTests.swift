@@ -61,7 +61,7 @@ class ControllerTests: TailorTestCase {
   
   override func setUp() {
     super.setUp()
-    Application.configuration = .init()
+    Application.configuration.localization = { PropertyListLocalization(locale: $0) }
     
     user = User(emailAddress: "test@test.com", password: "test").save()!
     

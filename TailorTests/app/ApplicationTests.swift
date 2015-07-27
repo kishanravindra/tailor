@@ -31,6 +31,10 @@ class ApplicationTests : TailorTestCase {
     }
   }
   
+  @available(*, deprecated) func testInitializationSetsSessionKeyFromSessionFile() {
+    self.assert(Application.configuration.sessionEncryptionKey, equals: "0FC7ECA7AADAD635DCC13A494F9A2EA8D8DAE366382CDB3620190F6F20817124")
+  }
+  
   @available(*, deprecated) func testInitializationSetsDateFormatters() {
     self.assert(application.dateFormatters["short"]?.dateFormat, equals: "hh:mm Z", message: "sets the short time format properly")
     self.assert(application.dateFormatters["long"]?.dateFormat, equals: "dd MMMM, yyyy, hh:mm z", message: "sets a long time format properly")

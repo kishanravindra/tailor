@@ -14,7 +14,7 @@ class SessionTests: TailorTestCase {
       mergedData["_flash_\(key)"] = value
     }
     
-    let key = Application.sharedApplication().configuration["application.encryptionKey"] ?? ""
+    let key = Application.configuration.sessionEncryptionKey
     let jsonData: NSData
     do {
       jsonData = try NSJSONSerialization.dataWithJSONObject(mergedData, options: [])
@@ -104,20 +104,6 @@ class SessionTests: TailorTestCase {
     application.configuration["application.encryptionKey"] = key
   }
   
-  func testInitializationWithNoEncryptionKeyLeavesSessionEmpty() {
-    let string = createCookieString(
-      ["name": "John", "userId": "5"]
-    )
-    let request = Request(cookies: ["_session": string])
-    let application = Application.sharedApplication()
-    
-    let key = application.configuration["application.encryptionKey"]
-    application.configuration["application.encryptionKey"] = nil
-    let session = Session(request: request)
-    assert(session.isEmpty())
-    application.configuration["application.encryptionKey"] = key
-  }
-  
   func testInitializationWithWrongClientAddressLeavesDataEmpty() {
     let string = createCookieString(
       ["name": "John", "userId": "5"],
@@ -171,7 +157,7 @@ class SessionTests: TailorTestCase {
   }
   
   func testInitializationWithNonJsonDataInCookieLeavesSesssionEmpty() {
-    let key = Application.sharedApplication().configuration["application.encryptionKey"]!
+    let key = Application.configuration.sessionEncryptionKey
     let data = NSData(bytes: [1,2,3,4])
     let encryptedData = AesEncryptor(key: key)!.encrypt(data)
     let string = encryptedData.base64EncodedStringWithOptions([])
@@ -181,7 +167,7 @@ class SessionTests: TailorTestCase {
   }
   
   func testInitializationWithIntegerDataInCookieLeavesSesssionEmpty() {
-    let key = Application.sharedApplication().configuration["application.encryptionKey"]!
+    let key = Application.configuration.sessionEncryptionKey
     let data = "{\"a\":5}".dataUsingEncoding(NSUTF8StringEncoding)!
     let encryptedData = AesEncryptor(key: key)!.encrypt(data)
     let string = encryptedData.base64EncodedStringWithOptions([])
@@ -231,7 +217,7 @@ class SessionTests: TailorTestCase {
     var session = createSession(createCookieString(["name": "Joan"]))
     session.setFlash("notice", "Success")
     let string = session.cookieString()
-    let key = Application.sharedApplication().configuration["application.encryptionKey"]  ?? ""
+    let key = Application.configuration.sessionEncryptionKey
     let decryptor = AesEncryptor(key: key)
     let cookieData = NSData(base64EncodedString: string, options: []) ?? NSData()
     XCTAssertNotEqual(cookieData.length, 0, "can base-64 decode the cookie data")
@@ -250,12 +236,9 @@ class SessionTests: TailorTestCase {
   }
   
   func testCookieStringWithoutEncryptorIsEmptyString() {
-    let application = Application.sharedApplication()
-    let key = application.configuration["application.encryptionKey"]
-    application.configuration["application.encryptionKey"] = nil
+    Application.configuration.sessionEncryptionKey = ""
     let session = createSession(createCookieString(["name": "Joan"]))
     assert(session.cookieString(), equals: "")
-    application.configuration["application.encryptionKey"] = key
   }
   
   func testStoreInCookiesPutsCookieStringInFlash() {
