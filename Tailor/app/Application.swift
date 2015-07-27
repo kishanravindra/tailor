@@ -17,6 +17,13 @@ public class Application {
     /** A function for creating the localization for a given locale. */
     public var localization: (String->LocalizationSource) = { PropertyListLocalization(locale: $0) }
     
+    /**
+      A function for creating the database driver for the application.
+
+      You must set this yourself if you are going to make any database queries.
+      */
+    public var databaseDriver: (Void->DatabaseDriver)? = nil
+    
     /** The static content for a property list localization. */
     public var staticContent = [String:String]()
     
@@ -114,6 +121,7 @@ public class Application {
       return [:]
     }
   }
+  
   /**
     The IP Address that the application listens on.
   
@@ -272,13 +280,19 @@ public class Application {
     }
     self.loadConfigFromFile("application.plist")
     self.loadConfigFromFile("sessions.plist")
-    self.loadConfigFromFile("database.plist")
     
     let localizationConfig = propertyList("localization")
     if let className = localizationConfig["class"] as? String {
       if let klass = NSClassFromString(className) as? LocalizationSource.Type {
         Application.configuration.localization = { return klass.init(locale: $0) }
       }
+    }
+    
+    let databaseConfig = propertyList("database")
+    if let className = databaseConfig["class"] as? String,
+      let databaseOptions = databaseConfig as? [String:String],
+      let klass = NSClassFromString(className) as? DatabaseDriver.Type {
+        Application.configuration.databaseDriver = { return klass.init(config: databaseOptions) }
     }
     
     Application.configuration.setDefaultContent("en.model.errors.blank", value: "cannot be blank")
@@ -395,16 +409,11 @@ public class Application {
     - returns:   The connection
     */
   public func openDatabaseConnection() -> DatabaseDriver {
-    guard let config = configuration.child("database").toDictionary() as? [String:String] else {
+    guard let connection = Application.configuration.databaseDriver?() else {
       fatalError("Cannot open a database connection because there is no database configuration")
     }
     
-    guard let klass = NSClassFromString(config["class"] ?? "DatabaseDriver") as? DatabaseDriver.Type else {
-      let className = config["class"] ?? "No class"
-      fatalError("Cannot get database class from configuration: \(className)")
-    }
-    
-    return klass.init(config: config)
+    return connection
   }
   
   //MARK: - Loading

@@ -2,6 +2,7 @@ import Foundation
 import XCTest
 import Tailor
 import TailorTesting
+import TailorSqlite
 
 class ApplicationTests : TailorTestCase {
   //MARK: Initialization
@@ -19,6 +20,15 @@ class ApplicationTests : TailorTestCase {
   
   @available(*, deprecated) func testInitializationSetsLocalizationClassFromLocalizationFile() {
     self.assert(Application.configuration.localization("en") is DatabaseLocalization)
+  }
+  
+  @available(*, deprecated) func testInitializationSetsDatabaseDriverClassFromDatabaseFile() {
+    if let driver = Application.configuration.databaseDriver?() {
+      assert(driver is SqliteConnection)
+    }
+    else {
+      assert(false, message: "Did not have a database driver")
+    }
   }
   
   @available(*, deprecated) func testInitializationSetsDateFormatters() {
@@ -68,6 +78,10 @@ class ApplicationTests : TailorTestCase {
   
   func testDefaultConfigurationHasNoStaticContent() {
     assert(Application.Configuration().staticContent, equals: [:])
+  }
+  
+  func testDefaultConfigurationHasNoDatabaseDriver() {
+    assert(isNil: Application.Configuration().databaseDriver)
   }
   
   func testFlattenDictionaryCombinesStringKeys() {
@@ -331,10 +345,7 @@ class ApplicationTests : TailorTestCase {
       }
     }
     
-    application.configuration.child("database").addDictionary([
-      "class": NSStringFromClass(ApplicationTestConnection.self),
-      "name": "My Connection"
-    ])
+    Application.configuration.databaseDriver = { return ApplicationTestConnection(config: ["name": "My Connection"]) }
     
     let connection = application.openDatabaseConnection()
     
