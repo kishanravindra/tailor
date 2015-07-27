@@ -4,21 +4,50 @@ import Foundation
   This class represents a web application.
   */
 public class Application {
-  /** The IP Address that the application listens on. */
-  public var ipAddress = (0,0,0,0)
+  /**
+    This structure provides the configuration settings for an application.
+    */
+  public struct Configuration {
+    /** The port that the application listens on. */
+    public var port = 8080
+    
+    /** The IP address that the application listens on. */
+    public var ipAddress = (0,0,0,0)
+    
+    /**
+      This initializer creates a configuration setting object with the default
+      values.
+      */
+    public init() {
+      
+    }
+  }
+  /**
+    The IP Address that the application listens on.
+  
+    This is deprecated. The IP address is now stored on the configuration setting.
+    */
+  @available(*, deprecated, message="This is deprecated. The IP address is now stored in the configuration")
+  public var ipAddress: (Int,Int,Int,Int) {
+    get {
+      return Application.configuration.ipAddress
+    }
+    set {
+      Application.configuration.ipAddress = newValue
+    }
+  }
   
   /**
     The port that the application listens on.
   
-    This is deprecated. The port is now stored in the configuration settings, in
-    application.port
+    This is deprecated. The port is now stored in the configuration settings.
     */
-  public var port: Int {
+  @available(*, deprecated, message="This is deprecated. The port is now stored in the configuration") public var port: Int {
     get {
-      return Int(self.configuration.fetch("application.port") ?? "8080") ?? 8080
+      return Application.configuration.port
     }
-    @available(*, deprecated, message="This is deprecated. The port is now stored in the configuration")  set {
-      self.configuration.set("application.port", value: String(newValue))
+    set {
+      Application.configuration.port = newValue
     }
   }
   
@@ -74,8 +103,18 @@ public class Application {
   
   /**
     The configuration settings for the application.
+  
+    This has been deprecated in favor of the static configuration variable.
     */
-  public let configuration = ConfigurationSetting()
+  @available(*, deprecated, message="This has been deprecated in favor of the static configuration variable") public let configuration = ConfigurationSetting()
+  
+  /**
+    The configuration settings for the application.
+  
+    We don't guarantee thread safety for setting this, so it is best to only
+    change this variables on the main thread, before starting the application.
+    */
+  public static var configuration = Configuration()
   
   /** Whether this application is being loaded as part of a test bundle. */
   private let testing: Bool
@@ -210,7 +249,7 @@ public class Application {
     This method starts a server for this application.
     */
   public func startServer() {
-    Connection.startServer(ipAddress, port: port, handler: { RouteSet.shared().handleRequest($0, callback: $1) })
+    Connection.startServer(Application.configuration.ipAddress, port: Application.configuration.port, handler: { RouteSet.shared().handleRequest($0, callback: $1) })
   }
   
   /** Starts a version of this application as the shared application. */
@@ -505,10 +544,12 @@ public class Application {
     The settings will be put into the configuration with a prefix taken from the
     filename of the path.
   
+    This has been deprecated in favor of the static configuration variable.
+  
     - parameter path:     The path to the file, relative to the application's
                           root path.
     */
-  public func loadConfigFromFile(path: String) {
+  @available(*, deprecated, message="Use the static configuration variable instead") public func loadConfigFromFile(path: String) {
     let name = path.lastPathComponent.stringByDeletingPathExtension
     let fullPath = self.rootPath() + "/" + path
     self.configuration.child(name).addDictionary(ConfigurationSetting(contentsOfFile: fullPath).toDictionary())
@@ -520,10 +561,12 @@ public class Application {
     The localization class name will be taken from the `localization.class`
     setting. It will default to `PropertyListLocalization`.
   
+    This has been deprecated in favor of the static configuration variable.
+  
     - parameter locale:     The locale for the localization
     - returns:              The localization
     */
-  public func localization(locale: String) -> LocalizationSource {
+   public func localization(locale: String) -> LocalizationSource {
     let klass = NSClassFromString(self.configuration["localization.class"] ?? "") as? LocalizationSource.Type ?? PropertyListLocalization.self
     return klass.init(locale: locale)
   }

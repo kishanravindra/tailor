@@ -11,17 +11,6 @@ class ApplicationTests : TailorTestCase {
     super.setUp()
     application = Application.sharedApplication()
   }
-
-  func testInitializationSetsInstanceVariables() {
-    application = Application()
-    let address = application.ipAddress
-    XCTAssertTrue(
-      address.0 == 0 &&
-      address.1 == 0 &&
-      address.2 == 0 &&
-      address.3 == 0
-      , "initalizes IP address to dummy address")
-  }
   
   @available(*, deprecated) func testInitializationSetsDateFormatters() {
     self.assert(application.dateFormatters["short"]?.dateFormat, equals: "hh:mm Z", message: "sets the short time format properly")
@@ -52,27 +41,39 @@ class ApplicationTests : TailorTestCase {
     self.assert(application.flags, equals: ["a": "5"], message: "sets the flags from the prompt")
   }
   
-  func testPortGetsValueFromConfigurationSettings() {
+  @available(*, deprecated) func testIpAddressGetsValueFromConfigurationSettings() {
     application = Application()
-    application.configuration.set("application.port", value: "3000")
+    Application.configuration.ipAddress = (127,0,0,1)
+    assert(application.ipAddress.0, equals: 127)
+    assert(application.ipAddress.1, equals: 0)
+    assert(application.ipAddress.2, equals: 0)
+    assert(application.ipAddress.3, equals: 1)
+  }
+  
+  @available(*, deprecated) func testSettingIpAddressChangesConfigurationSetting() {
+    application = Application()
+    Application.configuration.ipAddress = (0,0,0,0)
+    application.ipAddress = (127,0,0,1)
+    assert(application.ipAddress.0, equals: 127)
+    assert(application.ipAddress.1, equals: 0)
+    assert(application.ipAddress.2, equals: 0)
+    assert(application.ipAddress.3, equals: 1)
+    assert(Application.configuration.ipAddress.0, equals: 127)
+    assert(Application.configuration.ipAddress.1, equals: 0)
+    assert(Application.configuration.ipAddress.2, equals: 0)
+    assert(Application.configuration.ipAddress.3, equals: 1)
+  }
+  
+  @available(*, deprecated) func testPortGetsValueFromConfigurationSettings() {
+    application = Application()
+    Application.configuration.port = 3000
     assert(application.port, equals: 3000)
   }
   
-  func testPortWithNoConfigurationSettingIs8080() {
-    application = Application()
-    assert(application.port, equals: 8080)
-  }
-  
-  func testPortWithNonNumericSettingsGets8080() {
-    application = Application()
-    application.configuration.set("application.port", value: "dead")
-    assert(application.port, equals: 8080)
-  }
-  
-  func testSettingPortChangesConfigurationSetting() {
+  @available(*, deprecated) func testSettingPortChangesConfigurationSetting() {
     application = Application()
     application.port = 3000
-    assert(application.configuration.fetch("application.port"), equals: "3000")
+    assert(Application.configuration.port, equals: 3000)
     assert(application.port, equals: 3000)
   }
   

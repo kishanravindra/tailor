@@ -2,7 +2,7 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class ConfigurationSettingTests: TailorTestCase {
+@available(*, deprecated) class ConfigurationSettingTests: TailorTestCase {
   var setting: ConfigurationSetting!
   
   override func setUp() {
@@ -236,6 +236,40 @@ class ConfigurationSettingTests: TailorTestCase {
     let value = setting["a.b"]
     assert(value!, equals: "5", message: "leaves the old value")
   }
+  
+  //MARK: - Specially Mapped Valuers
+  
+  func testApplicationPortGetsGlobalConfiguration() {
+    let setting = ConfigurationSetting()
+    Application.configuration.port = 1234
+    let node = setting.child("application.port")
+    assert(node.value, equals: "1234")
+  }
+  
+  func testApplicationPortSetsGlobalConfiguration() {
+    let setting = ConfigurationSetting()
+    setting.child("application.garbage1").value = "hi"
+    let node = setting.child("application.port")
+    setting.child("application.garbage2").value = "bye"
+    node.value = "1010"
+    assert(Application.configuration.port, equals: 1010)
+  }
+  
+  func testApplicationPortToNilValueSetsGlobalValueToDefaultValue() {
+    Application.configuration.port = 123
+    let setting = ConfigurationSetting()
+    setting.set("application.port", value: nil)
+    assert(Application.configuration.port, equals: 8080)
+  }
+  
+  func testApplicationPortToNonIntegerValueSetsGlobalValueToDefaultValue() {
+    Application.configuration.port = 123
+    let setting = ConfigurationSetting()
+    setting.set("application.port", value: "bad")
+    assert(Application.configuration.port, equals: 8080)
+  }
+  
+  //MARK: - Comparison
   
   func testComparisonIsEqualWithSameValues() {
     let setting1 = ConfigurationSetting(dictionary: ["a": ["b": "5", "c": "6"]])
