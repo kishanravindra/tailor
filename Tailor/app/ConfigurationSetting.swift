@@ -7,8 +7,16 @@ import Foundation
   This has been deprecated in favor of the Application.Configuration structure.
   */
 public final class ConfigurationSetting: Equatable {
+  /** The raw value in the node. */
   private var _value: String?
+  
+  /** The key that this node holds in its parent's dictionary. */
   internal var key: String?
+  
+  /**
+    The full key path from the root node to this node, including this node's
+    key.
+    */
   internal var keyPath: String? {
     guard let key = self.key else { return nil }
     if let parentPath = self.parent?.keyPath {
@@ -19,23 +27,70 @@ public final class ConfigurationSetting: Equatable {
     }
   }
   
-  /** The value at this node. */
+  /**
+    The value at this node.
+  
+    The key paths that are now handled in the global configuration variable
+    will be automatically mapped by this function.
+    */
   @available(*, deprecated, message="This has been deprecated in favor of the Application.Configuration structure")
   public var value: String? {
     get {
       guard let path = self.keyPath else { return _value }
+      if path.hasPrefix("localization.content.") {
+        return Application.configuration.staticContent[path.substringFromIndex(advance(path.startIndex, 21))]
+      }
       switch(path) {
       case "application.port":
         return String(Application.configuration.port)
+      case "localization.class":
+        return NSStringFromClass(Application.configuration.localization("en").dynamicType)
+      case "database.class":
+        if let klass = Application.configuration.databaseDriver?().dynamicType {
+          return NSStringFromClass(klass)
+        }
+        else {
+          return nil
+        }
+      case "cache.class":
+        return NSStringFromClass(Application.configuration.cacheStore().dynamicType)
+      case "sessions.encryptionKey":
+        return Application.configuration.sessionEncryptionKey
       default:
         return _value
       }
     }
     set {
-      guard let path = self.keyPath else { return }
+      guard let path = self.keyPath else {
+        _value = newValue
+        return
+      }
+      if path.hasPrefix("localization.content.") {
+        Application.configuration.staticContent[path.substringFromIndex(advance(path.startIndex, 21))] = newValue
+      }
       switch(path) {
       case "application.port":
         Application.configuration.port = Int(newValue ?? "") ?? 8080
+      case "localization.class":
+        Application.configuration.localization = {
+          let klass = NSClassFromString(newValue ?? "") as? LocalizationSource.Type ?? PropertyListLocalization.self
+          return klass.init(locale: $0)
+        }
+      case "database.class":
+        Application.configuration.databaseDriver = {
+          let className = newValue ?? "No Class"
+          guard let klass = NSClassFromString(className) as? DatabaseDriver.Type else {
+            fatalError("Cannot get database class from configuration: \(className)")
+          }
+          return klass.init(config: self.parentDictionary())
+        }
+      case "cache.class":
+        Application.configuration.cacheStore = {
+          let klass = NSClassFromString(newValue ?? "") as? CacheImplementation.Type ?? MemoryCacheStore.self
+          return klass.init()
+        }
+      case "sessions.encryptionKey":
+        Application.configuration.sessionEncryptionKey = newValue ?? ""
       default:
         _value = newValue
       }
@@ -260,6 +315,23 @@ public final class ConfigurationSetting: Equatable {
       }
     }
     return dictionary
+  }
+  
+  /**
+    This method gets a dictionary of the parent's child values.
+
+    It will not include any auto-generated values or nested values.
+    */
+  @available(*, deprecated)
+  private func parentDictionary() -> [String:String] {
+    var results = [String:String]()
+    guard let children = parent?.children else { return [:] }
+    for (key, child) in children {
+      if let value = child._value {
+        results[key] = value
+      }
+    }
+    return results
   }
   
   /**

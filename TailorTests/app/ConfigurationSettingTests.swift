@@ -1,6 +1,7 @@
 import XCTest
 import Tailor
 import TailorTesting
+import TailorSqlite
 
 @available(*, deprecated) class ConfigurationSettingTests: TailorTestCase {
   var setting: ConfigurationSetting!
@@ -255,20 +256,128 @@ import TailorTesting
     assert(Application.configuration.port, equals: 1010)
   }
   
-  func testApplicationPortToNilValueSetsGlobalValueToDefaultValue() {
+  func testApplicationPortWithNilValueSetsGlobalValueToDefaultValue() {
     Application.configuration.port = 123
     let setting = ConfigurationSetting()
     setting.set("application.port", value: nil)
     assert(Application.configuration.port, equals: 8080)
   }
   
-  func testApplicationPortToNonIntegerValueSetsGlobalValueToDefaultValue() {
+  func testApplicationPortWithNonIntegerValueSetsGlobalValueToDefaultValue() {
     Application.configuration.port = 123
     let setting = ConfigurationSetting()
     setting.set("application.port", value: "bad")
     assert(Application.configuration.port, equals: 8080)
   }
   
+  func testLocalizationClassGetsClassFromLocalization() {
+    Application.configuration.localization = { DatabaseLocalization(locale: $0) }
+    let setting = ConfigurationSetting()
+    assert(setting.fetch("localization.class"), equals: "Tailor.DatabaseLocalization")
+  }
+  
+  func testLocalizationClassSetsLocalizationWithClassName() {
+    Application.configuration.localization = { PropertyListLocalization(locale: $0) }
+    let setting = ConfigurationSetting()
+    setting.set("localization.class", value: "Tailor.DatabaseLocalization")
+    assert(Application.configuration.localization("en") is DatabaseLocalization)
+  }
+  
+  func testLocalizationClassWithNilValueSetsPropertyListLocalization() {
+    Application.configuration.localization = { DatabaseLocalization(locale: $0) }
+    let setting = ConfigurationSetting()
+    setting.set("localization.class", value: nil)
+    assert(Application.configuration.localization("en") is PropertyListLocalization)
+  }
+  
+  func testLocalizationContentGetsContentFromStaticContent() {
+    Application.configuration.staticContent["en.test.token"] = "Hello"
+    let setting = ConfigurationSetting()
+    
+    assert(setting.fetch("localization.content.en.test.token"), equals: "Hello")
+  }
+  
+  func testLocalizationContentSetsContentInStaticContent() {
+    Application.configuration.staticContent["en.test.token"] = "Hello"
+    let setting = ConfigurationSetting()
+    setting.set("localization.content.en.test.token", value: "Goodbye")
+    assert(Application.configuration.staticContent["en.test.token"], equals: "Goodbye")
+  }
+  
+  func testDatabaseClassGetsClassFromConfiguration() {
+    Application.configuration.databaseDriver = { SqliteConnection(config: ["path": "/tmp/databaseTest.sqlite"]) }
+    let setting = ConfigurationSetting()
+    assert(setting.fetch("database.class"), equals: "TailorSqlite.SqliteConnection")
+  }
+  
+  func testDatabaseClassWithNoConfigurationSettingIsNil() {
+    Application.configuration.databaseDriver = nil
+    let setting = ConfigurationSetting()
+    assert(isNil: setting.fetch("database.class"))
+  }
+  
+  func testDatabaseClassSetsInitializerInConfiguration() {
+    Application.configuration.databaseDriver = nil
+    
+    setting.child("database").addDictionary([
+      "class": "TailorSqlite.SqliteConnection",
+      "path": "/tmp/databaseTest2.sqlite"
+      ])
+    guard let _ = Application.configuration.databaseDriver?() as? SqliteConnection else {
+      assert(false, message: "Did not have a driver")
+      return
+    }
+  }
+  
+  func testCacheClassGetsClassFromConfiguration() {
+    Application.configuration.cacheStore = { return CacheStore() }
+    let setting = ConfigurationSetting()
+    assert(setting.fetch("cache.class"), equals: "Tailor.CacheStore")
+  }
+  
+  func testCacheClassSetsClassInConfiguration() {
+    Application.configuration.cacheStore = { return MemoryCacheStore() }
+    let setting = ConfigurationSetting()
+    setting.set("cache.class", value: "Tailor.CacheStore")
+    assert(Application.configuration.cacheStore() is CacheStore)
+  }
+  
+  func testCacheClassWithNilValueSetsMemoryCacheStoreInConfiguration() {
+    Application.configuration.cacheStore = { return CacheStore() }
+    let setting = ConfigurationSetting()
+    setting.set("cache.class", value: nil)
+    assert(Application.configuration.cacheStore() is MemoryCacheStore)
+  }
+  
+  func testSessionsEncryptionKeyGetsEncryptionKey() {
+    let key = AesEncryptor.generateKey()
+    Application.configuration.sessionEncryptionKey = key
+    let setting = ConfigurationSetting()
+    assert(setting.fetch("sessions.encryptionKey"), equals: key)
+  }
+
+  func testSessionsEncryptionKeySetsEncryptionKey() {
+    let key = AesEncryptor.generateKey()
+    Application.configuration.sessionEncryptionKey = "abc123"
+    let setting = ConfigurationSetting()
+    setting.set("sessions.encryptionKey", value: key)
+    assert(Application.configuration.sessionEncryptionKey, equals: key)
+  }
+  
+  func testSessionsEncryptionKeyWithNilValueSetsBlankEncryptionKey() {
+    Application.configuration.sessionEncryptionKey = "abc123"
+    let setting = ConfigurationSetting()
+    setting.set("sessions.encryptionKey", value: nil)
+    assert(Application.configuration.sessionEncryptionKey, equals: "")
+  }
+  
+  
+  func testSetValueOnEmptyNodeSetsValue() {
+    let setting = ConfigurationSetting()
+    setting.value = "Hi"
+    assert(setting.value, equals: "Hi")
+  }
+
   //MARK: - Comparison
   
   func testComparisonIsEqualWithSameValues() {
