@@ -125,73 +125,41 @@ class ApplicationTests : TailorTestCase {
   }
   
   func testSetDefaultContentSetsValueInContent() {
-    var configuration = Application.Configuration()
+    let configuration = Application.Configuration()
     configuration.setDefaultContent("en.key1", value: "value1")
     assert(configuration.staticContent["en.key1"], equals: "value1")
   }
   
   func testSetDefaultContentKeepsExistingValue() {
-    var configuration = Application.Configuration()
+    let configuration = Application.Configuration()
     configuration.staticContent["en.key1"] = "value1"
     configuration.setDefaultContent("en.key1", value: "value2")
     assert(configuration.staticContent["en.key1"], equals: "value1")
   }
   
-  func testContentFromLocalizationPlistGetsContentFromFile() {
-    let content = Application.Configuration.contentFromLocalizationPlist()
+  func testConfigurationFromFileGetsConfiguration() {
+    let content = Application.Configuration.configurationFromFile("goodPlist")
     assert(content, equals: [
       "en.key1": "value1",
       "en.key2.key3": "value3"
     ])
   }
   
-  func testContentFromLocalizationPlistWithMissingFileGetsEmptyDictionary() {
-    let content = Application.Configuration.contentFromLocalizationPlist("./badPath.plist")
+  func testConfigurationFromFileWithMissingFileGetsEmptyDictionary() {
+    let content = Application.Configuration.configurationFromFile("badPath")
     assert(content.isEmpty)
   }
   
-  func testContentFromLocalizationPlistWithNonPlistFileGetsEmptyDictionary() {
-    var bundlePath = ""
-    for bundle in NSBundle.allBundles() {
-      bundlePath = bundle.resourcePath ?? "."
-      bundlePath += "/localization2.txt"
-      if NSFileManager.defaultManager().fileExistsAtPath(bundlePath) {
-        break
-      }
-    }
-    
-    let content = Application.Configuration.contentFromLocalizationPlist(bundlePath)
+  func testConfigurationFromFileWithNonPlistFileGetsEmptyDictionary() {
+    let content = Application.Configuration.configurationFromFile("invalidPlist")
     assert(content.isEmpty)
   }
   
-  func testContentFromLocalizationPlistWithNonDictionaryFileGetsEmptyDictionary() {
-    var bundlePath = ""
-    for bundle in NSBundle.allBundles() {
-      bundlePath = bundle.resourcePath ?? "."
-      bundlePath += "/localization3.plist"
-      if NSFileManager.defaultManager().fileExistsAtPath(bundlePath) {
-        break
-      }
-    }
-    
-    let content = Application.Configuration.contentFromLocalizationPlist(bundlePath)
+  func testConfigurationFromFileWithNonDictionaryFileGetsEmptyDictionary() {
+    let content = Application.Configuration.configurationFromFile("arrayPlist")
     assert(content.isEmpty)
   }
   
-  func testContentFromLocalizationPlistWithNoContentDictionaryGetsEmptyDictionary() {
-    var bundlePath = ""
-    for bundle in NSBundle.allBundles() {
-      bundlePath = bundle.resourcePath ?? "."
-      bundlePath += "/localization4.plist"
-      if NSFileManager.defaultManager().fileExistsAtPath(bundlePath) {
-        break
-      }
-    }
-    
-    let content = Application.Configuration.contentFromLocalizationPlist(bundlePath)
-    assert(content.isEmpty)
-  }
-
   @available(*, deprecated) func testIpAddressGetsValueFromConfigurationSettings() {
     application = Application()
     Application.configuration.ipAddress = (127,0,0,1)

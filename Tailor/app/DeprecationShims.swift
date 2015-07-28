@@ -11,10 +11,6 @@ internal class DeprecationShims: NSObject {
     application.application.loadConfigFromFile("sessions.plist")
     application.application.loadConfigFromFile("database.plist")
     application.application.loadConfigFromFile("localization.plist")
-    
-    if Application.configuration.staticContent.isEmpty {
-      Application.configuration.staticContent = Application.Configuration.contentFromLocalizationPlist()
-    }
   }
 }
 extension Application {

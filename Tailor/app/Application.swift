@@ -7,7 +7,7 @@ public class Application {
   /**
     This structure provides the configuration settings for an application.
     */
-  public struct Configuration {
+  public final class Configuration {
     /** The port that the application listens on. */
     public var port = 8080
     
@@ -47,7 +47,21 @@ public class Application {
       values.
       */
     public init() {
-      
+      self.configure()
+    }
+    
+    /**
+      This method provides the configuration.
+
+      This implementation is empty, but your apps can override it in an
+      extension to provide your custom configuration.
+
+      This can also be a convenient place to load your routes.
+    
+      This will be run once during the initialization of the configuration,
+      which will be done while the application is starting.
+      */
+    public dynamic func configure() {
     }
     
     /**
@@ -89,44 +103,48 @@ public class Application {
       - parameter key:    The key to set content for
       - parameter value:  The content to set.
       */
-    public mutating func setDefaultContent(key: String, value: String) {
+    public func setDefaultContent(key: String, value: String) {
       self.staticContent[key] = self.staticContent[key] ?? value
     }
     
     /**
-      This method gets the content from a localization plist file.
+      This method gets the path to a config plist.
 
-      The plist file must contain a dictionary with a key "content". That key
-      must map to a dictionary containing the content. If the dictionary has
-      nested dictionaries within it, they will be collapsed into a single
-      dictionary by combining the keys into a key path with a period as the
-      separator.
-
-      If a path is not provided, this will look through the bundles for the
-      application for one that has a "localization.plist" file, and then use
-      that file for the content.
-
-      - parameter path:   The full path to the plist file.
-      - returns:          The flattened content dictionary.
+      - parameter name:   The name of the file, not including the extension.
+      - returns:          The path to the file, or nil if the file could not be
+                          found.
       */
-    public static func contentFromLocalizationPlist(path: String? = nil) -> [String:String] {
-      let path = path ?? {
-        for bundle in NSBundle.allBundles() {
-          var bundlePath = bundle.resourcePath ?? "."
-          bundlePath += "/localization.plist"
-          if NSFileManager.defaultManager().fileExistsAtPath(bundlePath) {
-            return bundlePath
-          }
+    internal static func pathForConfigFile(name: String) -> String? {
+      for bundle in NSBundle.allBundles() {
+        var bundlePath = bundle.resourcePath ?? "."
+        bundlePath += "/\(name).plist"
+        if NSFileManager.defaultManager().fileExistsAtPath(bundlePath) {
+          return bundlePath
         }
-        return "."
-      }()
+      }
+      return nil
+    }
+    
+    /**
+      This method extracts the configuration from a plist file.
       
-      if let data = NSData(contentsOfFile: path) {
+      This will look through the bundles for the application for one that has a
+      "\(name).plist" file, extract a property list dictionary from it, and then
+      flatten it into a dictionary mapping strings to strings.
+
+      If any part of this fails, this will return an empty dictionary.
+      
+      - parameter name:   The name of the plist file, not including the
+                          extension.
+      - returns:          The flattened config dictionary.
+      */
+    public static func configurationFromFile(name: String) -> [String:String] {
+      if let path = pathForConfigFile(name),
+        let data = NSData(contentsOfFile: path) {
         do {
          let plist = try NSPropertyListSerialization.propertyListWithData(data, options: [.Immutable], format: nil)
-          if let dictionary = plist as? NSDictionary,
-            let contentDictionary = dictionary["content"] as? NSDictionary {
-              return flattenDictionary(contentDictionary)
+          if let dictionary = plist as? NSDictionary {
+            return flattenDictionary(dictionary)
           }
         }
         catch {
