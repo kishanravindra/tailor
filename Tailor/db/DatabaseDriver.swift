@@ -38,9 +38,11 @@ public protocol DatabaseDriver: class {
    func transaction(block: ()->())
   
   /**
-    This method getes the list of tables in the database.
+    This method getes the tables in the database.
+  
+    This will be a dictionary mapping table names to the SQL for creating them.
     */
-  func tableNames() -> [String]
+  func tables() -> [String:String]
 }
 
 public extension DatabaseDriver {
@@ -94,6 +96,10 @@ public extension DatabaseDriver {
     let range = NSMakeRange(0, columnName.characters.count)
     let sanitizedColumn = keyRegex.stringByReplacingMatchesInString(columnName, options: [], range: range, withTemplate: "")
     return sanitizedColumn
+  }
+  
+  public func tableNames() -> [String] {
+    return self.tables().keys.array
   }
 }
 

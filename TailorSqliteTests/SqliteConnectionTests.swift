@@ -246,8 +246,13 @@ class SqliteConnectionTests: TailorTestCase {
 
   //MARK: - Metadata
   
-  func testTableNamesCanGetNames() {
-    let names = connection.tableNames().sort()
-    assert(names, equals: ["hats", "shelfs", "stores", "tailor_alterations", "users"])
+  func testTablesCanGetTableSql() {
+    let tables = connection.tables()
+    assert(tables.keys.array.sort(), equals: ["hats", "shelfs", "stores", "tailor_alterations", "users"])
+    assert(tables["hats"], equals: "CREATE TABLE `hats` ( `id` integer NOT NULL PRIMARY KEY, `color` varchar(255), `brim_size` int(11), shelf_id int(11), `created_at` timestamp, `updated_at` timestamp)")
+    assert(tables["shelfs"], equals: "CREATE TABLE `shelfs` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255), `store_id` int(11))")
+    assert(tables["stores"], equals: "CREATE TABLE `stores` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255))")
+    assert(tables["users"], equals: "CREATE TABLE `users` ( `id` integer NOT NULL PRIMARY KEY, `email_address` varchar(255), `encrypted_password` varchar(255))")
+    assert(tables["tailor_alterations"], equals: "CREATE TABLE tailor_alterations ( id varchar(255) PRIMARY KEY )")
   }
 }

@@ -66,10 +66,15 @@ public final class SqliteConnection: DatabaseDriver {
   /**
     This method gets the names of the tables in the database.
     */
-  public func tableNames() -> [String] {
-    let results = executeQuery("SELECT DISTINCT tbl_name FROM sqlite_master")
-    return removeNils(results.map {
-      return $0.data["tbl_name"]?.stringValue
-    })
+  public func tables() -> [String:String] {
+    let tableInfo = executeQuery("SELECT distinct tbl_name,sql FROM sqlite_master WHERE type='table'")
+    var results = [String:String]()
+    for table in tableInfo {
+      if let tableName = table.data["tbl_name"]?.stringValue,
+        let sql = table.data["sql"]?.stringValue {
+          results[tableName] = sql
+      }
+    }
+    return results
   }
 }

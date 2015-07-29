@@ -71,7 +71,7 @@ import Foundation
     return sanitizedColumn
   }
   
-  public func tableNames() -> [String] {
-    return []
+  public func tables() -> [String:String] {
+    return [:]
   }
 }

@@ -312,8 +312,8 @@ class ApplicationTests : TailorTestCase {
         return []
       }
       
-      func tableNames() -> [String] {
-        return []
+      func tables() -> [String:String] {
+        return [:]
       }
     }
     

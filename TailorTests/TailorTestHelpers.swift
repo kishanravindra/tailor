@@ -26,8 +26,8 @@ final class TestConnection : DatabaseDriver {
     dictionary["databaseConnection"] = oldConnection
   }
   
-  func tableNames() -> [String] {
-    return []
+  func tables() -> [String:String] {
+    return [:]
   }
 }
 
