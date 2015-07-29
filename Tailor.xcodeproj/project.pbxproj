@@ -70,6 +70,7 @@
 		5262EE7E1AD0AC9B006F864D /* ServerTaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784CE1A5CC6350065C10D /* ServerTaskTests.swift */; };
 		5262EEA41AD0BA3D006F864D /* Tailor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5262EEA21AD0BA3D006F864D /* Tailor.framework */; };
 		526378D91B4A06600008B2E1 /* JsonPrimitive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526378D81B4A06600008B2E1 /* JsonPrimitive.swift */; };
+		526525FE1B691B360043EB12 /* CsvParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526525FD1B691B360043EB12 /* CsvParserTests.swift */; };
 		526A23771B30E0A30033A094 /* TestConfig.plist in Resources */ = {isa = PBXBuildFile; fileRef = 526A23761B30E0A30033A094 /* TestConfig.plist */; };
 		526ACD801B07922900CE0CC0 /* TimeFormatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526ACD7F1B07922900CE0CC0 /* TimeFormatTests.swift */; };
 		526ACD821B07A9FD00CE0CC0 /* TimeIntervalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526ACD811B07A9FD00CE0CC0 /* TimeIntervalTests.swift */; };
@@ -290,6 +291,7 @@
 		5262EEA21AD0BA3D006F864D /* Tailor.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Tailor.framework; path = build/Tailor.framework; sourceTree = "<group>"; };
 		5262EEA31AD0BA3D006F864D /* TailorTesting.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TailorTesting.framework; path = build/TailorTesting.framework; sourceTree = "<group>"; };
 		526378D81B4A06600008B2E1 /* JsonPrimitive.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonPrimitive.swift; sourceTree = "<group>"; };
+		526525FD1B691B360043EB12 /* CsvParserTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CsvParserTests.swift; sourceTree = "<group>"; };
 		526A23761B30E0A30033A094 /* TestConfig.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = TestConfig.plist; path = ../TestConfig.plist; sourceTree = "<group>"; };
 		526ACD7F1B07922900CE0CC0 /* TimeFormatTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeFormatTests.swift; sourceTree = "<group>"; };
 		526ACD811B07A9FD00CE0CC0 /* TimeIntervalTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeIntervalTests.swift; sourceTree = "<group>"; };
@@ -556,14 +558,15 @@
 			path = db;
 			sourceTree = "<group>";
 		};
-		5262D1191B4A06AC00101154 /* json */ = {
+		5262D1191B4A06AC00101154 /* serial */ = {
 			isa = PBXGroup;
 			children = (
 				5262D11A1B4A06CC00101154 /* JsonPrimitiveTests.swift */,
 				5262D14A1B4B5A3800101154 /* JsonErrorsTests.swift */,
+				526525FD1B691B360043EB12 /* CsvParserTests.swift */,
 				5262D1501B4C956E00101154 /* JsonConvertibleTests.swift */,
 			);
-			path = json;
+			path = serial;
 			sourceTree = "<group>";
 		};
 		526378D71B4A061C0008B2E1 /* serial */ = {
@@ -743,7 +746,7 @@
 				52E784B61A59F1720065C10D /* crypt */,
 				525898A01A4F28A900DD853D /* db */,
 				52E784BB1A5B593B0065C10D /* ext */,
-				5262D1191B4A06AC00101154 /* json */,
+				5262D1191B4A06AC00101154 /* serial */,
 				52E784C81A5CC1900065C10D /* localization */,
 				52DD44E91B57369300312923 /* mail */,
 				5209E2871A5091BE0044EE70 /* model */,
@@ -1312,6 +1315,7 @@
 				525F84601B3B65F40025CA38 /* LocalizationSourceTests.swift in Sources */,
 				52DD44F11B5C3B8D00312923 /* FileEmailAgentTests.swift in Sources */,
 				5262EE7B1AD0AC9B006F864D /* DictionaryTests.swift in Sources */,
+				526525FE1B691B360043EB12 /* CsvParserTests.swift in Sources */,
 				520BD5021AA90E2600CBC3DC /* PropertyListLocalizationTests.swift in Sources */,
 				5262D11B1B4A06CC00101154 /* JsonPrimitiveTests.swift in Sources */,
 				5232ACC61B6198730043F9A2 /* ExternalProcessTests.swift in Sources */,
