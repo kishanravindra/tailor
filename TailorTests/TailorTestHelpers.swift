@@ -66,7 +66,7 @@ struct Hat : Persistable {
         self.init(
           brimSize: brimSize,
           color: color,
-          shelfId: databaseRow["id"]?.intValue,
+          shelfId: databaseRow["shelf_id"]?.intValue,
           id: databaseRow["id"]?.intValue
         )
         createdAt = databaseRow["created_at"]?.timestampValue
