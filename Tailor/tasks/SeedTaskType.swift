@@ -5,6 +5,9 @@
   and seed data to CSV files, and read them back when resetting a database.
 
   This can be useful for setting up local development environments.
+
+  The syntax for this is `seeds load`, to load the database from the seed files,
+  or `seeds dump`, or dumping the database contents to the seed files.
   */
 public protocol SeedTaskType: TaskType {
   /**
@@ -136,7 +139,21 @@ extension SeedTaskType {
     }
   }
   
+  /**
+    This method runs the task for loading or dumping seed data.
+    */
   public static func runTask() {
-    
+    let application = Application.sharedApplication()
+    if application.flags["load"] != nil {
+      self.loadSchema()
+      self.loadModels()
+    }
+    else if application.flags["dump"] != nil {
+      self.dumpSchema()
+      self.dumpModels()
+    }
+    else {
+      NSLog("You must provide an operation, either `seeds load` or `seeds dump`")
+    }
   }
 }
