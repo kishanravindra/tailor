@@ -34,16 +34,26 @@ class SeedTaskTypeTests: TailorTestCase {
     super.tearDown()
   }
   
-  func testPathForFileGetsPathInApplicationDirectory() {
-    let path = SeedTask.pathForFile("tables")
-    assert(path, equals: "/tmp/seeds/tables.csv")
+  func testSeedFolderIsPathInConfigInProjectFolder() {
+    NSBundle.stubMethod("infoDictionary", result: ["TailorProjectPath": PROJECT_DIR, "CFBundleName": "MyApp"]) {
+      let folder = SeedTask.seedFolder
+      assert(folder, equals: PROJECT_DIR + "/MyApp/config/seeds")
+    }
   }
   
-  func testPathForFileGetsPathWithNilWorkingDirectoryGetsRelativePath() {
-    NSProcessInfo.stubEnvironment([:])
+  func testSeedFolderRemovesTestsFromProjectNameInPath() {
+    let folder = SeedTask.seedFolder
+    assert(folder, equals: Application.projectPath + "/Tailor/config/seeds")
+  }
+  
+  func testPathForFileGetsPathInSeedFolder() {
     let path = SeedTask.pathForFile("tables")
-    assert(path, equals: "./seeds/tables.csv")
-    NSProcessInfo.unstubEnvironment()
+    assert(path, equals: SeedTask.seedFolder + "/tables.csv")
+  }
+  
+  func testPathForFileWithModelGetsPathToModelNameInSeedFolder() {
+    let path = SeedTask.pathForFile(Store.self)
+    assert(path, equals: SeedTask.seedFolder + "/stores.csv")
   }
   
   func testDumpSchemaSavesSchemaToFile() {
@@ -98,21 +108,13 @@ class SeedTaskTypeTests: TailorTestCase {
       ])
   }
   
-  func testDumpSchemaWithInaccessibleFileDoesNotWriteFile() {
-    NSProcessInfo.stubEnvironment(["PWD": "/"])
-    SeedTask.dumpSchema()
-    let data = NSData(contentsOfFile: SeedTask.pathForFile("tables"))
-    assert(isNil: data)
-    NSProcessInfo.unstubEnvironment()
-  }
-  
   func testDumpModelSavesModelToFile() {
     let hat1 = Hat(brimSize: 10, color: "red", shelfId: 1).save()!
     let hat2 = Hat(brimSize: 12, color: "brown").save()!
     
     SeedTask.dumpModel(Hat.self)
     
-    let rows = CsvParser(path: "/tmp/seeds/hats.csv").rows
+    let rows = CsvParser(path: SeedTask.pathForFile("hats")).rows
     assert(rows, equals: [
       ["id", "brim_size", "color", "created_at", "shelf_id", "updated_at"],
       ["1", "10", "red", hat1.createdAt!.description, "1", hat1.updatedAt!.description],
@@ -139,7 +141,7 @@ class SeedTaskTypeTests: TailorTestCase {
     connection.executeQuery("UPDATE hats SET id=NULL")
     SeedTask.dumpModel(Hat.self)
     
-    let rows = CsvParser(path: "/tmp/seeds/hats.csv").rows
+    let rows = CsvParser(path: SeedTask.pathForFile("hats")).rows
     assert(rows, equals: [
       ["id", "brim_size", "color", "created_at", "shelf_id", "updated_at"],
       ["0", "10", "red", hat1.createdAt!.description, "1", hat1.updatedAt!.description],
@@ -273,7 +275,7 @@ class SeedTaskTypeTests: TailorTestCase {
       ["users", "CREATE TABLE `users` ( `id` integer NOT NULL PRIMARY KEY, `email_address` varchar(255), `encrypted_password` varchar(255))"]
       ])
     
-    let rows = CsvParser(path: "/tmp/seeds/hats.csv").rows
+    let rows = CsvParser(path: SeedTask.pathForFile("hats")).rows
     assert(rows, equals: [
       ["id", "brim_size", "color", "created_at", "shelf_id", "updated_at"],
       ["1", "10", "red", hat1.createdAt!.description, "1", hat1.updatedAt!.description],

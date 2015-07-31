@@ -371,4 +371,30 @@ class ApplicationTests : TailorTestCase {
     let localization = application.localization("en")
     assert(localization is PropertyListLocalization)
   }
+  
+  func testProjectPathReadsTailorProjectFolderSetting() {
+    assert(Application.projectPath, equals: PROJECT_DIR)
+  }
+  
+  func testProjectPathWithNoSettingIsCurrentPath() {
+    NSBundle.stubMethod("infoDictionary", result: NSDictionary()) {
+      assert(Application.projectPath, equals: ".")
+    }
+  }
+  
+  func testProjectPathWithNonExistantPathIsCurrentPath() {
+    NSBundle.stubMethod("infoDictionary", result: ["TailorProjectPath": "/badpath"]) {
+      assert(Application.projectPath, equals: ".")
+    }
+  }
+  
+  func testProjectNameReadsBundleName() {
+    assert(Application.projectName, equals: "TailorTests")
+  }
+  
+  func testProjectNameWithNoBundleNameIsApplication() {
+    NSBundle.stubMethod("infoDictionary", result: NSDictionary()) {
+      assert(Application.projectName, equals: "Application")
+    }
+  }
 }

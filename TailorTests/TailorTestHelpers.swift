@@ -140,3 +140,19 @@ struct Store : Persistable {
     self.init(request: Request(), actionName: "index", callback: {_ in })
   }
 }
+
+extension NSObject {
+  class func stubMethod<T: AnyObject>(name: String, result: T, @noescape block: Void -> Void) {
+    let method = class_getInstanceMethod(self, Selector(name))
+    let oldImplementation = method_getImplementation(method)
+    let implementationBlock: @convention(block) (AnyObject)->AnyObject = {
+      _ in
+      return result
+    }
+
+    let newImplementation = imp_implementationWithBlock(unsafeBitCast(implementationBlock, AnyObject.self))
+    method_setImplementation(method, newImplementation)
+    block()
+    method_setImplementation(method, oldImplementation)
+  }
+}

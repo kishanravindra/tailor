@@ -13,6 +13,16 @@ public protocol SeedTaskType: TaskType {
   //MARK: - Customization
   
   /**
+    This method gets the seed folder where your seeds will live.
+
+    The default is a path inside project directory, inside a folder with your
+    project name, and then inside "config/seeds".
+  
+    The same project name will be used for your app target and your test target.
+    */
+  static var seedFolder: String { get }
+  
+  /**
     This method dumps the seed data for all of your models to the seed data.
 
     You can use the `dumpModel` method to dump each model one by one.
@@ -36,6 +46,14 @@ public protocol SeedTaskType: TaskType {
 }
 
 extension SeedTaskType {
+  public static var seedFolder: String {
+    var projectName = Application.projectName
+    if projectName.hasSuffix("Tests") {
+      projectName = projectName.substringToIndex(advance(projectName.startIndex, projectName.characters.count - 5))
+    }
+    return Application.projectPath + "/" + projectName + "/config/seeds"
+  }
+  
   /**
     This method gets the path for a seed file.
 
@@ -43,10 +61,7 @@ extension SeedTaskType {
     - returns:          The path to the file.
     */
   public static func pathForFile(file: String) -> String {
-    let info = NSProcessInfo.processInfo().environment
-    let directory = info["PWD"] ?? "."
-    let path = directory + "/seeds/\(file).csv"
-    return path
+    return self.seedFolder + "/\(file).csv"
   }
   
   /**

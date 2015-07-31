@@ -693,6 +693,55 @@ public class Application {
    public func localization(locale: String) -> LocalizationSource {
     return Application.configuration.localization(locale)
   }
+  
+  /**
+    This method gets a key from the bundle's info dictionary.
+
+    This will search through all bundles, to make up for some weird behavior
+    in how the main bundle gets assigned in test targets.
+    
+    - param key:    The key to search for.
+    - returns:      The value for that key, or nil if we could not find a value.
+    */
+  internal static func bundleInfo(key: String) -> String? {
+    for bundle in NSBundle.allBundles() {
+      if let bundleInfo = bundle.infoDictionary {
+        if let value = bundleInfo[key] as? String {
+          return value
+        }
+      }
+    }
+    return nil
+  }
+  
+  /**
+    This method gets the path to the folder where your project lives in your
+    development environment.
+
+    This looks for the value in the TailorProjectPath key in your bundle's
+    info dictionary. You should set this to `$PROJECT_PATH` to use the path that
+    Xcode already has in the build settings.
+  
+    If there is no value for that key in the info dictionary, this will be ".".
+    */
+  public static var projectPath: String {
+    if let folder = bundleInfo("TailorProjectPath") {
+      if NSFileManager.defaultManager().fileExistsAtPath(folder) {
+        return folder
+      }
+    }
+    return "."
+  }
+  
+  /**
+    This method gets the name of your project, from the CFBundleName key in the
+    bundle's info dictionary.
+
+    If there is no value for that key, this will be "Application".
+    */
+  public static var projectName: String {
+    return bundleInfo("CFBundleName") ?? "Application"
+  }
 }
 
 /** The arguments for the application that we are running. */
