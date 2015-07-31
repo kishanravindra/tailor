@@ -10,6 +10,8 @@
   or `seeds dump`, or dumping the database contents to the seed files.
   */
 public protocol SeedTaskType: TaskType {
+  //MARK: - Customization
+  
   /**
     This method dumps the seed data for all of your models to the seed data.
 
@@ -23,6 +25,14 @@ public protocol SeedTaskType: TaskType {
     You can use the `loadModel` method to load each model one by one.
   */
   static func loadModels()
+  
+  /**
+    This method provides the names of the tables that should be excluded from
+    the schema when dumping the schema.
+
+    The default is an empty list.
+    */
+  static var excludedTables: [String] { get }
 }
 
 extension SeedTaskType {
@@ -56,10 +66,7 @@ extension SeedTaskType {
     */
   public static func dumpSchema() {
     let tables = Application.sharedDatabaseConnection().tables()
-    let rows = [["table","sql"]] + tables.map {
-      (key,value) in
-      [key,value]
-      }.sort { $0[0] < $1[0] }
+    let rows = [["table","sql"]] + tables.filter { !excludedTables.contains($0.0) }.map { [$0.0, $0.1] }.sort { $0[0] < $1[0] }
     let path = self.pathForFile("tables")
     let data = CsvParser.encode(rows)
     let folderPath = path.stringByDeletingLastPathComponent
@@ -156,4 +163,8 @@ extension SeedTaskType {
       NSLog("You must provide an operation, either `seeds load` or `seeds dump`")
     }
   }
+  
+  //MARK: - Customization
+  
+  public static var excludedTables: [String] { return [] }
 }
