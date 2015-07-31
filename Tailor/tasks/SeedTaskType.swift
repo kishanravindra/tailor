@@ -7,7 +7,19 @@
   This can be useful for setting up local development environments.
   */
 public protocol SeedTaskType: TaskType {
+  /**
+    This method dumps the seed data for all of your models to the seed data.
+
+    You can use the `dumpModel` method to dump each model one by one.
+    */
   static func dumpModels()
+  
+  /**
+    This method loads the seed data from all of your models to the seed data.
+  
+    You can use the `loadModel` method to load each model one by one.
+  */
+  static func loadModels()
 }
 
 extension SeedTaskType {
@@ -58,6 +70,21 @@ extension SeedTaskType {
     }
   }
   
+  public static func loadSchema() {
+    let connection = Application.sharedDatabaseConnection()
+    for tableName in connection.tableNames() {
+      connection.executeQuery("DROP TABLE `\(tableName)`")
+    }
+    let rows = CsvParser(path: self.pathForFile("tables")).rows
+    for row in rows {
+      if row.count < 2 {
+        continue
+      }
+      let query = row[1]
+      connection.executeQuery(query)
+    }
+  }
+  
   /**
     This method dumps all the data for a model to a CSV file.
   
@@ -84,6 +111,29 @@ extension SeedTaskType {
     }
     let filename = pathForFile(model)
     data.writeToFile(filename, atomically: true)
+  }
+  
+  /**
+    This method loads the seed data for a model from its seed file.
+
+    This will not destroy any existing records. It will insert rows with the
+    data from the rows in the seed file.
+
+    - parameter model:    The model to load.
+    */
+  public static func loadModel<ModelType: Persistable>(model: ModelType.Type) {
+    let rows = CsvParser(path: self.pathForFile(model)).rows
+    if rows.count == 0 {
+      return
+    }
+    let keys = "`,`".join(rows[0])
+    let connection = Application.sharedDatabaseConnection()
+    let placeholders = ",".join(rows[0].map { _ in return "?" })
+    let query = "INSERT INTO `\(model.tableName)` (`\(keys)`) VALUES (\(placeholders))"
+    for index in 1..<rows.count {
+      let row = rows[index].map { $0.databaseValue }
+      connection.executeQuery(query, parameters: row)
+    }
   }
   
   public static func runTask() {

@@ -6,6 +6,18 @@ class SeedTaskTypeTests: TailorTestCase {
     static func dumpModels() {
       
     }
+    static func loadModels() {
+      
+    }
+  }
+  
+  override func tearDown() {
+    let connection = Application.sharedDatabaseConnection()
+    for table in connection.tableNames() {
+      connection.executeQuery("DROP TABLE `\(table)`")
+    }
+    AlterationsTask.runTask()
+    super.tearDown()
   }
   
   func testPathForFileGetsPathInApplicationDirectory() {
@@ -49,7 +61,7 @@ class SeedTaskTypeTests: TailorTestCase {
     ])
   }
   
-  func testDumpModelsCreatesEmptyFilesForEmptyModel() {
+  func testDumpModelCreatesEmptyFilesForEmptyModel() {
     do {
       try NSFileManager.defaultManager().removeItemAtPath(SeedTask.pathForFile(Hat.self))
     }
@@ -57,5 +69,59 @@ class SeedTaskTypeTests: TailorTestCase {
     SeedTask.dumpModel(Hat.self)
     let data = NSData(contentsOfFile: SeedTask.pathForFile(Hat.self))
     assert(data, equals: NSData())
+  }
+  
+  func testLoadSchemaDropsTablesThatAreNotInFile() {
+    let rows = [
+      ["table","sql"],
+      ["hats","CREATE TABLE `hats` ( `id` integer NOT NULL PRIMARY KEY, `color` varchar(255), `brim_size` integer, shelf_id integer, `created_at` timestamp, `updated_at` timestamp)"],
+      ["shelfs","CREATE TABLE `shelfs` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255), `store_id` integer)"]
+    ]
+    CsvParser.encode(rows).writeToFile(SeedTask.pathForFile("tables"), atomically: true)
+    SeedTask.loadSchema()
+    let tables = Application.sharedDatabaseConnection().tables()
+    assert(isNil: tables["stores"], message: "removes tables that are not in the schema file")
+  }
+  
+  func testLoadSchemaAddsTableFromFile() {
+    Application.sharedDatabaseConnection().executeQuery("DROP TABLE `hats`")
+    let rows = [
+      ["table","sql"],
+      ["hats","CREATE TABLE `hats` ( `id` integer NOT NULL PRIMARY KEY, `color` varchar(255), `brim_size` integer, shelf_id integer, `created_at` timestamp, `updated_at` timestamp)"],
+      ["shelfs","CREATE TABLE `shelfs` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255), `store_id` integer)"]
+    ]
+    CsvParser.encode(rows).writeToFile(SeedTask.pathForFile("tables"), atomically: true)
+    SeedTask.loadSchema()
+    let tables = Application.sharedDatabaseConnection().tables()
+    assert(tables["hats"], equals: rows[1][1], message: "creates the table with the SQL from the file")
+  }
+  
+  func testLoadModelLoadsRecordsFromModel() {
+    let rows = [
+      ["id", "brim_size", "color", "created_at", "shelf_id", "updated_at"],
+      ["1", "10", "red", "2015-07-31 11:02:00", "1", "2015-07-31 11:03:00"],
+      ["2", "12", "brown", "2015-07-31 09:15:00", "", "2015-07-31 09:30:00"]
+    ]
+    CsvParser.encode(rows).writeToFile(SeedTask.pathForFile(Hat.self), atomically: true)
+    SeedTask.loadModel(Hat.self)
+    let timeZone = Application.sharedDatabaseConnection().timeZone
+    let hat1 = Query<Hat>().find(1)
+    assert(hat1?.brimSize, equals: 10)
+    assert(hat1?.color, equals: "red")
+    assert(hat1?.createdAt, equals: Timestamp(year: 2015, month: 7, day: 31, hour: 11, minute: 2, second: 0, nanosecond: 0, timeZone: timeZone))
+    assert(hat1?.shelfId, equals: 1)
+    assert(hat1?.updatedAt, equals: Timestamp(year: 2015, month: 7, day: 31, hour: 11, minute: 3, second: 0, nanosecond: 0, timeZone: timeZone))
+    let hat2 = Query<Hat>().find(2)
+    assert(hat2?.brimSize, equals: 12)
+    assert(hat2?.color, equals: "brown")
+    assert(hat2?.createdAt, equals: Timestamp(year: 2015, month: 7, day: 31, hour: 9, minute: 15, second: 0, nanosecond: 0, timeZone: timeZone))
+    assert(isNil: hat2?.shelfId)
+    assert(hat2?.updatedAt, equals: Timestamp(year: 2015, month: 7, day: 31, hour: 9, minute: 30, second: 0, nanosecond: 0, timeZone: timeZone))
+  }
+  
+  func testLoadModelWithEmptyFileDoesNotLoadAnyRecords() {
+    NSData().writeToFile(SeedTask.pathForFile(Hat.self), atomically: true)
+    SeedTask.loadModel(Hat.self)
+    assert(Query<Hat>().count(), equals: 0)
   }
 }
