@@ -113,20 +113,36 @@ extension SeedTaskType {
   /**
     This method dumps all the data for a model to a CSV file.
   
-    The file name will be the model name, in snake case, with a CSV extension.
+    The file name will be the table name, with a CSV extension.
   
     - parameter model:    The model that we are saving.
     */
   public static func dumpModel<ModelType: Persistable>(model: ModelType.Type) {
-    let records = Query<ModelType>().all()
+    dumpTable(model.tableName)
+  }
+  
+  /**
+    This method dumps all the data for a table to a CSV file.
+    
+    The file name will be the table name, with a CSV extension.
+    
+    - parameter table:    The table that we are saving.
+    */
+  public static func dumpTable(table: String) {
+    let records = Application.sharedDatabaseConnection().executeQuery("SELECT * FROM `\(table)`")
     let data: NSData
     if !records.isEmpty {
-      let keys = records[0].valuesToPersist().keys.array.sort()
-      var rows = [["id"] + keys]
+      let keys = records[0].data.keys.array.sort()
+      var rows = [keys]
       for record in records {
-        let values = record.valuesToPersist()
-        let id = String(record.id ?? 0)
-        let row = [id] + keys.map { (values[$0]??.databaseValue ?? DatabaseValue.String("")).description }
+        let values = record.data
+        let row = keys.map { (key: String) -> String in
+          guard let value = values[key] else { return "" }
+          if value == DatabaseValue.Null {
+            return ""
+          }
+          return value.description
+        }
         rows.append(row)
       }
       data = CsvParser.encode(rows)
@@ -134,7 +150,7 @@ extension SeedTaskType {
     else {
       data = NSData()
     }
-    let filename = pathForFile(model)
+    let filename = pathForFile(table)
     data.writeToFile(filename, atomically: true)
   }
   
@@ -147,14 +163,27 @@ extension SeedTaskType {
     - parameter model:    The model to load.
     */
   public static func loadModel<ModelType: Persistable>(model: ModelType.Type) {
-    let rows = CsvParser(path: self.pathForFile(model)).rows
+    self.loadTable(model.tableName)
+  }
+  
+  
+  /**
+    This method loads the seed data for a table from its seed file.
+  
+    This will not destroy any existing records. It will insert rows with the
+    data from the rows in the seed file.
+  
+    - parameter table:    The name of the table to load.
+  */
+  public static func loadTable(table: String) {
+    let rows = CsvParser(path: self.pathForFile(table)).rows
     if rows.count == 0 {
       return
     }
     let keys = "`,`".join(rows[0])
     let connection = Application.sharedDatabaseConnection()
     let placeholders = ",".join(rows[0].map { _ in return "?" })
-    let query = "INSERT INTO `\(model.tableName)` (`\(keys)`) VALUES (\(placeholders))"
+    let query = "INSERT INTO `\(table)` (`\(keys)`) VALUES (\(placeholders))"
     for index in 1..<rows.count {
       let row = rows[index].map { $0.databaseValue }
       connection.executeQuery(query, parameters: row)
@@ -168,10 +197,12 @@ extension SeedTaskType {
     let application = Application.sharedApplication()
     if application.flags["load"] != nil {
       self.loadSchema()
+      self.loadTable("tailor_alterations")
       self.loadModels()
     }
     else if application.flags["dump"] != nil {
       self.dumpSchema()
+      self.dumpTable("tailor_alterations")
       self.dumpModels()
     }
     else {
@@ -182,4 +213,6 @@ extension SeedTaskType {
   //MARK: - Customization
   
   public static var excludedTables: [String] { return [] }
+  
+  public static var commandName: String { return "seeds" }
 }

@@ -3,8 +3,6 @@ import TailorTesting
 
 class SeedTaskTypeTests: TailorTestCase {
   final class SeedTask: SeedTaskType {
-    static var commandName = "seeds"
-    
     static func dumpModels() {
       dumpModel(Hat.self)
       dumpModel(Shelf.self)
@@ -116,9 +114,9 @@ class SeedTaskTypeTests: TailorTestCase {
     
     let rows = CsvParser(path: SeedTask.pathForFile("hats")).rows
     assert(rows, equals: [
-      ["id", "brim_size", "color", "created_at", "shelf_id", "updated_at"],
-      ["1", "10", "red", hat1.createdAt!.description, "1", hat1.updatedAt!.description],
-      ["2", "12", "brown", hat2.createdAt!.description, "", hat2.updatedAt!.description]
+      ["brim_size", "color", "created_at", "id", "shelf_id", "updated_at"],
+      ["10", "red", hat1.createdAt!.description, "1", "1", hat1.updatedAt!.description],
+      ["12", "brown", hat2.createdAt!.description, "2", "", hat2.updatedAt!.description]
     ])
   }
   
@@ -130,23 +128,6 @@ class SeedTaskTypeTests: TailorTestCase {
     SeedTask.dumpModel(Hat.self)
     let data = NSData(contentsOfFile: SeedTask.pathForFile(Hat.self))
     assert(data, equals: NSData())
-  }
-  
-  func testDumpModelWithNoIdSetsIdToZero() {
-    let connection = Application.sharedDatabaseConnection()
-    connection.executeQuery("DROP TABLE hats")
-    connection.executeQuery("CREATE TABLE `hats` ( `id` integer, `color` varchar(255), `brim_size` integer, shelf_id integer, `created_at` timestamp, `updated_at` timestamp)")
-    let hat1 = Hat(brimSize: 10, color: "red", shelfId: 1).save()!
-    let hat2 = Hat(brimSize: 12, color: "brown").save()!
-    connection.executeQuery("UPDATE hats SET id=NULL")
-    SeedTask.dumpModel(Hat.self)
-    
-    let rows = CsvParser(path: SeedTask.pathForFile("hats")).rows
-    assert(rows, equals: [
-      ["id", "brim_size", "color", "created_at", "shelf_id", "updated_at"],
-      ["0", "10", "red", hat1.createdAt!.description, "1", hat1.updatedAt!.description],
-      ["0", "12", "brown", hat2.createdAt!.description, "", hat2.updatedAt!.description]
-      ])
   }
   
   func testLoadSchemaDropsTablesThatAreNotInFile() {
@@ -225,14 +206,30 @@ class SeedTaskTypeTests: TailorTestCase {
     assert(Query<Hat>().count(), equals: 1)
   }
   
-  func testRunTaskWithLoadCommandLoadsSeeds() {
+  func testRunTaskWithLoadCommandLoadsSchema() {
     let tables = [
       ["table","sql"],
       ["hats","CREATE TABLE `hats` ( `id` integer NOT NULL PRIMARY KEY, `color` varchar(255), `brim_size` integer, shelf_id integer, `created_at` timestamp, `updated_at` timestamp)"],
-      ["shelfs","CREATE TABLE `shelfs` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255), `store_id` integer)"]
+      ["shelfs","CREATE TABLE `shelfs` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255), `store_id` integer)"],
+      ["tailor_alterations","CREATE TABLE tailor_alterations ( id varchar(255) PRIMARY KEY )"]
     ]
     CsvParser.encode(tables).writeToFile(SeedTask.pathForFile("tables"), atomically: true)
     
+    APPLICATION_ARGUMENTS = ("seeds", ["load": "1"])
+    NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
+    Application.start()
+    assert(Application.sharedDatabaseConnection().tableNames(), equals: ["hats", "shelfs", "tailor_alterations"])
+  }
+  
+  func testRunTaskWithLoadCommandLoadsModels() {
+    let tables = [
+      ["table","sql"],
+      ["hats","CREATE TABLE `hats` ( `id` integer NOT NULL PRIMARY KEY, `color` varchar(255), `brim_size` integer, shelf_id integer, `created_at` timestamp, `updated_at` timestamp)"],
+      ["shelfs","CREATE TABLE `shelfs` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255), `store_id` integer)"],
+      ["tailor_alterations","CREATE TABLE tailor_alterations ( id varchar(255) PRIMARY KEY )"]
+    ]
+    CsvParser.encode(tables).writeToFile(SeedTask.pathForFile("tables"), atomically: true)
+
     let hats = [
       ["id", "brim_size", "color", "created_at", "shelf_id", "updated_at"],
       ["1", "10", "red", "2015-07-31 11:02:00", "1", "2015-07-31 11:03:00"],
@@ -243,25 +240,39 @@ class SeedTaskTypeTests: TailorTestCase {
     APPLICATION_ARGUMENTS = ("seeds", ["load": "1"])
     NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
     Application.start()
-    assert(Application.sharedDatabaseConnection().tableNames(), equals: ["hats", "shelfs"])
     assert(Query<Hat>().count(), equals: 2)
   }
   
-  func testRunTaskWithDumpCommandDumpsSeeds() {
-    let hat1 = Hat(brimSize: 10, color: "red", shelfId: 1).save()!
-    let hat2 = Hat(brimSize: 12, color: "brown").save()!
+  func testRunTaskWithLoadCommandLoadsAlterations() {
+    let tables = [
+      ["table","sql"],
+      ["hats","CREATE TABLE `hats` ( `id` integer NOT NULL PRIMARY KEY, `color` varchar(255), `brim_size` integer, shelf_id integer, `created_at` timestamp, `updated_at` timestamp)"],
+      ["shelfs","CREATE TABLE `shelfs` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255), `store_id` integer)"],
+      ["tailor_alterations","CREATE TABLE tailor_alterations ( id varchar(255) PRIMARY KEY )"]
+    ]
+    CsvParser.encode(tables).writeToFile(SeedTask.pathForFile("tables"), atomically: true)
+
+    let alterations = [
+      ["id"],
+      ["0"],
+      ["1"]
+    ]
+    CsvParser.encode(alterations).writeToFile(SeedTask.pathForFile("tailor_alterations"), atomically: true)
     
+    APPLICATION_ARGUMENTS = ("seeds", ["load": "1"])
+    NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
+    Application.start()
     
+    let alterationCount = Application.pendingAlterations().count
+    assert(alterationCount, equals: 3)
+  }
+  
+  func testRunTaskWithDumpCommandDumpsSchema() {
     APPLICATION_ARGUMENTS = ("seeds", ["dump": "1"])
     NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
     Application.start()
     
-    guard let tableData = NSData(contentsOfFile: SeedTask.pathForFile("tables")) else {
-      assert(false, message: "Did not save any data to the file")
-      return
-    }
-    
-    let tables = CsvParser.parse(tableData)
+    let tables = CsvParser(path: SeedTask.pathForFile("tables")).rows
     assert(tables, equals: [
       ["table","sql"],
       ["alteration_tests",
@@ -273,13 +284,35 @@ class SeedTaskTypeTests: TailorTestCase {
       ["tailor_alterations", "CREATE TABLE tailor_alterations ( id varchar(255) PRIMARY KEY )"],
       ["tailor_translations","CREATE TABLE `tailor_translations` ( `id` integer NOT NULL PRIMARY KEY, `translation_key` varchar(255), `locale` varchar(255), `translated_text` varchar(255))"],
       ["users", "CREATE TABLE `users` ( `id` integer NOT NULL PRIMARY KEY, `email_address` varchar(255), `encrypted_password` varchar(255))"]
-      ])
+    ])
+  }
+  
+  func testRunTaskWithDumpCommandDumpsAlterations() {
+    APPLICATION_ARGUMENTS = ("seeds", ["dump": "1"])
+    NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
+    Application.start()
+    
+    let alterations = CsvParser(path: SeedTask.pathForFile("tailor_alterations")).rows
+    assert(alterations, equals: [["id"], ["0"], ["1"], ["2"], ["3"]])
+  }
+
+  func testRunTaskWithDumpCommandDumpModels() {
+    let hat1 = Hat(brimSize: 10, color: "red", shelfId: 1).save()!
+    let hat2 = Hat(brimSize: 12, color: "brown").save()!
+    
+    APPLICATION_ARGUMENTS = ("seeds", ["dump": "1"])
+    NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
+    Application.start()
     
     let rows = CsvParser(path: SeedTask.pathForFile("hats")).rows
     assert(rows, equals: [
-      ["id", "brim_size", "color", "created_at", "shelf_id", "updated_at"],
-      ["1", "10", "red", hat1.createdAt!.description, "1", hat1.updatedAt!.description],
-      ["2", "12", "brown", hat2.createdAt!.description, "", hat2.updatedAt!.description]
+      ["brim_size", "color", "created_at", "id", "shelf_id", "updated_at"],
+      ["10", "red", hat1.createdAt!.description, "1", "1", hat1.updatedAt!.description],
+      ["12", "brown", hat2.createdAt!.description, "2", "", hat2.updatedAt!.description]
       ])
+  }
+  
+  func testCommandNameIsSeeds() {
+    assert(SeedTask.commandName, equals: "seeds")
   }
 }
