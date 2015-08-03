@@ -44,17 +44,22 @@ public final class ConfigurationSetting: Equatable {
       case "application.port":
         return String(Application.configuration.port)
       case "localization.class":
-        return NSStringFromClass(Application.configuration.localization("en").dynamicType)
+        if let localization = Application.configuration.localization("en") as? AnyObject {
+          return NSStringFromClass(localization.dynamicType)
+        }
+        else {
+          return nil
+        }
       case "database.class":
-        if let klass = Application.configuration.databaseDriver?().dynamicType as? AnyClass {
-          return NSStringFromClass(klass)
+        if let driver = Application.configuration.databaseDriver?().dynamicType as? AnyObject {
+          return NSStringFromClass(driver.dynamicType)
         }
         else {
           return nil
         }
       case "cache.class":
-        if let klass = Application.configuration.cacheStore().dynamicType as? AnyClass {
-          return NSStringFromClass(klass)
+        if let store = Application.configuration.cacheStore() as? AnyObject {
+          return NSStringFromClass(store.dynamicType)
         }
         else {
           return nil

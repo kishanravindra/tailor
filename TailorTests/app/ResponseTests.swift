@@ -72,6 +72,13 @@ class ResponseTests: TailorTestCase {
     let string = response.bodyString
     assert(string, equals: "")
   }
+  
+  func testCopyDoesNotShareChanges() {
+    let response2 = response
+    response.appendString("Hello")
+    assert(response2.bodyString, equals: "")
+  }
+  
   //MARK: - Comparisons
   
   func testResponsesAreEqualWithSameInformation() {

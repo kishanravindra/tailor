@@ -721,7 +721,6 @@
 			isa = PBXGroup;
 			children = (
 				52BD141919E9DA1D006D72B0 /* Info.plist */,
-				52CACC8F1B6C221F00454BD1 /* config */,
 				52BD140019E9DA1D006D72B0 /* app */,
 				52BD140919E9DA1D006D72B0 /* controller */,
 				52C6251819EE110B0024453F /* crypt */,
@@ -852,21 +851,6 @@
 				52C6251F19EE12810024453F /* PasswordHasher.swift */,
 			);
 			path = crypt;
-			sourceTree = "<group>";
-		};
-		52CACC8F1B6C221F00454BD1 /* config */ = {
-			isa = PBXGroup;
-			children = (
-				52CACC901B6C221F00454BD1 /* seeds */,
-			);
-			path = config;
-			sourceTree = "<group>";
-		};
-		52CACC901B6C221F00454BD1 /* seeds */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = seeds;
 			sourceTree = "<group>";
 		};
 		52DD44E61B57327800312923 /* mail */ = {

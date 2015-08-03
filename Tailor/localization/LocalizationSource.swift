@@ -3,7 +3,7 @@ import Foundation
 /**
   This protocol describes a source of localized content.
   */
-public protocol LocalizationSource: class {
+public protocol LocalizationSource {
   /** The locale for the content this source provides. */
   var locale : String { get }
   

@@ -277,6 +277,23 @@ import TailorSqlite
     assert(setting.fetch("localization.class"), equals: "Tailor.DatabaseLocalization")
   }
   
+  func testLocalizationClassGetsNilForNonClassLocalization() {
+    struct TestLocalization: LocalizationSource {
+      let locale: String
+      
+      init(locale: String) {
+        self.locale = locale
+      }
+      
+      func fetch(key: String, inLocale locale: String) -> String? {
+        return nil
+      }
+    }
+    Application.configuration.localization = { TestLocalization(locale: $0) }
+    let setting = ConfigurationSetting()
+    assert(isNil: setting.fetch("localization.class"))
+  }
+  
   func testLocalizationClassSetsLocalizationWithClassName() {
     Application.configuration.localization = { PropertyListLocalization(locale: $0) }
     let setting = ConfigurationSetting()
@@ -335,6 +352,30 @@ import TailorSqlite
     let setting = ConfigurationSetting()
     assert(setting.fetch("cache.class"), equals: "Tailor.CacheStore")
   }
+  
+  func testCacheClassWithNonClassTypeGetsNil() {
+    struct TestCacheStore: CacheImplementation {
+      func read(key: String) -> String? {
+        return nil
+      }
+      
+      func write(key: String, value: String, expireIn: TimeInterval?) {
+        
+      }
+      
+      func clear() {
+        
+      }
+      
+      func clear(key: String) {
+        
+      }
+    }
+    Application.configuration.cacheStore = { return TestCacheStore() }
+    let setting = ConfigurationSetting()
+    assert(isNil: setting.fetch("cache.class"))
+  }
+  
   
   func testCacheClassSetsClassInConfiguration() {
     Application.configuration.cacheStore = { return MemoryCacheStore() }

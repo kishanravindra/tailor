@@ -77,6 +77,13 @@ class CookieJarTests: TailorTestCase {
     assert(cookieJar.cookieDictionary(), equals: ["key1": "value1", "key2": "value2"], message: "has hash of cookie keys and values")
   }
   
+  func testCopyDoesNotShareChanges() {
+    let jar2 = cookieJar
+    cookieJar["key1"] = "value1"
+    assert(isNotNil: cookieJar["key1"])
+    assert(isNil: jar2["key1"])
+  }
+  
   //MARK: - Serialization
   
   func setHeaderStringIncludesChanges() {
