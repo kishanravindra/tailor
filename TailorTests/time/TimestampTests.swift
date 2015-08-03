@@ -330,6 +330,30 @@ class TimestampTests: TailorTestCase {
     assert(foundationDate.timeIntervalSince1970, equals: seconds)
   }
   
+  func testFreezeMethodFreezesCurrentTime() {
+    Timestamp.unfreeze()
+    let time1 = Timestamp.now()
+    Timestamp.freeze()
+    let time2 = Timestamp.now()
+    NSThread.sleepForTimeInterval(0.5)
+    let time3 = Timestamp.now()
+    self.assert(time2, equals: time3)
+    Timestamp.unfreeze()
+    let time4 = Timestamp.now()
+    assert(time4, doesNotEqual: time1)
+  }
+  
+  func testFreezeMethodWithNewValueFreezesAtThatValue() {
+    Timestamp.unfreeze()
+    let time1 = 30.minutes.ago
+    Timestamp.freeze(at: time1)
+    let time2 = Timestamp.now()
+    assert(time2, equals: time1)
+    Timestamp.unfreeze()
+    let time3 = Timestamp.now()
+    self.assert(time3, doesNotEqual: time1)
+  }
+  
   //MARK: - Components
   
   func testDateCreatesDateWithDateInformation() {

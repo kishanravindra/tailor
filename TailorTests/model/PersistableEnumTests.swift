@@ -25,6 +25,7 @@ class PersistableEnumTests: TailorTestCase {
   
   override func tearDown() {
     Application.sharedDatabaseConnection().executeQuery("DROP TABLE hat_types")
+    super.tearDown()
   }
   
   func testStringPersistableEnumGetsStringFromFromCaseName() {

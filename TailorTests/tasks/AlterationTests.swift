@@ -27,6 +27,7 @@ class AlterationTests: TailorTestCase {
   override func tearDown() {
     Application.sharedDatabaseConnection().executeQuery("DROP TABLE IF EXISTS alteration_tests")
     Application.sharedDatabaseConnection().executeQuery("DELETE FROM tailor_alterations WHERE id IN ('1','2','3')")
+    super.tearDown()
   }
 
   func testDescriptionGetsClassName() {

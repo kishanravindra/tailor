@@ -38,8 +38,15 @@ public class TailorTestCase: XCTestCase {
   }
   
   public override func setUp() {
+    super.setUp()
+    Timestamp.freeze()
     configure()
     resetDatabase()
+  }
+  
+  public override func tearDown() {
+    Timestamp.unfreeze()
+    super.tearDown()
   }
 
   /**

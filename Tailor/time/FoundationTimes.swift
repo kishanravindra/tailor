@@ -7,7 +7,34 @@ extension Timestamp {
     - returns:   The new timestamp.
   */
   public static func now() -> Timestamp {
-    return self.init(epochSeconds: NSDate().timeIntervalSince1970)
+    if let time = TIMESTAMP_FROZEN_TIME {
+      return self.init(epochSeconds: time)
+    }
+    else {
+      return self.init(epochSeconds: NSDate().timeIntervalSince1970)
+    }
+  }
+  
+  /**
+    This method freezes the current time. After calling this, `Timestamp.now`
+    will always return the same value, until you call `unfreeze`.
+  
+    `freeze` and `unfreeze` are automatically called in the setUp and tearDown
+    methods in TailorTestCase, so any test cases that inherit from that will
+    have their clock frozen for the duration of the tests.
+  
+    - parameter timestamp:    The value to return from `Timestamp.now`.
+    */
+  public static func freeze(at timestamp: Timestamp = Timestamp.now()) {
+    TIMESTAMP_FROZEN_TIME = timestamp.epochSeconds
+  }
+  
+  /**
+    This method unfreezes the current time. After calling this, `Timestamp.now`
+    will return the current clock time.
+    */
+  public static func unfreeze() {
+    TIMESTAMP_FROZEN_TIME = nil
   }
   
   //MARK: - Foundation Bridging
@@ -29,6 +56,8 @@ extension Timestamp {
     return NSDate(timeIntervalSince1970: epochSeconds)
   }
 }
+
+private var TIMESTAMP_FROZEN_TIME: Timestamp.EpochInterval? = nil
 
 /**
   This method gets the system calendar.

@@ -82,6 +82,7 @@ class ControllerTests: TailorTestCase {
   
   override func tearDown() {
     RouteSet.load { routes in }
+    super.tearDown()
   }
   
   func testInitializeSetsUserFromIdInSession() {
