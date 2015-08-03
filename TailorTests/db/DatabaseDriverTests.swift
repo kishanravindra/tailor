@@ -16,7 +16,7 @@ class DatabaseDriverTests: TailorTestCase {
   //MARK: - Initialization
   
   func testSharedConnectionOpensWithApplication() {
-    let application = TestApplication.init(testing: true)
+    let application = TestApplication.init()
     application.start()
     NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] = application
     NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")
@@ -27,7 +27,7 @@ class DatabaseDriverTests: TailorTestCase {
   }
   
   func testSharedConnectionOpensSeparateConnectionInNewThread() {
-    let application = TestApplication.init(testing: true)
+    let application = TestApplication.init()
     application.start()
     NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] = application
     NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")

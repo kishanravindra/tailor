@@ -14,6 +14,7 @@ import TailorTesting
   
   override func tearDown() {
     NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")
+    super.tearDown()
   }
   
   //MARK: - Initialization

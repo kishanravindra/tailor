@@ -242,9 +242,19 @@ public class Application {
     */
   public static var configuration = Configuration()
   
-  /** Whether this application is being loaded as part of a test bundle. */
-  private let testing: Bool
-    
+  /**
+    This method initializes the application.
+  
+    This initializer is deprecated, because the testing flag has been
+    deprecated.
+  
+    - parameter testing:    Whether this application is being loaded as part of
+                            a test bundle.
+    */
+  @available(*, deprecated, message="The testing flag is deprecated")
+  public required init(testing: Bool) {
+
+  }
   /**
     This method initializes the application.
   
@@ -256,24 +266,14 @@ public class Application {
     localization, sessions, and database plist files. This behavior is
     deprecated, and will be removed in a future release. Instead, you should
     set configuration in code prior to starting the application.
-  
-    - parameter testing:    Whether this application is being loaded as part of
-                            a test bundle. This is set to true in test cases
-                            that subclass TailorTestCase.
     */
-  public required init(testing: Bool = false) {
-    self.testing = testing
-    
+  public required init() {
     self.loadDateFormatters()
     self.registerSubtypes(TaskType.self) { $0 is TaskType.Type }
     self.registerSubtypes(AlterationScript.self) { $0 is AlterationScript.Type }
     
     if NSProcessInfo.processInfo().environment["TestBundleLocation"] != nil {
       self.command = "run_tests"
-      self.flags = [:]
-    }
-    else if testing {
-      self.command = "tailor.exit"
       self.flags = [:]
     }
     else if let arguments = APPLICATION_ARGUMENTS {
@@ -649,17 +649,16 @@ public class Application {
     path from the first XCTest bundle in the active bundle list.
     */
   public func rootPath() -> String {
-    if testing {
+    var mainBundle = NSBundle.mainBundle()
+    if mainBundle.bundlePath.hasPrefix("/Applications/Xcode") {
       for bundle in NSBundle.allBundles() {
         if bundle.bundlePath.hasSuffix(".xctest") {
-          return bundle.resourcePath ?? "."
+          mainBundle = bundle
+          break
         }
       }
-      return "."
     }
-    else {
-      return NSBundle.mainBundle().resourcePath ?? "."
-    }
+    return mainBundle.resourcePath ?? "."
   }
   
   /**
@@ -705,6 +704,9 @@ public class Application {
     */
   internal static func bundleInfo(key: String) -> String? {
     for bundle in NSBundle.allBundles() {
+      if bundle.bundlePath.hasPrefix("/System") {
+        continue
+      }
       if let bundleInfo = bundle.infoDictionary {
         if let value = bundleInfo[key] as? String {
           return value

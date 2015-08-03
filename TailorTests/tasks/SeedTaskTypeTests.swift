@@ -3,9 +3,9 @@ import TailorTesting
 
 class SeedTaskTypeTests: TailorTestCase {
   final class SeedTask: SeedTaskType {
-    static func dumpModels() {
-      dumpModel(Hat.self)
-      dumpModel(Shelf.self)
+    static func saveModels() {
+      saveModel(Hat.self)
+      saveModel(Shelf.self)
     }
     static func loadModels() {
       loadModel(Hat.self)
@@ -22,6 +22,7 @@ class SeedTaskTypeTests: TailorTestCase {
     }
     catch {}
   }
+  
   override func tearDown() {
     let connection = Application.sharedDatabaseConnection()
     for table in connection.tableNames() {
@@ -29,6 +30,16 @@ class SeedTaskTypeTests: TailorTestCase {
     }
     AlterationsTask.runTask()
     APPLICATION_ARGUMENTS = ("tailor.exit", [:])
+    
+    do {
+      for path in try NSFileManager.defaultManager().contentsOfDirectoryAtPath(SeedTask.seedFolder) {
+        if path.hasSuffix(".keep") {
+          let newPath = path.substringToIndex(advance(path.startIndex, path.characters.count - 5))
+          try NSFileManager.defaultManager().copyItemAtPath(SeedTask.seedFolder + "/" + path, toPath: SeedTask.seedFolder + "/" + newPath)
+        }
+      }
+    }
+    catch {}
     super.tearDown()
   }
   
@@ -54,8 +65,8 @@ class SeedTaskTypeTests: TailorTestCase {
     assert(path, equals: SeedTask.seedFolder + "/stores.csv")
   }
   
-  func testDumpSchemaSavesSchemaToFile() {
-    SeedTask.dumpSchema()
+  func testSaveSchemaSavesSchemaToFile() {
+    SeedTask.saveSchema()
     guard let data = NSData(contentsOfFile: SeedTask.pathForFile("tables")) else {
       assert(false, message: "Did not save any data to the file")
       return
@@ -76,9 +87,10 @@ class SeedTaskTypeTests: TailorTestCase {
     ])
   }
   
-  func testDumpSchemaExcludesTablesInExcludedTableList() {
+  func testSaveSchemaExcludesTablesInExcludedTableList() {
     final class RestrictedSeedTask: SeedTaskType {
-      static func dumpModels() {
+      static var commandName = "restricted_seeds"
+      static func saveModels() {
         
       }
       static func loadModels() {
@@ -86,7 +98,7 @@ class SeedTaskTypeTests: TailorTestCase {
       }
       static let excludedTables = ["stores"]
     }
-    RestrictedSeedTask.dumpSchema()
+    RestrictedSeedTask.saveSchema()
     guard let data = NSData(contentsOfFile: SeedTask.pathForFile("tables")) else {
       assert(false, message: "Did not save any data to the file")
       return
@@ -106,11 +118,11 @@ class SeedTaskTypeTests: TailorTestCase {
       ])
   }
   
-  func testDumpModelSavesModelToFile() {
+  func testSaveModelSavesModelToFile() {
     let hat1 = Hat(brimSize: 10, color: "red", shelfId: 1).save()!
     let hat2 = Hat(brimSize: 12, color: "brown").save()!
     
-    SeedTask.dumpModel(Hat.self)
+    SeedTask.saveModel(Hat.self)
     
     let rows = CsvParser(path: SeedTask.pathForFile("hats")).rows
     assert(rows, equals: [
@@ -120,12 +132,12 @@ class SeedTaskTypeTests: TailorTestCase {
     ])
   }
   
-  func testDumpModelCreatesEmptyFilesForEmptyModel() {
+  func testSaveModelCreatesEmptyFilesForEmptyModel() {
     do {
       try NSFileManager.defaultManager().removeItemAtPath(SeedTask.pathForFile(Hat.self))
     }
     catch {}
-    SeedTask.dumpModel(Hat.self)
+    SeedTask.saveModel(Hat.self)
     let data = NSData(contentsOfFile: SeedTask.pathForFile(Hat.self))
     assert(data, equals: NSData())
   }
@@ -202,7 +214,8 @@ class SeedTaskTypeTests: TailorTestCase {
   func testRunTaskWithNoArgumentsDoesNothing() {
     Hat(brimSize: 10, color: "red", shelfId: 1).save()!
     APPLICATION_ARGUMENTS = ("seeds", [:])
-    Application().start()
+    NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
+    Application.start()
     assert(Query<Hat>().count(), equals: 1)
   }
   
@@ -267,8 +280,8 @@ class SeedTaskTypeTests: TailorTestCase {
     assert(alterationCount, equals: 3)
   }
   
-  func testRunTaskWithDumpCommandDumpsSchema() {
-    APPLICATION_ARGUMENTS = ("seeds", ["dump": "1"])
+  func testRunTaskWithSaveCommandSavesSchema() {
+    APPLICATION_ARGUMENTS = ("seeds", ["save": "1"])
     NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
     Application.start()
     
@@ -287,8 +300,8 @@ class SeedTaskTypeTests: TailorTestCase {
     ])
   }
   
-  func testRunTaskWithDumpCommandDumpsAlterations() {
-    APPLICATION_ARGUMENTS = ("seeds", ["dump": "1"])
+  func testRunTaskWithSaveCommandSavesAlterations() {
+    APPLICATION_ARGUMENTS = ("seeds", ["save": "1"])
     NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
     Application.start()
     
@@ -296,11 +309,11 @@ class SeedTaskTypeTests: TailorTestCase {
     assert(alterations, equals: [["id"], ["0"], ["1"], ["2"], ["3"]])
   }
 
-  func testRunTaskWithDumpCommandDumpModels() {
+  func testRunTaskWithSaveCommandSaveModels() {
     let hat1 = Hat(brimSize: 10, color: "red", shelfId: 1).save()!
     let hat2 = Hat(brimSize: 12, color: "brown").save()!
     
-    APPLICATION_ARGUMENTS = ("seeds", ["dump": "1"])
+    APPLICATION_ARGUMENTS = ("seeds", ["save": "1"])
     NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
     Application.start()
     

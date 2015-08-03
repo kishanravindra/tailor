@@ -3,6 +3,13 @@ import Tailor
 import TailorTesting
 import TailorSqlite
 
+extension TailorTestCase {
+  public dynamic func configure() {
+    APPLICATION_ARGUMENTS = ("tailor.exit", [:])
+    Application.configuration.databaseDriver = { return SqliteConnection(path: "test.sqlite") }
+    Application.configuration.sessionEncryptionKey = "0FC7ECA7AADAD635DCC13A494F9A2EA8D8DAE366382CDB3620190F6F20817124"
+  }
+}
 final class TestConnection : DatabaseDriver {
   var timeZone: TimeZone
   var queries = [(String,[DatabaseValue])]()

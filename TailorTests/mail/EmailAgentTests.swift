@@ -17,6 +17,7 @@ class EmailAgentTests: TailorTestCase {
   
   func testSharedEmailAgentDefaultsToFileEmailAgent() {
     SHARED_EMAIL_AGENT = nil
+    Application.configuration = .init()
     let emailAgent = Application.sharedEmailAgent()
     assert(emailAgent is FileEmailAgent)
   }

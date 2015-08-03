@@ -35,7 +35,6 @@ public struct Session {
     self.clientAddress = request.clientAddress
     encryptor = AesEncryptor(key: Application.configuration.sessionEncryptionKey)
     if let encryptedDataString = cookies["_session"] {
-      NSLog("Decrypting %@ with %@", encryptedDataString, Application.configuration.sessionEncryptionKey)
       let encryptedData = NSData(base64EncodedString: encryptedDataString, options: []) ?? NSData()
       let decryptedData = encryptor?.decrypt(encryptedData) ?? NSData()
       

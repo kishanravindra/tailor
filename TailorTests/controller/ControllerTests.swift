@@ -85,6 +85,8 @@ class ControllerTests: TailorTestCase {
   }
   
   func testInitializeSetsUserFromIdInSession() {
+    SeedTaskTypeTests.SeedTask.saveSchema()
+    SeedTaskTypeTests.SeedTask.saveTable("tailor_alterations")
     controller = TestController(
       request: Request(sessionData: ["userId": String(user.id!)]),
       actionName: "index",

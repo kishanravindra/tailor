@@ -7,6 +7,7 @@ import TailorSqlite
   var setting: ConfigurationSetting!
   
   override func setUp() {
+    super.setUp()
     setting = ConfigurationSetting(dictionary: ["a": ["b": "5"]])
   }
   

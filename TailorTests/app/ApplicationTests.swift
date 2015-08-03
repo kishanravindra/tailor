@@ -13,6 +13,11 @@ class ApplicationTests : TailorTestCase {
     application = Application.sharedApplication()
   }
   
+  override func tearDown() {
+    NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
+    super.tearDown()
+  }
+  
   @available(*, deprecated) func testInitializationSetsStaticContentFromLocalizationFile() {
     self.assert(Application.configuration.staticContent["en.key1"], equals: "value1")
     self.assert(Application.configuration.staticContent["en.key2.key3"], equals: "value3")

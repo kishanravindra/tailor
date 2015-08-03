@@ -7,7 +7,7 @@
   This can be useful for setting up local development environments.
 
   The syntax for this is `seeds load`, to load the database from the seed files,
-  or `seeds dump`, or dumping the database contents to the seed files.
+  or `seeds save`, or saving the database contents to the seed files.
   */
 public protocol SeedTaskType: TaskType {
   //MARK: - Customization
@@ -23,11 +23,11 @@ public protocol SeedTaskType: TaskType {
   static var seedFolder: String { get }
   
   /**
-    This method dumps the seed data for all of your models to the seed data.
+    This method saves the seed data for all of your models to the seed data.
 
-    You can use the `dumpModel` method to dump each model one by one.
+    You can use the `saveModel` method to save each model one by one.
     */
-  static func dumpModels()
+  static func saveModels()
   
   /**
     This method loads the seed data from all of your models to the seed data.
@@ -38,7 +38,7 @@ public protocol SeedTaskType: TaskType {
   
   /**
     This method provides the names of the tables that should be excluded from
-    the schema when dumping the schema.
+    the schema when saving the schema.
 
     The default is an empty list.
     */
@@ -75,11 +75,11 @@ extension SeedTaskType {
   }
   
   /**
-    This method dumps the database schema to a CSV file.
+    This method saves the database schema to a CSV file.
 
     The file will be called "tables.csv".
     */
-  public static func dumpSchema() {
+  public static func saveSchema() {
     let tables = Application.sharedDatabaseConnection().tables()
     let rows = [["table","sql"]] + tables.filter { !excludedTables.contains($0.0) }.map { [$0.0, $0.1] }.sort { $0[0] < $1[0] }
     let path = self.pathForFile("tables")
@@ -102,7 +102,7 @@ extension SeedTaskType {
     }
     let rows = CsvParser(path: self.pathForFile("tables")).rows
     for row in rows {
-      if row.count < 2 {
+      if row.count < 2 || row[1] == "sql" {
         continue
       }
       let query = row[1]
@@ -111,24 +111,24 @@ extension SeedTaskType {
   }
   
   /**
-    This method dumps all the data for a model to a CSV file.
+    This method saves all the data for a model to a CSV file.
   
     The file name will be the table name, with a CSV extension.
   
     - parameter model:    The model that we are saving.
     */
-  public static func dumpModel<ModelType: Persistable>(model: ModelType.Type) {
-    dumpTable(model.tableName)
+  public static func saveModel<ModelType: Persistable>(model: ModelType.Type) {
+    saveTable(model.tableName)
   }
   
   /**
-    This method dumps all the data for a table to a CSV file.
+    This method saves all the data for a table to a CSV file.
     
     The file name will be the table name, with a CSV extension.
     
     - parameter table:    The table that we are saving.
     */
-  public static func dumpTable(table: String) {
+  public static func saveTable(table: String) {
     let records = Application.sharedDatabaseConnection().executeQuery("SELECT * FROM `\(table)`")
     let data: NSData
     if !records.isEmpty {
@@ -191,22 +191,24 @@ extension SeedTaskType {
   }
   
   /**
-    This method runs the task for loading or dumping seed data.
+    This method runs the task for loading or saving seed data.
     */
   public static func runTask() {
     let application = Application.sharedApplication()
     if application.flags["load"] != nil {
+      NSLog("Loading seeds from %@", seedFolder)
       self.loadSchema()
       self.loadTable("tailor_alterations")
       self.loadModels()
     }
-    else if application.flags["dump"] != nil {
-      self.dumpSchema()
-      self.dumpTable("tailor_alterations")
-      self.dumpModels()
+    else if application.flags["save"] != nil {
+      NSLog("Saving seeds to %@", seedFolder)
+      self.saveSchema()
+      self.saveTable("tailor_alterations")
+      self.saveModels()
     }
     else {
-      NSLog("You must provide an operation, either `seeds load` or `seeds dump`")
+      NSLog("You must provide an operation, either `seeds load` or `seeds save`")
     }
   }
   

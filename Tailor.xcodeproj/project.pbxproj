@@ -308,6 +308,7 @@
 		52A684511A3D0C5B00F4AA47 /* ConnectionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionTests.swift; sourceTree = "<group>"; };
 		52A684531A3EFB1000F4AA47 /* CookieTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CookieTests.swift; sourceTree = "<group>"; };
 		52A684551A3FC14D00F4AA47 /* CookieJarTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CookieJarTests.swift; sourceTree = "<group>"; };
+		52A8209A1B6FD6CA002CF1C5 /* tailor_alterations.csv */ = {isa = PBXFileReference; lastKnownFileType = file; name = tailor_alterations.csv; path = Tailor/config/seeds/tailor_alterations.csv; sourceTree = "<group>"; };
 		52A95E301AE0A3B9001AED1F /* DatabaseValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseValue.swift; sourceTree = "<group>"; };
 		52A95E321AE0A3E6001AED1F /* DatabaseValueTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseValueTests.swift; sourceTree = "<group>"; };
 		52A95E341AE27537001AED1F /* ValidationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidationTests.swift; sourceTree = "<group>"; };
@@ -409,6 +410,7 @@
 		52EADCC91A40504000D9A8CF /* RequestTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestTests.swift; sourceTree = "<group>"; };
 		52EC6D471A475B8000A4D822 /* ResponseTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResponseTests.swift; sourceTree = "<group>"; };
 		52EC6D491A47B3F100A4D822 /* RouteSetTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteSetTests.swift; sourceTree = "<group>"; };
+		52ED134E1B6E747200D4E596 /* tables.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = tables.csv; path = Tailor/config/seeds/tables.csv; sourceTree = "<group>"; };
 		52EF126319EF545000B61DF4 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		52EF127319F0A58400B61DF4 /* Localization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Localization.swift; sourceTree = "<group>"; };
 		52F18B011B68FEBD00F5863E /* CsvParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CsvParser.swift; sourceTree = "<group>"; };
@@ -526,6 +528,7 @@
 		5233019B1B46FB8D00C9E5EE /* config */ = {
 			isa = PBXGroup;
 			children = (
+				52ED13491B6E743700D4E596 /* seeds */,
 				5233019C1B46FBF400C9E5EE /* database.plist */,
 				5233019E1B46FC1B00C9E5EE /* sessions.plist */,
 				52B710011B65B7FE0003A6DF /* localization.plist */,
@@ -936,6 +939,16 @@
 				52B710151B6813280003A6DF /* SeedTaskTypeTests.swift */,
 			);
 			path = tasks;
+			sourceTree = "<group>";
+		};
+		52ED13491B6E743700D4E596 /* seeds */ = {
+			isa = PBXGroup;
+			children = (
+				52ED134E1B6E747200D4E596 /* tables.csv */,
+				52A8209A1B6FD6CA002CF1C5 /* tailor_alterations.csv */,
+			);
+			name = seeds;
+			path = ../../TailorTesting/seeds;
 			sourceTree = "<group>";
 		};
 		52EF127219F0A54A00B61DF4 /* localization */ = {

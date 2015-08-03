@@ -9,14 +9,37 @@ import XCTest
   */
 public class TailorTestCase: XCTestCase {
   public dynamic func configure() {
-    Application.configuration = .init()
+  }
+  
+  /**
+    This method resets the test database.
+
+    This will load the schema and the alterations table from the seed data,
+    if they have not already been loaded. It will also run any pending
+    alterations.
+
+    It will also truncate all of the tables besides tailor_alterations. It will
+    do this every time the method is called, whereas the rest of the work in
+    this method is only done the first time the method has called.
+    */
+  public func resetDatabase() {
+    if !TAILOR_TEST_CASE_DATABASE_RESET {
+      for task in Application.sharedApplication().registeredTasks() {
+        if let seedTask = task as? SeedTaskType.Type {
+          seedTask.loadSchema()
+          seedTask.loadTable("tailor_alterations")
+        }
+      }
+      
+      AlterationsTask.runTask()
+      TAILOR_TEST_CASE_DATABASE_RESET = true
+    }
+    Application.truncateTables()
   }
   
   public override func setUp() {
     configure()
-    NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] = Application(testing: true)
-    AlterationsTask.runTask()
-    Application.truncateTables()
+    resetDatabase()
   }
 
   /**
@@ -302,3 +325,5 @@ public class TailorTestCase: XCTestCase {
     }
   }
 }
+
+private var TAILOR_TEST_CASE_DATABASE_RESET = false
