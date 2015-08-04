@@ -46,8 +46,11 @@ public struct Connection {
     for listening for a new connection.
     */
   public mutating func listenToSocket() {
+    if self.socketDescriptor < 0 {
+      return
+    }
     NSOperationQueue.mainQueue().addOperationWithBlock {
-      let connectionDescriptor = accept(self.socketDescriptor, nil, nil)
+      let connectionDescriptor = Connection.accept(self.socketDescriptor)
       
       if connectionDescriptor < 0 {
         return
@@ -70,7 +73,7 @@ public struct Connection {
     */
   public mutating func readFromSocket(connectionDescriptor: Int32) {
     let data = NSMutableData()
-    let bufferLength: UInt = 1024
+    let bufferLength = 1024
     var buffer = [UInt8](count: Int(bufferLength), repeatedValue: 0)
     var request: Request = Request()
     let startTime = Timestamp.now()
@@ -81,21 +84,27 @@ public struct Connection {
       sa_data: (0,0,0,0,0,0,0,0,0,0,0,0,0,0)
     )
     
+    var size = UInt32(sizeof(sockaddr))
+    Connection.getpeername(connectionDescriptor, address: &clientAddress, addressLength: &size)
+    
     let clientAddressString = "\(clientAddress.sa_data.2).\(clientAddress.sa_data.3).\(clientAddress.sa_data.4).\(clientAddress.sa_data.5)"
     
-    var size = UInt32(sizeof(sockaddr))
-    getpeername(connectionDescriptor, &clientAddress, &size)
     while true {
-      let length = read(connectionDescriptor, &buffer, Int(bufferLength))
+      let length = Connection.read(connectionDescriptor, buffer: &buffer, maxLength: bufferLength)
       if length < 0 || length > Int(bufferLength) {
-        close(connectionDescriptor)
+        Connection.close(connectionDescriptor)
         return
       }
       data.appendBytes(buffer, length: length)
-      if UInt(length) < bufferLength {
+      if length < bufferLength {
         request = Request(clientAddress: clientAddressString, data: data)
-        let headerLength = Int(request.headers["Content-Length"] ?? "") ?? 0
-        if request.body.length == headerLength {
+        guard let headerLength = Int(request.headers["Content-Length"] ?? "") else { break }
+        if request.body.length > headerLength {
+          let finalData = data.subdataWithRange(NSMakeRange(0, data.length + headerLength - request.body.length))
+          request = Request(clientAddress: clientAddressString, data: finalData)
+          break
+        }
+        else if request.body.length == headerLength {
           break
         }
       }
@@ -103,8 +112,8 @@ public struct Connection {
     
     self.handler(request) {
       let responseData = $0.data
-      write(connectionDescriptor, responseData.bytes, responseData.length)
-      close(connectionDescriptor)
+      Connection.write(connectionDescriptor, data: responseData)
+      Connection.close(connectionDescriptor)
       let interval = Timestamp.now().epochSeconds - startTime.epochSeconds
       NSLog("Finished processing %@ in %lf seconds", request.path, interval)
     }
@@ -157,8 +166,149 @@ public struct Connection {
     _ = Connection(fileDescriptor: socketDescriptor, handler: handler)
     
     NSLog("Listening on port %d", port)
-    
     NSRunLoop.currentRunLoop().run()
+    
     return true
   }
+  
+  //MARK: - Stubbing
+  
+  /** Whether we are currently stubbing out connections. */
+  internal private(set) static var stubbing: Bool = false
+  
+  /** The file descriptors that we have accepted stubbed connections on. */
+  internal private(set) static var acceptedSockets: [Int32] = []
+  
+  /** The file descriptors that we have read stubbed data from. */
+  internal private(set) static var readConnections: [Int32] = []
+  
+  /** The file descriptors that we have closed in stubbed connections. */
+  internal private(set) static var closedConnections: [Int32] = []
+  
+  /** The data that we should provide to stubbed connections. */
+  internal private(set) static var stubbedData: [NSData] = []
+  
+  /** The data that we have written to stubbed connections. */
+  internal private(set) static var outputData = NSMutableData()
+  
+  /**
+    This method causes the connections to stub out all of their communications.
+
+    - parameter data:   The data to provide when reading from stubbed
+                        connections. If there are multiple values in the array,
+                        then a separate call to `read` will be required to go
+                        from one data object to the next.
+    */
+  internal static func startStubbing(data: [NSData] = []) {
+    stubbing = true
+    acceptedSockets = []
+    readConnections = []
+    closedConnections = []
+    stubbedData = data
+    outputData = NSMutableData()
+  }
+  
+  /**
+    This method causes the connections to stop stubbing out communication.
+    */
+  internal static func stopStubbing() {
+    stubbing = false
+  }
+  
+  /**
+    This method accepts a connection on a socket.
+
+    - parameter socketDescriptor:   The socket that we are listening on.
+    */
+  internal static func accept(socketDescriptor: Int32) -> Int32 {
+    if stubbing {
+      if !acceptedSockets.isEmpty {
+        return -1
+      }
+      acceptedSockets.append(socketDescriptor)
+      return socketDescriptor + 1
+    }
+    else {
+      return Foundation.accept(socketDescriptor, nil, nil)
+    }
+  }
+  
+  /**
+    This method gets the client address from a connection.
+
+    - parameter connection:     The connection that we are reading from.
+    - parameter address:        A pointer holding the address.
+    - parameter addressLength:  A pointer holding the number of bytes in the
+                                address.
+    - returns:                  Whether we were able to get the client address.
+    */
+  internal static func getpeername(connection: Int32, address: UnsafeMutablePointer<sockaddr>, addressLength: UnsafeMutablePointer<socklen_t>) -> Int32 {
+    if stubbing {
+      address.memory.sa_data = (1,2,3,4,5,6,7,8,9,10,11,12,13,14)
+      return 0
+    }
+    else {
+      return Foundation.getpeername(connection, address, addressLength)
+    }
+  }
+  
+  /**
+    This method reads data from a connection.
+
+    - parameter connection:   The connection handle that we are reading from.
+    - parameter buffer:       The buffer that we are reading into.
+    - parameter maxLength:    The maximum size of the buffer.
+    - returns:                The number of bytes that we actually read.
+    */
+  internal static func read(connection: Int32, buffer: UnsafeMutablePointer<Void>, maxLength: Int) -> Int {
+    if stubbing {
+      readConnections.append(connection)
+      if stubbedData.isEmpty { return -1 }
+      let firstData = stubbedData[0]
+      if maxLength < firstData.length {
+        firstData.getBytes(buffer, length: maxLength)
+        stubbedData[0] = firstData.subdataWithRange(NSMakeRange(maxLength, firstData.length - maxLength))
+        return maxLength
+      }
+      else {
+        let length = firstData.length
+        firstData.getBytes(buffer, length: maxLength)
+        stubbedData.removeAtIndex(0)
+        return length
+      }
+    }
+    else {
+      return Foundation.read(connection, buffer, maxLength)
+    }
+  }
+  
+  /**
+    This method closes a connection.
+
+    - parameter connection:   The connection to close.
+    */
+  internal static func close(connection: Int32) {
+    if stubbing {
+      closedConnections.append(connection)
+    }
+    else {
+      Foundation.close(connection)
+    }
+  }
+  
+  /**
+    This method writes data to a connection.
+
+    - parameter connection:   The connection to write to.
+    - parameter data:         The data to write to the connection.
+    */
+  internal static func write(connection: Int32, data: NSData) {
+    if stubbing {
+      outputData.appendData(data)
+    }
+    else {
+      Foundation.write(connection, data.bytes, data.length)
+    }
+  }
+
 }
