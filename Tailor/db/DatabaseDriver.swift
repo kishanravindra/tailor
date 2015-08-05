@@ -162,4 +162,12 @@ public extension Application {
       return connection
     }
   }
+  
+  /**
+    This method clears the shared database connection, forcing the next call
+    to `sharedDatabaseConnection` to open a new connection.
+    */
+  public static func removeSharedDatabaseConnection() {
+    NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")
+  }
 }

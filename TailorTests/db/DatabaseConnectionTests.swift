@@ -13,7 +13,7 @@ import TailorTesting
   }
   
   override func tearDown() {
-    NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")
+    Application.removeSharedDatabaseConnection()
     NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
     super.tearDown()
   }
@@ -24,7 +24,7 @@ import TailorTesting
     let application = TestApplication.init()
     application.start()
     NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] = application
-    NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")
+    Application.removeSharedDatabaseConnection()
     DatabaseConnection.openSharedConnection()
     assert(NSStringFromClass(DatabaseConnection.sharedConnection().dynamicType), equals: NSStringFromClass(DatabaseConnection.self), message: "has a database connection as the shared connection")
     assert(application.connectionCount, equals: 2, message: "increments the connection count every time one is opened")
@@ -35,7 +35,8 @@ import TailorTesting
     let application = TestApplication.init()
     application.start()
     NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] = application
-    NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")
+    
+    Application.removeSharedDatabaseConnection()
     assert(NSStringFromClass(DatabaseConnection.sharedConnection().dynamicType), equals: NSStringFromClass(DatabaseConnection.self), message: "has a database connection as the shared connection")
     assert(application.connectionCount, equals: 1, message: "increments the connection count")
     NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")

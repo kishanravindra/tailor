@@ -7,14 +7,16 @@ class DatabaseDriverTests: TailorTestCase {
   //MARK: - Initialization
   
   override func tearDown() {
-    NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")
+    
+    Application.removeSharedDatabaseConnection()
     super.tearDown()
   }
   
   func testSharedConnectionOpensWithDriverFromConfiguration() {
     TestConnection.connectionCount = 0
     Application.configuration.databaseDriver = { return TestConnection(config: [:]) }
-    NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")
+    
+    Application.removeSharedDatabaseConnection()
     assert(NSStringFromClass(Application.sharedDatabaseConnection().dynamicType), equals: NSStringFromClass(TestConnection.self), message: "has a test connection as the shared connection")
     assert(TestConnection.connectionCount, equals: 1, message: "increments the connection count")
   }
@@ -22,7 +24,8 @@ class DatabaseDriverTests: TailorTestCase {
   func testSharedConnectionReusesConnectionInSameThread() {
     TestConnection.connectionCount = 0
     Application.configuration.databaseDriver = { return TestConnection(config: [:]) }
-    NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")
+    
+    Application.removeSharedDatabaseConnection()
     Application.sharedDatabaseConnection()
     assert(TestConnection.connectionCount, equals: 1, message: "increments the connection count")
     Application.sharedDatabaseConnection()
@@ -32,7 +35,8 @@ class DatabaseDriverTests: TailorTestCase {
   func testSharedConnectionOpensSeparateConnectionInNewThread() {
     TestConnection.connectionCount = 0
     Application.configuration.databaseDriver = { return TestConnection(config: [:]) }
-    NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")
+    
+    Application.removeSharedDatabaseConnection()
     Application.sharedDatabaseConnection()
     let expectation = expectationWithDescription("executes block in thread")
     dispatch_async(dispatch_queue_create(nil, DISPATCH_QUEUE_CONCURRENT)) {
