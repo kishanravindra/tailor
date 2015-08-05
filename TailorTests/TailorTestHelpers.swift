@@ -90,6 +90,8 @@ struct Hat : Persistable {
   }
 }
 
+let Hats = Query<Hat>()
+
 struct Shelf : Persistable {
   let id: Int?
   var name: String?
@@ -116,6 +118,8 @@ struct Shelf : Persistable {
     self.storeId = databaseRow["store_id"]?.intValue ?? 0
   }
 }
+
+let Shelfs = Query<Shelf>()
 
 struct Store : Persistable {
   let id: Int?
@@ -145,6 +149,8 @@ struct Store : Persistable {
     }
   }
 }
+
+let Stores = Query<Store>()
 
 @available(*, deprecated) extension Controller {
   convenience init() {

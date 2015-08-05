@@ -131,7 +131,7 @@ public struct ControllerState {
     self.actionName = actionName
     
     if let userId = Int(self.session["userId"] ?? "") {
-      self.currentUser = Query<User>().find(userId)
+      self.currentUser = Users.find(userId)
     }
   }
 

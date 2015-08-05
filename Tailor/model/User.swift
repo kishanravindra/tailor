@@ -105,7 +105,7 @@ public class User : Persistable {
     - returns: The user
     */
   public class func authenticate(emailAddress: String, password: String) -> User? {
-    let users = Query<User>().filter(["email_address": emailAddress]).all()
+    let users = Users.filter(["email_address": emailAddress]).all()
     
     if users.isEmpty {
       return nil
@@ -120,3 +120,6 @@ public class User : Persistable {
     }
   }
 }
+
+/** A query for fetching all users, which you can build other queries off of. */
+public let Users = Query<User>()

@@ -94,6 +94,12 @@ public final class DatabaseLocalization: LocalizationSource {
   }
   
   /**
+    A query for fetching all translations, which you can build other queries off
+    of.
+    */
+  public let Translations = Query<Translation>()
+  
+  /**
     This method fetches localized text from the database.
 
     - parameter key:        The key for the localization
@@ -101,7 +107,7 @@ public final class DatabaseLocalization: LocalizationSource {
     - returns:              The localized text, if we could find it.
     */
   public func fetch(key: String, inLocale locale: String) -> String? {
-    let translation = Query<Translation>().filter(["locale": locale, "translation_key": key]).first()
+    let translation = Translations.filter(["locale": locale, "translation_key": key]).first()
     return translation?.translatedText
   }
 }
