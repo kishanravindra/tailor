@@ -147,16 +147,6 @@ public struct DatabaseRow {
 
 public extension Application {
   /**
-    This forces us to open a new connection to serve as the shared connection.
-    */
-  public static func openSharedDatabaseConnection() -> DatabaseDriver {
-    let dictionary = NSThread.currentThread().threadDictionary
-    let connection = Application.sharedApplication().openDatabaseConnection()
-    dictionary["databaseConnection"] = connection
-    return connection
-  }
-  
-  /**
     This gets the shared global database connection.
     */
   public static func sharedDatabaseConnection() -> DatabaseDriver {
@@ -165,7 +155,11 @@ public extension Application {
       return connection
     }
     else {
-      return self.openSharedDatabaseConnection()
+      guard let connection = Application.configuration.databaseDriver?() else {
+        fatalError("Could not get database driver from config")
+      }
+      dictionary["databaseConnection"] = connection
+      return connection
     }
   }
 }

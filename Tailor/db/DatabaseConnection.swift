@@ -26,7 +26,7 @@ import Foundation
     This forces us to open a new connection to serve as the shared connection.
     */
   public class func openSharedConnection() -> DatabaseConnection {
-    return Application.openSharedDatabaseConnection() as! DatabaseConnection
+    return Application.sharedApplication().openDatabaseConnection()
   }
   
   /**
@@ -38,7 +38,9 @@ import Foundation
       return connection
     }
     else {
-      return self.openSharedConnection()
+      let connection = self.openSharedConnection()
+      dictionary["databaseConnection"] = connection
+      return connection
     }
   }
 

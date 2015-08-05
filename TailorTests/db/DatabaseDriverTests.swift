@@ -4,42 +4,36 @@ import TailorTesting
 import TailorSqlite
 
 class DatabaseDriverTests: TailorTestCase {
-  class TestApplication : Application {
-    var connectionCount = 0
-    
-    override func openDatabaseConnection() -> DatabaseDriver {
-      connectionCount += 1
-      return super.openDatabaseConnection()
-    }
-  }
-  
   //MARK: - Initialization
   
-  func testSharedConnectionOpensWithApplication() {
-    let application = TestApplication.init()
-    application.start()
-    NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] = application
+  func testSharedConnectionOpensWithDriverFromConfiguration() {
+    TestConnection.connectionCount = 0
+    Application.configuration.databaseDriver = { return TestConnection(config: [:]) }
+    NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")
+    assert(NSStringFromClass(Application.sharedDatabaseConnection().dynamicType), equals: NSStringFromClass(TestConnection.self), message: "has a test connection as the shared connection")
+    assert(TestConnection.connectionCount, equals: 1, message: "increments the connection count")
+  }
+  
+  func testSharedConnectionReusesConnectionInSameThread() {
+    TestConnection.connectionCount = 0
+    Application.configuration.databaseDriver = { return TestConnection(config: [:]) }
     NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")
     Application.sharedDatabaseConnection()
-    assert(NSStringFromClass(Application.sharedDatabaseConnection().dynamicType), equals: NSStringFromClass(SqliteConnection.self), message: "has a SQLite connection as the shared connection")
-    assert(application.connectionCount, equals: 1, message: "increments the connection count")
-    NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
+    assert(TestConnection.connectionCount, equals: 1, message: "increments the connection count")
+    Application.sharedDatabaseConnection()
+    assert(TestConnection.connectionCount, equals: 1, message: "does not increment the connection count on a subsequent call")
   }
   
   func testSharedConnectionOpensSeparateConnectionInNewThread() {
-    let application = TestApplication.init()
-    application.start()
-    NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] = application
+    TestConnection.connectionCount = 0
+    Application.configuration.databaseDriver = { return TestConnection(config: [:]) }
     NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")
     Application.sharedDatabaseConnection()
     let expectation = expectationWithDescription("executes block in thread")
-    Application.sharedDatabaseConnection()
-    NSOperationQueue().addOperationWithBlock {
+    dispatch_async(dispatch_queue_create(nil, DISPATCH_QUEUE_CONCURRENT)) {
       expectation.fulfill()
-      NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] = application
-      NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")
       Application.sharedDatabaseConnection()
-      self.assert(application.connectionCount, equals: 2, message: "creates two connections")
+      self.assert(TestConnection.connectionCount, equals: 2, message: "creates two connections")
     }
     waitForExpectationsWithTimeout(0.1, handler: nil)
   }

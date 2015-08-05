@@ -1,16 +1,25 @@
 import Foundation
 import XCTest
-import Tailor
+@testable import Tailor
 import TailorTesting
 import TailorSqlite
 
 class ApplicationTests : TailorTestCase {
+  
+  class TestApplicationOne: Application {
+    
+  }
+  
+  class TestApplicationTwo: Application {
+    
+  }
   //MARK: Initialization
   
   var application: Application!
   override func setUp() {
     super.setUp()
     application = Application.sharedApplication()
+    APPLICATION_ARGUMENTS = ("tailor.exit", [:])
   }
   
   override func tearDown() {
@@ -55,7 +64,16 @@ class ApplicationTests : TailorTestCase {
     self.assert(application.flags, equals: ["a": "25"])
   }
   
+  func testInitializationWithTestBundleLocationRunsTests() {
+    NSProcessInfo.stubMethod("environment", result: ["TestBundleLocation": "/test/path"]) {
+      let application = Application()
+      self.assert(application.command, equals: "run_tests")
+      self.assert(application.flags, equals: [:])
+    }
+  }
+  
   func testInitializationWithoutSharedArgumentsReadsFromPrompt() {
+    APPLICATION_ARGUMENTS = nil
     class TestApplication: Application {
       var commands = ["tailor.exit a=5"]
       override func promptForCommand() -> String {
@@ -63,7 +81,6 @@ class ApplicationTests : TailorTestCase {
       }
     }
     
-    APPLICATION_ARGUMENTS = nil
     let application = TestApplication()
     self.assert(application.command, equals: "tailor.exit", message: "sets the command from the prompt")
     self.assert(application.flags, equals: ["a": "5"], message: "sets the flags from the prompt")
@@ -165,6 +182,14 @@ class ApplicationTests : TailorTestCase {
     assert(content.isEmpty)
   }
   
+  func testConfigurationFromFileWithoutResourcePathGetsEmptyDictionary() {
+    let path: NSString? = nil
+    NSBundle.stubMethod("resourcePath", result: path) {
+      let content = Application.Configuration.configurationFromFile("goodPlist")
+      assert(content.isEmpty)
+    }
+  }
+  
   @available(*, deprecated) func testIpAddressGetsValueFromConfigurationSettings() {
     application = Application()
     Application.configuration.ipAddress = (127,0,0,1)
@@ -229,6 +254,88 @@ class ApplicationTests : TailorTestCase {
     assert(application.dateFormatters["test"], equals: formatter)
   }
   
+  func testSharedApplicationReusesApplication() {
+    let application1 = Application.sharedApplication()
+    let application2 = Application.sharedApplication()
+    self.assert(application1 === application2)
+  }
+  
+  func testSharedApplicationWithPrincipalClassUsesThatClass() {
+    NSBundle.stubMethod("infoDictionary", result: ["NSPrincipalClass": NSStringFromClass(TestApplicationOne.self)]) {
+      NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
+     assert(Application.sharedApplication() is TestApplicationOne)
+    }
+  }
+  
+  func testSharedApplicationWithTailorApplicationClassUsesThatClass() {
+    NSBundle.stubMethod("infoDictionary", result: ["TailorApplicationClass": NSStringFromClass(TestApplicationTwo.self)]) {
+      NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
+      assert(Application.sharedApplication() is TestApplicationTwo)
+    }
+
+  }
+  
+  func testSharedApplicationWithNoClassInBundleCreatesApplication() {
+    NSBundle.stubMethod("infoDictionary", result: [:]) {
+      NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
+      assert(!(Application.sharedApplication() is TestApplicationOne))
+      assert(!(Application.sharedApplication() is TestApplicationTwo))
+    }
+  }
+  
+  func testStartMethodRunsTaskFromCommand() {
+    class TestTask: TaskType {
+      static let commandName: String = "application_test_task_1"
+      static var hasRun = false
+      static func runTask() {
+        hasRun = true
+      }
+    }
+    APPLICATION_ARGUMENTS = ("application_test_task_1", [:])
+    let application = Application()
+    application.start()
+    assert(TestTask.hasRun)
+  }
+  
+  func testClassStartMethodRunsTaskOnSharedApplication() {
+    NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
+    class TestTask: TaskType {
+      static let commandName: String = "application_test_task_2"
+      static var hasRun = false
+      static func runTask() {
+        hasRun = true
+      }
+    }
+    APPLICATION_ARGUMENTS = ("application_test_task_2", [:])
+    Application.start()
+    assert(TestTask.hasRun)
+  }
+  
+  @available(*, deprecated) func testOpenDatabaseConnectionGetsConnectionFromConfig() {
+    let application = Application()
+    final class ApplicationTestConnection: DatabaseConnection {
+      let name: String
+      
+      required init(config: [String:String]) {
+        self.name = config["name"] ?? "Anonymous"
+        super.init(config: config)
+      }
+    }
+    
+    Application.configuration.databaseDriver = { return ApplicationTestConnection(config: ["name": "My Connection"]) }
+    
+    let connection = application.openDatabaseConnection()
+    
+    if let castConnection = connection as? ApplicationTestConnection {
+      assert(castConnection.name, equals: "My Connection")
+    }
+    else {
+      assert(false, message: "Did not have correct class for connection")
+    }
+  }
+  
+  //MARK: Loading
+  
   func testParseArgumentsRepeatedlyPromptsUntilValidTaskAppears() {
     class TestApplication: Application {
       var commands = ["tailor.exit a=7", "tailor.wait"]
@@ -269,68 +376,32 @@ class ApplicationTests : TailorTestCase {
     self.assert(application.flags, equals: ["a": "b", "c": "1"])
   }
   
-  func testSharedApplicationReusesApplication() {
-    let application1 = Application.sharedApplication()
-    let application2 = Application.sharedApplication()
-    self.assert(application1 === application2)
+  func testPromptForCommandGetsCommandByName() {
+    let standardInput = NSPipe()
+    NSFileHandle.stubClassMethod("fileHandleWithStandardInput", result: standardInput.fileHandleForReading) {
+      let command = "custom_task a=b c"
+      standardInput.fileHandleForWriting.writeData(NSData(bytes: command.utf8))
+      standardInput.fileHandleForWriting.closeFile()
+      assert(application.promptForCommand(), equals: command)
+    }
   }
   
-  func testStartMethodRunsTaskFromCommand() {
-    class TestTask: TaskType {
-      static let commandName: String = "application_test_task_1"
-      static var hasRun = false
-      static func runTask() {
-        hasRun = true
-      }
+  func testPromptForCommandGetsCommandByNumber() {
+    let standardInput = NSPipe()
+    NSFileHandle.stubClassMethod("fileHandleWithStandardInput", result: standardInput.fileHandleForReading) {
+      let command = "3"
+      standardInput.fileHandleForWriting.writeData(NSData(bytes: command.utf8))
+      standardInput.fileHandleForWriting.closeFile()
+      assert(application.promptForCommand(), equals: "command_name_test_task")
     }
-    APPLICATION_ARGUMENTS = ("application_test_task_1", [:])
-    let application = Application()
-    application.start()
-    assert(TestTask.hasRun)
   }
   
-  func testClassStartMethodRunsTaskOnSharedApplication() {
-    NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
-    class TestTask: TaskType {
-      static let commandName: String = "application_test_task_2"
-      static var hasRun = false
-      static func runTask() {
-        hasRun = true
-      }
-    }
-    APPLICATION_ARGUMENTS = ("application_test_task_2", [:])
-    Application.start()
-    assert(TestTask.hasRun)
-  }
-  
-  func testOpenDatabaseConnectionGetsConnectionFromConfig() {
-    let application = Application()
-    final class ApplicationTestConnection: DatabaseDriver {
-      let name: String
-      let timeZone: TimeZone = TimeZone.systemTimeZone()
-      
-      init(config: [String:String]) {
-        self.name = config["name"] ?? "Anonymous"
-      }
-      
-      func executeQuery(query: String, parameters: [DatabaseValue]) -> [DatabaseRow] {
-        return []
-      }
-      
-      func tables() -> [String:String] {
-        return [:]
-      }
-    }
-    
-    Application.configuration.databaseDriver = { return ApplicationTestConnection(config: ["name": "My Connection"]) }
-    
-    let connection = application.openDatabaseConnection()
-    
-    if let castConnection = connection as? ApplicationTestConnection {
-      assert(castConnection.name, equals: "My Connection")
-    }
-    else {
-      assert(false, message: "Did not have correct class for connection")
+  func testPromptForCommandWithInvalidDataReturnsEmptyString() {
+    let standardInput = NSPipe()
+    NSFileHandle.stubClassMethod("fileHandleWithStandardInput", result: standardInput.fileHandleForReading) {
+      standardInput.fileHandleForWriting.writeData(NSData(bytes: [0xD8, 0x00]))
+      standardInput.fileHandleForWriting.closeFile()
+      assert(application.promptForCommand(), equals: "")
     }
   }
   
@@ -353,6 +424,55 @@ class ApplicationTests : TailorTestCase {
     let types = application.registeredSubtypeList(TestClassWithSubclasses)
     let ids = types.map { $0.id() }
     self.assert(ids.sort(), equals: [1, 2, 3], message: "registers all subclasses of the type given, including the type itself")
+  }
+  
+  func testRegisteredAlterationsGetsAlterations() {
+    let alterations = application.registeredAlterations().map { $0.name }
+    assert(alterations.contains("TailorTests.AlterationTests.FirstAlteration"))
+  }
+  
+  func testRegisteredAlterationsWithNoAlterationsRegisteredGetsEmptyList() {
+    application.clearRegisteredSubtypes()
+    assert(application.registeredAlterations().isEmpty)
+  }
+  
+  func testRegisteredTasksGetsTasks() {
+    let tasks = application.registeredTasks().map { $0.commandName }
+    assert(tasks.contains("run_tests"))
+  }
+  
+  func testRegisteredTasksWithNoTasksRegisteredGetsEmptyList() {
+    application.clearRegisteredSubtypes()
+    let tasks = application.registeredTasks().map { $0.commandName }
+    assert(tasks.isEmpty)
+  }
+  
+  func testRegisteredSubtypeListGetsSubtypes() {
+    class TestClassOne {
+      class func name() -> String {
+        return NSStringFromClass(self)
+      }
+    }
+    class TestClassTwo: TestClassOne {
+      
+    }
+    application.registerSubclasses(TestClassOne.self)
+    let names = application.registeredSubtypeList(TestClassOne.self).map { $0.name() }.sort()
+    assert(names, equals: [TestClassOne.name(), TestClassTwo.name()])
+  }
+  
+  func testRegisteredSubtypeListWithNoTypesRegisteredGetsEmptyList() {
+    class TestClassOne {
+      class func name() -> String {
+        return NSStringFromClass(self)
+      }
+    }
+    class TestClassTwo: TestClassOne {
+      
+    }
+    application.clearRegisteredSubtypes()
+    let names = application.registeredSubtypeList(TestClassOne.self).map { $0.name() }.sort()
+    assert(names.isEmpty)
   }
   
   //MARK: - Configuration

@@ -6,7 +6,7 @@ import TailorSqlite
 extension TailorTestCase {
   public dynamic func configure() {
     APPLICATION_ARGUMENTS = ("tailor.exit", [:])
-    Application.configuration.databaseDriver = { return SqliteConnection(path: "test.sqlite") }
+    Application.configuration.databaseDriver = { return SqliteConnection(path: "testing.sqlite") }
     Application.configuration.sessionEncryptionKey = "0FC7ECA7AADAD635DCC13A494F9A2EA8D8DAE366382CDB3620190F6F20817124"
   }
 }
@@ -14,8 +14,12 @@ final class TestConnection : DatabaseDriver {
   var timeZone: TimeZone
   var queries = [(String,[DatabaseValue])]()
   var response : [DatabaseConnection.Row] = []
+  static var connectionCount = 0
   
-  init(config: [String : String]) { timeZone = TimeZone.systemTimeZone() }
+  init(config: [String : String]) {
+    timeZone = TimeZone.systemTimeZone()
+    TestConnection.connectionCount += 1
+  }
   func executeQuery(query: String, parameters bindParameters: [DatabaseValue]) -> [DatabaseRow] {
     NSLog("Executing %@", query)
     queries.append((query, bindParameters))
@@ -149,10 +153,24 @@ struct Store : Persistable {
 }
 
 extension NSObject {
-  class func stubMethod<T: AnyObject>(name: String, result: T, @noescape block: Void -> Void) {
+  class func stubClassMethod<T: AnyObject>(name: String, result: T?, @noescape block: Void -> Void) {
+    let method = class_getClassMethod(self, Selector(name))
+    let oldImplementation = method_getImplementation(method)
+    let implementationBlock: @convention(block) (AnyObject)->AnyObject? = {
+      _ in
+      return result
+    }
+    
+    let newImplementation = imp_implementationWithBlock(unsafeBitCast(implementationBlock, AnyObject.self))
+    method_setImplementation(method, newImplementation)
+    block()
+    method_setImplementation(method, oldImplementation)
+  }
+  
+  class func stubMethod<T: AnyObject>(name: String, result: T?, @noescape block: Void -> Void) {
     let method = class_getInstanceMethod(self, Selector(name))
     let oldImplementation = method_getImplementation(method)
-    let implementationBlock: @convention(block) (AnyObject)->AnyObject = {
+    let implementationBlock: @convention(block) (AnyObject)->AnyObject? = {
       _ in
       return result
     }

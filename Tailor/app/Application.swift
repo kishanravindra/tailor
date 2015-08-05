@@ -2,6 +2,9 @@ import Foundation
 
 /**
   This class represents a web application.
+
+  NOTE: Subclassing this class is deprecated. In a future release, it will be
+  made into a final class.
   */
 public class Application {
   /**
@@ -116,7 +119,7 @@ public class Application {
       */
     internal static func pathForConfigFile(name: String) -> String? {
       for bundle in NSBundle.allBundles() {
-        var bundlePath = bundle.resourcePath ?? "."
+        guard var bundlePath = bundle.resourcePath else { continue }
         bundlePath += "/\(name).plist"
         if NSFileManager.defaultManager().fileExistsAtPath(bundlePath) {
           return bundlePath
@@ -252,8 +255,8 @@ public class Application {
                             a test bundle.
     */
   @available(*, deprecated, message="The testing flag is deprecated")
-  public required init(testing: Bool) {
-
+  public convenience init(testing: Bool) {
+    self.init()
   }
   /**
     This method initializes the application.
@@ -377,7 +380,7 @@ public class Application {
   /**
     This method starts a server for this application.
     */
-  public func startServer() {
+  @available(*, deprecated) public func startServer() {
     Connection.startServer(Application.configuration.ipAddress, port: Application.configuration.port, handler: { RouteSet.shared().handleRequest($0, callback: $1) })
   }
   
@@ -400,8 +403,8 @@ public class Application {
 
     - returns:   The connection
     */
-  public func openDatabaseConnection() -> DatabaseDriver {
-    guard let connection = Application.configuration.databaseDriver?() else {
+  @available(*, deprecated) public func openDatabaseConnection() -> DatabaseConnection {
+    guard let connection = Application.configuration.databaseDriver?() as? DatabaseConnection else {
       fatalError("Cannot open a database connection because there is no database configuration")
     }
     
@@ -568,6 +571,13 @@ public class Application {
         self.registeredSubtypes[key] = subtypes
       }
     }
+  }
+  
+  /**
+    This method removes all types from our list of registered subtypes.
+    */
+  internal func clearRegisteredSubtypes() {
+    self.registeredSubtypes = [:]
   }
   
   /**

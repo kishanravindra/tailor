@@ -9,6 +9,10 @@ public final class ServerTask : TaskType {
 
   /** This method starts the server. */
   public static func runTask() {
-    Application.sharedApplication().startServer()
+    Connection.startServer(
+      Application.configuration.ipAddress,
+      port: Application.configuration.port,
+      handler: { RouteSet.shared().handleRequest($0, callback: $1) }
+  )
   }
 }
