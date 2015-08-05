@@ -6,6 +6,11 @@ import TailorSqlite
 class DatabaseDriverTests: TailorTestCase {
   //MARK: - Initialization
   
+  override func tearDown() {
+    NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")
+    super.tearDown()
+  }
+  
   func testSharedConnectionOpensWithDriverFromConfiguration() {
     TestConnection.connectionCount = 0
     Application.configuration.databaseDriver = { return TestConnection(config: [:]) }
