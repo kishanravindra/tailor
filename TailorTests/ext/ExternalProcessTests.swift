@@ -81,7 +81,8 @@ class ExternalProcessTests: TailorTestCase {
     let process = ExternalProcess(launchPath: "/bin/cat", arguments: [path]) {
       code,data in
       XCTAssertEqual(code, 1, "exits with an error")
-      XCTAssertEqual(data, "cat: /tmp/stub_test.txt: No such file or directory\n".dataUsingEncoding(NSASCIIStringEncoding)!, "has the expected error message in the output")
+      let otherData = "cat: /tmp/stub_test.txt: No such file or directory\n".dataUsingEncoding(NSASCIIStringEncoding)!
+      XCTAssert(data.isEqualToData(otherData), "has the expected error message in the output")
       expectation.fulfill()
     }
     process.launch()

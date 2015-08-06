@@ -84,7 +84,7 @@ extension SeedTaskType {
     let rows = [["table","sql"]] + tables.filter { !excludedTables.contains($0.0) }.map { [$0.0, $0.1] }.sort { $0[0] < $1[0] }
     let path = self.pathForFile("tables")
     let data = CsvParser.encode(rows)
-    let folderPath = path.stringByDeletingLastPathComponent
+    let folderPath = (path as NSString).stringByDeletingLastPathComponent
     do {
       let manager = NSFileManager.defaultManager()
       try manager.createDirectoryAtPath(folderPath, withIntermediateDirectories: true, attributes: nil)

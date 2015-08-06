@@ -65,7 +65,7 @@ public extension Application {
 
 public extension AlterationScript {
   public static var name: String {
-    return typeName(self)
+    return String(reflecting: self)
   }
   
   /**

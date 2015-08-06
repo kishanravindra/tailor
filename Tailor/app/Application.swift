@@ -510,7 +510,7 @@ public class Application {
     while (tasks.filter { $0.commandName == self.command }).isEmpty {
       let commandLine = self.promptForCommand()
       var inQuotes = false
-      arguments = split(commandLine.characters) {
+      arguments = commandLine.characters.split() {
         (character: Character) -> Bool in
         if character == "\"" {
           inQuotes = !inQuotes
@@ -565,7 +565,7 @@ public class Application {
       allClasses = advance(allClasses, 1)
       
       if matcher(type) {
-        let key = typeName(parentType)
+        let key = String(reflecting: parentType)
         var subtypes = self.registeredSubtypes[key] ?? []
         subtypes.append(type)
         self.registeredSubtypes[key] = subtypes
@@ -605,7 +605,7 @@ public class Application {
     - returns:  The types.
     */
   public func registeredAlterations() -> [AlterationScript.Type] {
-    let description = typeName(AlterationScript.self)
+    let description = String(reflecting: AlterationScript.self)
     let classes = self.registeredSubtypes[description] ?? []
     return removeNils(classes.map { $0 as? AlterationScript.Type })
   }
@@ -615,7 +615,7 @@ public class Application {
     - returns: The types.
     */
   public func registeredTasks() -> [TaskType.Type] {
-    let description = typeName(TaskType.self)
+    let description = String(reflecting: TaskType.self)
     let classes = self.registeredSubtypes[description] ?? []
     return removeNils(classes.map { $0 as? TaskType.Type })
   }
@@ -643,7 +643,7 @@ public class Application {
     - returns:          The subclasses of the type.
   */
   public func registeredSubtypeList<ParentType>(type: ParentType.Type) -> [ParentType.Type] {
-    let description = typeName(ParentType.self)
+    let description = String(reflecting: ParentType.self)
     let classes = self.registeredSubtypes[description] ?? []
     return removeNils(classes.map { $0 as? ParentType.Type })
   }
@@ -683,7 +683,7 @@ public class Application {
                           root path.
     */
   @available(*, deprecated, message="Use the static configuration variable instead") public func loadConfigFromFile(path: String) {
-    let name = path.lastPathComponent.stringByDeletingPathExtension
+    let name = ((path as NSString).lastPathComponent as NSString).stringByDeletingPathExtension
     let fullPath = self.rootPath() + "/" + path
     self.configuration.child(name).addDictionary(ConfigurationSetting(contentsOfFile: fullPath).toDictionary())
   }

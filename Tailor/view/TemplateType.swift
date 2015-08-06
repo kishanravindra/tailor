@@ -61,7 +61,7 @@ extension TemplateType {
     This is only added to keys that start with a dot.
     */
   public var localizationPrefix: String {
-    return typeName(self.dynamicType).underscored()
+    return String(reflecting: self.dynamicType).underscored()
   }
   
   /**
