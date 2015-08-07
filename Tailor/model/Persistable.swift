@@ -7,13 +7,11 @@ public protocol Persistable: Equatable, ModelType, JsonEncodable {
     This method initializes a record with a row from the database.
     
     If the row does not contain enough data to initialize the record, this must
-    return nil.
+    throw an exception.
     
-    - parameter databaseRow:    The row from the database. The keys will be
-                                column names, and the rows will be wrapped in
-                                the database value wrapper.
+    - parameter databaseRow:    The row from the database.
     */
-  init?(databaseRow: [String: DatabaseValue])
+  init(databaseRow: DatabaseRow) throws
   
   /** The unique identifier for the record. */
   var id: Int? { get }
@@ -125,7 +123,6 @@ public func ==<T: Persistable>(lhs: T, rhs: T) -> Bool {
 }
 
 //MARK: - Persistence
-
 /**
   This method saves a record to the database.
 
@@ -156,6 +153,34 @@ public func ==<T: Persistable>(lhs: T, rhs: T) -> Bool {
 }
 
 extension Persistable {
+  /**
+    This method builds a record from a row in the database.
+    
+    It wraps around the initializer to catch exceptions and log them, returning
+    nil in the case of failure.
+    
+    - parameter row:    The row to use to build the object.
+    - returns:          The new record.
+    */
+  internal static func build(row: DatabaseRow) -> Self? {
+    do {
+      return try self.init(databaseRow: row)
+    }
+    catch let DatabaseError.GeneralError(message) {
+      NSLog("Error building record in %@: %@", self.tableName, message)
+    }
+    catch let DatabaseError.MissingField(name) {
+      NSLog("Error building record in %@: %@ was missing", self.tableName, name)
+    }
+    catch let DatabaseError.FieldType(name, actualType, desiredType) {
+      NSLog("Error building record in %@: %@ should be %@, but was %@", self.tableName, name, desiredType, actualType)
+    }
+    catch {
+      NSLog("Unknown error building record")
+    }
+    return nil
+  }
+
   /**
     This method saves a record to the database.
     
@@ -250,10 +275,10 @@ extension Persistable {
   }
   
   /**
-  This method saves the record to the database by inserting it.
-  
-  - returns:   Whether we were able to save the record.
-  */
+    This method saves the record to the database by inserting it.
+    
+    - returns:   Whether we were able to save the record.
+    */
   private func insertRecord(values: [String:DatabaseValueConvertible?]) -> Self? {
     var query = "INSERT INTO \(self.dynamicType.tableName) ("
     var parameters = [DatabaseValue]()
@@ -296,7 +321,7 @@ extension Persistable {
     }
     else {
       mappedValues["id"] = result?.data["id"]
-      return self.dynamicType.init(databaseRow: mappedValues)
+      return self.dynamicType.build(DatabaseRow(data: mappedValues))
     }
   }
   
@@ -338,7 +363,7 @@ extension Persistable {
         return nil
       }
     }
-    return self.dynamicType.init(databaseRow: mappedValues)
+    return self.dynamicType.build(DatabaseRow(data: mappedValues))
   }
   
   public static func foreignKeyName() -> String {

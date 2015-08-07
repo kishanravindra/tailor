@@ -187,53 +187,53 @@ class DatabaseValueTests: TailorTestCase {
   
   func testDescriptionWithStringGetsString() {
     let value = DatabaseValue.String("Hello")
-    assert(value.description, equals: "Hello")
+    assert(value.valueDescription, equals: "Hello")
   }
   
   func testDescriptionWithBooleanGetsTrueOrValue() {
     let value1 = DatabaseValue.Boolean(true)
-    assert(value1.description, equals: "true")
+    assert(value1.valueDescription, equals: "true")
     let value2 = DatabaseValue.Boolean(false)
-    assert(value2.description, equals: "false")
+    assert(value2.valueDescription, equals: "false")
   }
   
   func testDescriptionWithDataGetsDataDescription() {
     let data = NSData(bytes: [1,2,3,4])
     let value = DatabaseValue.Data(data)
-    assert(value.description, equals: data.description)
+    assert(value.valueDescription, equals: data.description)
   }
   
   func testDescriptionWithIntegerGetsIntegerAsString() {
     let value = DatabaseValue.Integer(42)
-    assert(value.description, equals: "42")
+    assert(value.valueDescription, equals: "42")
   }
   
   func testDescriptionWithDoubleGetsDoubleAsString() {
     let value = DatabaseValue.Double(35.5)
-    assert(value.description, equals: "35.5")
+    assert(value.valueDescription, equals: "35.5")
   }
   
   func testDescriptionWithTimestampGetsFormattedDate() {
     let timestamp = Timestamp.now()
     let value = DatabaseValue.Timestamp(timestamp)
-    assert(value.description, equals: timestamp.format(TimeFormat.Database))
+    assert(value.valueDescription, equals: timestamp.format(TimeFormat.Database))
   }
   
   func testDescriptionWithDateUsesDateDescription() {
     let date = Date(year: 1999, month: 7, day: 12)
     let value = DatabaseValue.Date(date)
-    assert(value.description, equals: date.description)
+    assert(value.valueDescription, equals: date.description)
   }
   
   func testDescriptionWithTimeUsesTimeDescription() {
     let time = Time(hour: 15, minute: 7, second: 11, nanosecond: 0, timeZone: TimeZone(name: "US/Pacific"))
     let value = DatabaseValue.Time(time)
-    assert(value.description, equals: time.description)
+    assert(value.valueDescription, equals: time.description)
   }
   
   func testDescriptionWithNullGetsNull() {
     let value = DatabaseValue.Null
-    assert(value.description, equals: "NULL")
+    assert(value.valueDescription, equals: "NULL")
   }
   
   //MARK: - Comparision

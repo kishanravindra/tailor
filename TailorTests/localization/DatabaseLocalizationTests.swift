@@ -12,35 +12,63 @@ class DatabaseLocalizationTests: TailorTestCase {
   }
   
   func testTranslationInitializationWithAllFieldsSetsFields() {
-    let translation = DatabaseLocalization.Translation(databaseRow: ["translation_key": "database.message".databaseValue
-      , "locale": "en".databaseValue, "translated_text": "Hello".databaseValue, "id": 1.databaseValue])
-    assert(translation?.id, equals: 1)
-    assert(translation?.translationKey, equals: "database.message")
-    assert(translation?.locale, equals: "en")
-    assert(translation?.translatedText, equals: "Hello")
-  }
-  
-  func testTranslationInitializationWithNoIdIsNil() {
-    let translation = DatabaseLocalization.Translation(databaseRow: ["translation_key": "database.message".databaseValue
-      , "locale": "en".databaseValue, "translated_text": "Hello".databaseValue])
-    assert(isNil: translation)
+    let translation = try! DatabaseLocalization.Translation(databaseRow: DatabaseRow(data: ["translation_key": "database.message".databaseValue
+      , "locale": "en".databaseValue, "translated_text": "Hello".databaseValue, "id": 1.databaseValue]))
+    assert(translation.id, equals: 1)
+    assert(translation.translationKey, equals: "database.message")
+    assert(translation.locale, equals: "en")
+    assert(translation.translatedText, equals: "Hello")
   }
   
   func testTranslationInitializationWithNoKeyIsNil() {
-    let translation = DatabaseLocalization.Translation(databaseRow: ["locale": "en".databaseValue, "translated_text": "Hello".databaseValue, "id": 1.databaseValue])
-    assert(isNil: translation)
+    do {
+      _ = try DatabaseLocalization.Translation(databaseRow: DatabaseRow(data: [
+        "locale": "en".databaseValue,
+        "translated_text": "Hello".databaseValue,
+        "id": 1.databaseValue
+      ]))
+      assert(false, message: "should throw an exception")
+    }
+    catch let DatabaseError.MissingField(name) {
+      assert(name, equals: "translation_key")
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
   }
   
   func testTranslationInitializationWithNoLocaleIsNil() {
-    let translation = DatabaseLocalization.Translation(databaseRow: ["translation_key": "database.message".databaseValue
-      , "translated_text": "Hello".databaseValue, "id": 1.databaseValue])
-    assert(isNil: translation)
+    do {
+      _ = try DatabaseLocalization.Translation(databaseRow: DatabaseRow(data: [
+        "translation_key": "database.message".databaseValue,
+        "translated_text": "Hello".databaseValue,
+        "id": 1.databaseValue
+        ]))
+      assert(false, message: "should throw an exception")
+    }
+    catch let DatabaseError.MissingField(name) {
+      assert(name, equals: "locale")
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
   }
   
   func testTranslationInitializationWithNoTranslatedTextIsNil() {
-    let translation = DatabaseLocalization.Translation(databaseRow: ["translation_key": "database.message".databaseValue
-      , "locale": "en".databaseValue, "id": 1.databaseValue])
-    assert(isNil: translation)
+    do {
+      _ = try DatabaseLocalization.Translation(databaseRow: DatabaseRow(data: [
+        "translation_key": "database.message".databaseValue,
+        "locale": "en".databaseValue,
+        "id": 1.databaseValue
+        ]))
+      assert(false, message: "should throw an exception")
+    }
+    catch let DatabaseError.MissingField(name) {
+      assert(name, equals: "translated_text")
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
   }
   
   func testFetchInLocaleGetsValueFromTranslation() {

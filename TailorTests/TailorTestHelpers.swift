@@ -71,22 +71,13 @@ struct Hat : Persistable {
     ]
   }
   
-  init?(databaseRow: [String:DatabaseValue]){
-    if let brimSize = databaseRow["brim_size"]?.intValue,
-      let color = databaseRow["color"]?.stringValue {
-        self.init(
-          brimSize: brimSize,
-          color: color,
-          shelfId: databaseRow["shelf_id"]?.intValue,
-          id: databaseRow["id"]?.intValue
-        )
-        createdAt = databaseRow["created_at"]?.timestampValue
-        updatedAt = databaseRow["updated_at"]?.timestampValue
-    }
-    else {
-      self.init()
-      return nil
-    }
+  init(databaseRow: DatabaseRow) throws {
+    self.brimSize = try databaseRow.read("brim_size")
+    self.color = try databaseRow.read("color")
+    self.shelfId = rescue(try databaseRow.read("shelf_id"))
+    self.id = rescue(try databaseRow.read("id"))
+    self.createdAt = rescue(try databaseRow.read("created_at"))
+    self.updatedAt = rescue(try databaseRow.read("updated_at"))
   }
 }
 
@@ -112,10 +103,14 @@ struct Shelf : Persistable {
     ]
   }
   
-  init?(databaseRow: [String:DatabaseValue]) {
-    self.name = databaseRow["name"]?.stringValue
-    self.id = databaseRow["id"]?.intValue
-    self.storeId = databaseRow["store_id"]?.intValue ?? 0
+  init(databaseRow: DatabaseRow) throws {
+    self.name = rescue(try databaseRow.read("name"))
+    self.id = rescue(try databaseRow.read("id"))
+    self.storeId = rescue(try databaseRow.read("store_id")) ?? 0
+    
+    if databaseRow.data["throwError"] != nil {
+      throw DatabaseError.GeneralError(message: "I was told to throw an error")
+    }
   }
 }
 
@@ -138,15 +133,9 @@ struct Store : Persistable {
     ]
   }
   
-  init?(databaseRow: [String:DatabaseValue]) {
-    if let name = databaseRow["name"]?.stringValue,
-      let id = databaseRow["id"]?.intValue {
-      self.init(name: name, id: id)
-    }
-    else {
-      self.init(name: "")
-      return nil
-    }
+  init(databaseRow: DatabaseRow) throws {
+    self.name = try databaseRow.read("name")
+    self.id = rescue(try databaseRow.read("id"))
   }
 }
 

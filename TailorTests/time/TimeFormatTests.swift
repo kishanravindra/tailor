@@ -341,9 +341,16 @@ class TimeFormatTests: TailorTestCase {
     assert(result, equals: "_")
   }
   
-  func testParseTimeComponentWithNonNumericCharacterReturnsNil() {
+  func testParseTimeComponentWithYearWithNonNumericCharacterReturnsNil() {
     formatter = TimeFormatComponent.YearWith(padding: "0", length: 4, truncate: false)
     let result = formatter.parseTime(from: "Wednesday", into: &timeComponents, calendar: calendar)
+    assert(timeComponents.year, equals: 0)
+    assert(isNil: result)
+  }
+  
+  func testParseTimeComponentWithYearWithTooFewCharactersReturnsNil() {
+    formatter = TimeFormatComponent.YearWith(padding: "0", length: 4, truncate: false)
+    let result = formatter.parseTime(from: "201", into: &timeComponents, calendar: calendar)
     assert(timeComponents.year, equals: 0)
     assert(isNil: result)
   }

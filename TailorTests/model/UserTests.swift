@@ -21,25 +21,59 @@ class UserTests: TailorTestCase {
   }
   
   func testInitializationWithValidDatabaseRowSetsFields() {
-    let user = User(databaseRow: ["email_address": "test@test.com".databaseValue, "encrypted_password": "12345".databaseValue, "id": 1.databaseValue])
-    assert(user?.emailAddress, equals: "test@test.com")
-    assert(user?.encryptedPassword, equals: "12345")
-    assert(user?.id, equals: 1)
+    let user = try! User(databaseRow: DatabaseRow(data: [
+      "email_address": "test@test.com".databaseValue,
+      "encrypted_password": "12345".databaseValue,
+      "id": 1.databaseValue
+      ]))
+    assert(user.emailAddress, equals: "test@test.com")
+    assert(user.encryptedPassword, equals: "12345")
+    assert(user.id, equals: 1)
   }
   
-  func testInitializationWithNoEmailAddressIsNil() {
-    let user = User(databaseRow: ["encrypted_password": "12345".databaseValue, "id": 1.databaseValue])
-    assert(isNil: user)
+  func testInitializationWithNoEmailAddressThrowsException() {
+    do {
+      _ = try User(databaseRow: DatabaseRow(data: [
+        "encrypted_password": "12345".databaseValue,
+        "id": 1.databaseValue
+        ]))
+      assert(false, message: "should throw an exception")
+    }
+    catch let DatabaseError.MissingField(name) {
+      assert(name, equals: "email_address")
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
   }
   
-  func testInitializationWithNoPasswordIsNil() {
-    let user = User(databaseRow: ["email_address": "test@test.com".databaseValue, "id": 1.databaseValue])
-    assert(isNil: user)
+  func testInitializationWithNoPasswordThrowsException() {
+    do {
+      _ = try User(databaseRow: DatabaseRow(data: [
+        "email_address": "test@test.com".databaseValue,
+        "id": 1.databaseValue
+        ]))
+      assert(false, message: "should throw an exception")
+    }
+    catch let DatabaseError.MissingField(name) {
+      assert(name, equals: "encrypted_password")
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
   }
   
-  func testInitializationWithNoIdIsNil() {
-    let user = User(databaseRow: ["id": 1.databaseValue])
-    assert(isNil: user)
+  func testInitializationWithNoIdDoesNotThrowException() {
+    do {
+      let user = try User(databaseRow: DatabaseRow(data: [
+        "email_address": "test@test.com".databaseValue,
+        "encrypted_password": "12345".databaseValue
+        ]))
+      assert(isNil: user.id)
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
   }
   
   //MARK: - Authentication

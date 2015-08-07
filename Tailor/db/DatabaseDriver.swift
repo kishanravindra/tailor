@@ -143,6 +143,86 @@ public struct DatabaseRow {
     self.init(data: [:])
     self.error = error
   }
+
+  /**
+    This method reads a value from our data dictionary and attempts to cast it
+    to another type.
+  
+    This will infer the desired return type from the calling context.
+  
+    If there is no value for that key, or if the value cannot be cast to a
+    compatible type, this will throw an exception.
+  
+    This will use the `stringValue`, `intValue`, etc. family of methods on
+    `DatabaseValue` to do the casting, so whereever those methods support
+    automatic conversion, so will this method.
+  
+    - parameter key:    The key to read.
+    - returns:          The cast value.
+    - throws:           An exception from `DatabaseError`.
+    */
+  public func read<OutputType>(key: String) throws -> OutputType {
+    guard let value = self.data[key] else {
+      throw DatabaseError.MissingField(name: key)
+    }
+    
+    switch(OutputType.self) {
+    case is String.Type:
+      if let cast = value.stringValue as? OutputType {
+        return cast
+      }
+    case is Int.Type:
+      if let cast = value.intValue as? OutputType { return cast }
+    case is Timestamp.Type:
+      if let cast = value.timestampValue as? OutputType { return cast }
+    case is Date.Type:
+      if let cast = value.dateValue as? OutputType { return cast }
+    case is Time.Type:
+      if let cast = value.timeValue as? OutputType { return cast }
+    case is NSData.Type:
+      if let cast = value.dataValue as? OutputType { return cast }
+    case is Double.Type:
+      if let cast = value.doubleValue as? OutputType { return cast }
+    case is Bool.Type:
+      if let cast = value.boolValue as? OutputType { return cast }
+    default:
+      break
+    }
+    let typeName = String(OutputType.self)
+    var actualTypeName = String(value)
+    if let index = actualTypeName.characters.indexOf("(") {
+      actualTypeName = actualTypeName.substringToIndex(index)
+    }
+    throw DatabaseError.FieldType(name: key, actualType: actualTypeName, desiredType: typeName)
+  }
+}
+
+/**
+  This enum holds errors that are thrown by methods for communicating with the
+  database, or extracting data from a database result.
+  */
+public enum DatabaseError: ErrorType {
+  /**
+    This error is thrown when something goes wrong and we don't have a
+    specialized error for it.
+  
+    - parameter message:    A message describing the error.
+    */
+  case GeneralError(message: String)
+  
+  /**
+    This error is thrown when the user tries to read a value from a database
+    row, but there is no value there.
+  
+    - parameter name:   The name of the field they tried to read.
+    */
+  case MissingField(name: String)
+  
+  /**
+    This error is thrown when the user tries to read a value from a database
+    row, but the actual value is not compatible with the requested type.
+    */
+  case FieldType(name: String, actualType: String, desiredType: String)
 }
 
 public extension Application {

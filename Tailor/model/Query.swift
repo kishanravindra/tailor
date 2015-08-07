@@ -294,7 +294,7 @@ public struct Query<RecordType: Persistable> {
   public func all() -> [RecordType] {
     let (query, parameters) = self.toSql()
     if self.cacheResults {
-      let parameterString = ",".join(parameters.map { $0.description })
+      let parameterString = ",".join(parameters.map { String($0) })
       let cacheKey = query + "(" + parameterString + ")"
       
       var cachedIds = Application.cache.read(cacheKey)
@@ -319,7 +319,13 @@ public struct Query<RecordType: Persistable> {
     }
     let results = Application.sharedDatabaseConnection().executeQuery(query, parameters: parameters)
     let type = RecordType.self
-    return removeNils(results.map { $0.error == nil ? type.init(databaseRow: $0.data) : nil })
+    return removeNils(results.map {
+      if $0.error == nil {
+        return type.build($0)
+      }
+      return nil
+    }
+    )
   }
   
   /**

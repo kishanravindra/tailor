@@ -73,23 +73,11 @@ public final class DatabaseLocalization: LocalizationSource {
 
       - parameter databaseRow:     The fields from the database.
       */
-    public init?(databaseRow: [String:DatabaseValue]) {
-      if let translationKey = databaseRow["translation_key"]?.stringValue,
-        locale = databaseRow["locale"]?.stringValue,
-        translatedText = databaseRow["translated_text"]?.stringValue,
-        id = databaseRow["id"]?.intValue {
-          self.id = id
-          self.translationKey = translationKey
-          self.locale = locale
-          self.translatedText = translatedText
-      }
-      else {
-        self.translationKey = ""
-        self.locale = ""
-        self.translatedText = ""
-        self.id = nil
-        return nil
-      }
+    public init(databaseRow: DatabaseRow) throws {
+      self.translationKey = try databaseRow.read("translation_key")
+      self.locale = try databaseRow.read("locale")
+      self.translatedText = try databaseRow.read("translated_text")
+      self.id = rescue(try databaseRow.read("id"))
     }
   }
   

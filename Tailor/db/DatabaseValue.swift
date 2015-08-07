@@ -6,7 +6,7 @@ import Foundation
   This allows us to pass a database value of an unknown type in a way that still
   puts type constraints on what it can be.
   */
-public enum DatabaseValue: Equatable, CustomStringConvertible {
+public enum DatabaseValue: Equatable {
   /** A null value */
   case Null
   
@@ -156,7 +156,7 @@ public enum DatabaseValue: Equatable, CustomStringConvertible {
   /**
     This method gets a description of the underlying value for debugging.
     */
-  public var description: Swift.String {
+  public var valueDescription: Swift.String {
     switch(self) {
     case let .String(string):
       return string

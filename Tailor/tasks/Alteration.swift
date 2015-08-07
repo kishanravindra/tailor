@@ -105,7 +105,7 @@ import Foundation
     let results = DatabaseConnection.sharedConnection().executeQuery(query, parameterValues: parameters)
     if !results.isEmpty && results[0].error != nil {
       NSLog("Error running query")
-      NSLog("%@ %@", query, parameters.map { $0.databaseValue.description })
+      NSLog("%@ %@", query, parameters.map { String($0.databaseValue) })
       NSLog("Error: %@", results[0].error!)
       exit(1)
     }

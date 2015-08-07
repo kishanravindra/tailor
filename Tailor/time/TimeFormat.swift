@@ -401,6 +401,10 @@ public enum TimeFormatComponent: TimeFormatter {
                             the number will be zero and the string will be nil.
     */
   private func parseNumber(from string: String, length: Int, padding: Character?) -> (Int,String?) {
+    if length > string.characters.count {
+      return (0,nil)
+    }
+    
     var substring = string.substringToIndex(advance(string.startIndex, length))
     var realStartIndex = -1
     for (index,character) in substring.unicodeScalars.enumerate() {

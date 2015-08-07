@@ -1,5 +1,5 @@
 import XCTest
-import Tailor
+@testable import Tailor
 import TailorTesting
 
 class PersistableTests: TailorTestCase {
@@ -351,6 +351,26 @@ class PersistableTests: TailorTestCase {
         self.assert(parameters, equals: [data], message: "has the id as the parameter for the query")
       }
     }
+  }
+  
+  func testBuildWithNoErrorBuildsRecord() {
+    let hat = Hat.build(DatabaseRow(data: ["brim_size": 10.databaseValue, "color": "red".databaseValue]))
+    assert(isNotNil: hat)
+  }
+  
+  func testBuildWithGeneralErrorIsNil() {
+    let shelf = Shelf.build(DatabaseRow(data: ["name": "hi".databaseValue, "throwError": true.databaseValue]))
+    assert(isNil: shelf)
+  }
+  
+  func testBuildWithMissingFieldReturnsNil() {
+    let hat = Hat.build(DatabaseRow(data: ["brim_size": 10.databaseValue]))
+    assert(isNil: hat)
+  }
+  
+  func testBuildWithWrongFieldTypeReturnsNil() {
+    let hat = Hat.build(DatabaseRow(data: ["brim_size": 10.databaseValue, "color": 5.databaseValue]))
+    assert(isNil: hat)
   }
   
   func testToJsonCreatesJsonDictionaryBasedOnDataMapping() {

@@ -55,19 +55,17 @@ public class User : Persistable {
   
     - parameter databaseRow:   The information from the database.
     */
-  public required init?(databaseRow: [String:DatabaseValue]) {
-    if let emailAddress = databaseRow["email_address"]?.stringValue,
-      let encryptedPassword = databaseRow["encrypted_password"]?.stringValue,
-      let id = databaseRow["id"]?.intValue {
-        self.emailAddress = emailAddress
-        self.encryptedPassword = encryptedPassword
-        self.id = id
+  public required init(databaseRow: DatabaseRow) throws {
+    do {
+      self.emailAddress = try databaseRow.read("email_address")
+      self.encryptedPassword = try databaseRow.read("encrypted_password")
+      self.id = rescue(try databaseRow.read("id"))
     }
-    else {
+    catch let e {
       self.emailAddress = ""
       self.encryptedPassword = ""
       self.id = nil
-      return nil
+      throw e
     }
   }
   
