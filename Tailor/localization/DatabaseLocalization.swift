@@ -77,7 +77,7 @@ public final class DatabaseLocalization: LocalizationSource {
       self.translationKey = try databaseRow.read("translation_key")
       self.locale = try databaseRow.read("locale")
       self.translatedText = try databaseRow.read("translated_text")
-      self.id = rescue(try databaseRow.read("id"))
+      self.id = try databaseRow.read("id")
     }
   }
   

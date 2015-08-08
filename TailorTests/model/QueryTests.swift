@@ -380,7 +380,7 @@ class QueryTests: TailorTestCase {
     let firstResults = query.all()
     assert(firstResults.count, equals: 2, message: "gets two results")
     
-    let cacheKey = "SELECT hats.* FROM hats WHERE hats.color=?(black)"
+    let cacheKey = "SELECT hats.* FROM hats WHERE hats.color=?(String(\"black\"))"
     XCTAssertNotNil(Application.cache.read(cacheKey))
     Application.cache.write(cacheKey, value: "0); DROP TABLE `hats`; SELECT (0")
     Hat(color: "black").save()!

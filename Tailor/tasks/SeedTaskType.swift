@@ -141,7 +141,7 @@ extension SeedTaskType {
           if value == DatabaseValue.Null {
             return ""
           }
-          return String(value)
+          return value.valueDescription
         }
         rows.append(row)
       }

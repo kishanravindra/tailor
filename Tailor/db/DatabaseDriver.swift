@@ -161,7 +161,7 @@ public struct DatabaseRow {
     - returns:          The cast value.
     - throws:           An exception from `DatabaseError`.
     */
-  public func read<OutputType>(key: String) throws -> OutputType {
+  public func read<OutputType: DatabaseValueConvertible>(key: String) throws -> OutputType {
     guard let value = self.data[key] else {
       throw DatabaseError.MissingField(name: key)
     }
@@ -194,6 +194,28 @@ public struct DatabaseRow {
       actualTypeName = actualTypeName.substringToIndex(index)
     }
     throw DatabaseError.FieldType(name: key, actualType: actualTypeName, desiredType: typeName)
+  }
+  
+  /**
+    This method reads a value from our data dictionary and attempts to cast it
+    to another type.
+    
+    This will infer the desired return type from the calling context.
+    
+    This method wraps around the other version of `read` which returns a
+    non-optional type. If the value is missing, or is a null database value,
+    this will return nil.
+  
+    - parameter key:    The key to read.
+    - returns:          The cast value.
+    - throws:           An exception from `DatabaseError`.
+    */
+  public func read<OutputType: DatabaseValueConvertible>(key: String) throws -> OutputType? {
+    guard let value = self.data[key] else { return nil }
+    if value == .Null { return nil }
+    if value == .String("") { return nil }
+    let result: OutputType = try self.read(key)
+    return result
   }
 }
 

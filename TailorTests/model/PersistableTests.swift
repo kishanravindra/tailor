@@ -66,7 +66,7 @@ class PersistableTests: TailorTestCase {
     
     let whereClause = query.whereClause
     assert(whereClause.query, equals: "shelfs.id=?")
-    assert(whereClause.parameters, equals: [hat.shelfId.databaseValue], message: "has the id as the parameter")
+    assert(whereClause.parameters, equals: [hat.shelfId!.databaseValue], message: "has the id as the parameter")
     
     let joinClause = query.joinClause
     assert(joinClause.query, equals: "INNER JOIN shelfs ON shelfs.store_id = stores.id", message: "joins between shelves and stores in the join clause")
@@ -114,7 +114,7 @@ class PersistableTests: TailorTestCase {
     
     let whereClause = query.whereClause
     assert(whereClause.query, equals: "shelfs.id=?")
-    assert(whereClause.parameters, equals: [hat.shelfId.databaseValue], message: "has the id as the parameter")
+    assert(whereClause.parameters, equals: [hat.shelfId!.databaseValue], message: "has the id as the parameter")
     
     let joinClause = query.joinClause
     assert(joinClause.query, equals: "INNER JOIN shelfs ON shelfs.store_id = stores.id", message: "joins between shelves and stores in the join clause")

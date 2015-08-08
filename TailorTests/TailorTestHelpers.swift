@@ -46,7 +46,7 @@ struct Hat : Persistable {
   let id: Int?
   var brimSize: Int
   var color: String
-  var shelfId: Int!
+  var shelfId: Int?
   var owner: String?
   var createdAt: Timestamp?
   var updatedAt: Timestamp?
@@ -74,10 +74,10 @@ struct Hat : Persistable {
   init(databaseRow: DatabaseRow) throws {
     self.brimSize = try databaseRow.read("brim_size")
     self.color = try databaseRow.read("color")
-    self.shelfId = rescue(try databaseRow.read("shelf_id"))
-    self.id = rescue(try databaseRow.read("id"))
-    self.createdAt = rescue(try databaseRow.read("created_at"))
-    self.updatedAt = rescue(try databaseRow.read("updated_at"))
+    self.shelfId = try databaseRow.read("shelf_id")
+    self.id = try databaseRow.read("id")
+    self.createdAt = try databaseRow.read("created_at")
+    self.updatedAt = try databaseRow.read("updated_at")
   }
 }
 
@@ -104,9 +104,9 @@ struct Shelf : Persistable {
   }
   
   init(databaseRow: DatabaseRow) throws {
-    self.name = rescue(try databaseRow.read("name"))
-    self.id = rescue(try databaseRow.read("id"))
-    self.storeId = rescue(try databaseRow.read("store_id")) ?? 0
+    self.name = try databaseRow.read("name")
+    self.id = try databaseRow.read("id")
+    self.storeId = try databaseRow.read("store_id") ?? 0
     
     if databaseRow.data["throwError"] != nil {
       throw DatabaseError.GeneralError(message: "I was told to throw an error")
@@ -135,7 +135,7 @@ struct Store : Persistable {
   
   init(databaseRow: DatabaseRow) throws {
     self.name = try databaseRow.read("name")
-    self.id = rescue(try databaseRow.read("id"))
+    self.id = try databaseRow.read("id")
   }
 }
 

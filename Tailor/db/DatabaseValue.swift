@@ -57,6 +57,8 @@ public enum DatabaseValue: Equatable {
       return bool
     case let .Integer(int):
       return int == 1
+    case .String("true"): return true
+    case .String("false"): return false
     default:
       return nil
     }
@@ -69,6 +71,8 @@ public enum DatabaseValue: Equatable {
     switch(self) {
     case let .Integer(int):
       return int
+    case let .String(string):
+      return Int(string)
     default:
       return nil
     }
@@ -93,6 +97,8 @@ public enum DatabaseValue: Equatable {
     switch(self) {
     case let .Double(double):
       return double
+    case let .String(string):
+      return Swift.Double(string)
     default:
       return nil
     }

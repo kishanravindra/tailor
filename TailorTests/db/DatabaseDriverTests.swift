@@ -356,7 +356,7 @@ class DatabaseDriverTests: TailorTestCase {
   }
   
   func testDatabaseRowReadWithBooleanValueThrowsExceptionForStringValue() {
-    let row = DatabaseRow(data: ["key1": DatabaseValue.String("true")])
+    let row = DatabaseRow(data: ["key1": DatabaseValue.String("yo")])
     do {
       _ = try row.read("key1") as Bool
       assert(false, message: "threw unexpected exception")
@@ -426,16 +426,77 @@ class DatabaseDriverTests: TailorTestCase {
     }
   }
   
+  func testDatabaseRowReadWithOptionalValueCanReadRealValue() {
+    let row = DatabaseRow(data: ["key1": DatabaseValue.Integer(1)])
+    do {
+      let value: Int? = try row.read("key1")
+      assert(value, equals: 1)
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
+  func testDatabaseRowReadWithOptionalValueReturnsNilForMissingValue() {
+    let row = DatabaseRow(data: ["key2": DatabaseValue.Integer(1)])
+    do {
+      let value: Int? = try row.read("key1")
+      assert(isNil: value)
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
+  func testDatabaseRowReadWithOptionalValueReturnsNilForNullValue() {
+    let row = DatabaseRow(data: ["key1": DatabaseValue.Null])
+    do {
+      let value: Int? = try row.read("key1")
+      assert(isNil: value)
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
+  func testDatabaseRowReadWithOptionalValueReturnsNilForEmptyStringValue() {
+    let row = DatabaseRow(data: ["key1": DatabaseValue.String("")])
+    do {
+      let value: Int? = try row.read("key1")
+      assert(isNil: value)
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
+  func testDatabaseRowReadWithOptionalValueThrowsExceptionForWrongType() {
+    let row = DatabaseRow(data: ["key1": DatabaseValue.String("hello")])
+    do {
+      let value: Int? = try row.read("key1")
+      assert(isNil: value)
+      assert(false, message: "should throw an exception")
+    }
+    catch let DatabaseError.FieldType(name, actualType, desiredType) {
+      assert(name, equals: "key1")
+      assert(actualType, equals: "String")
+      assert(desiredType, equals: "Int")
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
   func testDatabaseRowReadWithUnsupportedTypeThrowsException() {
     let row = DatabaseRow(data: ["key1": DatabaseValue.Integer(5)])
     do {
-      _ = try row.read("key1") as Hat
+      _ = try row.read("key1") as DatabaseValue
       assert(false, message: "threw unexpected exception")
     }
     catch let DatabaseError.FieldType(name, actualType, desiredType) {
       assert(name, equals: "key1")
       assert(actualType, equals: "Integer")
-      assert(desiredType, equals: "Hat")
+      assert(desiredType, equals: "DatabaseValue")
     }
     catch {
       assert(false, message: "threw unexpected exception")

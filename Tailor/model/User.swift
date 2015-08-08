@@ -59,7 +59,7 @@ public class User : Persistable {
     do {
       self.emailAddress = try databaseRow.read("email_address")
       self.encryptedPassword = try databaseRow.read("encrypted_password")
-      self.id = rescue(try databaseRow.read("id"))
+      self.id = try databaseRow.read("id")
     }
     catch let e {
       self.emailAddress = ""
