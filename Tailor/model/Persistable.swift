@@ -32,6 +32,19 @@ public protocol Persistable: ModelType, JsonEncodable {
     - returns:   The values to save.
     */
   func valuesToPersist() -> [String:DatabaseValueConvertible?]
+  
+  /**
+    This method provides an empty query for fetching records for this record
+    type.
+
+    There is a default implementation that returns a `GenericQuery`, but because
+    of a compiler bug you *must* provide an implementation for any structs that
+    conform to the protocol. Additionally, it is recommended that you provide an
+    implementation of all types that returns a parameterized `Query` rather than
+    a `GenericQuery`, so that you can use it to fetch results that are properly
+    cast to the record type.
+    */
+  static var query: QueryType { get }
 }
 
 //MARK: - Comparison
@@ -369,6 +382,8 @@ extension Persistable {
   public static func foreignKeyName() -> String {
     return self.modelName() + "_id"
   }
+  
+  public static var query: QueryType { return GenericQuery(recordType: self, tableName: self.tableName) }
 }
 
 extension Persistable {

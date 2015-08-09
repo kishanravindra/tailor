@@ -191,13 +191,13 @@ class SeedTaskTypeTests: TailorTestCase {
     CsvParser.encode(rows).writeToFile(SeedTask.pathForFile(Hat.self), atomically: true)
     SeedTask.loadModel(Hat.self)
     let timeZone = Application.sharedDatabaseConnection().timeZone
-    let hat1 = Hats.find(1)
+    let hat1 = Hat.query.find(1)
     assert(hat1?.brimSize, equals: 10)
     assert(hat1?.color, equals: "red")
     assert(hat1?.createdAt, equals: Timestamp(year: 2015, month: 7, day: 31, hour: 11, minute: 2, second: 0, nanosecond: 0, timeZone: timeZone))
     assert(hat1?.shelfId, equals: 1)
     assert(hat1?.updatedAt, equals: Timestamp(year: 2015, month: 7, day: 31, hour: 11, minute: 3, second: 0, nanosecond: 0, timeZone: timeZone))
-    let hat2 = Hats.find(2)
+    let hat2 = Hat.query.find(2)
     assert(hat2?.brimSize, equals: 12)
     assert(hat2?.color, equals: "brown")
     assert(hat2?.createdAt, equals: Timestamp(year: 2015, month: 7, day: 31, hour: 9, minute: 15, second: 0, nanosecond: 0, timeZone: timeZone))
@@ -208,7 +208,7 @@ class SeedTaskTypeTests: TailorTestCase {
   func testLoadModelWithEmptyFileDoesNotLoadAnyRecords() {
     NSData().writeToFile(SeedTask.pathForFile(Hat.self), atomically: true)
     SeedTask.loadModel(Hat.self)
-    assert(Hats.count(), equals: 0)
+    assert(Hat.query.count(), equals: 0)
   }
   
   func testRunTaskWithNoArgumentsDoesNothing() {
@@ -216,7 +216,7 @@ class SeedTaskTypeTests: TailorTestCase {
     APPLICATION_ARGUMENTS = ("seeds", [:])
     NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
     Application.start()
-    assert(Hats.count(), equals: 1)
+    assert(Hat.query.count(), equals: 1)
   }
   
   func testRunTaskWithLoadCommandLoadsSchema() {
@@ -253,7 +253,7 @@ class SeedTaskTypeTests: TailorTestCase {
     APPLICATION_ARGUMENTS = ("seeds", ["load": "1"])
     NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
     Application.start()
-    assert(Hats.count(), equals: 2)
+    assert(Hat.query.count(), equals: 2)
   }
   
   func testRunTaskWithLoadCommandLoadsAlterations() {

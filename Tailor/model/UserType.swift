@@ -12,22 +12,6 @@ public protocol UserType: Persistable {
   
   /** The user's password, encrypted with bcrypt. */
   var encryptedPassword: String { get set }
-  
-  /**
-    This method looks up a user by id.
-
-    - parameter id:   The id of the user to find.
-    - returns:        The user.
-    */
-  static func find(id: Int) -> UserType?
-  
-  /**
-    This method looks up a user by email address.
-
-    - parameter emailAddress:   The email address of the user to find.
-    - returns:                  The user with that email address.
-    */
-  static func find(emailAddress emailAddress: String) -> [UserType]
 }
 
 extension UserType {
@@ -64,7 +48,7 @@ extension UserType {
     - returns: The user
     */
   public static func authenticate(emailAddress: String, password: String) -> UserType? {
-    let users = find(emailAddress: emailAddress)
+    let users = query.filter(["email_address": emailAddress]).allRecords().flatMap { $0 as? UserType }
     
     if users.isEmpty {
       return nil

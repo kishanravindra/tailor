@@ -27,13 +27,8 @@ import Foundation
   /** The user's password, encrypted with bcrypt. */
   public var encryptedPassword: String
   
-  public static func find(id: Int) -> UserType? {
-    return Query<User>().find(id)
-  }
-  
-  public static func find(emailAddress emailAddress: String) -> [UserType] {
-    return Query<User>().filter(["email_address": emailAddress]).all().map { $0 as UserType }
-  }
+  /** A query for fetching users. */
+  static let query = Query<User>()
   
   //MARK: Sign-Up
   

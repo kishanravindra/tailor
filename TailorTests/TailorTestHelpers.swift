@@ -51,7 +51,7 @@ struct Hat : Persistable, Equatable {
   var owner: String?
   var createdAt: Timestamp?
   var updatedAt: Timestamp?
-  
+  static let query = Query<Hat>()
   
   init(brimSize: Int = 0, color: String = "", shelfId: Int? = nil, owner: String? = nil, id: Int? = nil) {
     self.brimSize = brimSize
@@ -82,12 +82,11 @@ struct Hat : Persistable, Equatable {
   }
 }
 
-let Hats = Query<Hat>()
-
-struct Shelf : Persistable {
+struct Shelf : Persistable, Equatable {
   let id: Int?
   var name: String?
   var storeId: Int
+  static let query = Query<Shelf>()
   
   init(name: String?, storeId: Int = 0, id: Int? = nil) {
     self.name = name
@@ -115,8 +114,6 @@ struct Shelf : Persistable {
   }
 }
 
-let Shelfs = Query<Shelf>()
-
 struct Store : Persistable {
   let id: Int?
   var name: String
@@ -127,6 +124,7 @@ struct Store : Persistable {
   }
   
   static var tableName: String { return "stores" }
+  static let query = Query<Store>()
   
   func valuesToPersist() -> [String : DatabaseValueConvertible?] {
     return [
@@ -139,8 +137,6 @@ struct Store : Persistable {
     self.id = try databaseRow.read("id")
   }
 }
-
-let Stores = Query<Store>()
 
 @available(*, deprecated) extension Controller {
   convenience init() {
@@ -199,10 +195,6 @@ struct TestUser: UserType, Equatable {
   }
   
   static let tableName = "users"
-  
-  static func find(id: Int) -> UserType? { return Query<TestUser>().find(id) }
-  static func find(emailAddress emailAddress: String) -> [UserType] {
-    return Query<TestUser>().filter(["email_address": emailAddress]).all().map { $0 as UserType }
-  }
+  static let query = Query<TestUser>()
 }
   

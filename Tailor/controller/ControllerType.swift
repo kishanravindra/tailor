@@ -131,7 +131,8 @@ public struct ControllerState {
     self.actionName = actionName
     
     if let userId = Int(self.session["userId"] ?? "") {
-      self.currentUser = Application.configuration.userType?.find(userId)
+      let users = Application.configuration.userType?.query.filter(["id": userId]).allRecords()
+      self.currentUser =  users?.first as? UserType
     }
   }
 

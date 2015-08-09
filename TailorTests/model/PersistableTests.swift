@@ -61,7 +61,7 @@ class PersistableTests: TailorTestCase {
   
   func testToManyThroughFetchesOneRecordsByForeignKey() {
     let hat = Hat(shelfId: 1).save()!
-    let shelfQuery = Shelfs.filter(["id": hat.shelfId])
+    let shelfQuery = Shelf.query.filter(["id": hat.shelfId])
     let query : Query<Store> = hat.toMany(through: shelfQuery, joinToMany: false)
     
     let whereClause = query.whereClause
@@ -109,7 +109,7 @@ class PersistableTests: TailorTestCase {
   
   @available(*, deprecated) func testToManyThroughFromFreeFunctionFetchesOneRecordsByForeignKey() {
     let hat = Hat(shelfId: 1).save()!
-    let shelfQuery = Shelfs.filter(["id": hat.shelfId])
+    let shelfQuery = Shelf.query.filter(["id": hat.shelfId])
     let query : Query<Store> = toManyRecords(through: shelfQuery, joinToMany: false)
     
     let whereClause = query.whereClause
@@ -148,23 +148,23 @@ class PersistableTests: TailorTestCase {
   func testSaveInsertsNewRecord() {
     Application.sharedDatabaseConnection()
     
-    assert(Hats.count(), equals: 0, message: "starts out with 0 records")
+    assert(Hat.query.count(), equals: 0, message: "starts out with 0 records")
     let hat = Hat()
     hat.save()
-    assert(Hats.count(), equals: 1, message: "ends with 1 record")
+    assert(Hat.query.count(), equals: 1, message: "ends with 1 record")
   }
   
   func testSaveUpdatesExistingRecord() {
     var hat = Hat(color: "black")
     
     hat = hat.save()!
-    assert(Hats.count(), equals: 1, message: "starts out with 1 record")
-    assert(Hats.first()?.color, equals: "black", message: "starts out with a black hat")
+    assert(Hat.query.count(), equals: 1, message: "starts out with 1 record")
+    assert(Hat.query.first()?.color, equals: "black", message: "starts out with a black hat")
     hat.color = "tan"
     hat = hat.save()!
     
-    assert(Hats.count(), equals: 1, message: "ends with 1 record")
-    assert(Hats.first()?.color, equals: "tan", message: "ends with a tan hat")
+    assert(Hat.query.count(), equals: 1, message: "ends with 1 record")
+    assert(Hat.query.first()?.color, equals: "tan", message: "ends with a tan hat")
   }
   
   func testSaveInsertConstructsInsertQuery() {
@@ -318,24 +318,24 @@ class PersistableTests: TailorTestCase {
   @available(*, deprecated) func testSaveFromFreeFunctionInsertsNewRecord() {
     Application.sharedDatabaseConnection()
     
-    assert(Hats.count(), equals: 0, message: "starts out with 0 records")
+    assert(Hat.query.count(), equals: 0, message: "starts out with 0 records")
     let hat = Hat()
     saveRecord(hat)
-    assert(Hats.count(), equals: 1, message: "ends with 1 record")
+    assert(Hat.query.count(), equals: 1, message: "ends with 1 record")
   }
   
   @available(*, deprecated) func testSaveFromFreeFunctionUpdatesExistingRecord() {
     var hat = Hat(color: "black")
     
     saveRecord(hat)
-    assert(Hats.count(), equals: 1, message: "starts out with 1 record")
-    assert(Hats.first()?.color, equals: "black", message: "starts out with a black hat")
-    hat = Hats.first()!
+    assert(Hat.query.count(), equals: 1, message: "starts out with 1 record")
+    assert(Hat.query.first()?.color, equals: "black", message: "starts out with a black hat")
+    hat = Hat.query.first()!
     hat.color = "tan"
     saveRecord(hat)
     
-    assert(Hats.count(), equals: 1, message: "ends with 1 record")
-    assert(Hats.first()?.color, equals: "tan", message: "ends with a tan hat")
+    assert(Hat.query.count(), equals: 1, message: "ends with 1 record")
+    assert(Hat.query.first()?.color, equals: "tan", message: "ends with a tan hat")
   }
   
   @available(*, deprecated) func testDestroyFromFreeFunctionExecutesDeleteQuery() {
@@ -384,5 +384,41 @@ class PersistableTests: TailorTestCase {
       "created_at": JsonPrimitive.Null,
       "updated_at": JsonPrimitive.Null
     ]))
+  }
+  
+  func testCanFetchResultsFromQueryOnClass() {
+    class TestShelf: Persistable {
+      let id: Int?
+      var name: String?
+      var storeId: Int
+      
+      init(name: String?, storeId: Int = 0, id: Int? = nil) {
+        self.name = name
+        self.storeId = storeId
+        self.id = id
+      }
+      
+      static var tableName: String { return "shelfs" }
+      
+      func valuesToPersist() -> [String: DatabaseValueConvertible?] {
+        return [
+          "name": name,
+          "store_id": storeId
+        ]
+      }
+      
+      required init(databaseRow: DatabaseRow) {
+        self.name = try! databaseRow.read("name")
+        self.id = try! databaseRow.read("id")
+        self.storeId = try! databaseRow.read("store_id") ?? 0
+      }
+    }
+    let shelf = TestShelf(name: "Top Shelf").save()!
+    let results = TestShelf.query.allRecords()
+    assert(results.count, equals: 1)
+    if results.count > 0 {
+      let shelf2 = results[0] as? TestShelf
+      assert(shelf2?.id, equals: shelf.id!)
+    }
   }
 }

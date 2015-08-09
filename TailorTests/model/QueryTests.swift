@@ -15,8 +15,8 @@ class QueryTests: TailorTestCase {
   //MARK: - Initialization
   
   func testInitializationWithNoParametersHasDefaultClauses() {
-    let query = Hats
-    assert(query.selectClause, equals: "hats.*", message: "selects all fields")
+    let query = Hat.query
+    assert(query.selectClause, equals: "*", message: "selects all fields")
     assert(query.whereClause.query, equals: "", message: "has an empty where clause")
     assert(query.whereClause.parameters, equals: [], message: "has an empty where clause")
     assert(query.orderClause.query, equals: "", message: "has an empty order clause")
@@ -250,7 +250,7 @@ class QueryTests: TailorTestCase {
   }
   
   func testCachedSetsCachedFlagToTrue() {
-    let query = Hats.cached()
+    let query = Hat.query.cached()
     XCTAssertTrue(query.cacheResults, "sets the cacheResults flag to true")
   }
 
@@ -267,7 +267,7 @@ class QueryTests: TailorTestCase {
     let hat2 = Hat(color: "black").save()!
     Hat(color: "red").save()!
     let hat4 = Hat(color: "black").save()!
-    let results = Hats.filter(["color": "black"]).order("id", .OrderedDescending).limit(2).all()
+    let results = Hat.query.filter(["color": "black"]).order("id", .OrderedDescending).limit(2).all()
     assert(results, equals: [hat4, hat2], message: "fetches the correct records")
   }
   
@@ -275,7 +275,7 @@ class QueryTests: TailorTestCase {
     Hat(color: "red").save()!
     let hat2 = Hat(color: "black").save()!
     Hat(color: "black").save()!
-    let query = Hats.filter(["color": "black"]).order("id", .OrderedAscending)
+    let query = Hat.query.filter(["color": "black"]).order("id", .OrderedAscending)
     if let record = query.first() {
       assert(record, equals: hat2, message: "fetches the correct record")
     }
@@ -288,7 +288,7 @@ class QueryTests: TailorTestCase {
     Hat(color: "red").save()!
     Hat(color: "black").save()!
     Hat(color: "black").save()!
-    let query = Hats.filter(["color": "green"])
+    let query = Hat.query.filter(["color": "green"])
     XCTAssertTrue(query.first() == nil, "returns nil")
   }
   
@@ -296,7 +296,7 @@ class QueryTests: TailorTestCase {
     Hat(color: "black").save()!
     let hat2 = Hat(color: "red").save()!
     Hat(color: "blue").save()!
-    let query = Hats.order("color", .OrderedAscending)
+    let query = Hat.query.order("color", .OrderedAscending)
     let record = query.last()
     XCTAssertTrue(record != nil, "gets a record")
     if record != nil {
@@ -308,7 +308,7 @@ class QueryTests: TailorTestCase {
     Hat(color: "red").save()!
     let hat2 = Hat(color: "black").save()!
     
-    if let id=hat2.id, let record = Hats.find(id) {
+    if let id=hat2.id, let record = Hat.query.find(id) {
       assert(record, equals: hat2, message: "fetches the correct record")
     }
     else {
@@ -320,15 +320,15 @@ class QueryTests: TailorTestCase {
     Hat(color: "red").save()!
     let hat2 = Hat(color: "black").save()!
     
-    XCTAssertTrue(Hats.find(hat2.id! + 1) == nil, "returns nil with no matching id")
-    XCTAssertTrue(Hats.filter(["color": "red"]).find(hat2.id!) == nil, "returns nil when id fails other constraints")
+    XCTAssertTrue(Hat.query.find(hat2.id! + 1) == nil, "returns nil with no matching id")
+    XCTAssertTrue(Hat.query.filter(["color": "red"]).find(hat2.id!) == nil, "returns nil when id fails other constraints")
   }
   
   func testCountGetsNumberOfMatchingRecords() {
     Hat(color: "red").save()!
     Hat(color: "black").save()!
     Hat(color: "black").save()!
-    let count = Hats.filter(["color": "black"]).count()
+    let count = Hat.query.filter(["color": "black"]).count()
     assert(count, equals: 2, message: "finds two records")
   }
   
@@ -336,9 +336,9 @@ class QueryTests: TailorTestCase {
     Hat(color: "red").save()!
     Hat(color: "black").save()!
     Hat(color: "black").save()!
-    var query = Hats.filter(["color": "black"])
+    var query = Hat.query.filter(["color": "black"])
     XCTAssertFalse(query.isEmpty(), "is false when there are matches")
-    query = Hats.filter(["color": "green"])
+    query = Hat.query.filter(["color": "green"])
     XCTAssertTrue(query.isEmpty(), "is true when there are no matches")
   }
   
@@ -348,7 +348,7 @@ class QueryTests: TailorTestCase {
     Hat(color: "black").save()!
     
     Application.cache.clear()
-    let query = Hats.filter(["color": "black"]).cached()
+    let query = Hat.query.filter(["color": "black"]).cached()
     let firstResults = query.all()
     assert(firstResults.count, equals: 2, message: "gets two results")
     Hat(color: "black").save()!
@@ -362,7 +362,7 @@ class QueryTests: TailorTestCase {
     let hat3 = Hat(color: "black", brimSize: 11).save()!
     
     Application.cache.clear()
-    let query = Hats.order("brim_size", .OrderedDescending).filter(["color": "black"]).cached()
+    let query = Hat.query.order("brim_size", .OrderedDescending).filter(["color": "black"]).cached()
     let firstResults = query.all()
     assert(firstResults, equals: [hat3, hat2], message: "uses the specified ordering")
     let secondResults = query.all()
@@ -376,17 +376,17 @@ class QueryTests: TailorTestCase {
     Hat(color: "black").save()!
     
     Application.cache.clear()
-    let query = Hats.filter(["color": "black"]).cached()
+    let query = Hat.query.filter(["color": "black"]).cached()
     let firstResults = query.all()
     assert(firstResults.count, equals: 2, message: "gets two results")
     
-    let cacheKey = "SELECT hats.* FROM hats WHERE hats.color=?(String(\"black\"))"
+    let cacheKey = "SELECT * FROM hats WHERE hats.color=?(String(\"black\"))"
     XCTAssertNotNil(Application.cache.read(cacheKey))
     Application.cache.write(cacheKey, value: "0); DROP TABLE `hats`; SELECT (0")
     Hat(color: "black").save()!
     let secondResults = query.all()
     assert(secondResults.count, equals: 3, message: "gets three results after one is created")
-    assert(Hats.count(), equals: 4, message: "finds four total results")
+    assert(Hat.query.count(), equals: 4, message: "finds four total results")
   }
   
   func testFetchAllWithCachingOffDoesNotCacheResults() {
@@ -395,7 +395,7 @@ class QueryTests: TailorTestCase {
     Hat(color: "black").save()!
     
     Application.cache.clear()
-    let query = Hats.filter(["color": "black"])
+    let query = Hat.query.filter(["color": "black"])
     let firstResults = query.all()
     assert(firstResults.count, equals: 2, message: "gets two results")
     Hat(color: "black").save()!
