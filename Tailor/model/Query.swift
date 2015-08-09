@@ -304,7 +304,7 @@ public struct Query<RecordType: Persistable> {
       
       guard let idString = cachedIds else {
         let results = self.dynamicType.init(copyFrom: self, cacheResults: false).all()
-        let ids = removeNils(results.map { $0.id }).map { String($0) }
+        let ids = results.flatMap { $0.id }.map { String($0) }
         Application.cache.write(cacheKey, value: ",".join(ids), expireIn: nil)
         return results
       }
@@ -319,13 +319,12 @@ public struct Query<RecordType: Persistable> {
     }
     let results = Application.sharedDatabaseConnection().executeQuery(query, parameters: parameters)
     let type = RecordType.self
-    return removeNils(results.map {
+    return results.flatMap {
       if $0.error == nil {
         return type.build($0)
       }
       return nil
     }
-    )
   }
   
   /**

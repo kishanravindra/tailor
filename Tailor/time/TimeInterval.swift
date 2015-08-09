@@ -80,7 +80,7 @@ public struct TimeInterval: Equatable,CustomStringConvertible {
     */
   public var description: String {
     let components = [(years, "years"), (months, "months"), (days, "days"), (hours, "hours"), (minutes, "minutes"), (seconds, "seconds")]
-    let textComponents = removeNils(components.map {
+    let textComponents = components.flatMap {
       (value, text) -> String? in
       if value == 0 {
         return nil
@@ -92,7 +92,7 @@ public struct TimeInterval: Equatable,CustomStringConvertible {
       else {
         return "\(value) \(text)"
       }
-    })
+    }
     var text = ", ".join(textComponents)
     if nanoseconds != 0 {
       text += String(format: ", %.5f nanoseconds", nanoseconds)

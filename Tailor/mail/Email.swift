@@ -123,7 +123,7 @@ public struct Email: Equatable {
     self.bccs = bccs
     self.subject = subject
     self.body = template?.generate() ?? body
-    self.renderedTemplates = removeNils([template])
+    self.renderedTemplates = [template].flatMap { $0 }
     self.attachments = attachments
   }
   

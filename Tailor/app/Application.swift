@@ -614,7 +614,7 @@ public class Application {
   public func registeredAlterations() -> [AlterationScript.Type] {
     let description = String(reflecting: AlterationScript.self)
     let classes = self.registeredSubtypes[description] ?? []
-    return removeNils(classes.map { $0 as? AlterationScript.Type })
+    return classes.flatMap { $0 as? AlterationScript.Type }
   }
   
   /**
@@ -624,7 +624,7 @@ public class Application {
   public func registeredTasks() -> [TaskType.Type] {
     let description = String(reflecting: TaskType.self)
     let classes = self.registeredSubtypes[description] ?? []
-    return removeNils(classes.map { $0 as? TaskType.Type })
+    return classes.flatMap { $0 as? TaskType.Type }
   }
   
   /**
@@ -652,7 +652,7 @@ public class Application {
   public func registeredSubtypeList<ParentType>(type: ParentType.Type) -> [ParentType.Type] {
     let description = String(reflecting: ParentType.self)
     let classes = self.registeredSubtypes[description] ?? []
-    return removeNils(classes.map { $0 as? ParentType.Type })
+    return classes.flatMap { $0 as? ParentType.Type }
   }
   
   //MARK: - Configuration
