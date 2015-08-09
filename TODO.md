@@ -24,3 +24,4 @@
 * Having a pathFor / redirectTo method with fewer parameters instead of using
   default parameters
 * Turning localization sources into structs rather than classes
+* Using type parameters in functions dealing with Persistable and UserType

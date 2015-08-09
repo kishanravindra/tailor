@@ -103,7 +103,7 @@ public struct ControllerState {
   public var actionName: String
 
   /** The user that is signed into the session. */
-  public var currentUser: User?
+  public var currentUser: UserType?
 
   /** The localization that the controller should use to localize text. */
   public var localization: LocalizationSource
@@ -131,7 +131,7 @@ public struct ControllerState {
     self.actionName = actionName
     
     if let userId = Int(self.session["userId"] ?? "") {
-      self.currentUser = Users.find(userId)
+      self.currentUser = Application.configuration.userType?.find(userId)
     }
   }
 
@@ -148,7 +148,7 @@ public struct ControllerState {
     - parameter localization  The localization that the controller should use
                               to localize its text.
     */
-  public init(request: Request, callback: Connection.ResponseCallback, session: Session, actionName: String, currentUser: User?, localization: LocalizationSource) {
+  public init(request: Request, callback: Connection.ResponseCallback, session: Session, actionName: String, currentUser: UserType?, localization: LocalizationSource) {
     self.request = request
     self.callback = callback
     self.session = session
@@ -175,7 +175,7 @@ extension ControllerType {
   public var localization: LocalizationSource { return self.state.localization }
 
   /** The user that is signed in. */
-  public var currentUser: User? { return self.state.currentUser }
+  public var currentUser: UserType? { return self.state.currentUser }
 
   public init(request: Request, actionName: String, callback: Connection.ResponseCallback) {
     self.init(state: ControllerState(request: request, actionName: actionName, callback: callback))
@@ -464,7 +464,7 @@ extension ControllerType {
     - parameter user:     The user to sign in.
     - returns:            The new session information with the user signed in.
     */
-  public func signIn(user: User) -> Session {
+  public func signIn(user: UserType) -> Session {
     var session = self.session
     session["userId"] = String(user.id ?? 0)
     return session
@@ -498,7 +498,7 @@ extension ControllerType {
                                 return nil.
   */
   public func signIn(emailAddress: String, password: String) -> Session? {
-    if let user = User.authenticate(emailAddress, password: password) {
+    if let user = Application.configuration.userType?.authenticate(emailAddress, password: password) {
       return self.signIn(user)
     }
     else {
@@ -552,7 +552,7 @@ extension ControllerType {
     - parameter parameters:    The request parameters.
     - parameter callback:      The callback to call with the response.
   */
-  public static func callAction<T:ControllerType>(actionName: String, _ action: (T)->(Void->Void), user: User?, parameters: [String:String], callback: (Response,T)->()) {
+  public static func callAction<T:ControllerType>(actionName: String, _ action: (T)->(Void->Void), user: UserType?, parameters: [String:String], callback: (Response,T)->()) {
     var sessionData = [String:String]()
     if let id = user?.id {
       sessionData["userId"] = String(id)
@@ -583,7 +583,7 @@ extension ControllerType {
     - parameter user:          The user for the request.
     - parameter callback:      The callback to call with the response.
   */
-  public static func callAction<T:ControllerType>(actionName: String, _ action: (T)->(Void->Void), user: User?, callback: (Response,T)->()) {
+  public static func callAction<T:ControllerType>(actionName: String, _ action: (T)->(Void->Void), user: UserType?, callback: (Response,T)->()) {
     self.callAction(actionName, action, user: user, parameters: [:], callback: callback)
   }
 }

@@ -46,6 +46,13 @@ public class Application {
     public var emailAgent: (Void->EmailAgent) = { FileEmailAgent() }
     
     /**
+      The type that models users of the application.
+
+      This is used to fetch users from the session in controllerse.
+      */
+    public var userType: UserType.Type? = nil
+    
+    /**
       This initializer creates a configuration setting object with the default
       values.
       */

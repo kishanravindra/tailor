@@ -8,6 +8,7 @@ extension TailorTestCase {
     APPLICATION_ARGUMENTS = ("tailor.exit", [:])
     Application.configuration.databaseDriver = { return SqliteConnection(path: "testing.sqlite") }
     Application.configuration.sessionEncryptionKey = "0FC7ECA7AADAD635DCC13A494F9A2EA8D8DAE366382CDB3620190F6F20817124"
+    Application.configuration.userType = TestUser.self
   }
 }
 final class TestConnection : DatabaseDriver {
@@ -42,7 +43,7 @@ final class TestConnection : DatabaseDriver {
   }
 }
 
-struct Hat : Persistable {
+struct Hat : Persistable, Equatable {
   let id: Int?
   var brimSize: Int
   var color: String
@@ -176,3 +177,32 @@ extension NSObject {
     method_setImplementation(method, oldImplementation)
   }
 }
+
+
+struct TestUser: UserType, Equatable {
+  let id: Int?
+  var emailAddress: String = ""
+  var encryptedPassword: String = ""
+  
+  init() {
+    id = nil
+  }
+  
+  init(databaseRow: DatabaseRow) throws {
+    self.id = try databaseRow.read("id")
+    self.emailAddress = try databaseRow.read("email_address")
+    self.encryptedPassword = try databaseRow.read("encrypted_password")
+  }
+  
+  func valuesToPersist() -> [String : DatabaseValueConvertible?] {
+    return ["email_address": emailAddress, "encrypted_password": encryptedPassword]
+  }
+  
+  static let tableName = "users"
+  
+  static func find(id: Int) -> UserType? { return Query<TestUser>().find(id) }
+  static func find(emailAddress emailAddress: String) -> [UserType] {
+    return Query<TestUser>().filter(["email_address": emailAddress]).all().map { $0 as UserType }
+  }
+}
+  

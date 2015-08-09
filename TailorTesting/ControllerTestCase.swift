@@ -24,7 +24,7 @@ public class ControllerTestCase : TailorTestCase {
   /**
     The user that should be considered logged in for the request we are testing.
     */
-  public var user: User!
+  public var user: UserType!
   
   /**
     The file data that should be set on the request.

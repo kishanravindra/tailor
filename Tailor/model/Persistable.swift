@@ -2,7 +2,7 @@
   This protocol describes methods that a model class must provide in order to
   be persisted to a database.
   */
-public protocol Persistable: Equatable, ModelType, JsonEncodable {
+public protocol Persistable: ModelType, JsonEncodable {
   /**
     This method initializes a record with a row from the database.
     

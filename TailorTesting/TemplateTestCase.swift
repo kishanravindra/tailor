@@ -35,7 +35,7 @@ public class TemplateTestCase: TailorTestCase {
     - parameter user:         The user who is signed in to the controller.
     - parameter parameters:   The request parameters
     */
-  public func setUpController(type: ControllerType.Type, actionName: String = "index", user: User! = nil, parameters: [String:String] = [:]) {
+  public func setUpController(type: ControllerType.Type, actionName: String = "index", user: UserType! = nil, parameters: [String:String] = [:]) {
     
     var request = Request(parameters: parameters)
     if user != nil {

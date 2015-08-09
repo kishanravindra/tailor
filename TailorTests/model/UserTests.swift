@@ -2,7 +2,7 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class UserTests: TailorTestCase {
+@available(*, deprecated) class UserTests: TailorTestCase {
   var user : User!
   
   override func setUp() {
@@ -87,7 +87,7 @@ class UserTests: TailorTestCase {
   }
   
   func testAuthenticateReturnsUserWithMatchingEmailAndPassword() {
-    let result = User.authenticate("test@test.com", password: "Monkey")
+    let result = User.authenticate("test@test.com", password: "Monkey") as? User
     XCTAssertNotNil(result, "returns a result")
     if result != nil {
       assert(user, equals: result!, message: "returns the matching user")
@@ -95,12 +95,12 @@ class UserTests: TailorTestCase {
   }
   
   func testAuthenticateReturnsNilWithInvalidEmailAddress() {
-    let result = User.authenticate("test2@test.com", password: "Monkey")
+    let result = User.authenticate("test2@test.com", password: "Monkey") as? User
     XCTAssertNil(result, "returns nil")
   }
   
   func testAuthenticateReturnsNilWithIncorrectPassword() {
-    let result = User.authenticate("test@test.com", password: "M0nkey")
+    let result = User.authenticate("test@test.com", password: "M0nkey") as? User
     XCTAssertNil(result, "returns nil")
   }
 }

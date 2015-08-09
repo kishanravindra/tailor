@@ -12,8 +12,10 @@ import Foundation
 
   You can support a different table name or column layout by subclassing this
   class and overriding the methods in the Persistable protocol.
+
+  This class has been deprecated in favor of the UserType protocol.
   */
-public class User : Persistable {
+@available(*, deprecated, message="Use the UserType protocol instead") public final class User : UserType, Equatable {
   //MARK: - Structure
   
   /** The primary key for the record. */
@@ -24,6 +26,14 @@ public class User : Persistable {
   
   /** The user's password, encrypted with bcrypt. */
   public var encryptedPassword: String
+  
+  public static func find(id: Int) -> UserType? {
+    return Query<User>().find(id)
+  }
+  
+  public static func find(emailAddress emailAddress: String) -> [UserType] {
+    return Query<User>().filter(["email_address": emailAddress]).all().map { $0 as UserType }
+  }
   
   //MARK: Sign-Up
   
@@ -81,43 +91,4 @@ public class User : Persistable {
       "encrypted_password": self.encryptedPassword
     ]
   }
-  
-  //MARK: Authentication
-  
-  /**
-    This method determines if a password is correct for this user.
-
-    - parameter password:     The password to check.
-    - returns:                Whether the password is correct.
-    */
-  public func hasPassword(password: String) -> Bool {
-    return PasswordHasher.isMatch(password, encryptedHash: self.encryptedPassword)
-  }
-  
-  /**
-    This method looks up a user by email address and password.
-
-    If the email address does not belong to any user, or the password is
-    incorrect, this will return nil.
-
-    - returns: The user
-    */
-  public class func authenticate(emailAddress: String, password: String) -> User? {
-    let users = Users.filter(["email_address": emailAddress]).all()
-    
-    if users.isEmpty {
-      return nil
-    }
-    
-    let user = users[0]
-    if user.hasPassword(password) {
-      return user
-    }
-    else {
-      return nil
-    }
-  }
 }
-
-/** A query for fetching all users, which you can build other queries off of. */
-public let Users = Query<User>()

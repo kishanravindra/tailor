@@ -75,6 +75,8 @@
 		526ACD841B07B8FC00CE0CC0 /* TimestampTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526ACD831B07B8FC00CE0CC0 /* TimestampTests.swift */; };
 		526E8DE31B3783400040CA35 /* Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526E8DE21B3783400040CA35 /* Controller.swift */; };
 		526E8DE51B379C320040CA35 /* ControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526E8DE41B379C320040CA35 /* ControllerTests.swift */; };
+		5284BD331B77994D00C2D601 /* UserType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5284BD321B77994D00C2D601 /* UserType.swift */; };
+		5284BD351B779AFC00C2D601 /* UserTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5284BD341B779AFC00C2D601 /* UserTypeTests.swift */; };
 		528D183F1A8FDD4A00A6E116 /* TailorTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D183E1A8FDD4A00A6E116 /* TailorTestHelpers.swift */; };
 		528D18411A8FE15D00A6E116 /* Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D18401A8FE15D00A6E116 /* Layout.swift */; };
 		528D6FA51A562D5900783BE5 /* FormBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D6FA41A562D5900783BE5 /* FormBuilderTests.swift */; };
@@ -296,6 +298,8 @@
 		526ACD831B07B8FC00CE0CC0 /* TimestampTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimestampTests.swift; sourceTree = "<group>"; };
 		526E8DE21B3783400040CA35 /* Controller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Controller.swift; sourceTree = "<group>"; };
 		526E8DE41B379C320040CA35 /* ControllerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControllerTests.swift; sourceTree = "<group>"; };
+		5284BD321B77994D00C2D601 /* UserType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserType.swift; sourceTree = "<group>"; };
+		5284BD341B779AFC00C2D601 /* UserTypeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserTypeTests.swift; sourceTree = "<group>"; };
 		5289AD141B2239CD0016CA40 /* CHANGELOG.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
 		528D183E1A8FDD4A00A6E116 /* TailorTestHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TailorTestHelpers.swift; sourceTree = "<group>"; };
 		528D18401A8FE15D00A6E116 /* Layout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Layout.swift; sourceTree = "<group>"; };
@@ -471,6 +475,7 @@
 				52A95E381AE321C9001AED1F /* PersistableTests.swift */,
 				52DDCF001A538C5800D3A47E /* QueryTests.swift */,
 				52ACAC771A56059200E875D9 /* UserTests.swift */,
+				5284BD341B779AFC00C2D601 /* UserTypeTests.swift */,
 				5214B5D41AA3903800624E9D /* ValidationErrorTests.swift */,
 				52A95E341AE27537001AED1F /* ValidationTests.swift */,
 				5233011E1B45FC5B00C9E5EE /* PersistableEnumTests.swift */,
@@ -823,6 +828,7 @@
 				52EF126319EF545000B61DF4 /* User.swift */,
 				52BD142219E9DA1D006D72B0 /* Validation.swift */,
 				5214B5D11AA38B0800624E9D /* ValidationError.swift */,
+				5284BD321B77994D00C2D601 /* UserType.swift */,
 			);
 			path = model;
 			sourceTree = "<group>";
@@ -1230,6 +1236,7 @@
 				52DD44EF1B5C3A1500312923 /* FileEmailAgent.swift in Sources */,
 				52EF127419F0A58400B61DF4 /* Localization.swift in Sources */,
 				526E8DE31B3783400040CA35 /* Controller.swift in Sources */,
+				5284BD331B77994D00C2D601 /* UserType.swift in Sources */,
 				522B56CA1A18C849009BBE32 /* Array.swift in Sources */,
 				523D65621A98D36D000C686B /* ConfigurationSetting.swift in Sources */,
 				52DD44ED1B5C380500312923 /* EmailAgent.swift in Sources */,
@@ -1300,6 +1307,7 @@
 			files = (
 				52EC6D4A1A47B3F100A4D822 /* RouteSetTests.swift in Sources */,
 				5262D1511B4C956E00101154 /* JsonConvertibleTests.swift in Sources */,
+				5284BD351B779AFC00C2D601 /* UserTypeTests.swift in Sources */,
 				52FC9E0E1B3B952E001F783B /* TemplateTypeTests.swift in Sources */,
 				526254351AABC9A600D63024 /* MemoryCacheStoreTests.swift in Sources */,
 				5262D14B1B4B5A3800101154 /* JsonErrorsTests.swift in Sources */,

@@ -54,7 +54,7 @@ class ControllerTests: TailorTestCase {
     }
   }
   
-  var user: User!
+  var user: UserType!
   var callback: Connection.ResponseCallback = {response in }
   var controller: ControllerType!
   var routeSet = RouteSet()
@@ -63,7 +63,10 @@ class ControllerTests: TailorTestCase {
     super.setUp()
     Application.configuration.localization = { PropertyListLocalization(locale: $0) }
     
-    user = User(emailAddress: "test@test.com", password: "test").save()!
+    var user = TestUser()
+    user.emailAddress = "test@test.com"
+    user.password = "test"
+    self.user = user.save()!
     
     RouteSet.load { routes in
       TestController.defineRoutes(routes)
@@ -95,7 +98,7 @@ class ControllerTests: TailorTestCase {
         (response) in
       }
     )
-    assert(controller.currentUser, equals: user, message: "sets user to the one with the id given")
+    assert(controller.currentUser?.id, equals: user.id!, message: "sets user to the one with the id given")
   }
   
   func testInitializerSetsUserToNilWithBadId() {
@@ -106,7 +109,7 @@ class ControllerTests: TailorTestCase {
         (response) in
       }
     )
-    XCTAssertNil(controller.currentUser, "sets user to nil")
+    assert(isNil: controller.currentUser, message: "sets user to nil")
   }
   
   func testInitializerSetsUserToNilWithNoId() {
@@ -117,17 +120,17 @@ class ControllerTests: TailorTestCase {
         (response) in
       }
     )
-    XCTAssertNil(controller.currentUser, "sets user to nil")
+    assert(isNil: controller.currentUser, message: "sets user to nil")
   }
   
   func testInitializeStateWithAllFieldsSetsAllFields() {
     let request = Request()
     let session = Session(request: request)
-    let user = User(emailAddress: "test@test.com", password: "12341234").save()!
+    let user = TestUser().save()!
     let state = ControllerState(request: request, callback: {_ in}, session: session, actionName: "show", currentUser: user, localization: PropertyListLocalization(locale: "es"))
     assert(state.request, equals: request)
     assert(state.actionName, equals: "show")
-    assert(state.currentUser, equals: user)
+    assert(state.currentUser?.id, equals: user.id!)
     assert(state.localization.locale, equals: "es")
   }
   
@@ -531,7 +534,7 @@ class ControllerTests: TailorTestCase {
   //MARK: - Authentication
   
   func testSignInSetsCurrentUserAndStoresIdInSession() {
-    let user2 = User(emailAddress: "test2@test.com", password: "test").save()!
+    let user2 = TestUser().save()!
     
     let newSession = self.controller.signIn(user2)
     
@@ -539,7 +542,7 @@ class ControllerTests: TailorTestCase {
   }
   
   func testSignInWithNewUserSetsUserIdToZero() {
-    let user2 = User(emailAddress: "test2@test.com", password: "test")
+    let user2 = TestUser()
     let newSession = self.controller.signIn(user2)
     assert(newSession["userId"], equals: "0", message: "sets userId to zero")
   }
@@ -547,8 +550,8 @@ class ControllerTests: TailorTestCase {
   func testSignOutClearsCurrentUserAndIdInSession() {
     controller.signIn(user)
     controller.signOut()
-    XCTAssertNil(controller.currentUser)
-    XCTAssertNil(controller.session["userId"])
+    assert(isNil: controller.currentUser)
+    assert(isNil: controller.session["userId"])
   }
   
   func testSignInWithEmailAndPasswordSignsIn() {
@@ -664,27 +667,25 @@ class ControllerTests: TailorTestCase {
   
   func testCallActionCanCallActionWithUserAndParameters() {
     let expectation = expectationWithDescription("respond method called")
-    let user = User(emailAddress: "test@test.com", password: "test").save()!
+    let user = TestUser().save()!
     TestController.callAction("index", TestController.indexAction, user: user, parameters: ["id": "5"]) {
       response, controller in
       expectation.fulfill()
       self.assert(controller.request.requestParameters, equals: ["id": "5"], message: "sets request parameters")
       let currentUser = controller.currentUser
-      XCTAssertNotNil(currentUser, "has a user")
-      if currentUser != nil { self.assert(currentUser!, equals: user, message: "has the user given") }
+      self.assert(currentUser?.id, equals: user.id!, message: "has the user given")
     }
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
   func testCallActionCanCallActionWithUser() {
     let expectation = expectationWithDescription("respond method called")
-    let user = User(emailAddress: "test@test.com", password: "test").save()!
+    let user = TestUser().save()!
     TestController.callAction("index", TestController.indexAction, user: user) {
       response, controller in
       expectation.fulfill()
       let currentUser = controller.currentUser
-      XCTAssertNotNil(currentUser, "has a user")
-      if currentUser != nil { self.assert(currentUser!, equals: user, message: "has the user given") }
+      self.assert(currentUser?.id, equals: user.id!, message: "has the user given")
     }
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
