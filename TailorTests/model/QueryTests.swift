@@ -212,6 +212,11 @@ class QueryTests: TailorTestCase {
     assert(query.joinClause.parameters, equals: [5.databaseValue], message: "sets join clause")
   }
   
+  func testJoinWithQueryStringWithWildcardSelectSpecifiesTableName() {
+    let query = baseQuery.select("*").join("INNER JOIN stores ON stores.id = shelfs.store_id AND stories.id > ?", [5])
+    assert(query.selectClause, equals: "hats.*", message: "changes select clause")
+  }
+  
   func testJoinWithValidColumnNamesSetsJoinClause() {
     let query = baseQuery.join(Store.self, fromColumn: "id", toColumn: "shelf_id")
     assert(query.selectClause, equals: baseQuery.selectClause, message: "copies select clause")
@@ -224,6 +229,15 @@ class QueryTests: TailorTestCase {
     assert(query.joinClause.query, equals: "INNER JOIN shelfs ON shelfs.id = hats.shelf_id INNER JOIN stores ON stores.id = hats.shelf_id", message: "sets join clause")
     assert(query.joinClause.parameters, equals: [], message: "sets join clause")
   }
+  
+  func testJoinWithValidColumnNamesCanFetchResults() {
+    _ = Hat(brimSize: 10, color: "red").save()
+    let shelf = Shelf(name: "Tops").save()!
+    let hat2 = Hat(brimSize: 11, color: "brown", shelfId: shelf.id).save()!
+    let query = Query<Hat>().join(Shelf.self, fromColumn: "id", toColumn: "shelf_id")
+    assert(query.first(), equals: hat2)
+  }
+  
   func testReverseWithNoOrderOrdersByIdDesc() {
     let query = baseQuery.dynamicType.init(copyFrom: baseQuery, orderClause: ("", [])).reverse()
     assert(query.orderClause.query, equals: "id DESC", message: "adds an order clause in descending order by id")

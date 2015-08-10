@@ -20,7 +20,7 @@ public final class DatabaseLocalization: LocalizationSource {
   /**
     This class models a translation from the database.
     */
-  public struct Translation: Persistable {
+  public struct Translation: Persistable, Equatable {
     /** The key that this is a translation for. */
     public var translationKey: String
     

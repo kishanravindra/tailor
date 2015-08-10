@@ -245,9 +245,11 @@ extension QueryType {
     }
     clause.query += query
     clause.parameters.extend(parameters.map { $0.databaseValue })
+    let selectClause = self.selectClause == "*" ? "\(self.tableName).*" : self.selectClause
     return self.dynamicType.init(
       copyFrom: self,
-      joinClause: clause
+      joinClause: clause,
+      selectClause: selectClause
     )
   }
   
