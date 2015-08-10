@@ -467,6 +467,11 @@ extension ControllerType {
     */
   public func signIn(user: UserType) -> Session {
     var session = self.session
+    if var trackableUser = user as? TrackableUserType {
+      trackableUser.lastSignInIp = request.clientAddress
+      trackableUser.lastSignInTime = Timestamp.now()
+      trackableUser.save()
+    }
     session["userId"] = String(user.id ?? 0)
     return session
   }
@@ -484,27 +489,26 @@ extension ControllerType {
     session["userId"] = nil
     return session
   }
-  
   /**
     This method signs in a user by providing their credentials.
     
     This will not modify any information on the controller. Instead, it provides
     a new session that you can feed into the response.
-  
+    
     - parameter emailAddress:   The email address the user has provided.
     - parameter password:       The password the user has provided.
     - returns:                  If we were able to sign them in, this will
                                 return a new session with the user signed out.
                                 If we were not able to sign them in, this will
-                                return nil.
+                                rethrow the exception from the
+                                `UserType.authenticate` method.
   */
-  public func signIn(emailAddress: String, password: String) -> Session? {
-    if let user = Application.configuration.userType?.authenticate(emailAddress, password: password) {
-      return self.signIn(user)
+  public func signIn(emailAddress: String, password: String) throws -> Session {
+    guard let type = Application.configuration.userType else {
+      throw UserLoginError.WrongEmailAddress
     }
-    else {
-      return nil
-    }
+    let user = try type.authenticate(emailAddress, password: password)
+    return self.signIn(user)
   }
   
   //MARK: - Test Helpers

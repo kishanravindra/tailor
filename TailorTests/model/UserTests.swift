@@ -87,7 +87,7 @@ import TailorTesting
   }
   
   func testAuthenticateReturnsUserWithMatchingEmailAndPassword() {
-    let result = User.authenticate("test@test.com", password: "Monkey") as? User
+    let result = rescue(try User.authenticate("test@test.com", password: "Monkey")) as? User
     XCTAssertNotNil(result, "returns a result")
     if result != nil {
       assert(user, equals: result!, message: "returns the matching user")
@@ -95,12 +95,12 @@ import TailorTesting
   }
   
   func testAuthenticateReturnsNilWithInvalidEmailAddress() {
-    let result = User.authenticate("test2@test.com", password: "Monkey") as? User
+    let result = rescue(try User.authenticate("test2@test.com", password: "Monkey")) as? User
     XCTAssertNil(result, "returns nil")
   }
   
   func testAuthenticateReturnsNilWithIncorrectPassword() {
-    let result = User.authenticate("test@test.com", password: "M0nkey") as? User
+    let result = rescue(try User.authenticate("test@test.com", password: "M0nkey")) as? User
     XCTAssertNil(result, "returns nil")
   }
 }

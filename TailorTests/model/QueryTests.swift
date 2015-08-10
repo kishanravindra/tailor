@@ -3,19 +3,21 @@ import Tailor
 import TailorTesting
 
 class QueryTests: TailorTestCase {
-  let baseQuery = Query<Hat>(
+  let baseQuery = GenericQuery(
     selectClause: "hats.id,hats.color,hats.brim_size",
     whereClause: ("hats.store_id=?", [DatabaseValue.Integer(5)]),
     orderClause: ("hats.created_at ASC", []),
     limitClause: ("5", []),
     joinClause: ("INNER JOIN shelfs ON shelfs.id = hats.shelf_id", []),
-    cacheResults: true
+    cacheResults: true,
+    recordType: Hat.self,
+    tableName: "hats"
   )
   
   //MARK: - Initialization
   
   func testInitializationWithNoParametersHasDefaultClauses() {
-    let query = Hat.query
+    let query = Query<Hat>()
     assert(query.selectClause, equals: "*", message: "selects all fields")
     assert(query.whereClause.query, equals: "", message: "has an empty where clause")
     assert(query.whereClause.parameters, equals: [], message: "has an empty where clause")
@@ -29,7 +31,7 @@ class QueryTests: TailorTestCase {
   }
   
   func testInitializationWithCopyFromCopiesAllFields() {
-    let query = Query<Hat>(copyFrom: baseQuery)
+    let query = GenericQuery(copyFrom: baseQuery)
     assert(query.selectClause, equals: baseQuery.selectClause, message: "copies select clause")
     assert(query.whereClause.query, equals: baseQuery.whereClause.query, message: "copies where clause")
     assert(query.whereClause.parameters, equals: baseQuery.whereClause.parameters, message: "copies where clause")
@@ -40,12 +42,13 @@ class QueryTests: TailorTestCase {
     assert(query.joinClause.query, equals: baseQuery.joinClause.query, message: "copies join clause")
     assert(query.joinClause.parameters, equals: baseQuery.joinClause.parameters, message: "copies join clause")
     assert(query.cacheResults, equals: true, message: "copies cacheResults field")
+    assert(query.tableName, equals: "hats", message: "copies tableName field")
   }
 
   //MARK: - Query Building
   
   func testFilterWithNoClauseSetsClause() {
-    let query1 = Query<Hat>(copyFrom: baseQuery, whereClause: ("", []))
+    let query1 = GenericQuery(copyFrom: baseQuery, whereClause: ("", []))
     let query2 = query1.filter("hats.color=?", ["red"])
     
     assert(query2.selectClause, equals: baseQuery.selectClause, message: "copies select clause")
@@ -197,7 +200,7 @@ class QueryTests: TailorTestCase {
   }
   
   func testJoinWithQueryStringAppendsToJoinClause() {
-    let query = baseQuery.join("INNER JOIN stores ON stores.id = shelfs.store_id")
+    let query = baseQuery.join("INNER JOIN stores ON stores.id = shelfs.store_id AND stories.id > ?", [5])
     assert(query.selectClause, equals: baseQuery.selectClause, message: "copies select clause")
     assert(query.whereClause.query, equals: baseQuery.whereClause.query, message: "copies where clause")
     assert(query.whereClause.parameters, equals: baseQuery.whereClause.parameters, message: "copies where clause")
@@ -205,8 +208,8 @@ class QueryTests: TailorTestCase {
     assert(query.orderClause.parameters, equals: baseQuery.orderClause.parameters, message: "copies order clause")
     assert(query.limitClause.query, equals: baseQuery.limitClause.query, message: "copies limit clause")
     assert(query.limitClause.parameters, equals: baseQuery.limitClause.parameters, message: "copies limit clause")
-    assert(query.joinClause.query, equals: "INNER JOIN shelfs ON shelfs.id = hats.shelf_id INNER JOIN stores ON stores.id = shelfs.store_id", message: "sets join clause")
-    assert(query.joinClause.parameters, equals: [], message: "sets join clause")
+    assert(query.joinClause.query, equals: "INNER JOIN shelfs ON shelfs.id = hats.shelf_id INNER JOIN stores ON stores.id = shelfs.store_id AND stories.id > ?", message: "sets join clause")
+    assert(query.joinClause.parameters, equals: [5.databaseValue], message: "sets join clause")
   }
   
   func testJoinWithValidColumnNamesSetsJoinClause() {
@@ -221,7 +224,6 @@ class QueryTests: TailorTestCase {
     assert(query.joinClause.query, equals: "INNER JOIN shelfs ON shelfs.id = hats.shelf_id INNER JOIN stores ON stores.id = hats.shelf_id", message: "sets join clause")
     assert(query.joinClause.parameters, equals: [], message: "sets join clause")
   }
-  
   func testReverseWithNoOrderOrdersByIdDesc() {
     let query = baseQuery.dynamicType.init(copyFrom: baseQuery, orderClause: ("", [])).reverse()
     assert(query.orderClause.query, equals: "id DESC", message: "adds an order clause in descending order by id")
@@ -269,6 +271,12 @@ class QueryTests: TailorTestCase {
     let hat4 = Hat(color: "black").save()!
     let results = Hat.query.filter(["color": "black"]).order("id", .OrderedDescending).limit(2).all()
     assert(results, equals: [hat4, hat2], message: "fetches the correct records")
+  }
+  
+  func testAllWithErrorReturnsEmptyList() {
+    _ = Hat(brimSize: 10).save()!
+    let query = baseQuery.filter(["brimSize": 10])
+    assert(query.allRecords().isEmpty)
   }
   
   func testFirstGetsFirstMatchingRecord() {
@@ -331,6 +339,15 @@ class QueryTests: TailorTestCase {
     let count = Hat.query.filter(["color": "black"]).count()
     assert(count, equals: 2, message: "finds two records")
   }
+  
+  func testCountWithErrorReturnsZero() {
+    Hat(color: "red").save()!
+    Hat(color: "black").save()!
+    Hat(color: "black").save()!
+    let count = Hat.query.filter(["colorIs": "black"]).count()
+    assert(count, equals: 0, message: "finds two records")
+  }
+
   
   func testIsEmptyIsTrueWithMatchingRecords() {
     Hat(color: "red").save()!

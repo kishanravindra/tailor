@@ -555,14 +555,42 @@ class ControllerTests: TailorTestCase {
   }
   
   func testSignInWithEmailAndPasswordSignsIn() {
-    let result = controller.signIn("test@test.com", password: "test")
-    self.assert(isNotNil: result)
-    self.assert(result?["userId"], equals: String(user.id!), message: "sets user as current user in new session")
+    do {
+      let result = try controller.signIn("test@test.com", password: "test")
+      self.assert(result["userId"], equals: String(user.id!), message: "sets user as current user in new session")
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
   }
   
-  func testSignInWithInvalidCombinationReturnsNil() {
-    let result = controller.signIn("test@test.com", password: "test2")
-    self.assert(isNil: result)
+  func testSignInWithInvalidPasswordThrowsException() {
+    do {
+      _ = try controller.signIn("test@test.com", password: "test2")
+      assert(false, message: "should throw exception")
+    }
+    catch {
+      assert(true, message: "threw exception")
+    }
+  }
+  
+  func testSignInWithTrackableUserSetsTrackingInformation() {
+    Application.configuration.userType = UserTypeTests.TrackableUser.self
+    
+    let connection = Application.sharedDatabaseConnection()
+    connection.executeQuery("ALTER TABLE `users` ADD COLUMN `last_sign_in_ip` varchar(255)")
+    connection.executeQuery("ALTER TABLE `users` ADD COLUMN `last_sign_in_time` timestamp")
+    do {
+      _ = try controller.signIn("test@test.com", password: "test")
+      let user = Query<UserTypeTests.TrackableUser>().first()
+      assert(user?.lastSignInIp, equals: controller.request.clientAddress)
+      assert(user?.lastSignInTime, equals: Timestamp.now().change(nanosecond: 0))
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+    Application.configuration.userType = TestUser.self
+    resetDatabase()
   }
   
   //MARK: - Localization

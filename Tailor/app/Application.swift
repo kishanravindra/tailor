@@ -53,6 +53,14 @@ public class Application {
     public var userType: UserType.Type? = nil
     
     /**
+      The maximum number of times that a user can try to log in with the wrong
+      password before their account is locked.
+
+      This is only used if your user type conforms to `LockableUserType`.
+      */
+    public var failedLoginLimit = 5
+    
+    /**
       This initializer creates a configuration setting object with the default
       values.
       */
