@@ -9,6 +9,11 @@ class RequestTests: TailorTestCase {
   var request : Request { get { return Request(clientAddress: clientAddress, data: requestData) } }
   var requestData : NSData { get { return requestString.dataUsingEncoding(NSUTF8StringEncoding)! } }
   
+  override func setUp() {
+    super.setUp()
+    Application.configuration.localization = { PropertyListLocalization(locale: $0) }
+  }
+  
   //MARK: - Initialization
   
   func testInitializationSetsClientAddressOnRequest() {
@@ -178,6 +183,39 @@ class RequestTests: TailorTestCase {
     let queryString = "key1=1&key%1=2"
     let decoded = Request.decodeQueryString(queryString)
     assert(decoded.keys.array, equals: ["key1", "key%1"])
+  }
+  
+  func testParseTimeCanParseRfc822Format() {
+    let timestamp = Request.parseTime("Sun, 06 Nov 1994 08:49:37 GMT")
+    assert(timestamp?.year, equals: 1994)
+    assert(timestamp?.month, equals: 11)
+    assert(timestamp?.day, equals: 6)
+    assert(timestamp?.hour, equals: 8)
+    assert(timestamp?.minute, equals: 49)
+    assert(timestamp?.second, equals: 37)
+    assert(timestamp?.timeZone.name, equals: "GMT")
+  }
+  
+  func testParseTimeCanParseRfc850Format() {
+    let timestamp = Request.parseTime("Sunday, 06-Nov-94 08:49:37 GMT")
+    assert(timestamp?.year, equals: 1994)
+    assert(timestamp?.month, equals: 11)
+    assert(timestamp?.day, equals: 6)
+    assert(timestamp?.hour, equals: 8)
+    assert(timestamp?.minute, equals: 49)
+    assert(timestamp?.second, equals: 37)
+    assert(timestamp?.timeZone.name, equals: "GMT")
+  }
+  
+  func testParseTimeCanParsePosixFormat() {
+    let timestamp = Request.parseTime("Sun Nov  6 08:49:37 1994")
+    assert(timestamp?.year, equals: 1994)
+    assert(timestamp?.month, equals: 11)
+    assert(timestamp?.day, equals: 6)
+    assert(timestamp?.hour, equals: 8)
+    assert(timestamp?.minute, equals: 49)
+    assert(timestamp?.second, equals: 37)
+    assert(timestamp?.timeZone.name, equals: TimeZone.systemTimeZone().name)
   }
   
   //MARK: - Test Helpers

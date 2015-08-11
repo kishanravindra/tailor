@@ -287,7 +287,7 @@ class TimeFormatTests: TailorTestCase {
   
   //MARK: - Parsing
   
-  var timeComponents = (year: 0, month: 0, day: 0, hour: 0, minute: 0, second: 0, nanosecond: 0.0)
+  var timeComponents = (year: 0, month: 0, day: 0, hour: 0, minute: 0, second: 0, nanosecond: 0.0, timeZone: TimeZone(name: "UTC"))
   let calendar = GregorianCalendar()
   
   func testParseTimeComponentWithLiteralComponentLeavesTimeAlone() {
@@ -353,6 +353,19 @@ class TimeFormatTests: TailorTestCase {
     let result = formatter.parseTime(from: "201", into: &timeComponents, calendar: calendar)
     assert(timeComponents.year, equals: 0)
     assert(isNil: result)
+  }
+  
+  func testParseTimeComponentWithTwoDigitYearPutsYearIn1900s() {
+    formatter = TimeFormatComponent.YearWith(padding: "0", length: 2, truncate: false)
+    let result = formatter.parseTime(from: "75-", into: &timeComponents, calendar: calendar)
+    assert(timeComponents.year, equals: 1975)
+    assert(timeComponents.month, equals: 0)
+    assert(timeComponents.day, equals: 0)
+    assert(timeComponents.hour, equals: 0)
+    assert(timeComponents.minute, equals: 0)
+    assert(timeComponents.second, equals: 0)
+    assert(timeComponents.nanosecond, equals: 0.0)
+    assert(result, equals: "-")
   }
   
   func testParseTimeComponentWithMonthGetsMonth() {
@@ -680,7 +693,7 @@ class TimeFormatTests: TailorTestCase {
     assert(isNil: result)
   }
   
-  func testParseTimeWithTimeZoneDoesNotModifyTime() {
+  func testParseTimeWithTimeZoneSetsTimeZone() {
     formatter = TimeFormatComponent.TimeZone
     let result = formatter.parseTime(from: "EST ", into: &timeComponents, calendar: calendar)
     assert(timeComponents.year, equals: 0)
@@ -690,10 +703,11 @@ class TimeFormatTests: TailorTestCase {
     assert(timeComponents.minute, equals: 0)
     assert(timeComponents.second, equals: 0)
     assert(timeComponents.nanosecond, equals: 0.0)
+    assert(timeComponents.timeZone.name, equals: "EST")
     assert(result, equals: " ")
   }
   
-  func testParseTimeWithTimeZoneWithUnderThreeCharactersReturnsEmptyString() {
+  func testParseTimeWithTimeZoneWithUnderThreeCharactersReturnsNil() {
     formatter = TimeFormatComponent.TimeZone
     let result = formatter.parseTime(from: "ES", into: &timeComponents, calendar: calendar)
     assert(timeComponents.year, equals: 0)
@@ -703,7 +717,8 @@ class TimeFormatTests: TailorTestCase {
     assert(timeComponents.minute, equals: 0)
     assert(timeComponents.second, equals: 0)
     assert(timeComponents.nanosecond, equals: 0.0)
-    assert(result, equals: "")
+    assert(timeComponents.timeZone.name, equals: "UTC")
+    assert(isNil: result)
   }
   
   func testParseTimeWithTimeZoneOffsetDoesNotModifyTime() {
@@ -866,6 +881,20 @@ class TimeFormatTests: TailorTestCase {
     assert(result?.second, equals: 11)
   }
   
+  func testParseTimeToTimestampWithTimeZoneInFormatUsesThatTimeZone() {
+    let formatter = TimeFormat(.Year, "-", .Month, "-", .Day, " ", .Hour, ":", .Minute, ":", .Seconds, " ", .TimeZone)
+    let zone = TimeZone(name: "UTC")
+    let result = formatter.parseTime("2015-05-12 15:23:11 EDT", timeZone: zone, calendar: GregorianCalendar())
+    assert(result?.epochSeconds, equals: 1431458591)
+    assert(result?.year, equals: 2015)
+    assert(result?.month, equals: 5)
+    assert(result?.day, equals: 12)
+    assert(result?.hour, equals: 15)
+    assert(result?.minute, equals: 23)
+    assert(result?.second, equals: 11)
+    assert(result?.timeZone.name, equals: "EDT")
+  }
+  
   func testParseTimeToTimestampWithInvalidStringReturnsNil() {
     let formatter = TimeFormat(.Year, "-", .Month, "-", .Day, " ", .Hour, ":", .Minute, ":", .Seconds)
     let result = formatter.parseTime("2015-May-12 00:00:00")
@@ -895,5 +924,38 @@ class TimeFormatTests: TailorTestCase {
     assert(result?.hour, equals: 23)
     assert(result?.minute, equals: 11)
     assert(result?.second, equals: 51)
+  }
+  
+  func testParseTimeWithRfc822CanParseValidTime() {
+    let result = TimeFormat.Rfc822.parseTime("Sun, 06 Nov 1994 08:49:37 GMT")
+    assert(result?.year, equals: 1994)
+    assert(result?.month, equals: 11)
+    assert(result?.day, equals: 6)
+    assert(result?.hour, equals: 8)
+    assert(result?.minute, equals: 49)
+    assert(result?.second, equals: 37)
+    assert(result?.timeZone.name, equals: "GMT")
+  }
+  
+  func testParseTimeWithRfc850CanParseValidTime() {
+    let result = TimeFormat.Rfc850.parseTime("Sunday, 06-Nov-94 08:49:37 GMT")
+    assert(result?.year, equals: 1994)
+    assert(result?.month, equals: 11)
+    assert(result?.day, equals: 6)
+    assert(result?.hour, equals: 8)
+    assert(result?.minute, equals: 49)
+    assert(result?.second, equals: 37)
+    assert(result?.timeZone.name, equals: "GMT")
+  }
+  
+  func testParseTimeWithPosixFormatCanParseValidTime() {
+    let result = TimeFormat.Posix.parseTime("Sun Nov  6 08:49:37 1994")
+    assert(result?.year, equals: 1994)
+    assert(result?.month, equals: 11)
+    assert(result?.day, equals: 6)
+    assert(result?.hour, equals: 8)
+    assert(result?.minute, equals: 49)
+    assert(result?.second, equals: 37)
+    assert(result?.timeZone.name, equals: TimeZone.systemTimeZone().name)
   }
 }

@@ -21,7 +21,7 @@ public protocol TimeFormatter {
     - parameter calendar:    The calendar that the date is formatted in.
     - returns:           The remaining string.
     */
-  func parseTime(from string: String, inout into container: (year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int, nanosecond: Double), calendar: Calendar) -> String?
+  func parseTime(from string: String, inout into container: (year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int, nanosecond: Double, timeZone: TimeZone), calendar: Calendar) -> String?
 }
 
 /**
@@ -154,7 +154,7 @@ public struct TimeFormat: TimeFormatter {
     - parameter calendar:    The calendar that the date is formatted in.
     - returns:           The remaining string.
   */
-  public func parseTime(from string: String, inout into container: (year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int, nanosecond: Double), calendar: Calendar = GregorianCalendar()) -> String? {
+  public func parseTime(from string: String, inout into container: (year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int, nanosecond: Double, timeZone: TimeZone), calendar: Calendar = GregorianCalendar()) -> String? {
     var string: String = string
     
     for component in components {
@@ -176,12 +176,12 @@ public struct TimeFormat: TimeFormatter {
                       expected format, this will return nil.
     */
   public func parseTime(string: String, timeZone: TimeZone = TimeZone.systemTimeZone(), calendar: Calendar = GregorianCalendar()) -> Timestamp? {
-    var timeInformation = (year: 0, month: 0, day: 0, hour: 0, minute: 0, second: 0, nanosecond: 0.0)
+    var timeInformation = (year: 0, month: 0, day: 0, hour: 0, minute: 0, second: 0, nanosecond: 0.0, timeZone: timeZone)
     let result = parseTime(from: string, into: &timeInformation)
     if result == nil {
       return nil
     }
-    return Timestamp(year: timeInformation.year, month: timeInformation.month, day: timeInformation.day, hour: timeInformation.hour, minute: timeInformation.minute, second: timeInformation.second, nanosecond: timeInformation.nanosecond, timeZone: timeZone, calendar: calendar)
+    return Timestamp(year: timeInformation.year, month: timeInformation.month, day: timeInformation.day, hour: timeInformation.hour, minute: timeInformation.minute, second: timeInformation.second, nanosecond: timeInformation.nanosecond, timeZone: timeInformation.timeZone, calendar: calendar)
   }
 }
 
@@ -469,7 +469,7 @@ public enum TimeFormatComponent: TimeFormatter {
   
     **TODO:** Parsing more types of components.
     */
-  public func parseTime(from string: String, inout into container: (year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int, nanosecond: Double), calendar: Calendar = GregorianCalendar()) -> String? {
+  public func parseTime(from string: String, inout into container: (year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int, nanosecond: Double, timeZone: Tailor.TimeZone), calendar: Calendar = GregorianCalendar()) -> String? {
     switch(self) {
     case let .Literal(literal):
       if string.hasPrefix(literal) {
@@ -479,8 +479,11 @@ public enum TimeFormatComponent: TimeFormatter {
         return nil
       }
     case let .YearWith(padding,length,_):
-      let (year,result) = parseNumber(from: string, length: length, padding: padding)
+      var (year,result) = parseNumber(from: string, length: length, padding: padding)
       if result != nil {
+        if length == 2 {
+          year += 1900
+        }
         container.year = year
       }
       return result
@@ -533,11 +536,15 @@ public enum TimeFormatComponent: TimeFormatter {
     case .EpochSeconds:
       return nil
     case .TimeZone:
-      if string.characters.count > 3 {
-        return string.substringFromIndex(advance(string.startIndex, 3))
+      if string.characters.count >= 3 {
+        let index = advance(string.startIndex, 3)
+        let timeZoneName = string.substringToIndex(index)
+        let remainder = string.substringFromIndex(index)
+        container.timeZone = Tailor.TimeZone(name: timeZoneName)
+        return remainder
       }
       else {
-        return ""
+        return nil
       }
     case .TimeZoneOffset:
       if string.characters.count < 6 {
@@ -617,8 +624,16 @@ public extension TimeFormat {
   /** This formats a time as a SQL date. */
   public static let DatabaseDate = TimeFormat(.Year, "-", .Month, "-", .Day)
   
+  /** The time format for HTTP dates and times specified by RFC 822. */
+  public static let Rfc822 = TimeFormat(.WeekDayName(abbreviate: true), ", ", .Day, " ", .MonthName(abbreviate: true), " ", .Year, " ", .Hour, ":", .Minute, ":", .Seconds, " ", .TimeZone)
+  
+  public static let Rfc850 = TimeFormat(.WeekDayName(abbreviate: false), ", ", .Day, "-", .MonthName(abbreviate: true), "-", .YearWith(padding: "0", length: 2, truncate: true), " ", .Hour, ":", .Minute, ":", .Seconds, " ", .TimeZone)
+  
+  public static let Posix = TimeFormat(.WeekDayName(abbreviate: true), " ", .MonthName(abbreviate: true), " ", .DayWith(padding: " "), " ", .Hour, ":", .Minute, ":", .Seconds, " ", .Year)
+  
+  
   /** This formats a time for a cookie. */
-  public static let Cookie = TimeFormat(.WeekDayName(abbreviate: true), ", ", .Day, " ", .MonthName(abbreviate: true), " ", .Year, " ", .Hour, ":", .Minute, ":", .Seconds, " ", .TimeZone)
+  public static let Cookie = Rfc822
   
   /**
     This gets a full description of a timestamp with all the date and time

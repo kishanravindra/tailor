@@ -37,7 +37,10 @@ internal struct TimeZoneReader {
       - returns:   The byte.
       */
     mutating func readByte() -> UInt8 {
-      if isEmpty { print("Reading empty byte\n", appendNewline: false); return 0 }
+      if isEmpty {
+        print("Reading empty byte")
+        return 0
+      }
       let value = pointer.memory
       pointer = advance(pointer, 1)
       remaining -= 1
@@ -96,7 +99,11 @@ internal struct TimeZoneReader {
     - returns:   The parsed policies.
     */
   func read() -> [TimeZone.Policy] {
-    let fullPath = "/usr/share/zoneinfo/\(name)"
+    NSLog("Reading %@", name)
+    if name == "+VERSION" || name.hasSuffix(".tab") {
+      return []
+    }
+    let fullPath = "\(TimeZoneReader.zoneInfoPath)/\(name)"
     let data = NSData(contentsOfFile: fullPath) ?? NSData()
     var reader = DataReader(data)
     
@@ -185,6 +192,9 @@ internal struct TimeZoneReader {
     
     return policies
   }
+  
+  /** The path where the system stores zone info files. */
+  static let zoneInfoPath = "/usr/share/zoneinfo"
 }
 
 

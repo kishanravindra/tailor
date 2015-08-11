@@ -77,7 +77,7 @@ public struct Cookie: Equatable {
     get {
       var string = "\(self.key)=\(self.value)"
       
-      let expirationString : String? = expiresAt?.format(TimeFormat.Cookie)
+      let expirationString : String? = expiresAt?.inTimeZone(TimeZone(name: "GMT")).format(TimeFormat.Cookie)
       
       let ageString: String?
       if let age = maxAge { ageString = String(age) } else { ageString = nil }

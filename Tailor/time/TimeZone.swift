@@ -83,7 +83,7 @@ public struct TimeZone: Equatable,CustomStringConvertible {
     */
   public init(name: String, policies: [Policy]? = nil) {
     self.name = name
-    let policies = policies ?? TimeZoneReader(name: name).read()
+    let policies = policies ?? TIME_ZONE_POLICIES[name] ?? TimeZoneReader(name: name).read()
     self.policies = policies.sort {
       (left,right) -> Bool in
       return left.beginningTimestamp < right.beginningTimestamp
@@ -170,7 +170,25 @@ public struct TimeZone: Equatable,CustomStringConvertible {
       return nil
     }
   }
+  
+  static func loadTimeZones() -> [String: [TimeZone.Policy]] {
+    guard let enumerator = NSFileManager.defaultManager().enumeratorAtPath(TimeZoneReader.zoneInfoPath) else { return [:] }
+    var zones: [String: [TimeZone.Policy]] = [:]
+    for element in enumerator {
+      guard let path = element as? String else { continue }
+      let policies = TimeZoneReader(name: path).read()
+      guard !policies.isEmpty else { continue }
+      zones[path] = policies
+      for policy in policies {
+        if zones[policy.abbreviation] == nil {
+          zones[policy.abbreviation] = [policy]
+        }
+      }
+    }
+    return zones
+  }
 }
+
 /**
   This method determines if two time zone policies are equal.
 
@@ -198,3 +216,5 @@ public func ==(lhs: TimeZone, rhs: TimeZone) -> Bool {
   return lhs.name == rhs.name &&
     lhs.policies == rhs.policies
 }
+
+let TIME_ZONE_POLICIES: [String:[TimeZone.Policy]] = TimeZone.loadTimeZones()

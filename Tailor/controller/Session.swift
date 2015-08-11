@@ -101,7 +101,7 @@ public struct Session {
   public func cookieString() -> String {
     var mergedData = self.data
     mergedData["clientAddress"] = clientAddress
-    mergedData["expirationDate"] = self.expirationDate.format(TimeFormat.Cookie)
+    mergedData["expirationDate"] = self.expirationDate.inTimeZone(TimeZone(name: "GMT")).format(TimeFormat.Cookie)
     
     for (key, value) in self.nextFlash {
       mergedData["_flash_\(key)"] = value

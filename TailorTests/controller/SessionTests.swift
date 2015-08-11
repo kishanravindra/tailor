@@ -9,7 +9,7 @@ class SessionTests: TailorTestCase {
     var mergedData = data
     
     mergedData["clientAddress"] = clientAddress
-    mergedData["expirationDate"] = expirationDate?.format(TimeFormat.Cookie)
+    mergedData["expirationDate"] = expirationDate?.inTimeZone(TimeZone(name: "GMT")).format(TimeFormat.Cookie)
     for (key, value) in flashData {
       mergedData["_flash_\(key)"] = value
     }

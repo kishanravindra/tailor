@@ -226,6 +226,21 @@ public struct Request: Equatable {
   }
   
   /**
+    This method parses a timestamp from a header value.
+
+    This will accept timestamps in RFC-822 format, RFC-850 format, or Posix
+    asctime format.
+  
+    - param string:   The header value
+    - returns:        The timestamp.
+    */
+  public static func parseTime(string: String) -> Timestamp? {
+    return TimeFormat.Rfc822.parseTime(string) ??
+      TimeFormat.Rfc850.parseTime(string) ??
+      TimeFormat.Posix.parseTime(string)
+  }
+  
+  /**
     This method decodes a query string into a dictionary of parameters.
 
     - parameter string:     The query string.
