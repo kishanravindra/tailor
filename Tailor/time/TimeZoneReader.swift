@@ -99,7 +99,6 @@ internal struct TimeZoneReader {
     - returns:   The parsed policies.
     */
   func read() -> [TimeZone.Policy] {
-    NSLog("Reading %@", name)
     if name == "+VERSION" || name.hasSuffix(".tab") {
       return []
     }

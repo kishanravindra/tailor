@@ -33,6 +33,11 @@ public class Application {
     public var sessionEncryptionKey = ""
     
     /**
+      The maximum period of inactivity before a session should expire.
+      */
+    public var sessionLifetime = 1.hour
+    
+    /**
       A function for creating the database driver for the application.
 
       You must set this yourself if you are going to make any database queries.

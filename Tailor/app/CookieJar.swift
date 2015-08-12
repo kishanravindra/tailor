@@ -127,7 +127,7 @@ public struct CookieJar: Equatable {
       let headers = self.cookies.filter {
         $0.changed
       }.map {
-        "Set-Cookie: \($0.headerString)\n"
+        "Set-Cookie: \($0.headerString)\r\n"
       }
       return "".join(headers)
     }

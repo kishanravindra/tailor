@@ -24,6 +24,7 @@ public class TailorTestCase: XCTestCase {
     */
   public func resetDatabase() {
     if !TAILOR_TEST_CASE_DATABASE_RESET {
+      Application.removeSharedDatabaseConnection()
       for task in Application.sharedApplication().registeredTasks() {
         if let seedTask = task as? SeedTaskType.Type {
           seedTask.loadSchema()

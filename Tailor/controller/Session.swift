@@ -5,6 +5,14 @@ import Foundation
 
   This will allow storing arbitrary data on the client, persisted between
   requests, without the client being able to read it.
+
+  To prevent session replay attacks, the session data includes the IP address
+  of the request and an expiration date. If the IP address in the session does
+  not match the request it's for, this will create a new empty session. If the
+  expiration date is in the past, this will create a new empty session. Even if
+  the expiration date is in the future, every request will update the session's
+  expiration date. The `sessionLifetime` configuration setting specifies how
+  far in the future the session should expire.
   */
 public struct Session {
   /** The data in the sessions. */
@@ -34,6 +42,7 @@ public struct Session {
     let cookies = request.cookies
     self.clientAddress = request.clientAddress
     encryptor = AesEncryptor(key: Application.configuration.sessionEncryptionKey)
+    self.expirationDate = Application.configuration.sessionLifetime.fromNow
     if let encryptedDataString = cookies["_session"] {
       let encryptedData = NSData(base64EncodedString: encryptedDataString, options: []) ?? NSData()
       let decryptedData = encryptor?.decrypt(encryptedData) ?? NSData()
@@ -47,11 +56,10 @@ public struct Session {
       }
       let dateString = cookieData["expirationDate"] ?? ""
       
-      self.expirationDate = TimeFormat.Cookie.parseTime(dateString) ?? 1.hour.fromNow
+      guard let expirationDate = TimeFormat.Cookie.parseTime(dateString) else { return }
       guard let address = cookieData["clientAddress"] else { return }
       guard address == clientAddress else { return }
-      guard cookieData["expirationDate"] != nil else { return }
-      guard self.expirationDate >= Timestamp.now() else { return }
+      guard expirationDate >= Timestamp.now() else { return }
       
       self.data = cookieData
       
@@ -65,9 +73,6 @@ public struct Session {
           self.data[key] = nil
         }
       }
-    }
-    else {
-      self.expirationDate = 1.hour.fromNow
     }
   }
   

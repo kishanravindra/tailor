@@ -7,7 +7,7 @@ class ResponseTests: TailorTestCase {
   
   var responseLines: [String] { get {
     let responseString = NSString(data: response.data, encoding: NSUTF8StringEncoding)
-    return responseString!.componentsSeparatedByString("\n") as [String]
+    return responseString!.componentsSeparatedByString("\r\n") as [String]
   }}
   
   func setUpFullResponse() {

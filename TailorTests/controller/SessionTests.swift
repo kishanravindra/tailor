@@ -28,6 +28,21 @@ class SessionTests: TailorTestCase {
     return encryptedDataString
   }
   
+  func parseCookieString(cookieString: String) -> [String:String] {
+    let key = Application.configuration.sessionEncryptionKey
+    let decryptor = AesEncryptor(key: key)
+    let cookieData = NSData(base64EncodedString: cookieString, options: []) ?? NSData()
+    let decodedData = decryptor?.decrypt(cookieData) ?? NSData()
+    let jsonObject : [String:String]
+    do {
+      jsonObject = try NSJSONSerialization.JSONObjectWithData(decodedData, options: []) as? [String : String] ?? [:]
+    }
+    catch {
+      jsonObject = [:]
+    }
+    return jsonObject
+  }
+  
   func createSession(cookieString: String) -> Session {
     return Session(request: Request(cookies: ["_session": cookieString]))
   }
@@ -163,6 +178,14 @@ class SessionTests: TailorTestCase {
     XCTAssertNotNil(userId, "carries a new session param")
     if userId != nil { assert(userId!, equals: "1", message: "carries a new session param") }
   }
+  
+  func testCookieStringWithFutureExpirationDateSetsNewExpirationDateBasedOnSessionLifetime() {
+    let session = createSession(createCookieString(["name": "Joan"], expirationDate: 30.minutes.fromNow))
+    let date = parseCookieString(session.cookieString())["expirationDate"]
+    let futureTimestamp = 1.hour.fromNow.inTimeZone(TimeZone(name: "GMT")).format(TimeFormat.Cookie)
+    assert(date, equals: futureTimestamp)
+  }
+
   
   func testCookieStringWithFlashParamsConveysOnlyNewParams() {
     var session = createSession(createCookieString(flashData: ["notice": "Success"]))

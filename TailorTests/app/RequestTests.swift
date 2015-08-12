@@ -74,6 +74,24 @@ class RequestTests: TailorTestCase {
     assert(request.headers.isEmpty)
   }
   
+  func testInitializationRemovesLeadingWhiteSpaceFromHeaderValues() {
+    requestString = requestString.stringByReplacingOccurrencesOfString("header value", withString: " \theader value 2 ")
+    let value = request.headers["X-Custom-Field"]
+    assert(value, equals: "header value 2 ")
+  }
+  
+  func testInitializationWithContinuationLineKeepsValueTogether() {
+    requestString = requestString.stringByReplacingOccurrencesOfString("header value", withString: "header\r\n    value 2")
+    let value = request.headers["X-Custom-Field"]
+    assert(value, equals: "header value 2")
+  }
+  
+  func testInitializationWithContinuationLineInCookieKeepsValueTogether() {
+    requestString = requestString.stringByReplacingOccurrencesOfString("key3=value3", withString: "key3=value3\r\n + value4")
+    let value = request.cookies["key3"]
+    assert(value, equals: "value3 + value4")
+  }
+  
   //MARK: - Body Parsing
   
   func testBodyTextGetsStringFromBodyData() {

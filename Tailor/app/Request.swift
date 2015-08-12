@@ -88,23 +88,39 @@ public struct Request: Equatable {
     var headers : [String:String] = [:]
     var cookieHeaders = [String]()
     var cookies = CookieJar()
+    var lastHeaderKey: String? = nil
+    var lastWasCookie = false
     for index in 0..<lines.count {
-      let line = lines[index].stringByTrimmingCharactersInSet(NSCharacterSet.newlineCharacterSet())
+      let line = lines[index]
       if line.isEmpty {
         continue
       }
-      let headerMatch = Request.extractWithPattern(line, pattern: "^([\\w-]*): (.*)$")
+      let continuationMatch = Request.extractWithPattern(line, pattern: "^[ \t]+(.*)$")
+      if !continuationMatch.isEmpty {
+        guard let key = lastHeaderKey else { continue }
+        if lastWasCookie && cookieHeaders.count > 0 {
+          cookieHeaders[cookieHeaders.endIndex.predecessor()] += " " + continuationMatch[0]
+        }
+        else {
+          guard let value = headers[key] else { continue }
+          headers[key] = value + " " + continuationMatch[0]
+        }
+      }
+      let headerMatch = Request.extractWithPattern(line, pattern: "^([\\w-]*):[ \t]*(.*)$")
       
       if !headerMatch.isEmpty {
         if headerMatch[0] == "Cookie" {
           cookieHeaders.append(headerMatch[1])
+          lastHeaderKey = headerMatch[1]
+          lastWasCookie = true
         }
         else {
           headers[headerMatch[0]] = headerMatch[1]
+          lastHeaderKey = headerMatch[0]
+          lastWasCookie = false
         }
       }
     }
-    
     self.headers = headers
     
     for header in cookieHeaders {
@@ -216,6 +232,7 @@ public struct Request: Equatable {
       guard let result = result else { return }
       for index in 1..<result.numberOfRanges {
         let range = result.rangeAtIndex(index)
+        if range.location == NSNotFound { continue }
         let startIndex = advance(line.startIndex, range.location)
         let endIndex = advance(startIndex, range.length)
         let section = line.substringWithRange(Range(start: startIndex, end: endIndex))

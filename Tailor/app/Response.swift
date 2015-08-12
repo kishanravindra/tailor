@@ -75,14 +75,14 @@ public struct Response: Equatable {
       data.appendData(NSData(bytes: (string as String).utf8))
     }
     
-    add(NSString(format: "HTTP/1.1 %d\n", code))
-    add(NSString(format: "Content-Length: %d\n", bodyDataForReading.length))
+    add(NSString(format: "HTTP/1.1 %d\r\n", code))
+    add(NSString(format: "Content-Length: %d\r\n", bodyDataForReading.length))
     
     for (key,value) in self.headers {
-      add(NSString(format: "%@: %@\n", key, value))
+      add(NSString(format: "%@: %@\r\n", key, value))
     }
     add(cookies.headerStringForChanges)
-    add("\n")
+    add("\r\n")
     data.appendData(bodyDataForReading)
     return data
   } }
