@@ -122,6 +122,12 @@ class RouteSetTests: TailorTestCase {
     XCTAssertFalse(route.canHandleRequest(createTestRequest("/test/other_route")), "cannot handle route that doesn't match base of route")
   }
   
+  func testCanHandleRequestThatIsPercentEncoded() {
+    let route = createTestRoute("/test/route/[A-Z]*")
+    XCTAssertTrue(route.canHandleRequest(createTestRequest("/test/route/AB%50")), "can handle percent-encoded")
+    XCTAssertFalse(route.canHandleRequest(createTestRequest("/test/route/AB%FF")), "cannot handle request with invalid percent-encoding")
+  }
+  
   func testHandleRequestCallsHandler() {
     let expectation = expectationWithDescription("handler called")
     let route = RouteSet.Route(path: .Get("/test/route"), handler: {
@@ -158,6 +164,7 @@ class RouteSetTests: TailorTestCase {
     }
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
+
   
   //MARK: - RoutePath Enum
   
@@ -654,6 +661,57 @@ class RouteSetTests: TailorTestCase {
     }
     
     waitForExpectationsWithTimeout(0.01, handler: nil)
+  }
+  
+  func testRouteSetCanHandleRequestsWithMatchingRoutes() {
+    
+    routeSet.addRoute(.Get("hats")) {
+      request, callback in
+      var response = Response()
+      response.appendString("Request 1")
+      callback(response)
+    }
+    
+    routeSet.addRoute(.Get("hats/:id")) {
+      request, callback in
+      var response = Response()
+      let id = request.requestParameters["id"]!
+      response.appendString("Request 2: \(id)")
+      callback(response)
+    }
+    
+    assert(routeSet.canHandleRequest(createTestRequest("/hats")))
+    assert(routeSet.canHandleRequest(createTestRequest("/hats/3")))
+    assert(!routeSet.canHandleRequest(createTestRequest("/bad/path")))
+  }
+
+  
+  func testHandleRequestWithPercentEncodedUrlCallsHandler() {
+    let expectation = expectationWithDescription("calls callback")
+    
+    routeSet.addRoute(.Get("hats")) {
+      request, callback in
+      var response = Response()
+      response.appendString("Request 1")
+      callback(response)
+    }
+    
+    routeSet.addRoute(.Get("hats/:id")) {
+      request, callback in
+    }
+    
+
+    routeSet.handleRequest(createTestRequest("/hat%73")) {
+      response in
+      expectation.fulfill()
+      let body = response.bodyString
+      self.assert(body, equals: "Request 1", message: "calls appropriate request")
+    }
+    routeSet.handleRequest(createTestRequest("/hat%ff")) {
+      response in
+      self.assert(response.code, equals: 404)
+    }
+    waitForExpectationsWithTimeout(0, handler: nil)
   }
   
   //MARK: - Generating URLs

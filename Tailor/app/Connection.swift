@@ -76,7 +76,7 @@ public struct Connection {
     let bufferLength = 1024
     var buffer = [UInt8](count: Int(bufferLength), repeatedValue: 0)
     var request: Request = Request()
-    let startTime = Timestamp.now()
+    var startTime: Timestamp? = nil
     
     var clientAddress = sockaddr(
       sa_len: 0,
@@ -91,6 +91,7 @@ public struct Connection {
     
     while true {
       let length = Connection.read(connectionDescriptor, buffer: &buffer, maxLength: bufferLength)
+      startTime = Timestamp.now()
       if length < 0 || length > Int(bufferLength) {
         Connection.close(connectionDescriptor)
         return
@@ -98,24 +99,102 @@ public struct Connection {
       data.appendBytes(buffer, length: length)
       if length < bufferLength {
         request = Request(clientAddress: clientAddressString, data: data)
-        guard let headerLength = Int(request.headers["Content-Length"] ?? "") else { break }
-        if request.body.length > headerLength {
-          let finalData = data.subdataWithRange(NSMakeRange(0, data.length + headerLength - request.body.length))
-          request = Request(clientAddress: clientAddressString, data: finalData)
+        if request.headers["Expect"] == "100-continue" {
+          var response = Response()
+          response.code = RouteSet.shared().canHandleRequest(request) ? 100 : 404
+          Connection.write(connectionDescriptor, data: response.data)
+        }
+        if let headerLength = Int(request.headers["Content-Length"] ?? "") {
+          if request.body.length > headerLength {
+            let finalData = data.subdataWithRange(NSMakeRange(0, data.length + headerLength - request.body.length))
+            request = Request(clientAddress: clientAddressString, data: finalData)
+            break
+          }
+          else if request.body.length == headerLength {
+            break
+          }
+        }
+        else if request.headers["Transfer-Encoding"]?.hasPrefix("chunked") ?? false {
+          let headerAndBody = data.componentsSeparatedByString("\r\n\r\n", limit: 2)
+          guard headerAndBody.count > 1 else { break }
+          let header = headerAndBody[0]
+          let body = headerAndBody[1]
+          guard let decodedBody = Connection.decodeChunkedData(body) else { continue }
+          let decodedData = NSMutableData()
+          decodedData.appendData(header)
+          decodedData.appendData(NSData(bytes: "\r\nContent-Length: \(decodedBody.length)\r\n\r\n".utf8))
+          decodedData.appendData(decodedBody)
+          request = Request(clientAddress: clientAddressString, data: decodedData)
           break
         }
-        else if request.body.length == headerLength {
+        else {
           break
         }
       }
     }
     
     self.handler(request) {
-      let responseData = $0.data
+      response in
+      let responseData = response.data
       Connection.write(connectionDescriptor, data: responseData)
-      Connection.close(connectionDescriptor)
-      let interval = Timestamp.now().epochSeconds - startTime.epochSeconds
-      NSLog("Finished processing %@ in %lf seconds", request.path, interval)
+      if let startTime = startTime {
+        let interval = Timestamp.now().epochSeconds - startTime.epochSeconds
+        NSLog("Finished processing %@ in %lf seconds", request.path, interval)
+      }
+      if request.headers["Connection"] == "close" || response.headers["Connection"] == "close" {
+        Connection.close(connectionDescriptor)
+      }
+      else {
+        self.readFromSocket(connectionDescriptor)
+      }
+    }
+  }
+  
+  /**
+    This method takes data that has been encoded with the chunked
+    transfer-coding and decodes it.
+    
+    If the input data is incomplete, this will return nil.
+
+    - parameter input:    The encoded data
+    - returns:            The decoded data
+    */
+  internal static func decodeChunkedData(input: NSData) -> NSData? {
+    let output = NSMutableData()
+    let lines = input.componentsSeparatedByString("\r\n")
+    let newline = NSData(bytes: "\r\n".utf8)
+    var remainingChunkLength = 0
+    var hasCompleteRequest = false
+    for line in lines {
+      if remainingChunkLength == 0 {
+        let chunkLengthString = NSString(data: line, encoding: NSASCIIStringEncoding) ?? ""
+        
+        if chunkLengthString == "0" {
+          hasCompleteRequest = true
+          break
+        }
+        let scanner = NSScanner(string: chunkLengthString as String)
+        var newChunkLength: UInt32 = 0
+        scanner.scanHexInt(&newChunkLength)
+        remainingChunkLength = Int(newChunkLength)
+        continue
+      }
+      
+      if line.length >= remainingChunkLength {
+        output.appendData(line.subdataWithRange(NSMakeRange(0, remainingChunkLength)))
+        remainingChunkLength = 0
+      }
+      else {
+        remainingChunkLength -= line.length + 2
+        output.appendData(line)
+        output.appendData(newline)
+      }
+    }
+    if hasCompleteRequest {
+      return output
+    }
+    else {
+      return nil
     }
   }
 

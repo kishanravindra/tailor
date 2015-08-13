@@ -133,7 +133,7 @@ public class RouteSet {
       - returns:              Whether the route can handle the request.
       */
     public func canHandleRequest(request: Request) -> Bool {
-      let path = request.path
+      let path = request.path.stringByRemovingPercentEncoding ?? request.path
       let range = NSRange(location: 0, length: path.characters.count)
       let match = self.regex?.firstMatchInString(path, options: [], range: range)
       return match != nil && request.method == self.path.methodName
@@ -598,6 +598,16 @@ public class RouteSet {
   }
   
   //MARK: - Handling Requests
+  
+  /**
+    This method determines if this route set can handle a request.
+
+    - parameter request:    The request that we're handling.
+    - returns:              Whether we can handle it.
+    */
+  public func canHandleRequest(request: Request) -> Bool {
+    return !routes.filter { $0.canHandleRequest(request) }.isEmpty
+  }
   
   /**
     This method handles a request using the first matching route in the route

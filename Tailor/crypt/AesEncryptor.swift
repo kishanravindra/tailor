@@ -40,7 +40,7 @@ public final class AesEncryptor {
 
     If it's a one character string, it will interpret it as a single hex digit.
   
-    If it's a two character string, it will interpret is as a single byte, and
+    If it's a two character string, it will interpret it as a single byte, and
     use this method to get the hex digits for each character and combine them.
   
     If the string is not a valid hex byte, this will return nil.

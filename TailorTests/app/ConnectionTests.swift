@@ -114,6 +114,27 @@ class ConnectionTests: TailorTestCase {
     Connection.stopStubbing()
   }
   
+  func testReadFromSocketWithChunkedTransferReadsChunks() {
+    requestContents = [
+      "GET / HTTP/1.1\r\nHeader: Value\r\nTransfer-Encoding: chunked\r\n\r\n10\r\nWho",
+      " am I?\r\nYou  \r\n4\r\nask?\r\n",
+      "7\r\n No one\r\n0\r\n4\r\n",
+      "More\r\n"
+    ]
+    Connection.startStubbing(requestData)
+    let expectation = expectationWithDescription("received request")
+    var connection = Connection(fileDescriptor: -1) {
+      request, callback in
+      expectation.fulfill()
+      self.assert(request.headers["Content-Length"], equals: "27")
+      self.assert(request.bodyText, equals: "Who am I?\r\nYou  ask? No one")
+    }
+    
+    connection.readFromSocket(123)
+    waitForExpectationsWithTimeout(0, handler: nil)
+    Connection.stopStubbing()
+  }
+  
   func testReadFromSocketWritesResponseBackToSocket() {
     Connection.startStubbing(requestData)
     let expectation = expectationWithDescription("received request")
@@ -131,6 +152,152 @@ class ConnectionTests: TailorTestCase {
     waitForExpectationsWithTimeout(0, handler: nil)
     Connection.stopStubbing()
   }
+  
+  func testReadFromSocketWithExpectsContinueForValidPathWrites100Response() {
+    requestContents = ["GET / HTTP/1.1\r\nHeader: Value\r\nExpect: 100-continue\r\nContent-Length: 12\r\n\r\n", "Request Body"]
+    Connection.startStubbing(requestData)
+    RouteSet.load {
+      (inout routes: RouteSet) in
+      routes.addRoute(.Get("")) {
+        request, callback in
+      }
+    }
+    let expectation = expectationWithDescription("received request")
+    var connection = Connection(fileDescriptor: -1) {
+      request, callback in
+      expectation.fulfill()
+      var continueResponse = Response()
+      continueResponse.code = 100
+      var response = Response()
+      response.code = 200
+      response.headers["Test"] = "value"
+      response.appendString("Hello")
+      callback(response)
+      let expectedData = NSMutableData()
+      expectedData.appendData(continueResponse.data)
+      expectedData.appendData(continueResponse.data)
+      expectedData.appendData(response.data)
+      self.assert(Connection.outputData, equals: expectedData)
+    }
+    
+    connection.readFromSocket(123)
+    waitForExpectationsWithTimeout(0, handler: nil)
+    Connection.stopStubbing()
+  }
+  
+  func testReadFromSocketWithExpectsContinueForInvalidPathWrites404Response() {
+    requestContents = ["GET /foo HTTP/1.1\r\nHeader: Value\r\nExpect: 100-continue\r\nContent-Length: 12\r\n\r\n", "Request Body"]
+    Connection.startStubbing(requestData)
+    RouteSet.load {
+      (inout routes: RouteSet) in
+      routes.addRoute(.Get("")) {
+        request, callback in
+      }
+    }
+    let expectation = expectationWithDescription("received request")
+    var connection = Connection(fileDescriptor: -1) {
+      request, callback in
+      expectation.fulfill()
+      var continueResponse = Response()
+      continueResponse.code = 404
+      var response = Response()
+      response.code = 200
+      response.headers["Test"] = "value"
+      response.appendString("Hello")
+      callback(response)
+      let expectedData = NSMutableData()
+      expectedData.appendData(continueResponse.data)
+      expectedData.appendData(continueResponse.data)
+      expectedData.appendData(response.data)
+      self.assert(Connection.outputData, equals: expectedData)
+    }
+    
+    connection.readFromSocket(123)
+    waitForExpectationsWithTimeout(0, handler: nil)
+    Connection.stopStubbing()
+  }
+  
+  func testReadFromSocketWithoutExplicitClosingDoesNotCloseConnection() {
+    requestContents = ["GET / HTTP/1.1\r\nHeader: Value\r\nContent-Length: 12\r\n\r\nRequest Body", "foo"]
+    Connection.startStubbing(requestData)
+    let expectation = expectationWithDescription("received request")
+    var responded = false
+    var connection = Connection(fileDescriptor: -1) {
+      request, callback in
+      if responded { return }
+      responded = true
+      expectation.fulfill()
+      var response = Response()
+      response.headers["Test"] = "value"
+      response.appendString("Hello")
+      callback(response)
+      self.assert(Connection.closedConnections.isEmpty)
+    }
+    
+    connection.readFromSocket(123)
+    waitForExpectationsWithTimeout(0, handler: nil)
+    Connection.stopStubbing()
+  }
+  
+  func testReadFromSocketCanReadMultipleRequests() {
+    requestContents = [
+      "GET / HTTP/1.1\r\nHeader: Value\r\nContent-Length: 14\r\n\r\nRequest Body 1",
+      "GET / HTTP/1.1\r\nHeader: Value\r\nContent-Length: 14\r\n\r\nRequest Body 2"
+    ]
+    Connection.startStubbing(requestData)
+    var connection = Connection(fileDescriptor: -1) {
+      request, callback in
+      var response = Response()
+      response.appendString(request.bodyText)
+      callback(response)
+    }
+    
+    connection.readFromSocket(123)
+    let responses = "HTTP/1.1 200\r\nContent-Length: 14\r\n\r\nRequest Body 1HTTP/1.1 200\r\nContent-Length: 14\r\n\r\nRequest Body 2"
+    assert(Connection.outputData, equals: NSData(bytes: responses.utf8))
+    Connection.stopStubbing()
+  }
+  
+  func testReadFromSocketWithCloseFromRequestClosesConnection() {
+    requestContents = ["GET / HTTP/1.1\r\nHeader: Value\r\nConnection: close\r\nContent-Length: 12\r\n\r\nRequest Body"]
+    Connection.startStubbing(requestData)
+    let expectation = expectationWithDescription("received request")
+    
+    var connection = Connection(fileDescriptor: -1) {
+      request, callback in
+      expectation.fulfill()
+      var response = Response()
+      response.headers["Test"] = "value"
+      response.appendString("Hello")
+      callback(response)
+      self.assert(Connection.closedConnections, equals: [123])
+    }
+    
+    connection.readFromSocket(123)
+    waitForExpectationsWithTimeout(0, handler: nil)
+    Connection.stopStubbing()
+  }
+  
+  func testReadFromSocketWithCloseFromResponseClosesConnection() {
+    requestContents = ["GET / HTTP/1.1\r\nHeader: Value\\r\nContent-Length: 12\r\n\r\nRequest Body"]
+    Connection.startStubbing(requestData)
+    let expectation = expectationWithDescription("received request")
+    
+    var connection = Connection(fileDescriptor: -1) {
+      request, callback in
+      expectation.fulfill()
+      var response = Response()
+      response.headers["Test"] = "value"
+      response.headers["Connection"] = "close"
+      response.appendString("Hello")
+      callback(response)
+      self.assert(Connection.closedConnections, equals: [123])
+    }
+    
+    connection.readFromSocket(123)
+    waitForExpectationsWithTimeout(0, handler: nil)
+    Connection.stopStubbing()
+  }
     
   //MARK: - Testing with Real IO
   
@@ -138,8 +305,11 @@ class ConnectionTests: TailorTestCase {
     let fileContents = "GET / HTTP/1.1\r\nHeader: Value\r\nContent-Length: 12\r\n\r\nRequest Body"
     let path = Application.sharedApplication().rootPath() + "/connection.txt"
     let expectation = expectationWithDescription("callback called")
+    var responded = false
     var connection = Connection(fileDescriptor: -1) {
       request, callback in
+      if responded { return }
+      responded = true
       expectation.fulfill()
       self.assert(request.data, equals: NSData(bytes: fileContents.utf8))
       
