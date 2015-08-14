@@ -146,7 +146,7 @@ public class ControllerTestCase : TailorTestCase {
 
   //MARK: - Calling Actions
   
-  public func callAction(actionName: String, file: String = __FILE__, line: UInt = __LINE__, callback: Response -> Void) {
+  public func callAction(actionName: String, headers: [String:String] = [:], file: String = __FILE__, line: UInt = __LINE__, callback: Response -> Void) {
     let actionParams = params[actionName] ?? [:]
     var sessionData = [String:String]()
     if user != nil {
@@ -164,7 +164,7 @@ public class ControllerTestCase : TailorTestCase {
       recordFailureWithDescription("could not generate route for \(type.name)/\(actionName)", inFile: file, atLine: line, expected: true)
       return
     }
-    var request = Request(parameters: actionParams, sessionData: sessionData, path: path!, method: method)
+    var request = Request(parameters: actionParams, sessionData: sessionData, path: path!, method: method, headers: headers)
     if let actionFiles = files[actionName] {
       request.uploadedFiles = actionFiles
     }

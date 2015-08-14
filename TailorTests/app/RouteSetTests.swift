@@ -47,8 +47,12 @@ class RouteSetTests: TailorTestCase {
     return routeSet.routes.isEmpty ? nil : routeSet.routes[routeSet.routes.count - 1]
   }
   
-  func createTestRequest(path: String = "/") -> Request {
-    let body = "GET \(path) HTTP/1.1\r\n\r\n"
+  func createTestRequest(path: String = "/", headers: [String:String] = [:]) -> Request {
+    var body = "GET \(path) HTTP/1.1\r\n"
+    for (key,value) in headers {
+      body += "\(key): \(value)\r\n"
+    }
+    body += "\r\n"
     return Request(clientAddress: "0.0.0.0", data: body.dataUsingEncoding(NSUTF8StringEncoding)!)
   }
   
@@ -696,6 +700,28 @@ class RouteSetTests: TailorTestCase {
       self.assert(response.responseCode, equals: .Ok)
       let path = Application.sharedApplication().rootPath() + "/TestConfig.plist"
       self.assert(response.body, equals: NSData(contentsOfFile: path)!)
+      self.assert(response.headers["ETag"], equals: "57066efdb031b7a6ad8b4a4b2f985fee")
+    }
+  }
+  
+  func testStaticAssetWithMatchingEtagGenerates304Response() {
+    routeSet.staticAssets(prefix: "assets", localPrefix: "", assets: ["TestConfig.plist"])
+    routeSet.handleRequest(createTestRequest("/assets/TestConfig.plist", headers: ["If-None-Match": "57066efdb031b7a6ad8b4a4b2f985fee"])) {
+      response in
+      self.assert(response.responseCode, equals: .NotModified)
+      self.assert(response.headers["ETag"], equals: "57066efdb031b7a6ad8b4a4b2f985fee")
+      self.assert(response.body.length, equals: 0)
+    }
+  }
+  
+  func testStaticAssetWithInvalidEtagSendsNewAsset() {
+    routeSet.staticAssets(prefix: "assets", localPrefix: "", assets: ["TestConfig.plist"])
+    routeSet.handleRequest(createTestRequest("/assets/TestConfig.plist", headers: ["If-None-Match": "57066efdb031b7a6ad8b4a4b2f985fef"])) {
+      response in
+      self.assert(response.responseCode, equals: .Ok)
+      let path = Application.sharedApplication().rootPath() + "/TestConfig.plist"
+      self.assert(response.body, equals: NSData(contentsOfFile: path)!)
+      self.assert(response.headers["ETag"], equals: "57066efdb031b7a6ad8b4a4b2f985fee")
     }
   }
   

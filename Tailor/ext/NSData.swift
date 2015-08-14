@@ -55,4 +55,18 @@ public extension NSData {
     }
     return components
   }
+  
+  /**
+    This method gets an MD5 hash of the data.
+    */
+  public var md5Hash: String {
+    var buffer = UnsafeMutablePointer<UInt8>(malloc(CC_MD5_DIGEST_LENGTH))
+    CC_MD5(self.bytes, Int64(self.length), buffer)
+    let output = NSMutableString(capacity: 2 * CC_MD5_DIGEST_LENGTH)
+    for _ in 0..<CC_MD5_DIGEST_LENGTH {
+      output.appendFormat("%02x", buffer.memory)
+      buffer = advance(buffer, 1)
+    }
+    return output as String
+  }
 }

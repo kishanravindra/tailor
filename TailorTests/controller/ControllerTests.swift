@@ -594,6 +594,181 @@ class ControllerTests: TailorTestCase {
     resetDatabase()
   }
   
+  //MARK: - Caching
+  
+  func testCacheWithTagWithMatchingEtagSendsNotModifiedResponse() {
+    let data = NSData(bytes: [1,2,3,4])
+    let tag = data.md5Hash
+    let expectation = expectationWithDescription("callback called")
+    
+    controller = TestController(
+      request: Request(headers: ["If-None-Match": tag]),
+      actionName: "index",
+      callback: {
+        response in
+        expectation.fulfill()
+        self.assert(response.responseCode, equals: .NotModified)
+        self.assert(response.headers["ETag"], equals: tag)
+        self.assert(response.body.length, equals: 0)
+      }
+    )
+
+    controller.cacheWithTag {
+      (inout response: Response) -> Void in
+      response.appendData(data)
+    }
+    waitForExpectationsWithTimeout(0, handler: nil)
+  }
+
+  func testCacheWithTagWithNotMatchingEtagSendsFullResponse() {
+    let data = NSData(bytes: [1,2,3,4])
+    let tag = data.md5Hash
+    let expectation = expectationWithDescription("callback called")
+    
+    controller = TestController(
+      request: Request(headers: ["If-None-Match": tag + "boop"]),
+      actionName: "index",
+      callback: {
+        response in
+        expectation.fulfill()
+        self.assert(response.responseCode, equals: .Ok)
+        
+        self.assert(response.headers["ETag"], equals: tag)
+        self.assert(response.body, equals: data)
+      }
+    )
+
+    controller.cacheWithTag {
+      (inout response: Response) -> Void in
+      response.appendData(data)
+    }
+    waitForExpectationsWithTimeout(0, handler: nil)
+  }
+  
+  func testCacheWithTagWithNon200ResponseSendsOriginalResponse() {
+    let data = NSData(bytes: [1,2,3,4])
+    let tag = data.md5Hash
+    let expectation = expectationWithDescription("callback called")
+    
+    controller = TestController(
+      request: Request(headers: ["If-None-Match": tag]),
+      actionName: "index",
+      callback: {
+        response in
+        expectation.fulfill()
+        self.assert(response.responseCode, equals: .Created)
+        self.assert(response.headers["ETag"], equals: tag)
+        self.assert(response.body, equals: data)
+      }
+    )
+    
+    controller.cacheWithTag {
+      (inout response: Response) -> Void in
+      response.responseCode = .Created
+      response.appendData(data)
+    }
+    waitForExpectationsWithTimeout(0, handler: nil)
+  }
+  
+  func testCacheWithModificationTimeWithFreshTimestampReturnsNotModifiedResponse() {
+    let data = NSData(bytes: [1,2,3,4])
+    let timestamp = 1.hour.ago
+    let expectation = expectationWithDescription("callback called")
+    
+    controller = TestController(
+      request: Request(headers: ["If-Modified-Since": 30.minutes.ago.format(TimeFormat.Rfc822)]),
+      actionName: "index",
+      callback: {
+        response in
+        expectation.fulfill()
+        self.assert(response.responseCode, equals: .NotModified)
+        self.assert(response.headers["Last-Modified"], equals: timestamp.inTimeZone("GMT").format(TimeFormat.Rfc822))
+        self.assert(response.body.length, equals: 0)
+      }
+    )
+    
+    controller.cacheWithModificationTime(timestamp) {
+      (inout response: Response) -> Void in
+      assert(false, message: "Does not generate the response again")
+      response.appendData(data)
+    }
+    waitForExpectationsWithTimeout(0, handler: nil)
+  }
+  
+  func testCacheWithModificationTimeWithStaleTimestampReturnsFullResponse() {
+    let data = NSData(bytes: [1,2,3,4])
+    let timestamp = 1.hour.ago
+    let expectation = expectationWithDescription("callback called")
+    
+    controller = TestController(
+      request: Request(headers: ["If-Modified-Since": 2.hours.ago.format(TimeFormat.Rfc822)]),
+      actionName: "index",
+      callback: {
+        response in
+        expectation.fulfill()
+        self.assert(response.responseCode, equals: .Ok)
+        self.assert(response.headers["Last-Modified"], equals: timestamp.inTimeZone("GMT").format(TimeFormat.Rfc822))
+        self.assert(response.body, equals: data)
+      }
+    )
+    
+    controller.cacheWithModificationTime(timestamp) {
+      (inout response: Response) -> Void in
+      response.appendData(data)
+    }
+    waitForExpectationsWithTimeout(0, handler: nil)
+  }
+  
+  func testCacheWithModificationTimeWithNoTimestampReturnsFullResponse() {
+    let data = NSData(bytes: [1,2,3,4])
+    let timestamp = 1.hour.ago
+    let expectation = expectationWithDescription("callback called")
+    
+    controller = TestController(
+      request: Request(),
+      actionName: "index",
+      callback: {
+        response in
+        expectation.fulfill()
+        self.assert(response.responseCode, equals: .Ok)
+        self.assert(response.headers["Last-Modified"], equals: timestamp.inTimeZone("GMT").format(TimeFormat.Rfc822))
+        self.assert(response.body, equals: data)
+      }
+    )
+    
+    controller.cacheWithModificationTime(timestamp) {
+      (inout response: Response) -> Void in
+      response.appendData(data)
+    }
+    waitForExpectationsWithTimeout(0, handler: nil)
+  }
+  
+  
+  func testCacheWithModificationTimeWithNon200ResponseDoesNotSetModificationTime() {
+    let data = NSData(bytes: [1,2,3,4])
+    let timestamp = 1.hour.ago
+    let expectation = expectationWithDescription("callback called")
+    
+    controller = TestController(
+      request: Request(),
+      actionName: "index",
+      callback: {
+        response in
+        expectation.fulfill()
+        self.assert(response.responseCode, equals: .Created)
+        self.assert(isNil: response.headers["Last-Modified"])
+        self.assert(response.body, equals: data)
+      }
+    )
+    
+    controller.cacheWithModificationTime(timestamp) {
+      (inout response: Response) -> Void in
+      response.responseCode = .Created
+      response.appendData(data)
+    }
+    waitForExpectationsWithTimeout(0, handler: nil)
+  }
+  
   //MARK: - Localization
   
   func testLocalizationPrefixGetsUnderscoredControllerNameAndAction() {

@@ -512,6 +512,69 @@ extension ControllerType {
     return self.signIn(user)
   }
   
+  //MARK: - Caching
+  
+  /**
+    This method causes a response to be cached using an ETag header.
+
+    The full response will be generated for each request, and then an MD5
+    hash of the response body will be calculated. If that matches the
+    If-None-Match request header, then this will server a 304 response with no
+    body. If there is no matching request header, this will generate the full
+    normal response.
+
+    This caching mechanism only prevents having to re-transmit the response; it
+    does not prevent having to re-generate the response. This is best suited for
+    large responses that change rarely.
+  
+    - parameter responseGenerator: A block that adds the body to the response.
+    */
+  public func cacheWithTag(@noescape responseGenerator: (inout Response)->Void) {
+    generateResponse {
+      response -> Void in
+      let cacheResponse = response
+      responseGenerator(&response)
+      let tag = response.body.md5Hash
+      if response.responseCode.code == 200 && request.headers["If-None-Match"] == tag {
+        response = cacheResponse
+        response.responseCode = .NotModified
+      }
+      response.headers["ETag"] = tag
+    }
+  }
+  
+  /**
+    This method causes a response to be cached using a Last-Modified header.
+
+    This will check for an If-Modified-Since header in the request. If the
+    header is provided, and is on or after the provided timestamp, then this
+    will return a 304 response without trying to regenerate the response.
+    Otherwise, it will use the provided block to generate a new response.
+  
+    This caching mechanism prevents having to re-generate or re-transmit the
+    response, but requires a modification time that is known in advance. It is
+    best suited for responses that may be time consuming to generate, but have a
+    known modification date, like news articles.
+
+    - parameter responseGenerator:  A block that adds the body to the response.
+    */
+  public func cacheWithModificationTime(timestamp: Timestamp, @noescape responseGenerator: (inout Response)->Void) {
+    generateResponse {
+      (inout response: Response)->Void in
+      if let requestTimestamp = Request.parseTime(request.headers["If-Modified-Since"] ?? "") {
+        if Int(requestTimestamp.epochSeconds) >= Int(timestamp.epochSeconds) {
+          response.responseCode = .NotModified
+          response.headers["Last-Modified"] = timestamp.inTimeZone("GMT").format(TimeFormat.Rfc822)
+          return
+        }
+      }
+      responseGenerator(&response)
+      if response.responseCode == .Ok {
+        response.headers["Last-Modified"] = timestamp.inTimeZone("GMT").format(TimeFormat.Rfc822)
+      }
+    }
+  }
+
   //MARK: - Test Helpers
   
   /**

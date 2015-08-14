@@ -689,6 +689,10 @@ public class RouteSet {
     disk and serve it out as the response. The local paths for the assets will
     be relative to the application's root path, which defaults to the directory
     containing the executable.
+  
+    The assets will be given an ETag header with an MD5 hash of their contents.
+    If the client provides that tag in a request, this will return a
+    not-modified response.
     
     - parameter prefix:         The prefix that we append to all the static asset
                                 URLs.
@@ -706,9 +710,16 @@ public class RouteSet {
         let fullPath = Application.sharedApplication().rootPath() + "/\(localPath)"
         
         if let contents = NSFileManager.defaultManager().contentsAtPath(fullPath) {
+          let eTag = contents.md5Hash
           var response = Response()
-          response.responseCode = .Ok
-          response.appendData(contents)
+          response.headers["ETag"] = eTag
+          if request.headers["If-None-Match"] == eTag {
+            response.responseCode = .NotModified
+          }
+          else {
+            response.responseCode = .Ok
+            response.appendData(contents)
+          }
           callback(response)
         }
         else {

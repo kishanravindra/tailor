@@ -217,4 +217,17 @@ public func ==(lhs: TimeZone, rhs: TimeZone) -> Bool {
     lhs.policies == rhs.policies
 }
 
+extension TimeZone: StringLiteralConvertible {
+  public init(stringLiteral value: String) {
+    self.init(name: value)
+  }
+  
+  public init(extendedGraphemeClusterLiteral value: String) {
+    self.init(stringLiteral: value)
+  }
+  
+  public init(unicodeScalarLiteral value: String) {
+    self.init(stringLiteral: value)
+  }
+}
 let TIME_ZONE_POLICIES: [String:[TimeZone.Policy]] = TimeZone.loadTimeZones()
