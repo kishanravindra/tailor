@@ -167,11 +167,32 @@ public class RouteSet {
     path.
     */
   public enum RoutePath: Equatable, CustomStringConvertible {
-    /** A Get request */
+    /** A GET request */
     case Get(String)
     
-    /** A Post request */
+    /** A POST request */
     case Post(String)
+    
+    /** A PUT request. */
+    case Put(String)
+    
+    /** A PATCH request. */
+    case Patch(String)
+    
+    /** A DELETE request. */
+    case Delete(String)
+    
+    /** A TRACE request. */
+    case Trace(String)
+    
+    /** A HEAD request. */
+    case Head(String)
+    
+    /** An OPTIONS request. */
+    case Options(String)
+    
+    /** A CONNECT request. */
+    case Connect(String)
     
     /**
       This method builds a route path dynamically.
@@ -187,6 +208,13 @@ public class RouteSet {
       switch(methodName) {
       case "GET": return .Get(pathPattern)
       case "POST": return .Post(pathPattern)
+      case "PUT": return .Put(pathPattern)
+      case "PATCH": return .Patch(pathPattern)
+      case "DELETE": return .Delete(pathPattern)
+      case "OPTIONS": return .Options(pathPattern)
+      case "HEAD": return .Head(pathPattern)
+      case "TRACE": return .Trace(pathPattern)
+      case "CONNECT": return .Connect(pathPattern)
       default: return nil
       }
     }
@@ -198,6 +226,13 @@ public class RouteSet {
       switch(self) {
       case let Get(pathPattern): return pathPattern
       case let Post(pathPattern): return pathPattern
+      case let Put(pathPattern): return pathPattern
+      case let Patch(pathPattern): return pathPattern
+      case let Delete(pathPattern): return pathPattern
+      case let Options(pathPattern): return pathPattern
+      case let Head(pathPattern): return pathPattern
+      case let Trace(pathPattern): return pathPattern
+      case let Connect(pathPattern): return pathPattern
       }
     }
     
@@ -209,6 +244,13 @@ public class RouteSet {
       switch(self) {
       case Get: return "GET"
       case Post: return "POST"
+      case Put: return "PUT"
+      case Patch: return "PATCH"
+      case Delete: return "DELETE"
+      case Options: return "OPTIONS"
+      case Head: return "HEAD"
+      case Trace: return "TRACE"
+      case Connect: return "CONNECT"
       }
     }
     
@@ -229,8 +271,15 @@ public class RouteSet {
       */
     public func withPathPattern(pathPattern: String) -> RoutePath {
       switch(self) {
-      case .Get: return .Get(pathPattern)
-      case .Post: return .Post(pathPattern)
+      case Get: return Get(pathPattern)
+      case Post: return Post(pathPattern)
+      case Put: return Put(pathPattern)
+      case Patch: return Patch(pathPattern)
+      case Delete: return Delete(pathPattern)
+      case Options: return Options(pathPattern)
+      case Head: return Head(pathPattern)
+      case Trace: return Trace(pathPattern)
+      case Connect: return Connect(pathPattern)
       }
     }
   }
@@ -390,7 +439,7 @@ public class RouteSet {
     self.addRoute(.Get(pathPattern), handler: {
       request, responseHandler in
       var response = Response()
-      response.code = 302
+      response.responseCode = .SeeOther
       response.headers["location"] = toPath
       response.appendString("You are being redirected")
       responseHandler(response)
@@ -628,7 +677,7 @@ public class RouteSet {
     }
     NSLog("Unable to handle request")
     var response = Response()
-    response.code = 404
+    response.responseCode = .NotFound
     response.appendString("File Not Found")
     callback(response)
   }
@@ -658,13 +707,13 @@ public class RouteSet {
         
         if let contents = NSFileManager.defaultManager().contentsAtPath(fullPath) {
           var response = Response()
-          response.code = 200
+          response.responseCode = .Ok
           response.appendData(contents)
           callback(response)
         }
         else {
           var response = Response()
-          response.code = 404
+          response.responseCode = .NotFound
           callback(response)
         }
       }

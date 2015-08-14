@@ -167,9 +167,9 @@ class ConnectionTests: TailorTestCase {
       request, callback in
       expectation.fulfill()
       var continueResponse = Response()
-      continueResponse.code = 100
+      continueResponse.responseCode = .Continue
       var response = Response()
-      response.code = 200
+      response.responseCode = .Ok
       response.headers["Test"] = "value"
       response.appendString("Hello")
       callback(response)
@@ -199,9 +199,9 @@ class ConnectionTests: TailorTestCase {
       request, callback in
       expectation.fulfill()
       var continueResponse = Response()
-      continueResponse.code = 404
+      continueResponse.responseCode = .NotFound
       var response = Response()
-      response.code = 200
+      response.responseCode = .Ok
       response.headers["Test"] = "value"
       response.appendString("Hello")
       callback(response)
@@ -253,7 +253,7 @@ class ConnectionTests: TailorTestCase {
     }
     
     connection.readFromSocket(123)
-    let responses = "HTTP/1.1 200\r\nContent-Length: 14\r\n\r\nRequest Body 1HTTP/1.1 200\r\nContent-Length: 14\r\n\r\nRequest Body 2"
+    let responses = "HTTP/1.1 200 OK\r\nContent-Length: 14\r\n\r\nRequest Body 1HTTP/1.1 200 OK\r\nContent-Length: 14\r\n\r\nRequest Body 2"
     assert(Connection.outputData, equals: NSData(bytes: responses.utf8))
     Connection.stopStubbing()
   }

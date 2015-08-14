@@ -178,8 +178,43 @@ class RouteSetTests: TailorTestCase {
     assert(path, equals: .Post("/test/2"))
   }
   
-  func testBuildRoutePathWithPatchReturnsNil() {
-    let path = RouteSet.RoutePath.build("PATCH", pathPattern: "/test/1")
+  func testBuildRoutePathWithPutMakesPutRoute() {
+    let path = RouteSet.RoutePath.build("PUT", pathPattern: "/test/2")
+    assert(path, equals: .Put("/test/2"))
+  }
+  
+  func testBuildRoutePathWithPatchMakesPatchRoute() {
+    let path = RouteSet.RoutePath.build("PATCH", pathPattern: "/test/2")
+    assert(path, equals: .Patch("/test/2"))
+  }
+  
+  func testBuildRoutePathWithDeleteMakesDeleteRoute() {
+    let path = RouteSet.RoutePath.build("DELETE", pathPattern: "/test/2")
+    assert(path, equals: .Delete("/test/2"))
+  }
+  
+  func testBuildRoutePathWithOptionsMakesOptionsRoute() {
+    let path = RouteSet.RoutePath.build("OPTIONS", pathPattern: "/test/2")
+    assert(path, equals: .Options("/test/2"))
+  }
+  
+  func testBuildRoutePathWithHeadMakesHeadRoute() {
+    let path = RouteSet.RoutePath.build("HEAD", pathPattern: "/test/2")
+    assert(path, equals: .Head("/test/2"))
+  }
+  
+  func testBuildRoutePathWithTraceMakesTraceRoute() {
+    let path = RouteSet.RoutePath.build("TRACE", pathPattern: "/test/2")
+    assert(path, equals: .Trace("/test/2"))
+  }
+  
+  func testBuildRoutePathWithConnectMakesConnectRoute() {
+    let path = RouteSet.RoutePath.build("CONNECT", pathPattern: "/test/2")
+    assert(path, equals: .Connect("/test/2"))
+  }
+  
+  func testBuildRoutePathWithBadNameReturnsNil() {
+    let path = RouteSet.RoutePath.build("FOO", pathPattern: "/test/1")
     assert(isNil: path)
   }
   
@@ -193,6 +228,41 @@ class RouteSetTests: TailorTestCase {
     assert(path.pathPattern, equals: "/test/4")
   }
   
+  func testPathPatternForPutReturnsPathPattern() {
+    let path = RouteSet.RoutePath.Put("/test/4")
+    assert(path.pathPattern, equals: "/test/4")
+  }
+  
+  func testPathPatternForPatchReturnsPathPattern() {
+    let path = RouteSet.RoutePath.Patch("/test/4")
+    assert(path.pathPattern, equals: "/test/4")
+  }
+  
+  func testPathPatternForDeleteReturnsPathPattern() {
+    let path = RouteSet.RoutePath.Delete("/test/4")
+    assert(path.pathPattern, equals: "/test/4")
+  }
+  
+  func testPathPatternForOptionsReturnsPathPattern() {
+    let path = RouteSet.RoutePath.Options("/test/4")
+    assert(path.pathPattern, equals: "/test/4")
+  }
+  
+  func testPathPatternForHeadReturnsPathPattern() {
+    let path = RouteSet.RoutePath.Head("/test/4")
+    assert(path.pathPattern, equals: "/test/4")
+  }
+  
+  func testPathPatternForTraceReturnsPathPattern() {
+    let path = RouteSet.RoutePath.Trace("/test/4")
+    assert(path.pathPattern, equals: "/test/4")
+  }
+  
+  func testPathPatternForConnectReturnsPathPattern() {
+    let path = RouteSet.RoutePath.Connect("/test/4")
+    assert(path.pathPattern, equals: "/test/4")
+  }
+  
   func testMethodNameForGetReturnsGet() {
     let path = RouteSet.RoutePath.Get("/test/3")
     assert(path.methodName, equals: "GET")
@@ -202,6 +272,48 @@ class RouteSetTests: TailorTestCase {
     let path = RouteSet.RoutePath.Post("/test/4")
     assert(path.methodName, equals: "POST")
   }
+  
+  func testMethodNameForPutReturnsPut() {
+    let path = RouteSet.RoutePath.Put("/test/4")
+    assert(path.methodName, equals: "PUT")
+  }
+  
+  
+  func testMethodNameForPatchReturnsPatch() {
+    let path = RouteSet.RoutePath.Patch("/test/4")
+    assert(path.methodName, equals: "PATCH")
+  }
+  
+  
+  func testMethodNameForDeleteReturnsDelete() {
+    let path = RouteSet.RoutePath.Delete("/test/4")
+    assert(path.methodName, equals: "DELETE")
+  }
+  
+  
+  func testMethodNameForOptionsReturnsOptions() {
+    let path = RouteSet.RoutePath.Options("/test/4")
+    assert(path.methodName, equals: "OPTIONS")
+  }
+  
+  
+  func testMethodNameForHeadReturnsHead() {
+    let path = RouteSet.RoutePath.Head("/test/4")
+    assert(path.methodName, equals: "HEAD")
+  }
+  
+  
+  func testMethodNameForTraceReturnsTrace() {
+    let path = RouteSet.RoutePath.Trace("/test/4")
+    assert(path.methodName, equals: "TRACE")
+  }
+  
+  
+  func testMethodNameForConnectReturnsConnect() {
+    let path = RouteSet.RoutePath.Connect("/test/4")
+    assert(path.methodName, equals: "CONNECT")
+  }
+
   
   func testDescriptionForGetContainsMethodNameAndPath() {
     let path = RouteSet.RoutePath.Get("/test/3")
@@ -234,6 +346,13 @@ class RouteSetTests: TailorTestCase {
   func testWithPathPatternSwitchesPathPattern() {
     assert(RouteSet.RoutePath.Get("/test/1").withPathPattern("/test/2"), equals: RouteSet.RoutePath.Get("/test/2"))
     assert(RouteSet.RoutePath.Post("/test/1").withPathPattern("/test/2"), equals: RouteSet.RoutePath.Post("/test/2"))
+    assert(RouteSet.RoutePath.Put("/test/1").withPathPattern("/test/2"), equals: RouteSet.RoutePath.Put("/test/2"))
+    assert(RouteSet.RoutePath.Patch("/test/1").withPathPattern("/test/2"), equals: RouteSet.RoutePath.Patch("/test/2"))
+    assert(RouteSet.RoutePath.Delete("/test/1").withPathPattern("/test/2"), equals: RouteSet.RoutePath.Delete("/test/2"))
+    assert(RouteSet.RoutePath.Options("/test/1").withPathPattern("/test/2"), equals: RouteSet.RoutePath.Options("/test/2"))
+    assert(RouteSet.RoutePath.Head("/test/1").withPathPattern("/test/2"), equals: RouteSet.RoutePath.Head("/test/2"))
+    assert(RouteSet.RoutePath.Trace("/test/1").withPathPattern("/test/2"), equals: RouteSet.RoutePath.Trace("/test/2"))
+    assert(RouteSet.RoutePath.Connect("/test/1").withPathPattern("/test/2"), equals: RouteSet.RoutePath.Connect("/test/2"))
   }
   
   //MARK: - Adding Routes
@@ -452,7 +571,7 @@ class RouteSetTests: TailorTestCase {
     assert(route?.path.pathPattern, equals: "/route1", message: "sets route path to the first path")
     route?.handler(createTestRequest()) {
       response in
-      self.assert(response.code, equals: 302, message: "sets response code to 302")
+      self.assert(response.responseCode, equals: .SeeOther, message: "sets response code to 303")
       
       let location = response.headers["location"]
       self.assert(location, equals: "/route2", message: "sets location header to the second path")
@@ -574,7 +693,7 @@ class RouteSetTests: TailorTestCase {
     routeSet.staticAssets(prefix: "assets", localPrefix: "", assets: ["TestConfig.plist"])
     routeSet.handleRequest(createTestRequest("/assets/TestConfig.plist")) {
       response in
-      self.assert(response.code, equals: 200)
+      self.assert(response.responseCode, equals: .Ok)
       let path = Application.sharedApplication().rootPath() + "/TestConfig.plist"
       self.assert(response.body, equals: NSData(contentsOfFile: path)!)
     }
@@ -584,7 +703,7 @@ class RouteSetTests: TailorTestCase {
     routeSet.staticAssets(prefix: "assets", localPrefix: "", assets: ["BadConfig.plist"])
     routeSet.handleRequest(createTestRequest("/assets/BadConfig.plist")) {
       response in
-      self.assert(response.code, equals: 404)
+      self.assert(response.responseCode, equals: .NotFound)
     }
   }
   
@@ -655,7 +774,7 @@ class RouteSetTests: TailorTestCase {
       response in
       expectation3.fulfill()
       let body = response.bodyString
-      self.assert(response.code, equals: 404, message: "gives 404 response")
+      self.assert(response.responseCode, equals: .NotFound, message: "gives 404 response")
       self.assert(body, equals: "File Not Found", message: "gives error response")
 
     }
@@ -709,7 +828,7 @@ class RouteSetTests: TailorTestCase {
     }
     routeSet.handleRequest(createTestRequest("/hat%ff")) {
       response in
-      self.assert(response.code, equals: 404)
+      self.assert(response.responseCode, equals: .NotFound)
     }
     waitForExpectationsWithTimeout(0, handler: nil)
   }

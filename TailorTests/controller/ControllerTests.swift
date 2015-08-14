@@ -16,7 +16,7 @@ class ControllerTests: TailorTestCase {
     func checkParams() -> Bool {
       if request.requestParameters["failFilter"] != nil {
         var response = Response()
-        response.code = 419
+        response.responseCode = .init(419, "")
         self.callback(response)
         return false
       }
@@ -25,14 +25,14 @@ class ControllerTests: TailorTestCase {
     
     func indexAction() {
       var response = Response()
-      response.code = 200
+      response.responseCode = .Ok
       response.appendString("Index Action")
       self.callback(response)
     }
     
     func showAction() {
       var response = Response()
-      response.code = 200
+      response.responseCode = .Ok
       response.appendString("Show Action")
       self.callback(response)
     }
@@ -141,10 +141,10 @@ class ControllerTests: TailorTestCase {
     self.callback = {
       response in
       expectation.fulfill()
-      self.assert(response.code, equals: 123, message: "has the response code from the block given to generateResponse")
+      self.assert(response.responseCode, equals: Response.Code(123, "yo"), message: "has the response code from the block given to generateResponse")
     }
     
-    controller.generateResponse { (inout r: Response) in r.code = 123 }
+    controller.generateResponse { (inout r: Response) in r.responseCode = .init(123, "yo") }
     
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
@@ -273,7 +273,7 @@ class ControllerTests: TailorTestCase {
     self.callback = {
       response in
       expectation.fulfill()
-      self.assert(response.code, equals: 302, message: "gives a 302 response")
+      self.assert(response.responseCode, equals: .SeeOther, message: "gives a 302 response")
       self.assert(response.headers, equals: ["Location": "/test/path"], message: "gives a location header")
     }
     self.controller.redirectTo("/test/path")
@@ -285,7 +285,7 @@ class ControllerTests: TailorTestCase {
     self.callback = {
       response in
       expectation.fulfill()
-      self.assert(response.code, equals: 302, message: "gives a 302 response")
+      self.assert(response.responseCode, equals: .SeeOther, message: "gives a 302 response")
       self.assert(response.headers, equals: ["Location": "/test/path"], message: "gives a location header")
       
       let session = Session(request: Request(cookies: response.cookies.cookieDictionary()))
@@ -368,7 +368,7 @@ class ControllerTests: TailorTestCase {
     self.callback = {
       response in
       expectation.fulfill()
-      self.assert(response.code, equals: 302, message: "gives a 302 response")
+      self.assert(response.code, equals: 303, message: "gives a 303 response")
       self.assert(response.headers, equals: ["Location": "/route1"], message: "has a location header")
     }
     self.controller.redirectTo(TestController.name, actionName: "index")
@@ -380,7 +380,7 @@ class ControllerTests: TailorTestCase {
     self.callback = {
       response in
       expectation.fulfill()
-      self.assert(response.code, equals: 302, message: "gives a 302 response")
+      self.assert(response.responseCode, equals: .SeeOther, message: "gives a 303 response")
       self.assert(response.headers, equals: ["Location": "/route1"], message: "has a location header")
       
       let session = Session(request: Request(cookies: response.cookies.cookieDictionary()))
@@ -398,7 +398,7 @@ class ControllerTests: TailorTestCase {
     self.callback = {
       response in
       expectation.fulfill()
-      self.assert(response.code, equals: 302, message: "gives a 302 response")
+      self.assert(response.responseCode, equals: .SeeOther, message: "gives a 303 response")
       self.assert(response.headers, equals: ["Location": "/"], message: "has a location header")
     }
     
@@ -411,8 +411,9 @@ class ControllerTests: TailorTestCase {
     self.callback = {
       response in
       expectation.fulfill()
-      self.assert(response.code, equals: 302, message: "gives a 302 response")
+      self.assert(response.responseCode, equals: .SeeOther, message: "gives a 303 response")
       self.assert(response.headers, equals: ["Location": "/route2"], message: "has a location header")
+      self.assert(response.bodyString, equals: "<html><body>You are being <a href=\"/route2\">redirected</a>.</body></html>")
     }
     self.controller.redirectTo(SecondTestController.self, actionName: "index")
     waitForExpectationsWithTimeout(0.01, handler: nil)
@@ -423,7 +424,7 @@ class ControllerTests: TailorTestCase {
     self.callback = {
       response in
       expectation.fulfill()
-      self.assert(response.code, equals: 302, message: "gives a 302 response")
+      self.assert(response.responseCode, equals: .SeeOther, message: "gives a 303 response")
       self.assert(response.headers, equals: ["Location": "/route1"], message: "has a location header")
     }
     self.controller.redirectTo(actionName: "index")
@@ -435,7 +436,7 @@ class ControllerTests: TailorTestCase {
     self.callback = {
       response in
       expectation.fulfill()
-      self.assert(response.code, equals: 302, message: "gives a 302 response")
+      self.assert(response.responseCode, equals: .SeeOther, message: "gives a 303 response")
       self.assert(response.headers, equals: ["Location": "/route1"], message: "has a location header")
       
       let session = Session(request: Request(cookies: response.cookies.cookieDictionary()))
@@ -453,7 +454,7 @@ class ControllerTests: TailorTestCase {
     self.callback = {
       response in
       expectation.fulfill()
-      self.assert(response.code, equals: 302, message: "gives a 302 response")
+      self.assert(response.responseCode, equals: .SeeOther, message: "gives a 303 response")
       self.assert(response.headers, equals: ["Location": "/"], message: "has a location header")
     }
     self.controller.redirectTo(TestController.self, actionName: "foo")
@@ -468,7 +469,7 @@ class ControllerTests: TailorTestCase {
       self.callback = {
         response in
         expectation.fulfill()
-        self.assert(response.code, equals: 200, message: "gives a success response")
+        self.assert(response.responseCode, equals: .Ok, message: "gives a success response")
         self.assert(response.headers, equals: ["Content-Type": "application/json"])
         self.assert(response.body, equals: data)
       }
@@ -485,7 +486,7 @@ class ControllerTests: TailorTestCase {
     self.callback = {
       response in
       expectation.fulfill()
-      self.assert(response.code, equals: 500, message: "gives an error response")
+      self.assert(response.responseCode, equals: .InternalServerError, message: "gives an error response")
     }
     self.controller.respondWith(json: "Hat")
     waitForExpectationsWithTimeout(0.01, handler: nil)
@@ -497,7 +498,7 @@ class ControllerTests: TailorTestCase {
     self.callback = {
       response in
       expectation.fulfill()
-      self.assert(response.code, equals: 404, message: "gives a 404 response")
+      self.assert(response.responseCode, equals: .NotFound, message: "gives a 404 response")
     }
     self.controller.render404()
     waitForExpectationsWithTimeout(0.01, handler: nil)

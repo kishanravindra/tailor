@@ -101,7 +101,7 @@ public struct Connection {
         request = Request(clientAddress: clientAddressString, data: data)
         if request.headers["Expect"] == "100-continue" {
           var response = Response()
-          response.code = RouteSet.shared().canHandleRequest(request) ? 100 : 404
+          response.responseCode = RouteSet.shared().canHandleRequest(request) ? .Continue : .NotFound
           Connection.write(connectionDescriptor, data: response.data)
         }
         if let headerLength = Int(request.headers["Content-Length"] ?? "") {

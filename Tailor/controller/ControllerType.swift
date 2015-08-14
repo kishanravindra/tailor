@@ -244,8 +244,9 @@ extension ControllerType {
   public func redirectTo(path: String, session: Session? = nil) {
     self.generateResponse {
       response -> Session in
-      response.code = 302
+      response.responseCode = .SeeOther
       response.headers["Location"] = path
+      response.appendString("<html><body>You are being <a href=\"\(path)\">redirected</a>.</body></html>")
       return session ?? self.session
     }
   }
@@ -260,7 +261,7 @@ extension ControllerType {
       let jsonData = try json.toJson().jsonData()
       generateResponse {
         (inout response: Response) -> Void in
-        response.code = 200
+        response.responseCode = .Ok
         response.headers["Content-Type"] = "application/json"
         response.appendData(jsonData)
       }
@@ -268,7 +269,7 @@ extension ControllerType {
     catch {
       generateResponse {
         (inout response: Response) -> Void in
-        response.code = 500
+        response.responseCode = .InternalServerError
       }
     }
   }
@@ -321,7 +322,7 @@ extension ControllerType {
   public func render404() {
     self.generateResponse {
       response -> Void in
-      response.code = 404
+      response.responseCode = .NotFound
       response.appendString("Page Not Found")
     }
   }
