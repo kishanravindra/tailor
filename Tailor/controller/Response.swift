@@ -339,6 +339,13 @@ public struct Response: Equatable {
     bodyDataForWriting.appendData(data)
   }
   
+  /**
+    This method removes the data from the response.
+    */
+  public mutating func clearBody() {
+    bodyDataForWriting.setData(NSData())
+  }
+  
   /** A copy of the body data. */
   public var body: NSData { return NSData(data: self.bodyDataForReading) }
   

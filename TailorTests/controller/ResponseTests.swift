@@ -199,6 +199,13 @@ class ResponseTests: TailorTestCase {
     assert(response2.bodyString, equals: "")
   }
   
+  func testClearBodyClearsBody() {
+    setUpFullResponse()
+    response.appendString("Body")
+    response.clearBody()
+    assert(response.body.length, equals: 0)
+  }
+  
   @available(*, deprecated) func testCodeGetsResponseCode() {
     setUpFullResponse()
     assert(response.code, equals: 200)
