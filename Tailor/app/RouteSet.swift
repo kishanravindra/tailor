@@ -709,10 +709,20 @@ public class RouteSet {
         
         let fullPath = Application.sharedApplication().rootPath() + "/\(localPath)"
         
+        let mimeType: String
         if let contents = NSFileManager.defaultManager().contentsAtPath(fullPath) {
+          if let uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (fullPath as NSString).pathExtension, nil)?.takeRetainedValue(),
+            let type = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType)?.takeRetainedValue() {
+              mimeType = type as String
+          }
+          else {
+            mimeType = "text/plain"
+          }
+          
           let eTag = contents.md5Hash
           var response = Response()
           response.headers["ETag"] = eTag
+          response.headers["Content-Type"] = mimeType
           if request.headers["If-None-Match"] == eTag {
             response.responseCode = .NotModified
           }

@@ -694,13 +694,18 @@ class RouteSetTests: TailorTestCase {
   }
   
   func testStaticAssetsGeneratesRoutesToAssets() {
-    routeSet.staticAssets(prefix: "assets", localPrefix: "", assets: ["TestConfig.plist"])
+    routeSet.staticAssets(prefix: "assets", localPrefix: "", assets: ["TestConfig.plist", "TestStylesheet.css"])
     routeSet.handleRequest(createTestRequest("/assets/TestConfig.plist")) {
       response in
       self.assert(response.responseCode, equals: .Ok)
       let path = Application.sharedApplication().rootPath() + "/TestConfig.plist"
       self.assert(response.body, equals: NSData(contentsOfFile: path)!)
       self.assert(response.headers["ETag"], equals: "57066efdb031b7a6ad8b4a4b2f985fee")
+      self.assert(response.headers["Content-Type"], equals: "text/plain", message: "has a default mime type of text/plain")
+    }
+    routeSet.handleRequest(createTestRequest("/assets/TestStylesheet.css")) {
+      response in
+      self.assert(response.headers["Content-Type"], equals: "text/css", message: "gets the correct mime type based on the extension")
     }
   }
   

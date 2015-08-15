@@ -82,6 +82,7 @@
 		528D6FA51A562D5900783BE5 /* FormBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D6FA41A562D5900783BE5 /* FormBuilderTests.swift */; };
 		528D94901B51B99A004E3E7A /* TestConfig2.plist in Resources */ = {isa = PBXBuildFile; fileRef = 528D948F1B51B99A004E3E7A /* TestConfig2.plist */; };
 		529230061A3CF4E4006DD6EB /* ApplicationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529230051A3CF4E4006DD6EB /* ApplicationTests.swift */; };
+		52A05A291B7F93D100DB1248 /* TestStylesheet.css in Resources */ = {isa = PBXBuildFile; fileRef = 52A05A281B7F93D100DB1248 /* TestStylesheet.css */; };
 		52A684521A3D0C5B00F4AA47 /* ConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A684511A3D0C5B00F4AA47 /* ConnectionTests.swift */; };
 		52A684541A3EFB1000F4AA47 /* CookieTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A684531A3EFB1000F4AA47 /* CookieTests.swift */; };
 		52A684561A3FC14D00F4AA47 /* CookieJarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A684551A3FC14D00F4AA47 /* CookieJarTests.swift */; };
@@ -307,6 +308,7 @@
 		528D948F1B51B99A004E3E7A /* TestConfig2.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = TestConfig2.plist; path = ../TestConfig2.plist; sourceTree = "<group>"; };
 		529230051A3CF4E4006DD6EB /* ApplicationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApplicationTests.swift; sourceTree = "<group>"; };
 		5292303B1A3CF74A006DD6EB /* TailorTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TailorTests.h; sourceTree = "<group>"; };
+		52A05A281B7F93D100DB1248 /* TestStylesheet.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = TestStylesheet.css; sourceTree = "<group>"; };
 		52A684511A3D0C5B00F4AA47 /* ConnectionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionTests.swift; sourceTree = "<group>"; };
 		52A684531A3EFB1000F4AA47 /* CookieTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CookieTests.swift; sourceTree = "<group>"; };
 		52A684551A3FC14D00F4AA47 /* CookieJarTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CookieJarTests.swift; sourceTree = "<group>"; };
@@ -541,6 +543,7 @@
 				52BD13AE19E9D7E4006D72B0 /* Info.plist */,
 				526A23761B30E0A30033A094 /* TestConfig.plist */,
 				528D948F1B51B99A004E3E7A /* TestConfig2.plist */,
+				52A05A281B7F93D100DB1248 /* TestStylesheet.css */,
 			);
 			path = config;
 			sourceTree = "<group>";
@@ -1155,6 +1158,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52A05A291B7F93D100DB1248 /* TestStylesheet.css in Resources */,
 				5233019F1B46FC1B00C9E5EE /* sessions.plist in Resources */,
 				52B710021B65B7FE0003A6DF /* localization.plist in Resources */,
 				52B710041B65C8440003A6DF /* invalidPlist.plist in Resources */,
