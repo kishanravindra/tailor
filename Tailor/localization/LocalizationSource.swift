@@ -37,6 +37,11 @@ public protocol LocalizationSource {
     - returns:          The content.
     */
   func fetch(key: String, inLocale locale: String) -> String?
+  
+  /**
+    This method gets the locales that the localization supports.
+    */
+  static var availableLocales: [String] { get }
 }
 
 public extension LocalizationSource {

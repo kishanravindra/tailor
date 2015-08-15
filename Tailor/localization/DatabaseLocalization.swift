@@ -79,13 +79,10 @@ public final class DatabaseLocalization: LocalizationSource {
       self.translatedText = try databaseRow.read("translated_text")
       self.id = try databaseRow.read("id")
     }
+    
+    /** A query for fetching translations. */
+    static let query = Query<Translation>()
   }
-  
-  /**
-    A query for fetching all translations, which you can build other queries off
-    of.
-    */
-  public let Translations = Query<Translation>()
   
   /**
     This method fetches localized text from the database.
@@ -95,7 +92,18 @@ public final class DatabaseLocalization: LocalizationSource {
     - returns:              The localized text, if we could find it.
     */
   public func fetch(key: String, inLocale locale: String) -> String? {
-    let translation = Translations.filter(["locale": locale, "translation_key": key]).first()
+    let translation = Translation.query.filter(["locale": locale, "translation_key": key]).first()
     return translation?.translatedText
+  }
+  
+  /**
+    This method gets the locales that are available for translations.
+    */
+  public static var availableLocales: [String] {
+    let sql = Translation.query.select("DISTINCT(locale) as locale").toSql()
+    return Application.sharedDatabaseConnection().executeQuery(sql.query).flatMap {
+      row in
+      row.data["locale"]?.stringValue
+    }.sort()
   }
 }

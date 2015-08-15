@@ -28,4 +28,25 @@ public final class PropertyListLocalization: LocalizationSource {
   public func fetch(key: String, inLocale locale: String) -> String? {
     return Application.configuration.staticContent["\(locale).\(key)"]
   }
+  
+  /**
+    This method gets the locales from the keys in the application's static
+    configuration.
+  
+    You can assign this to availableLocales if you need to reload the locales
+    after a change to the static content.
+    */
+  public static func localesFromConfiguration() -> [String] {
+    var locales = Set<String>()
+    for key in Application.configuration.staticContent.keys {
+      locales.insert(String(key.characters.split(".").first ?? key.characters))
+    }
+    return Array(locales).sort()
+  }
+  
+  /**
+    This method gets the available locales in the application's static
+    configuration.
+    */
+  public static var availableLocales = PropertyListLocalization.localesFromConfiguration()
 }

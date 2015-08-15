@@ -48,4 +48,11 @@ import Foundation
   public func fetch(key: String, inLocale locale: String) -> String? {
     return nil
   }
+  
+  /**
+    This method gets the locales that this localization source supports.
+    */
+  public class var availableLocales: [String] {
+    return ["en"]
+  }
 }

@@ -9,6 +9,7 @@ class DatabaseLocalizationTests: TailorTestCase {
     Application.sharedDatabaseConnection().executeQuery("DELETE FROM `tailor_translations`")
     localization = DatabaseLocalization(locale: "en")
     DatabaseLocalization.Translation(translationKey: "database.message", locale: "en", translatedText: "Hello").save()
+    DatabaseLocalization.Translation(translationKey: "database.message", locale: "fr", translatedText: "Bonjour").save()
   }
   
   func testTranslationInitializationWithAllFieldsSetsFields() {
@@ -80,5 +81,9 @@ class DatabaseLocalizationTests: TailorTestCase {
   func testFetchInLocaleGetsNilForMissingValue() {
     let value = localization.fetch("database.message", inLocale: "es")
     XCTAssertNil(value, "does not get a value")
+  }
+  
+  func testAvailableLocalesGetsKeysFromDatabase() {
+    assert(DatabaseLocalization.availableLocales, equals: ["en", "fr"])
   }
 }

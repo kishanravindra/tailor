@@ -281,4 +281,216 @@ class RequestTests: TailorTestCase {
     let request2 = Request(parameters: ["a": "c"])
     assert(request1, doesNotEqual: request2)
   }
+  
+  //MARK: - Content Preferences
+  
+  func testContentPreferenceOptionFromHeaderWithSimpleOptionSetsTypeAndQuality() {
+    let option = Request.ContentPreference.Option(fromHeader: "en-US")
+    assert(option.type, equals: "en-US")
+    assert(option.subtype, equals: "")
+    assert(option.flags, equals: [:])
+    assert(option.quality, equals: 1)
+  }
+  
+  func testContentPreferenceOptionFromHeaderWithQualitySetsQuality() {
+    let option = Request.ContentPreference.Option(fromHeader: "en-US;q=0.5")
+    assert(option.type, equals: "en-US")
+    assert(option.quality, equals: 0.5)
+    assert(option.flags, equals: [:])
+  }
+  
+  func testContentPreferenceOptionFromHeaderWithBadQualityFieldSetsQualityToZero() {
+    let option = Request.ContentPreference.Option(fromHeader: "en-US;q=ok")
+    assert(option.type, equals: "en-US")
+    assert(option.quality, equals: 0)
+    assert(option.flags, equals: [:])
+  }
+  
+  func testContentPreferenceOptionFromHeaderWithFlagsSetsFlags() {
+    let option = Request.ContentPreference.Option(fromHeader: "en-US;level=1;q=0.5;a=b")
+    assert(option.type, equals: "en-US")
+    assert(option.quality, equals: 0.5)
+    assert(option.flags, equals: ["level": "1", "a": "b"])
+  }
+  
+  func testContentPreferenceOptionWithSubtypeSetsSubtype() {
+    let option = Request.ContentPreference.Option(fromHeader: "application/xml;q=0.2")
+    assert(option.type, equals: "application")
+    assert(option.subtype, equals: "xml")
+  }
+  
+  func testContentPreferenceOptionFromHeaderTrimsSpaces() {
+    let option = Request.ContentPreference.Option(fromHeader: " application/xml ;q=0.9")
+    assert(option.type, equals: "application")
+    assert(option.subtype, equals: "xml")
+  }
+
+  
+  func testContentPreferenceOptionMatchesCompleteMatch() {
+    let option = Request.ContentPreference.Option(fromHeader: "application/xml")
+    assert(option.matches("application/xml"))
+  }
+  
+  func testContentPreferenceOptionDoesNotMatchDifferentSubtype() {
+    let option = Request.ContentPreference.Option(fromHeader: "application/xml")
+    assert(!option.matches("application/html"))
+  }
+  
+  func testContentPreferenceOptionMatchLevelWithWildcardSubtypeIsMatch() {
+    let option = Request.ContentPreference.Option(fromHeader: "application/*")
+    assert(option.matches("application/xml"))
+  }
+  
+  func testContentPreferenceOptionMatchLevelWithFullWildcardIsMatch() {
+    let option = Request.ContentPreference.Option(fromHeader: "*/*")
+    assert(option.matches("application/xml"))
+  }
+  
+  func testContentPreferenceOptionWithNoSubtypeWithMatchIsMatch() {
+    let option = Request.ContentPreference.Option(fromHeader: "en")
+    assert(option.matches("en"))
+  }
+  
+  func testContentPreferenceOptionWithNoSubtypeWithWildcardIsMatch() {
+    let option = Request.ContentPreference.Option(fromHeader: "*")
+    assert(option.matches("en"))
+  }
+  
+  func testContentPreferenceOptionWithNoSubtypeWithMismatchIsNotMatch() {
+    let option = Request.ContentPreference.Option(fromHeader: "es")
+    assert(!option.matches("en"))
+  }
+  
+  func testContentPreferenceOptionWithAllFlagsMatchingIsMatch() {
+    let option = Request.ContentPreference.Option(fromHeader: "application/xml; a=b; c=d")
+    assert(option.matches("application/xml; c=d; a=b"))
+  }
+  
+  func testContentPreferenceOptionWithFlagsMissingIsNotMatch() {
+    let option = Request.ContentPreference.Option(fromHeader: "application/xml; a=b; c=d")
+    assert(!option.matches("application/xml; c=d"))
+  }
+  
+  func testContentPreferenceOptionWithWrongFlagValueIsNotMatch() {
+    let option = Request.ContentPreference.Option(fromHeader: "application/xml; a=b; c=d")
+    assert(!option.matches("application/xml; c=d; a=f"))
+  }
+  
+  func testContentPreferenceOptionWithExtraFlagValueIsMatch() {
+    let option = Request.ContentPreference.Option(fromHeader: "application/xml; a=b; c=d")
+    assert(option.matches("application/xml; c=d; a=b; e=f"))
+  }
+  
+  func testContentPreferenceOptionWithSameInformationAreEqual() {
+    let option1 = Request.ContentPreference.Option(type: "a", subtype: "b", flags: ["c": "d"], quality: 0.4)
+    let option2 = Request.ContentPreference.Option(type: "a", subtype: "b", flags: ["c": "d"], quality: 0.4)
+    assert(option1, equals: option2)
+  }
+  
+  func testContentPreferenceOptionWithDifferentTypesAreNotEqual() {
+    let option1 = Request.ContentPreference.Option(type: "a", subtype: "b", flags: ["c": "d"], quality: 0.4)
+    let option2 = Request.ContentPreference.Option(type: "b", subtype: "b", flags: ["c": "d"], quality: 0.4)
+    assert(option1, doesNotEqual: option2)
+  }
+  
+  func testContentPreferenceOptionWithDifferentSubtypesAreNotEqual() {
+    let option1 = Request.ContentPreference.Option(type: "a", subtype: "b", flags: ["c": "d"], quality: 0.4)
+    let option2 = Request.ContentPreference.Option(type: "a", subtype: "c", flags: ["c": "d"], quality: 0.4)
+    assert(option1, doesNotEqual: option2)
+  }
+  
+  func testContentPreferenceOptionWithDifferentFlagsAreNotEqual() {
+    let option1 = Request.ContentPreference.Option(type: "a", subtype: "b", flags: ["c": "d"], quality: 0.4)
+    let option2 = Request.ContentPreference.Option(type: "b", subtype: "b", flags: ["c": "e"], quality: 0.4)
+    assert(option1, doesNotEqual: option2)
+  }
+  
+  func testContentPreferenceOptionWithDifferentQualitiesAreNotEqual() {
+    let option1 = Request.ContentPreference.Option(type: "a", subtype: "b", flags: ["c": "d"], quality: 0.4)
+    let option2 = Request.ContentPreference.Option(type: "b", subtype: "b", flags: ["c": "d"], quality: 0.3)
+    assert(option1, doesNotEqual: option2)
+  }
+  
+  func testContentPreferenceFromHeaderParsesOptions() {
+    let preference = Request.ContentPreference(fromHeader: "application/html, application/xml")
+    assert(preference.options, equals: [
+      Request.ContentPreference.Option(type: "application", subtype: "html"),
+      Request.ContentPreference.Option(type: "application", subtype: "xml")
+    ])
+  }
+  
+  func testContentPreferenceFromHeaderPutsHighQualityOptionsBeforeLowQualityOptions() {
+    let preference = Request.ContentPreference(fromHeader: "application/html;q=0.5, application/xml,*/*;q=0.4")
+    
+    assert(preference.options, equals: [
+      Request.ContentPreference.Option(type: "application", subtype: "xml", quality: 1),
+      Request.ContentPreference.Option(type: "application", subtype: "html", quality: 0.5),
+      Request.ContentPreference.Option(type: "*", subtype: "*", quality: 0.4),
+    ])
+  }
+  
+  func testContentPreferenceBestMatchWithOneValueWithAcceptableValueReturnsValue() {
+    let preference = Request.ContentPreference(options: [
+      .init(type: "application", subtype: "xml"),
+      .init(type: "application", subtype: "html"),
+      .init(type: "application", subtype: "*")
+    ])
+    assert(preference.bestMatch("application/xml"), equals: "application/xml")
+    assert(preference.bestMatch("application/html"), equals: "application/html")
+    assert(preference.bestMatch("application/json"), equals: "application/json")
+  }
+  
+  func testContentPreferenceBestMatchWithMultipleValuesReturnsValueWithHighestMatch() {
+    
+    let preference = Request.ContentPreference(options: [
+      .init(type: "application", subtype: "xml"),
+      .init(type: "application", subtype: "html"),
+      .init(type: "application", subtype: "*")
+      ])
+    assert(preference.bestMatch("application/html", "application/xml"), equals: "application/xml")
+    assert(preference.bestMatch("application/json", "application/html"), equals: "application/html")
+    assert(preference.bestMatch("application/foo", "application/json"), equals: "application/foo")
+    assert(preference.bestMatch("text/plain", "application/json"), equals: "application/json")
+  }
+  
+  func testContentPreferenceBestMatchWithNoMatchReturnsNil() {
+    
+    let preference = Request.ContentPreference(options: [
+      .init(type: "application", subtype: "xml"),
+      .init(type: "application", subtype: "html"),
+      .init(type: "application", subtype: "*")
+      ])
+    assert(isNil: preference.bestMatch("text/plain", "text/foo"))
+  }
+  
+  func testContentPreferencesWithSameOptionsAreEqual() {
+    let preference1 = Request.ContentPreference(options: [
+      .init(type: "application", subtype: "xml"),
+      .init(type: "application", subtype: "html"),
+      .init(type: "application", subtype: "*")
+      ])
+    
+    let preference2 = Request.ContentPreference(options: [
+      .init(type: "application", subtype: "xml"),
+      .init(type: "application", subtype: "html"),
+      .init(type: "application", subtype: "*")
+      ])
+    assert(preference1, equals: preference2)
+  }
+  
+  func testConetnPreferencesWithDifferentOptionsAreNotEqual() {
+    let preference1 = Request.ContentPreference(options: [
+      .init(type: "application", subtype: "xml"),
+      .init(type: "application", subtype: "html"),
+      .init(type: "application", subtype: "*")
+      ])
+    
+    let preference2 = Request.ContentPreference(options: [
+      .init(type: "application", subtype: "xml"),
+      .init(type: "application", subtype: "html"),
+      .init(type: "application", subtype: "json")
+      ])
+    assert(preference1, doesNotEqual: preference2)
+    
+  }
 }

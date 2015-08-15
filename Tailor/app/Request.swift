@@ -346,3 +346,219 @@ public struct Request: Equatable {
 public func ==(lhs: Request, rhs: Request) -> Bool {
   return lhs.data == rhs.data
 }
+
+public extension Request {
+  /**
+    This type provides a set of preferences for what kind of content a server
+    should provide in response to a request.
+
+    A request will have multiple preferences for different aspect of the
+    content: the format, the encoding, the charset, or the language. Each
+    preference specifies one or more acceptable options, in order of preference.
+    */
+  public struct ContentPreference: Equatable {
+    /**
+      This type provides an option for an acceptable format for a response.
+      */
+    public struct Option: Equatable {
+      /**
+        The main type of the format.
+        */
+      public let type: String
+      
+      /**
+        The subtype of the format.
+        */
+      public let subtype: String
+      
+      /**
+        The flags that qualify the type.
+        */
+      public let flags: [String:String]
+      
+      /**
+        The quality that determines how favored this option is.
+
+        The quality must be between 0 and 1. Highever values are more favored.
+        */
+      public let quality: Double
+      
+      /**
+        This initializer creates a content preference option.
+
+        - parameter type:       The main type for the option.
+        - parameter subtype:    The subtype for the option.
+        - parameter flags:      The flags that qualify the type.
+        - parameter quality:    The quality that specifies how favored this
+                                option is.
+        */
+      public init(type: String, subtype: String = "", flags: [String:String] = [:], quality: Double = 1) {
+        self.type = type
+        self.subtype = subtype
+        self.flags = flags
+        self.quality = quality
+      }
+      
+      /**
+        This initializer creates a content preference option from a formatted
+        header string.
+
+        The general format for the header string is "type/subtype;q=0.5;foo=bar".
+        Type and subtype in that string represent the type and subtype on the
+        option. "foo=bar" and other similar sections indicate flags to set on
+        the option. The q flag is treated specially, because it provides the
+        quality field.
+
+        - parameter header:   The header string.
+        */
+      public init(fromHeader header: String) {
+        let components = header.characters.split(";")
+        let fullType = String(components[0])
+        var quality: Double = 1
+        var flags = [String:String]()
+        let type: String
+        let subtype: String
+        
+        if fullType.contains("/") {
+          let splitType = fullType.characters.split("/")
+          type = String(splitType[0])
+          subtype = String(splitType[1])
+        }
+        else {
+          type = fullType
+          subtype = ""
+        }
+        for indexOfComponent in 1..<components.count {
+          let splitFlag = components[indexOfComponent].split("=")
+          if splitFlag.count == 2 {
+            let key = String(splitFlag[0]).stringByTrimmingCharactersInSet(.whitespaceCharacterSet())
+            let value = String(splitFlag[1]).stringByTrimmingCharactersInSet(.whitespaceCharacterSet())
+            if key == "q" {
+              quality = Double(value) ?? 0
+            }
+            else {
+              flags[key] = value
+            }
+          }
+        }
+        self.init(
+          type: type.stringByTrimmingCharactersInSet(.whitespaceCharacterSet()),
+          subtype: subtype.stringByTrimmingCharactersInSet(.whitespaceCharacterSet()),
+          flags: flags,
+          quality: quality)
+      }
+      
+      /**
+        This method determines if this option is a match for a proposed value.
+
+        The value should be formatted in the same way as a header string in the
+        initializer. 
+
+        In order to match, the proposed value must have the same type and value
+        as this option, and must have a matching value for every flag in this
+        option. If the type or subtype is an asterisk, it will be interpreted as
+        a wildcard that accepts any value in that field.
+      
+        - parameter string:   The value to check.
+        - returns:            Whether this option accepts the value.
+        */
+      public func matches(string: String) -> Bool {
+        let parsedOption = Option(fromHeader: string)
+        if self.type != parsedOption.type && self.type != "*" { return false }
+        if self.subtype != parsedOption.subtype && self.subtype != "*" { return false }
+        for (key,value) in self.flags {
+          if parsedOption.flags[key] != value {
+            return false
+          }
+        }
+        return true
+      }
+    }
+    
+    /**
+      The options that this content preference accepts, in order from most
+      favored to least favored.
+      */
+    public let options: [Option]
+    
+    /**
+      This initializer creates a preferences from a list of content options.
+    
+      - parameter options:    The options that this content preference accepts,
+                              in order from most favored to least favored.
+      */
+    public init(options: [Option]) {
+      self.options = options
+    }
+    
+    /**
+      This initializer creates a content preference from a header string.
+
+      The header string must contain a set of content options, separated by
+      commas. For instance: "application/html;q=1,application/xml;q=0.5".
+      
+      - parameter header:   The header string
+      */
+    public init(fromHeader header: String) {
+      let options: [Option] = header.characters.split(",").map {
+        Option(fromHeader: String($0))
+        }.sort { $0.quality > $1.quality }
+      self.init(options: options)
+    }
+    
+    /**
+      This method identifies the option that is the best match out of a list
+      of options.
+
+      This will pick the entry from the allowed values that matches the highest
+      entry in our list of options.
+
+      - parameter allowedValues:    The values that we are selecting from.
+      - returns:                    The best option from the allowed values.
+      */
+    public func bestMatch(allowedValues: String...) -> String? {
+      return self.bestMatch(allowedValues)
+    }
+    
+    public func bestMatch(allowedValues: [String]) -> String? {
+      return allowedValues.filter {
+        value in
+        !self.options.filter { $0.matches(value) }.isEmpty
+        }.sort {
+        lhs,rhs in
+        let index1 = self.options.indexOf { $0.matches(lhs) } ?? self.options.endIndex
+        let index2 = self.options.indexOf { $0.matches(rhs) } ?? self.options.endIndex
+        return index1 < index2
+      }.first
+    }
+  }
+}
+
+/**
+  This method determines if two content preferences are equal.
+
+  They are equal if they have the same content options.
+
+  - parameter lhs:    The left-hand side of the comparison
+  - parameter rhs:    The right-hand side of the comparison.
+  - returns:          Whether the two are equal.
+  */
+public func ==(lhs: Request.ContentPreference, rhs: Request.ContentPreference) -> Bool {
+  return lhs.options == rhs.options
+}
+
+/**
+  This method determines if two content options are equal.
+
+  They are equal if they have the same type, subtype, flags, and options.
+
+  - parameter lhs:    The left-hand side of the comparison
+  - parameter rhs:    The right-hand side of the comparison.
+  - returns:          Whether the two are equal.
+  */
+public func ==(lhs: Request.ContentPreference.Option, rhs: Request.ContentPreference.Option) -> Bool {
+  return lhs.type == rhs.type &&
+    lhs.subtype == rhs.subtype &&
+    lhs.flags == rhs.flags &&
+    lhs.quality == rhs.quality
+}

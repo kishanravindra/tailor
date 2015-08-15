@@ -41,6 +41,7 @@ class ModelTests: TailorTestCase {
       func fetch(key: String, inLocale locale: String) -> String? {
         return key + " translated"
       }
+      static var availableLocales: [String] { return [] }
     }
     
     let name = Hat.attributeName("brimSize", localization: TestLocalization(locale: "en"))
@@ -66,6 +67,7 @@ class ModelTests: TailorTestCase {
       func fetch(key: String, inLocale locale: String) -> String? {
         return key + " translated"
       }
+      static var availableLocales: [String] { return [] }
     }
     
     let name = modelAttributeName("hat", key: "brimSize", localization: TestLocalization(locale: "en"))

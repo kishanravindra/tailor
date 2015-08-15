@@ -92,4 +92,8 @@ import TailorTesting
       assert(result!, equals: "My name is John", message: "puts the interpolated value in the content")
     }
   }
+  
+  func testLocalizationAvailableLocalesReturnsEnglish() {
+    assert(Localization.availableLocales, equals: ["en"])
+  }
 }

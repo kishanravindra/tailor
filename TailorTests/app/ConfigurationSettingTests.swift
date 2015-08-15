@@ -288,6 +288,8 @@ import TailorSqlite
       func fetch(key: String, inLocale locale: String) -> String? {
         return nil
       }
+      
+      static var availableLocales: [String] { return [] }
     }
     Application.configuration.localization = { TestLocalization(locale: $0) }
     let setting = ConfigurationSetting()

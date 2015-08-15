@@ -114,6 +114,9 @@ public struct ControllerState {
     This will set the request, action name, and callback from the input
     parameters. It will then build a session based on the request, set a default
     localization, and try and fetch the user from the session information.
+  
+    It will use the Accept-Language header from the request, in conjunction with
+    the available locales from the localization source, to choose a locale.
 
     - parameter request:      The request that the controller is responding to.
     - parameter actionName:   The name of the action that the controller should
@@ -127,7 +130,11 @@ public struct ControllerState {
     self.request = request
     self.callback = callback
     self.session = Session(request: request)
-    self.localization = Application.sharedApplication().localization("en")
+    
+    let localization = Application.sharedApplication().localization("en")
+    let locales = localization.dynamicType.availableLocales
+    let preferredLocale = Request.ContentPreference(fromHeader: request.headers["Accept-Language"] ?? "").bestMatch(locales) ?? "en"
+    self.localization = Application.sharedApplication().localization(preferredLocale)
     self.actionName = actionName
     
     if let userId = Int(self.session["userId"] ?? "") {

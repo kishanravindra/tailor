@@ -134,6 +134,27 @@ class ControllerTests: TailorTestCase {
     assert(state.localization.locale, equals: "es")
   }
   
+  func testInitializerSetsLocaleFromAvailableLocales() {
+    PropertyListLocalization.availableLocales = ["en", "fr"]
+    let request = Request(headers: ["Accept-Language": "fr, en"])
+    let state = ControllerState(request: request, actionName: "index", callback: {_ in})
+    assert(state.localization.locale, equals: "fr")
+  }
+  
+  func testInitializerSetsLocaleWithNoAvailableLocalesDefaultsToEnglish() {
+    PropertyListLocalization.availableLocales = ["en", "fr"]
+    let request = Request(headers: ["Accept-Language": "es-MX,es"])
+    let state = ControllerState(request: request, actionName: "index", callback: {_ in})
+    assert(state.localization.locale, equals: "en")
+  }
+  
+  func testInitializerSetsLocaleWithNoLanguageHeaderDefaultsToEnglish() {
+    PropertyListLocalization.availableLocales = ["en", "fr"]
+    let request = Request()
+    let state = ControllerState(request: request, actionName: "index", callback: {_ in})
+    assert(state.localization.locale, equals: "en")
+  }
+  
   //MARK: - Responses
   
   func testGenerateResponseGivesResponseToBlock() {

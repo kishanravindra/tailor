@@ -29,6 +29,8 @@ class LocalizationSourceTests: TailorTestCase {
         return nil
       }
     }
+    
+    static var availableLocales: [String] { return [] }
   }
   
   func testFallbackLocalesWithGlobalEnglishIsEmpty() {
