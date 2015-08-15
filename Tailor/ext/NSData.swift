@@ -70,3 +70,5 @@ public extension NSData {
     return output as String
   }
 }
+
+let CC_MD5_DIGEST_LENGTH = 16
