@@ -253,7 +253,8 @@ class ConnectionTests: TailorTestCase {
     }
     
     connection.readFromSocket(123)
-    let responses = "HTTP/1.1 200 OK\r\nContent-Length: 14\r\n\r\nRequest Body 1HTTP/1.1 200 OK\r\nContent-Length: 14\r\n\r\nRequest Body 2"
+    let date = Timestamp.now().inTimeZone("GMT").format(TimeFormat.Rfc822)
+    let responses = "HTTP/1.1 200 OK\r\nDate: \(date)\r\nContent-Length: 14\r\nContent-Type: text/html; charset=UTF-8\r\n\r\nRequest Body 1HTTP/1.1 200 OK\r\nDate: \(date)\r\nContent-Length: 14\r\nContent-Type: text/html; charset=UTF-8\r\n\r\nRequest Body 2"
     assert(Connection.outputData, equals: NSData(bytes: responses.utf8))
     Connection.stopStubbing()
   }

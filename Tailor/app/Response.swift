@@ -351,9 +351,14 @@ public struct Response: Equatable {
     }
     
     add(NSString(format: "HTTP/1.1 %d %@\r\n", responseCode.code, responseCode.description))
-    add(NSString(format: "Content-Length: %d\r\n", bodyDataForReading.length))
     
-    for (key,value) in self.headers {
+    var headers = self.headers
+    
+    headers["Content-Length"] = headers["Content-Length"] ?? String(bodyDataForReading.length)
+    headers["Content-Type"] = headers["Content-Type"] ?? "text/html; charset=UTF-8"
+    headers["Date"] = headers["Date"] ?? Timestamp.now().inTimeZone("GMT").format(TimeFormat.Rfc822)
+    
+    for (key,value) in headers {
       add(NSString(format: "%@: %@\r\n", key, value))
     }
     add(cookies.headerStringForChanges)

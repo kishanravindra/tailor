@@ -520,6 +520,16 @@ public extension Request {
       return self.bestMatch(allowedValues)
     }
     
+    /**
+      This method identifies the option that is the best match out of a list
+      of options.
+      
+      This will pick the entry from the allowed values that matches the highest
+      entry in our list of options.
+      
+      - parameter allowedValues:    The values that we are selecting from.
+      - returns:                    The best option from the allowed values.
+      */
     public func bestMatch(allowedValues: [String]) -> String? {
       return allowedValues.filter {
         value in

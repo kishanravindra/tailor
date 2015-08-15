@@ -7,6 +7,7 @@ class PropertyListLocalizationTests: TailorTestCase {
     super.setUp()
     Application.configuration.staticContent[ "en.localization_test"] = "Hello"
     Application.configuration.staticContent[ "es.localization_test"] = "Hola"
+    PropertyListLocalization.availableLocales = PropertyListLocalization.localesFromConfiguration()
   }
   
   func testFetchInLocaleGetsValueFromConfiguration() {

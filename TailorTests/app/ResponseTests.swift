@@ -138,21 +138,44 @@ class ResponseTests: TailorTestCase {
     assert(responseLines[0], equals: "HTTP/1.1 200 OK", message: "response has HTTP intro line")
   }
   
-  func testResponseDataContainsHeaders() {
+  func testResponseDataContainsCustomHeaders() {
     setUpFullResponse()
-    assert(responseLines[1], equals: "Content-Length: 24", message: "has the body length as the content length header")
-    assert(responseLines[2], equals: "X-Custom-Header: header value", message: "has a custom header in the headers")
+    assert(responseLines.contains("X-Custom-Header: header value"), message: "has a custom header in the headers")
+  }
+  
+  func testResponseDataContainsDefaultHeaders() {
+    setUpFullResponse()
+    
+    assert(responseLines.contains("Content-Length: 24"), message: "has the body length as the content length header")
+    assert(responseLines.contains("Content-Type: text/html; charset=UTF-8"))
+    let date = Timestamp.now().inTimeZone("GMT").format(TimeFormat.Rfc822)
+    assert(responseLines.contains("Date: \(date)"), message: "has the current time as the date header")
+  }
+  
+  func testResponseDataAllowsSpecialHeadersToOverrideDefaults() {
+    setUpFullResponse()
+    response.headers["Content-Length"] = "A"
+    response.headers["Content-Type"] = "B"
+    response.headers["Date"] = "C"
+    
+    assert(responseLines.contains("Content-Length: A"))
+    assert(responseLines.contains("Content-Type: B"))
+    assert(responseLines.contains("Date: C"))
+    assert(!responseLines.contains("Content-Length: 24"), message: "does not have the default content length")
+    assert(!responseLines.contains("Content-Type: text/html; charset=UTF-8"), message: "does not have the default content type")
+    let date = Timestamp.now().inTimeZone("GMT").format(TimeFormat.Rfc822)
+    assert(!responseLines.contains("Date: \(date)"), message: "does not have the current time as the date header")
   }
   
   func testResponseDataContainsCookieHeaders() {
     setUpFullResponse()
-    assert(responseLines[3], equals: "Set-Cookie: key2=value4; Path=/", message: "has a cookie header for a changed cookie")
-    assert(responseLines[4], equals: "Set-Cookie: key3=value3; Path=/", message: "has a cookie header for a new cookie")
+    assert(responseLines.contains("Set-Cookie: key2=value4; Path=/"), message: "has a cookie header for a changed cookie")
+    assert(responseLines.contains("Set-Cookie: key3=value3; Path=/"), message: "has a cookie header for a new cookie")
   }
   
   func testResponseDataContainsBody() {
     setUpFullResponse()
-    assert(responseLines[6], equals: "You are being redirected")
+    assert(responseLines.contains("You are being redirected"))
   }
   
   func testResponseBodyStringContainsBody() {
