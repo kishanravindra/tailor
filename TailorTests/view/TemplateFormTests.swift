@@ -62,6 +62,14 @@ class TemplateFormTests: TailorTestCase {
     assert(form.name, equals: "model")
   }
   
+  func testFormWithCsrfKeyPutsKeyInTemplate() {
+    
+    let controller = TestController(request: Request(sessionData: ["csrfKey": "myKey"]), response: Response(), actionName: "index", callback: {response in })
+    form = TemplateForm(controller: controller)
+    assert(form.template.contents, equals: "<input name=\"_csrfKey\" type=\"hidden\" value=\"myKey\"></input>")
+  }
+
+  
   func testDropdownBuildsSelectTag() {
     form.dropdown("brimSize", values: [("", "None"), ("10", "Ten"), ("20", "Twenty")], attributes: ["multiple": "multiple"])
     assert(template.contents, equals: "<select multiple=\"multiple\" name=\"hat[brimSize]\"><option value=\"\">None</option><option value=\"10\">Ten</option><option value=\"20\">Twenty</option></select>")

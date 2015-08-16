@@ -215,7 +215,7 @@ extension ControllerType {
     var response = self.state.response
     response.renderedTemplates.append(template)
     response.appendString(contents)
-    self.callback(response)
+    self.respondWith(response)
   }
   
   /**
@@ -248,7 +248,7 @@ extension ControllerType {
     catch {
       response.responseCode = .InternalServerError
     }
-    self.callback(response)
+    self.respondWith(response)
   }
   
   /**
@@ -315,7 +315,7 @@ extension ControllerType {
     var response = self.state.response
     response.responseCode = .NotFound
     response.appendString("Page Not Found")
-    self.callback(response)
+    self.respondWith(response)
   }
   
   /**
@@ -534,7 +534,7 @@ extension ControllerType {
     if response.responseCode == .Ok {
       response.headers["Last-Modified"] = timestamp.inTimeZone("GMT").format(TimeFormat.Rfc822)
     }
-    self.callback(response)
+    self.respondWith(response)
   }
 
   //MARK: - Test Helpers

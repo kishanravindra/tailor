@@ -65,6 +65,10 @@ public struct TemplateForm {
     else {
       self.inputBuilder = TemplateForm.defaultInputBuilder
     }
+    
+    if let key = controller.request.session["csrfKey"] {
+      self.template.tag("input", ["type": "hidden", "value": key, "name": "_csrfKey"])
+    }
   }
 
   /**

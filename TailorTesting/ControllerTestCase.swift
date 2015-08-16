@@ -147,8 +147,11 @@ public class ControllerTestCase : TailorTestCase {
   //MARK: - Calling Actions
   
   public func callAction(actionName: String, headers: [String:String] = [:], file: String = __FILE__, line: UInt = __LINE__, callback: Response -> Void) {
-    let actionParams = params[actionName] ?? [:]
+    var actionParams = params[actionName] ?? [:]
     var sessionData = [String:String]()
+    let csrfKey = AesEncryptor.generateKey()
+    sessionData["csrfKey"] = csrfKey
+    actionParams["_csrfKey"] = csrfKey
     if user != nil {
       sessionData["userId"] = String(user.id ?? 0)
     }
