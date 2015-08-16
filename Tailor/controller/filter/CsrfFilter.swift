@@ -42,6 +42,7 @@ public struct CsrfFilter: RequestFilterType, Equatable {
     if parameterKey != key && request.method != "GET" {
       NSLog("Request cannot continue because it lacks a valid CSRF token. See documentation for CsrfFilter for more information.")
       response.responseCode = .Forbidden
+      response.appendString("That action cannot be completed because of a security restriction.")
       callback(request, response, stop: true)
       return
     }

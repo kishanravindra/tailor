@@ -51,6 +51,7 @@ class CsrfFilterTests: TailorTestCase {
       expectation.fulfill()
       self.assert(stop)
       self.assert(response.responseCode, equals: .Forbidden)
+      self.assert(response.bodyString, equals: "That action cannot be completed because of a security restriction.")
     }
     
     waitForExpectationsWithTimeout(0, handler: nil)
@@ -64,6 +65,7 @@ class CsrfFilterTests: TailorTestCase {
       expectation.fulfill()
       self.assert(stop)
       self.assert(response.responseCode, equals: .Forbidden)
+      self.assert(response.bodyString, equals: "That action cannot be completed because of a security restriction.")
     }
     
     waitForExpectationsWithTimeout(0, handler: nil)
