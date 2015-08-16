@@ -141,7 +141,7 @@ struct Store : Persistable {
 
 @available(*, deprecated) extension Controller {
   convenience init() {
-    self.init(request: Request(), actionName: "index", callback: {_ in })
+    self.init(request: Request(), response: Response(), actionName: "index", callback: {_ in })
   }
 }
 

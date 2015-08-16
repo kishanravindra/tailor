@@ -24,7 +24,7 @@ class TemplateFormTests: TailorTestCase {
   
   override func setUp() {
     super.setUp()
-    controller = TestController(request: Request(), actionName: "index", callback: {response in })
+    controller = TestController(request: Request(), response: Response(), actionName: "index", callback: {response in })
     form = TemplateForm(controller: controller, name: "hat")
   }
   

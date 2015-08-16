@@ -29,6 +29,7 @@ class TemplateTypeTests: TailorTestCase {
     }
     self.controller = TestController(
       request: request,
+      response: Response(),
       actionName: "index",
       callback: callback
     )
@@ -190,6 +191,7 @@ class TemplateTypeTests: TailorTestCase {
     }
     var template2 = EmptyTemplate(state: TemplateState(InnerTestController(
       request: controller.request,
+      response: Response(),
       actionName: "show",
       callback: controller.callback
     )))
@@ -214,6 +216,7 @@ class TemplateTypeTests: TailorTestCase {
     }
     var template2 = EmptyTemplate(state: TemplateState(InnerTestController(
       request: controller.request,
+      response: Response(),
       actionName: "show",
       callback: controller.callback
       )))
@@ -241,6 +244,7 @@ class TemplateTypeTests: TailorTestCase {
     }
     var template2 = EmptyTemplate(state: TemplateState(InnerTestController(
       request: controller.request,
+      response: Response(),
       actionName: "show",
       callback: controller.callback
       )))
@@ -269,6 +273,7 @@ class TemplateTypeTests: TailorTestCase {
     }
     var template2 = EmptyTemplate(state: TemplateState(InnerTestController(
       request: controller.request,
+      response: Response(),
       actionName: "show",
       callback: controller.callback
       )))
@@ -293,6 +298,7 @@ class TemplateTypeTests: TailorTestCase {
     }
     var template2 = EmptyTemplate(state: TemplateState(InnerTestController(
       request: controller.request,
+      response: Response(),
       actionName: "show",
       callback: controller.callback
       )))
@@ -317,6 +323,7 @@ class TemplateTypeTests: TailorTestCase {
     }
     var template2 = EmptyTemplate(state: TemplateState(InnerTestController(
       request: controller.request,
+      response: Response(),
       actionName: "show",
       callback: controller.callback
       )))
@@ -343,6 +350,7 @@ class TemplateTypeTests: TailorTestCase {
     }
     var template2 = EmptyTemplate(state: TemplateState(InnerTestController(
       request: controller.request,
+      response: Response(),
       actionName: "show",
       callback: controller.callback
       )))
@@ -371,6 +379,7 @@ class TemplateTypeTests: TailorTestCase {
     }
     var template2 = EmptyTemplate(state: TemplateState(InnerTestController(
       request: controller.request,
+      response: Response(),
       actionName: "show",
       callback: controller.callback
       )))
@@ -393,6 +402,7 @@ class TemplateTypeTests: TailorTestCase {
     }
     var template2 = EmptyTemplate(state: TemplateState(InnerTestController(
       request: controller.request,
+      response: Response(),
       actionName: "show",
       callback: controller.callback
       )))
@@ -560,6 +570,7 @@ class TemplateTypeTests: TailorTestCase {
     request.requestParameters = ["id": "5", "color": "red", "size": "10"]
     let template = EmptyTemplate(state: TemplateState(TestController(
       request: request,
+      response: Response(),
       actionName: "test",
       callback: controller.callback
     )))
@@ -572,6 +583,7 @@ class TemplateTypeTests: TailorTestCase {
     request.requestParameters = ["id": "5", "color": "red", "size": "10"]
     let template = EmptyTemplate(state: TemplateState(TestController(
       request: request,
+      response: Response(),
       actionName: "test",
       callback: controller.callback
       )))

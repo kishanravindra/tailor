@@ -46,6 +46,8 @@ public protocol ControllerType {
     takes in the state.
 
     - parameter request:      The request that the controller is responding to.
+    - parameter response:     The baseline for the response that the controller
+                              will generate.
     - parameter actionName:   The name of the action that the controller should
                               invoke. This is mostly useful for generating
                               routes, because the actual action method will be
@@ -53,7 +55,7 @@ public protocol ControllerType {
     - parameter callback      The callback that the controller should invoke
                               when the response is ready.
     */
-  init(request: Request, actionName: String, callback: Connection.ResponseCallback)
+  init(request: Request, response: Response, actionName: String, callback: Connection.ResponseCallback)
 
   /**
     This method initializes a controller with its state.
@@ -92,6 +94,16 @@ public protocol ControllerType {
 public struct ControllerState {
   /** The request that the controller is responding to. */
   public var request: Request
+  
+  /**
+    The response that the controller is generating.
+  
+    Some parts of the response may be filled in by filters prior to the
+    controller action starting. You should use this as the baseline for the
+    response that you generate in the controller action and return to the
+    callback.
+    */
+  public var response: Response
 
   /** The callback that the controller should call once it has a response. */
   public var callback: Connection.ResponseCallback
@@ -119,6 +131,7 @@ public struct ControllerState {
     the available locales from the localization source, to choose a locale.
 
     - parameter request:      The request that the controller is responding to.
+    - parameter response:     The response baseline from the filters.
     - parameter actionName:   The name of the action that the controller should
                               invoke. This is mostly useful for generating
                               routes, because the actual action method will be
@@ -126,8 +139,9 @@ public struct ControllerState {
     - parameter callback      The callback that the controller should invoke
                               when the response is ready.
     */
-  public init(request: Request, actionName: String, callback: Connection.ResponseCallback) {
+  public init(request: Request, response: Response, actionName: String, callback: Connection.ResponseCallback) {
     self.request = request
+    self.response = response
     self.callback = callback
     self.session = Session(request: request)
     
@@ -147,6 +161,7 @@ public struct ControllerState {
     This method initializes a controller state with a full set of fields.
 
     - parameter request:      The request that the controller is responding to.
+    - parameter response:     The response baseline from the filters.
     - parameter actionName:   The name of the action that the controller should
                               invoke.
     - parameter callback      The callback that the controller should invoke
@@ -156,8 +171,9 @@ public struct ControllerState {
     - parameter localization  The localization that the controller should use
                               to localize its text.
     */
-  public init(request: Request, callback: Connection.ResponseCallback, session: Session, actionName: String, currentUser: UserType?, localization: LocalizationSource) {
+  public init(request: Request, response: Response, callback: Connection.ResponseCallback, session: Session, actionName: String, currentUser: UserType?, localization: LocalizationSource) {
     self.request = request
+    self.response = response
     self.callback = callback
     self.session = session
     self.actionName = actionName
@@ -185,8 +201,8 @@ extension ControllerType {
   /** The user that is signed in. */
   public var currentUser: UserType? { return self.state.currentUser }
 
-  public init(request: Request, actionName: String, callback: Connection.ResponseCallback) {
-    self.init(state: ControllerState(request: request, actionName: actionName, callback: callback))
+  public init(request: Request, response: Response, actionName: String, callback: Connection.ResponseCallback) {
+    self.init(state: ControllerState(request: request, response: response, actionName: actionName, callback: callback))
   }
   
   public static var name: String {
@@ -198,36 +214,6 @@ extension ControllerType {
   //MARK: - Responses
   
   /**
-    This method generates a response object and passes it to a block.
-    
-    This will set the cookies on the response before giving it to the block,
-    and after the block is done it will give the response to the controller's
-    handler.
-    */
-  public func generateResponse(@noescape contents: (inout Response)->()) {
-    var response = Response()
-    response.cookies = request.cookies
-    contents(&response)
-    session.storeInCookies(&response.cookies)
-    self.callback(response)
-  }
-  
-  /**
-    This method generates a response object and passes it to a block.
-    
-    This will set the cookies on the response before giving it to the block,
-    and after the block is done it will give the response to the controller's
-    handler.
-    */
-  public func generateResponse(@noescape contents: (inout Response)->(Session)) {
-    var response = Response()
-    response.cookies = request.cookies
-    let session = contents(&response)
-    session.storeInCookies(&response.cookies)
-    self.callback(response)
-  }
-  
-  /**
     This method generates a response with a template.
     
     - parameter template:    The template to use for the request.
@@ -235,27 +221,24 @@ extension ControllerType {
   public func respondWith(template: TemplateType) {
     var layout = self.dynamicType.layout.init(controller: self, template: template)
     let contents = layout.generate()
-    self.generateResponse {
-      (inout response : Response) -> Void in
-      response.renderedTemplates.append(template)
-      response.appendString(contents)
-    }
+    var response = self.state.response
+    response.renderedTemplates.append(template)
+    response.appendString(contents)
+    self.callback(response)
   }
   
   /**
     This method generates a response with a redirect to a different path.
   
     - parameter path:       The path to redirect to.
-    - parameter session:    The session information for the response.
+    - parameter session:    The new session for the response.
     */
   public func redirectTo(path: String, session: Session? = nil) {
-    self.generateResponse {
-      response -> Session in
-      response.responseCode = .SeeOther
-      response.headers["Location"] = path
-      response.appendString("<html><body>You are being <a href=\"\(path)\">redirected</a>.</body></html>")
-      return session ?? self.session
-    }
+    var response = self.state.response
+    response.responseCode = .SeeOther
+    response.headers["Location"] = path
+    response.appendString("<html><body>You are being <a href=\"\(path)\">redirected</a>.</body></html>")
+    self.respondWith(response, session: session)
   }
   
   /**
@@ -264,21 +247,32 @@ extension ControllerType {
     - parameter json:   The object to convert to JSON and render.
     */
   public func respondWith(json json: JsonEncodable) {
+    var response = self.state.response
     do {
       let jsonData = try json.toJson().jsonData()
-      generateResponse {
-        (inout response: Response) -> Void in
-        response.responseCode = .Ok
-        response.headers["Content-Type"] = "application/json"
-        response.appendData(jsonData)
-      }
+      response.responseCode = .Ok
+      response.headers["Content-Type"] = "application/json"
+      response.appendData(jsonData)
     }
     catch {
-      generateResponse {
-        (inout response: Response) -> Void in
-        response.responseCode = .InternalServerError
-      }
+      response.responseCode = .InternalServerError
     }
+    self.callback(response)
+  }
+  
+  /**
+    This method generates a sends a response to our callback.
+
+    If a session is provided, that session info will be stored on the response.
+  
+    - parameter response:   The response to send.
+    - parameter session:    The session info for the response.
+    */
+  public func respondWith(var response: Response, session: Session? = nil) {
+    if let session = session {
+      session.storeInCookies(&response.cookies)
+    }
+    self.callback(response)
   }
   
   /**
@@ -321,17 +315,17 @@ extension ControllerType {
   */
   public func redirectTo(controller: ControllerType.Type, actionName: String, parameters: [String:String] = [:], session: Session? = nil) {
     let path = self.pathFor(controller, actionName: actionName, parameters: parameters) ?? "/"
-    self.redirectTo(path, session: session)  }
+    self.redirectTo(path, session: session)
+  }
   
   /**
     This method generates a response with a 404 page.
   */
   public func render404() {
-    self.generateResponse {
-      response -> Void in
-      response.responseCode = .NotFound
-      response.appendString("Page Not Found")
-    }
+    var response = self.state.response
+    response.responseCode = .NotFound
+    response.appendString("Page Not Found")
+    self.callback(response)
   }
   
   /**
@@ -522,35 +516,6 @@ extension ControllerType {
   //MARK: - Caching
   
   /**
-    This method causes a response to be cached using an ETag header.
-
-    The full response will be generated for each request, and then an MD5
-    hash of the response body will be calculated. If that matches the
-    If-None-Match request header, then this will server a 304 response with no
-    body. If there is no matching request header, this will generate the full
-    normal response.
-
-    This caching mechanism only prevents having to re-transmit the response; it
-    does not prevent having to re-generate the response. This is best suited for
-    large responses that change rarely.
-  
-    - parameter responseGenerator: A block that adds the body to the response.
-    */
-  public func cacheWithTag(@noescape responseGenerator: (inout Response)->Void) {
-    generateResponse {
-      response -> Void in
-      let cacheResponse = response
-      responseGenerator(&response)
-      let tag = response.body.md5Hash
-      if response.responseCode.code == 200 && request.headers["If-None-Match"] == tag {
-        response = cacheResponse
-        response.responseCode = .NotModified
-      }
-      response.headers["ETag"] = tag
-    }
-  }
-  
-  /**
     This method causes a response to be cached using a Last-Modified header.
 
     This will check for an If-Modified-Since header in the request. If the
@@ -566,20 +531,20 @@ extension ControllerType {
     - parameter responseGenerator:  A block that adds the body to the response.
     */
   public func cacheWithModificationTime(timestamp: Timestamp, @noescape responseGenerator: (inout Response)->Void) {
-    generateResponse {
-      (inout response: Response)->Void in
-      if let requestTimestamp = Request.parseTime(request.headers["If-Modified-Since"] ?? "") {
-        if Int(requestTimestamp.epochSeconds) >= Int(timestamp.epochSeconds) {
-          response.responseCode = .NotModified
-          response.headers["Last-Modified"] = timestamp.inTimeZone("GMT").format(TimeFormat.Rfc822)
-          return
-        }
-      }
-      responseGenerator(&response)
-      if response.responseCode == .Ok {
+    var response = self.state.response
+    if let requestTimestamp = Request.parseTime(request.headers["If-Modified-Since"] ?? "") {
+      if Int(requestTimestamp.epochSeconds) >= Int(timestamp.epochSeconds) {
+        response.responseCode = .NotModified
         response.headers["Last-Modified"] = timestamp.inTimeZone("GMT").format(TimeFormat.Rfc822)
+        self.respondWith(response)
+        return
       }
     }
+    responseGenerator(&response)
+    if response.responseCode == .Ok {
+      response.headers["Last-Modified"] = timestamp.inTimeZone("GMT").format(TimeFormat.Rfc822)
+    }
+    self.callback(response)
   }
 
   //MARK: - Test Helpers
@@ -595,10 +560,11 @@ extension ControllerType {
   public static func callAction<T:ControllerType>(actionName: String, _ action: (T)->Void->Void, _ request: Request, callback: (Response,T)->()) {
     
     var controller: T
-
-    controller = T(request: request, actionName: actionName, callback: {_ in })
+    let response = Response()
+    controller = T(request: request, response: response, actionName: actionName, callback: {_ in })
     controller = T(
       request: request,
+      response: response,
       actionName: actionName,
       callback: { response in callback(response, controller) }
     )

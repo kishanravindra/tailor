@@ -18,18 +18,16 @@ class RouteSetTests: TailorTestCase {
     }
     
     func indexAction() {
-      generateResponse {
-        (inout response: Response) in
-        response.appendString("Test Controller: index")
-      }
+      var response = self.state.response
+      response.appendString("Test Controller: index")
+      self.callback(response)
     }
     
     func showAction() {
-      generateResponse {
-        (inout response: Response) -> Void in
-        let id = request.requestParameters["id"] ?? "None"
-        response.appendString("Test Controller: show \(id)")
-      }
+      var response = self.state.response
+      let id = request.requestParameters["id"] ?? "None"
+      response.appendString("Test Controller: show \(id)")
+      callback(response)
     }
   }
   
@@ -423,85 +421,63 @@ class RouteSetTests: TailorTestCase {
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
-  func testWithScopeWithPassingFilterCallsHandler() {
-    let expectation = expectationWithDescription("filter called")
-    let filter: (TestController)->Void->Bool = {
-      controller in
-      return {
-        expectation.fulfill()
-        self.assert(true, message: "calls filter")
-        return true
+  func testWithScopeWithContinuingFilterCallsHandler() {
+    struct TestFilter: RequestFilterType {
+      func preProcess(request: Request, var response: Response, callback: (Response, stop: Bool) -> Void) {
+        response.appendString("Yo\r\n")
+        callback(response, stop: false)
+      }
+      func postProcess(request: Request, var response: Response, callback: (Response) -> Void) {
+        response.appendString("\r\nDawg")
+        callback(response)
       }
     }
-    routeSet.withScope(filter: filter) {
+    routeSet.withScope(filter: TestFilter()) {
       self.routeSet.route(.Get("test"), to: TestController.indexAction, name: "index")
       self.assert(self.getLatestRoute()?.path.pathPattern, equals: "/test", message: "includes normal path in route in block")
     }
     let route = getLatestRoute()
     route?.handler(createTestRequest()) {
       response in
-      self.assert(response.bodyString, equals: "Test Controller: index")
+      self.assert(response.bodyString, equals: "Yo\r\nTest Controller: index\r\nDawg")
     }
-    waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
-  func testWithScopeWithFailingFilterDoesNotCallHandler() {
-    let expectation = expectationWithDescription("filter called")
-    let filter: (TestController)->Void->Bool = {
-      controller in
-      return {
-        expectation.fulfill()
-        controller.render404()
-        return false
+  func testWithScopeWithStoppingFilterDoesNotCallController() {
+    struct TestFilter: RequestFilterType {
+      func preProcess(request: Request, var response: Response, callback: (Response, stop: Bool) -> Void) {
+        response.appendString("Yo\r\n")
+        callback(response, stop: true)
+      }
+      func postProcess(request: Request, var response: Response, callback: (Response) -> Void) {
+        response.appendString("Dawg\r\n")
+        callback(response)
       }
     }
-    routeSet.withScope(filter: filter) {
+
+    routeSet.withScope(filter: TestFilter()) {
       self.routeSet.route(.Get("test"), to: TestController.indexAction, name: "index")
       self.assert(self.getLatestRoute()?.path.pathPattern, equals: "/test", message: "includes normal path in route in block")
     }
     let route = getLatestRoute()
     route?.handler(createTestRequest()) {
       response in
-      self.assert(response.bodyString, equals: "Page Not Found")
-    }
-    waitForExpectationsWithTimeout(0.01, handler: nil)
-  }
-  
-  func testWithScopeWithFilterForWrongControllerTypeRenders404() {
-    struct TestControllerTwo: ControllerType {
-      let state: ControllerState
-      static func defineRoutes(routes: RouteSet) {
-        
-      }
-    }
-    let filter: (TestControllerTwo)->Void->Bool = {
-      controller in
-      return {
-        XCTFail("does not call filter")
-        return true
-      }
-    }
-    routeSet.withScope(filter: filter) {
-      self.routeSet.route(.Get("test"), to: TestController.indexAction, name: "index")
-      self.assert(self.getLatestRoute()?.path.pathPattern, equals: "/test", message: "includes normal path in route in block")
-    }
-    let route = getLatestRoute()
-    route?.handler(createTestRequest()) {
-      response in
-      self.assert(response.bodyString, equals: "Page Not Found")
+      self.assert(response.bodyString, equals: "Yo\r\nDawg\r\n")
     }
   }
   
   func testWithScopeDoesNotCallFilterOnRouteOutsideBlock() {
-    let filter: (TestController)->Void->Bool = {
-      controller in
-      return {
-        XCTFail("does not call filter")
-        controller.render404()
-        return false
+    struct TestFilter: RequestFilterType {
+      func preProcess(request: Request, var response: Response, callback: (Response, stop: Bool) -> Void) {
+        response.appendString("Yo\r\n")
+        callback(response, stop: true)
+      }
+      func postProcess(request: Request, var response: Response, callback: (Response) -> Void) {
+        response.appendString("Dawg\r\n")
+        callback(response)
       }
     }
-    routeSet.withScope(filter: filter) {
+    routeSet.withScope(filter: TestFilter()) {
       self.routeSet.route(.Get("test"), to: TestController.indexAction, name: "index")
       self.assert(self.getLatestRoute()?.path.pathPattern, equals: "/test", message: "includes normal path in route in block")
     }
@@ -519,15 +495,17 @@ class RouteSetTests: TailorTestCase {
   }
   
   func testWithScopeWithPathAndFilterAddsPathPrefix() {
-    let filter: (TestController)->Void->Bool = {
-      controller in
-      return {
-        XCTFail("does not call filter")
-        controller.render404()
-        return false
+    struct TestFilter: RequestFilterType {
+      func preProcess(request: Request, var response: Response, callback: (Response, stop: Bool) -> Void) {
+        response.appendString("Yo\r\n")
+        callback(response, stop: false)
+      }
+      func postProcess(request: Request, var response: Response, callback: (Response) -> Void) {
+        response.appendString("Dawg\r\n")
+        callback(response)
       }
     }
-    routeSet.withScope(path: "foo", filter: filter) {
+    routeSet.withScope(path: "foo", filter: TestFilter()) {
       self.routeSet.route(.Get("test"), to: TestController.indexAction, name: "index")
       self.assert(self.getLatestRoute()?.path.pathPattern, equals: "/foo/test", message: "includes normal path in route in block")
     }
@@ -541,32 +519,34 @@ class RouteSetTests: TailorTestCase {
     assert(route?.path.pathPattern, equals: "/test2")
   }
   
-  func testWithScopeWithMultipleRoutesCallsAllFilters() {
-    let expectation1 = expectationWithDescription("filter1 called")
-    let filter1: (TestController)->Void->Bool = {
-      controller in
-      return {
-        expectation1.fulfill()
-        return true
+  func testWithScopeWithMultipleFiltersCallsAllFilters() {
+    struct TestFilter: RequestFilterType {
+      func preProcess(request: Request, var response: Response, callback: (Response, stop: Bool) -> Void) {
+        response.appendString("Yo\r\n")
+        callback(response, stop: false)
+      }
+      func postProcess(request: Request, response: Response, callback: (Response) -> Void) {
+        callback(response)
       }
     }
-    let expectation2 = expectationWithDescription("filter1 called")
-    let filter2: (TestController)->Void->Bool = {
-      controller in
-      return {
-        expectation2.fulfill()
-        return true
+    struct TestFilterTwo: RequestFilterType {
+      func preProcess(request: Request, response: Response, callback: (Response, stop: Bool) -> Void) {
+        callback(response, stop: false)
+      }
+      func postProcess(request: Request, var response: Response, callback: (Response) -> Void) {
+        response.appendString("\r\nDawg")
+        callback(response)
       }
     }
-    routeSet.withScope(filters: [filter1,filter2]) {
+    routeSet.withScope(filters: [TestFilter(),TestFilterTwo()]) {
       self.routeSet.route(.Get("test"), to: TestController.indexAction, name: "index")
       self.assert(self.getLatestRoute()?.path.pathPattern, equals: "/test", message: "includes normal path in route in block")
     }
     let route = getLatestRoute()
     route?.handler(createTestRequest()) {
       response in
+      self.assert(response.bodyString, equals: "Yo\r\nTest Controller: index\r\nDawg")
     }
-    waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
   func testAddRedirectCreatesRedirectResponse() {
@@ -751,10 +731,9 @@ class RouteSetTests: TailorTestCase {
       }
       
       func indexAction() {
-        generateResponse {
-          (inout response: Response) in
-          response.appendString("Test Controller: index")
-        }
+        var response = self.state.response
+        response.appendString("Test Controller: index")
+        self.callback(response)
       }
     }
     
@@ -766,6 +745,8 @@ class RouteSetTests: TailorTestCase {
       assert(routeSet.routes[2].description, equals: "SecondTestController#index")
     }
   }
+  
+  //MARK: - Handling Requests
   
   func testHandleRequestCallsHandlerForMatchingRequests() {
     let expectation1 = expectationWithDescription("calls first callback")

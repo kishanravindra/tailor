@@ -75,6 +75,7 @@ class ControllerTests: TailorTestCase {
     
     controller = TestController(
       request: Request(),
+      response: Response(),
       actionName: "index",
       callback: {
         response in
@@ -93,6 +94,7 @@ class ControllerTests: TailorTestCase {
     SeedTaskTypeTests.SeedTask.saveTable("tailor_alterations")
     controller = TestController(
       request: Request(sessionData: ["userId": String(user.id!)]),
+      response: Response(),
       actionName: "index",
       callback: {
         (response) in
@@ -104,6 +106,7 @@ class ControllerTests: TailorTestCase {
   func testInitializerSetsUserToNilWithBadId() {
     controller = TestController(
       request: Request(sessionData: ["userId": String(user.id! + 1)]),
+      response: Response(),
       actionName: "index",
       callback: {
         (response) in
@@ -115,6 +118,7 @@ class ControllerTests: TailorTestCase {
   func testInitializerSetsUserToNilWithNoId() {
     controller = TestController(
       request: Request(),
+      response: Response(),
       actionName: "index",
       callback: {
         (response) in
@@ -125,98 +129,40 @@ class ControllerTests: TailorTestCase {
   
   func testInitializeStateWithAllFieldsSetsAllFields() {
     let request = Request()
+    let response = Response()
     let session = Session(request: request)
     let user = TestUser().save()!
-    let state = ControllerState(request: request, callback: {_ in}, session: session, actionName: "show", currentUser: user, localization: PropertyListLocalization(locale: "es"))
+    let state = ControllerState(request: request, response: response, callback: {_ in}, session: session, actionName: "show", currentUser: user, localization: PropertyListLocalization(locale: "es"))
     assert(state.request, equals: request)
     assert(state.actionName, equals: "show")
     assert(state.currentUser?.id, equals: user.id!)
     assert(state.localization.locale, equals: "es")
+    assert(state.response, equals: response)
   }
   
   func testInitializerSetsLocaleFromAvailableLocales() {
     PropertyListLocalization.availableLocales = ["en", "fr"]
     let request = Request(headers: ["Accept-Language": "fr, en"])
-    let state = ControllerState(request: request, actionName: "index", callback: {_ in})
+    let state = ControllerState(request: request, response: Response(), actionName: "index", callback: {_ in})
     assert(state.localization.locale, equals: "fr")
   }
   
   func testInitializerSetsLocaleWithNoAvailableLocalesDefaultsToEnglish() {
     PropertyListLocalization.availableLocales = ["en", "fr"]
     let request = Request(headers: ["Accept-Language": "es-MX,es"])
-    let state = ControllerState(request: request, actionName: "index", callback: {_ in})
+    let state = ControllerState(request: request, response: Response(), actionName: "index", callback: {_ in})
     assert(state.localization.locale, equals: "en")
   }
   
   func testInitializerSetsLocaleWithNoLanguageHeaderDefaultsToEnglish() {
     PropertyListLocalization.availableLocales = ["en", "fr"]
     let request = Request()
-    let state = ControllerState(request: request, actionName: "index", callback: {_ in})
+    let state = ControllerState(request: request, response: Response(), actionName: "index", callback: {_ in})
     assert(state.localization.locale, equals: "en")
   }
   
   //MARK: - Responses
-  
-  func testGenerateResponseGivesResponseToBlock() {
-    let expectation = expectationWithDescription("block called")
-    self.callback = {
-      response in
-      expectation.fulfill()
-      self.assert(response.responseCode, equals: Response.Code(123, "yo"), message: "has the response code from the block given to generateResponse")
-    }
-    
-    controller.generateResponse { (inout r: Response) in r.responseCode = .init(123, "yo") }
-    
-    waitForExpectationsWithTimeout(0.01, handler: nil)
-  }
-  
-  func testGenerateResponseSetsCookies() {
-    let expectation = expectationWithDescription("callback called")
-    controller = TestController(
-      request: Request(cookies: ["cookie1": "value1"]),
-      actionName: "index",
-      callback: { self.callback($0) }
-    )
-    self.callback = {
-      response in
-      expectation.fulfill()
-      self.assert(response.cookies.cookieDictionary(), equals: [
-        "cookie1": "value1",
-        "cookie2": "value2",
-        "_session": self.controller.session.cookieString()
-        ], message: "gets old cookies, new cookies, and session info")
-    }
-    
-    controller.generateResponse {
-      (inout response: Response)->Void in
-      response.cookies["cookie2"] = "value2"
-    }
-    
-    waitForExpectationsWithTimeout(0.01, handler: nil)
-  }
-  
-  func testGenerateResponseWithSessionSetsSessionInfoOnResponse() {
-    let expectation = expectationWithDescription("callback called")
-    
-    self.callback = {
-      response in
-      expectation.fulfill()
-      let newRequest = Request(cookies: response.cookies.cookieDictionary())
-      let session = Session(request: newRequest)
-      self.assert(session["test"], equals: "value")
-    }
-    
-    controller.generateResponse {
-      response -> Session in
-      var session = controller.session
-      session["test"] = "value"
-      return session
-    }
-    
-    waitForExpectationsWithTimeout(0.01, handler: nil)
-  }
-  
-  func testRespondWithRendersTemplateInLayout() {
+    func testRespondWithRendersTemplateInLayout() {
     let expectation = expectationWithDescription("callback called")
     struct TestTemplate: TemplateType {
       var state: TemplateState
@@ -289,6 +235,38 @@ class ControllerTests: TailorTestCase {
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
+  func testRespondWithResponseAndSessionCallsCallbackWithResponse() {
+    var response = Response()
+    response.appendString("Test Body")
+    var session = Session(request: controller.request)
+    session["test"] = "value"
+    let expectation = expectationWithDescription("callback called")
+    self.callback = {
+      response2 in
+      expectation.fulfill()
+      self.assert(response2.body, equals: response.body)
+    }
+    controller.respondWith(response, session: session)
+    self.waitForExpectationsWithTimeout(0, handler: nil)
+  }
+  
+  func testRespondWithResponseAndSessionSetsSessionInfoOnResponse() {
+    var response = Response()
+    response.appendString("Test Body")
+    var session = Session(request: controller.request)
+    session["test"] = "value"
+    let expectation = expectationWithDescription("callback called")
+    self.callback = {
+      response2 in
+      expectation.fulfill()
+      let request = Request(cookies: ["_session": response2.cookies["_session"] ?? ""])
+      let session = Session(request: request)
+      self.assert(session["test"], equals: "value")
+    }
+    controller.respondWith(response, session: session)
+    self.waitForExpectationsWithTimeout(0, handler: nil)
+  }
+  
   func testRedirectToGeneratesRedirectResponse() {
     let expectation = expectationWithDescription("callback called")
     self.callback = {
@@ -331,6 +309,7 @@ class ControllerTests: TailorTestCase {
   @available(*, deprecated) func testPathForWithNameWithParametersInPathReusesThoseParameters() {
     controller = TestController(
       request: Request(parameters: ["id": "10"]),
+      response: Response(),
       actionName: "show",
       callback: {
         response in
@@ -349,6 +328,7 @@ class ControllerTests: TailorTestCase {
   func testPathForCanGetPathForSameAction() {
     self.controller = SecondTestController(
       request: Request(),
+      response: Response(),
       actionName: "index",
       callback: { self.callback($0) }
     )
@@ -359,6 +339,7 @@ class ControllerTests: TailorTestCase {
   func testPathForWithParametersInPathReusesParameters() {
     controller = TestController(
       request: Request(parameters: ["id": "10"]),
+      response: Response(),
       actionName: "show",
       callback: {
         response in
@@ -542,6 +523,7 @@ class ControllerTests: TailorTestCase {
     
     controller = SecondTestController(
       request: Request(),
+      response: Response(),
       actionName: "index",
       callback: {
         response in
@@ -617,80 +599,6 @@ class ControllerTests: TailorTestCase {
   
   //MARK: - Caching
   
-  func testCacheWithTagWithMatchingEtagSendsNotModifiedResponse() {
-    let data = NSData(bytes: [1,2,3,4])
-    let tag = data.md5Hash
-    let expectation = expectationWithDescription("callback called")
-    
-    controller = TestController(
-      request: Request(headers: ["If-None-Match": tag]),
-      actionName: "index",
-      callback: {
-        response in
-        expectation.fulfill()
-        self.assert(response.responseCode, equals: .NotModified)
-        self.assert(response.headers["ETag"], equals: tag)
-        self.assert(response.body.length, equals: 0)
-      }
-    )
-
-    controller.cacheWithTag {
-      (inout response: Response) -> Void in
-      response.appendData(data)
-    }
-    waitForExpectationsWithTimeout(0, handler: nil)
-  }
-
-  func testCacheWithTagWithNotMatchingEtagSendsFullResponse() {
-    let data = NSData(bytes: [1,2,3,4])
-    let tag = data.md5Hash
-    let expectation = expectationWithDescription("callback called")
-    
-    controller = TestController(
-      request: Request(headers: ["If-None-Match": tag + "boop"]),
-      actionName: "index",
-      callback: {
-        response in
-        expectation.fulfill()
-        self.assert(response.responseCode, equals: .Ok)
-        
-        self.assert(response.headers["ETag"], equals: tag)
-        self.assert(response.body, equals: data)
-      }
-    )
-
-    controller.cacheWithTag {
-      (inout response: Response) -> Void in
-      response.appendData(data)
-    }
-    waitForExpectationsWithTimeout(0, handler: nil)
-  }
-  
-  func testCacheWithTagWithNon200ResponseSendsOriginalResponse() {
-    let data = NSData(bytes: [1,2,3,4])
-    let tag = data.md5Hash
-    let expectation = expectationWithDescription("callback called")
-    
-    controller = TestController(
-      request: Request(headers: ["If-None-Match": tag]),
-      actionName: "index",
-      callback: {
-        response in
-        expectation.fulfill()
-        self.assert(response.responseCode, equals: .Created)
-        self.assert(response.headers["ETag"], equals: tag)
-        self.assert(response.body, equals: data)
-      }
-    )
-    
-    controller.cacheWithTag {
-      (inout response: Response) -> Void in
-      response.responseCode = .Created
-      response.appendData(data)
-    }
-    waitForExpectationsWithTimeout(0, handler: nil)
-  }
-  
   func testCacheWithModificationTimeWithFreshTimestampReturnsNotModifiedResponse() {
     let data = NSData(bytes: [1,2,3,4])
     let timestamp = 1.hour.ago
@@ -698,6 +606,7 @@ class ControllerTests: TailorTestCase {
     
     controller = TestController(
       request: Request(headers: ["If-Modified-Since": 30.minutes.ago.format(TimeFormat.Rfc822)]),
+      response: Response(),
       actionName: "index",
       callback: {
         response in
@@ -723,6 +632,7 @@ class ControllerTests: TailorTestCase {
     
     controller = TestController(
       request: Request(headers: ["If-Modified-Since": 2.hours.ago.format(TimeFormat.Rfc822)]),
+      response: Response(),
       actionName: "index",
       callback: {
         response in
@@ -747,6 +657,7 @@ class ControllerTests: TailorTestCase {
     
     controller = TestController(
       request: Request(),
+      response: Response(),
       actionName: "index",
       callback: {
         response in
@@ -772,6 +683,7 @@ class ControllerTests: TailorTestCase {
     
     controller = TestController(
       request: Request(),
+      response: Response(),
       actionName: "index",
       callback: {
         response in
@@ -793,7 +705,7 @@ class ControllerTests: TailorTestCase {
   //MARK: - Localization
   
   func testLocalizationPrefixGetsUnderscoredControllerNameAndAction() {
-    let controller = TestController(request: Request(), actionName: "index", callback: {_ in })
+    let controller = TestController(request: Request(), response: Response(), actionName: "index", callback: {_ in })
     let prefix = controller.localizationPrefix
     assert(prefix, equals: "tailor_tests.test_controller.index")
   }
@@ -834,10 +746,9 @@ class ControllerTests: TailorTestCase {
         if value1 != nil {
           XCTAssertEqual(value1!, "value1")
         }
-        self.generateResponse {
-          (inout response: Response) in
-          response.appendString("Test Response")
-        }
+        var response = self.state.response
+        response.appendString("Test Response")
+        self.callback(response)
       }
     }
     
@@ -874,10 +785,9 @@ class ControllerTests: TailorTestCase {
         if value1 != nil {
           XCTAssertEqual(value1!, "value1")
         }
-        self.generateResponse {
-          (inout response: Response) in
-          response.appendString("Test Response")
-        }
+        var response = self.state.response
+        response.appendString("Test Response")
+        self.callback(response)
       }
     }
     

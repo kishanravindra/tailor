@@ -38,7 +38,7 @@ public struct EmptyController: ControllerType {
     This method creates a controller with a dummy request, action, and callback.
     */
   public init() {
-    self.init(request: Request(), actionName: "empty", callback: {
+    self.init(request: Request(), response: Response(), actionName: "empty", callback: {
       _ in
     })
   }

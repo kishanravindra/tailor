@@ -103,11 +103,13 @@
   This method creates a controller for handling a request.
   
   - parameter request:       The request that we are processing
+  - parameter response:      The initial response that we should use as a
+                              baseline.
   - parameter actionName:    The name of the action that we are executing.
   - parameter callback:      The callback to give the response to.
   */
-  public required convenience init(request: Request, actionName: String, callback: Connection.ResponseCallback) {
-    self.init(state: ControllerState(request: request, actionName: actionName, callback: callback))
+  public required convenience init(request: Request, response: Response, actionName: String, callback: Connection.ResponseCallback) {
+    self.init(state: ControllerState(request: request, response: Response(), actionName: actionName, callback: callback))
   }
   
   public required init(state: ControllerState) {

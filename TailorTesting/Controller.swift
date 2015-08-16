@@ -6,6 +6,6 @@ import Tailor
     callback.
     */
   public convenience init() {
-    self.init(request: Request(), actionName: "index", callback: {_ in })
+    self.init(request: Request(), response: Response(), actionName: "index", callback: {_ in })
   }
 }

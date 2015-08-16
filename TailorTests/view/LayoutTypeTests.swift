@@ -14,7 +14,7 @@ class LayoutTypeTests: TailorTestCase {
       static func defineRoutes(routes: RouteSet) {}
     }
     
-    let controller = TestController(request: Request(), actionName: "index", callback: {response in})
+    let controller = TestController(request: Request(), response: Response(), actionName: "index", callback: {response in})
     let template = TestTemplate(state: TemplateState(controller))
     var layout = EmptyLayout(controller: controller, template: template)
     layout.generate()

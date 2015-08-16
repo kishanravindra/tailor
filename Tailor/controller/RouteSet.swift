@@ -296,7 +296,7 @@ public class RouteSet {
   private var currentController: ControllerType.Type?
   
   /** The filters that we will apply to the current request. */
-  private var currentFilters: [(ControllerType)->Void->Bool] = []
+  private var currentFilters: [RequestFilterType] = []
   
   /**
     This method creates an empty route set.
@@ -341,23 +341,6 @@ public class RouteSet {
   
   /**
     This method creates a scope that will apply to several routes.
-
-    - parameter path:     A segment of a path that will be applied to the
-                          beginning of the routes. There will be a slash added
-                          to the beginning of this segment.
-    - parameter block:    A block that will add the specific routes.
-    */
-  public func withScope(path path: String? = nil, @noescape block: Void->Void) {
-    let oldPrefix = self.currentPathPrefix
-    if let path = path {
-      self.currentPathPrefix += "/" + path
-    }
-    block()
-    self.currentPathPrefix = oldPrefix
-  }
-  
-  /**
-    This method creates a scope that will apply to several routes.
   
     This allows you to add filters that will be run before the controller
     action. The filters take in a controller and return a function that will
@@ -367,13 +350,15 @@ public class RouteSet {
     of the state of the system, or anything else that you want to be a reusable
     check. 
   
-    The type signature for filters is designed to work well with Swift's method
-    currying. If you have an instance method called `authenticate` on
-    `MyController` that returns a boolean, you can use it as a filter by passing
-    `MyController.authenticate` in the filter list for this method.
+    After the controller action has run, the filters' post-processing calls will
+    be run, in reverse order. This allows filters to add additional header
+    fields based on the response data.
+  
+    These filters will only be run on routes that are handled by controllers.
 
-    As soon as one of the filters returns false, we will stop all processing.
-    Any filter that returns false must also generate a response.
+    As soon as one of the filters says to stop, we will stop all pre-processing,
+    and will not call the controller action at all. We will do post-processing
+    with the filters, starting with the last filter that ran.
   
     The filters will only be applied to controller actions.
 
@@ -381,52 +366,23 @@ public class RouteSet {
                             beginning of the routes. There will be a slash added
                             to the beginning of this segment.
     - parameter filters:    The filters to run.
+    - parameter filter:     The filter to run. If both this and filters are
+                            provided, this filter will be run after the one in
+                            the filters list.
     - parameter block:      A block that will add the specific routes.
     */
-  public func withScope<T: ControllerType>(path path: String? = nil, filters: [(T)->Void->Bool] = [], @noescape block: Void->Void) {
+  public func withScope(path path: String? = nil, filters: [RequestFilterType] = [], filter: RequestFilterType? = nil, @noescape block: Void->Void) {
     let oldPrefix = self.currentPathPrefix
     if let path = path {
       self.currentPathPrefix += "/" + path
     }
-    let oldFilters = self.currentFilters
-    
-    let castFilters = filters.map {
-      filter in
-      return {
-        (controller: ControllerType)->Void->Bool in
-        return {
-          ()->Bool in
-          if let castController = controller as? T {
-            return filter(castController)()
-          }
-          else {
-            controller.render404()
-            return false
-          }
-        }
-      }
-    }
-    let newFilters = currentFilters + castFilters
+    let oldFilters = currentFilters
+    var newFilters = currentFilters + filters
+    if let filter = filter { newFilters.append(filter) }
     self.currentFilters = newFilters
     block()
     self.currentFilters = oldFilters
     self.currentPathPrefix = oldPrefix
-  }
-  
-  
-  /**
-    This method creates a scope that will apply to several routes.
-  
-    - parameter path:     A segment of a path that will be applied to the
-                          beginning of the routes. There will be a slash added
-                          to the beginning of this segment.
-    - parameter filter:   The filter to run. For more details on how filters
-                          work, see the documentation for the `withScope` method
-                          that accepts multiple filters.
-    - parameter block:    A block that will add the specific routes.
-    */
-  public func withScope<T: ControllerType>(path path: String? = nil, filter: (T)->Void->Bool, @noescape block: Void->Void) {
-    self.withScope(path: path, filters: [filter], block: block)
   }
   
   /**
@@ -514,13 +470,7 @@ public class RouteSet {
     let filters = self.currentFilters
     let handler: Connection.RequestHandler = {
       (request: Request, callback: Connection.ResponseCallback) in
-      let controller = T(request: request, actionName: actionName, callback: callback)
-      for filter in filters {
-        if !filter(controller)() {
-          return
-        }
-      }
-      action(controller)()
+      self.respondWithController(action, actionName: actionName, request: request, response: Response(), filters: filters, filterIndex: 0, inPostProcessing: false, callback: callback)
     }
     addRoute(path, handler: handler, description: description, controller: T.self, actionName: actionName)
   }
@@ -562,7 +512,7 @@ public class RouteSet {
     let description = NSString(format: "%@#%@", controllerType.name, actionName)
     let handler = {
       (request: Request, callback: Connection.ResponseCallback) -> () in
-      let controller = controllerType.init(request: request, actionName: actionName, callback: callback)
+      let controller = controllerType.init(request: request, response: Response(), actionName: actionName, callback: callback)
       controller.action.run(controller)
     }
     self.addRoute(pathPattern, method: method, handler: handler, description: description as String, controller: controllerType, actionName: actionName)
@@ -648,6 +598,52 @@ public class RouteSet {
   
   //MARK: - Handling Requests
   
+  /**
+    This method responds with a controller, wrapping its response in filters.
+  
+    - parameter action:             The action to call on the controller.
+    - parameter actionName:         The name of the action.
+    - parameter request:            The request that we are responding to.
+    - parameter response:           The response so far.
+    - parameter filters:            The filters that we are calling.
+    - parameter filterIndex:        The index of the current filter in the list.
+    - parameter inPostProcessing:   Whether we have already called the
+                                    controller and are now doing the post
+                                    processing on the filters.
+    */
+  private func respondWithController<SpecificType: ControllerType>(action: (SpecificType)->()->(), actionName: String, request: Request, response: Response, filters: [RequestFilterType], filterIndex: Int, inPostProcessing: Bool, callback: (Response)->Void) {
+    if inPostProcessing {
+      if filterIndex >= filters.startIndex {
+        filters[filterIndex].postProcess(request, response: response) {
+          newResponse in
+          self.respondWithController(action, actionName: actionName, request: request, response: newResponse, filters: filters, filterIndex: filterIndex - 1, inPostProcessing: inPostProcessing, callback: callback)
+        }
+      }
+      else {
+        callback(response)
+      }
+    }
+    else {
+      if filterIndex < filters.endIndex {
+        filters[filterIndex].preProcess(request, response: response) {
+          newResponse, stop in
+          if stop {
+            self.respondWithController(action, actionName: actionName, request: request, response: newResponse, filters: filters, filterIndex: filterIndex, inPostProcessing: true, callback: callback)
+          }
+          else {
+            self.respondWithController(action, actionName: actionName, request: request, response: newResponse, filters: filters, filterIndex: filterIndex + 1, inPostProcessing: inPostProcessing, callback: callback)
+          }
+        }
+      }
+      else {
+        let controller = SpecificType(request: request, response: response, actionName: actionName) {
+          newResponse in
+          self.respondWithController(action, actionName: actionName, request: request, response: newResponse, filters: filters, filterIndex: filters.endIndex - 1, inPostProcessing: true, callback: callback)
+        }
+        action(controller)()
+      }
+    }
+  }
   /**
     This method determines if this route set can handle a request.
 
