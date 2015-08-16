@@ -22,8 +22,8 @@ public struct EtagFilter: RequestFilterType, Equatable {
     - parameter callback:   A callback to call with the response after the
                             filter runs.
     */
-  public func preProcess(request: Request, response: Response, callback: (Response, stop: Bool)->Void) {
-    callback(response, stop: false)
+  public func preProcess(request: Request, response: Response, callback: (Request, Response, stop: Bool)->Void) {
+    callback(request, response, stop: false)
   }
   
   /**

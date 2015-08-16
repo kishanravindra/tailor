@@ -36,42 +36,56 @@ public struct Session {
   /**
     This method creates a session from request data.
     
+    This has been deprecated in favor of either using the session field on the
+    request or the new initializer that takes the cookie string and client
+    address.
+  
     - parameter request:   The request.
     */
-  public init(request: Request) {
+  @available(*, deprecated, message="You should get the session from the request instead") public init(request: Request) {
     let cookies = request.cookies
-    self.clientAddress = request.clientAddress
+    let cookie = cookies["_session"] ?? ""
+    self.init(cookieString: cookie, clientAddress: request.clientAddress)
+  }
+  
+  /**
+    This initializer creates a session.
+
+    - parameter cookieString:   The cookie string with the encrypted session
+                                data.
+    - parameter clientAddress:  The address of the client whose session this is.
+    */
+  public init(cookieString: String, clientAddress: String) {
     encryptor = AesEncryptor(key: Application.configuration.sessionEncryptionKey)
+    self.clientAddress = clientAddress
     self.expirationDate = Application.configuration.sessionLifetime.fromNow
-    if let encryptedDataString = cookies["_session"] {
-      let encryptedData = NSData(base64EncodedString: encryptedDataString, options: []) ?? NSData()
-      let decryptedData = encryptor?.decrypt(encryptedData) ?? NSData()
-      
-      var cookieData: [String:String]
-      do {
-        cookieData = try NSJSONSerialization.JSONObjectWithData(decryptedData, options: []) as? [String:String] ?? [:]
-      }
-      catch {
-        cookieData = [:]
-      }
-      let dateString = cookieData["expirationDate"] ?? ""
-      
-      guard let expirationDate = TimeFormat.Cookie.parseTime(dateString) else { return }
-      guard let address = cookieData["clientAddress"] else { return }
-      guard address == clientAddress else { return }
-      guard expirationDate >= Timestamp.now() else { return }
-      
-      self.data = cookieData
-      
-      self.data["clientAddress"] = nil
-      self.data["expirationDate"] = nil
-      
-      for (key, value) in self.data {
-        if key.hasPrefix("_flash_") {
-          let flashKey = key.substringFromIndex(advance(key.startIndex, 7))
-          self.currentFlash[flashKey] = value
-          self.data[key] = nil
-        }
+    let encryptedData = NSData(base64EncodedString: cookieString, options: []) ?? NSData()
+    let decryptedData = encryptor?.decrypt(encryptedData) ?? NSData()
+    
+    var cookieData: [String:String]
+    do {
+      cookieData = try NSJSONSerialization.JSONObjectWithData(decryptedData, options: []) as? [String:String] ?? [:]
+    }
+    catch {
+      cookieData = [:]
+    }
+    let dateString = cookieData["expirationDate"] ?? ""
+    
+    guard let expirationDate = TimeFormat.Cookie.parseTime(dateString) else { return }
+    guard let address = cookieData["clientAddress"] else { return }
+    guard address == clientAddress else { return }
+    guard expirationDate >= Timestamp.now() else { return }
+    
+    self.data = cookieData
+    
+    self.data["clientAddress"] = nil
+    self.data["expirationDate"] = nil
+    
+    for (key, value) in self.data {
+      if key.hasPrefix("_flash_") {
+        let flashKey = key.substringFromIndex(advance(key.startIndex, 7))
+        self.currentFlash[flashKey] = value
+        self.data[key] = nil
       }
     }
   }

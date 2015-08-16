@@ -108,9 +108,6 @@ public struct ControllerState {
   /** The callback that the controller should call once it has a response. */
   public var callback: Connection.ResponseCallback
 
-  /** The session information that we extracted from the request. */
-  public var session: Session
-
   /** The name of the action that is being called, as specified on the route. */
   public var actionName: String
 
@@ -143,7 +140,6 @@ public struct ControllerState {
     self.request = request
     self.response = response
     self.callback = callback
-    self.session = Session(request: request)
     
     let localization = Application.sharedApplication().localization("en")
     let locales = localization.dynamicType.availableLocales
@@ -151,7 +147,7 @@ public struct ControllerState {
     self.localization = Application.sharedApplication().localization(preferredLocale)
     self.actionName = actionName
     
-    if let userId = Int(self.session["userId"] ?? "") {
+    if let userId = Int(self.request.session["userId"] ?? "") {
       let users = Application.configuration.userType?.query.filter(["id": userId]).allRecords()
       self.currentUser =  users?.first as? UserType
     }
@@ -166,16 +162,14 @@ public struct ControllerState {
                               invoke.
     - parameter callback      The callback that the controller should invoke
                               when the response is ready.
-    - parameter session       The session information from the request.
     - parameter currentUser   The user that is signed in to the session.
     - parameter localization  The localization that the controller should use
                               to localize its text.
     */
-  public init(request: Request, response: Response, callback: Connection.ResponseCallback, session: Session, actionName: String, currentUser: UserType?, localization: LocalizationSource) {
+  public init(request: Request, response: Response, callback: Connection.ResponseCallback, actionName: String, currentUser: UserType?, localization: LocalizationSource) {
     self.request = request
     self.response = response
     self.callback = callback
-    self.session = session
     self.actionName = actionName
     self.currentUser = currentUser
     self.localization = localization
@@ -185,9 +179,6 @@ public struct ControllerState {
 extension ControllerType {
   /** The request that the controller is responding to. */
   public var request: Request { return self.state.request }
-
-  /** The session information from the request. */
-  public var session: Session { return self.state.session }
 
   /** The callback that the controller should use to respond to its request. */
   public var callback: Connection.ResponseCallback { return self.state.callback }
@@ -269,9 +260,8 @@ extension ControllerType {
     - parameter session:    The session info for the response.
     */
   public func respondWith(var response: Response, session: Session? = nil) {
-    if let session = session {
-      session.storeInCookies(&response.cookies)
-    }
+    let session = session ?? request.session
+    session.storeInCookies(&response.cookies)
     self.callback(response)
   }
   
@@ -468,7 +458,7 @@ extension ControllerType {
     - returns:            The new session information with the user signed in.
     */
   public func signIn(user: UserType) -> Session {
-    var session = self.session
+    var session = self.request.session
     if var trackableUser = user as? TrackableUserType {
       trackableUser.lastSignInIp = request.clientAddress
       trackableUser.lastSignInTime = Timestamp.now()
@@ -487,7 +477,7 @@ extension ControllerType {
     - returns:    The new session information with the user signed out.
     */
   public func signOut() -> Session {
-    var session = self.session
+    var session = self.request.session
     session["userId"] = nil
     return session
   }

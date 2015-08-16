@@ -130,9 +130,8 @@ class ControllerTests: TailorTestCase {
   func testInitializeStateWithAllFieldsSetsAllFields() {
     let request = Request()
     let response = Response()
-    let session = Session(request: request)
     let user = TestUser().save()!
-    let state = ControllerState(request: request, response: response, callback: {_ in}, session: session, actionName: "show", currentUser: user, localization: PropertyListLocalization(locale: "es"))
+    let state = ControllerState(request: request, response: response, callback: {_ in}, actionName: "show", currentUser: user, localization: PropertyListLocalization(locale: "es"))
     assert(state.request, equals: request)
     assert(state.actionName, equals: "show")
     assert(state.currentUser?.id, equals: user.id!)
@@ -238,7 +237,7 @@ class ControllerTests: TailorTestCase {
   func testRespondWithResponseAndSessionCallsCallbackWithResponse() {
     var response = Response()
     response.appendString("Test Body")
-    var session = Session(request: controller.request)
+    var session = controller.request.session
     session["test"] = "value"
     let expectation = expectationWithDescription("callback called")
     self.callback = {
@@ -253,17 +252,43 @@ class ControllerTests: TailorTestCase {
   func testRespondWithResponseAndSessionSetsSessionInfoOnResponse() {
     var response = Response()
     response.appendString("Test Body")
-    var session = Session(request: controller.request)
+    var session = controller.request.session
     session["test"] = "value"
     let expectation = expectationWithDescription("callback called")
     self.callback = {
       response2 in
       expectation.fulfill()
       let request = Request(cookies: ["_session": response2.cookies["_session"] ?? ""])
-      let session = Session(request: request)
+      let session = request.session
       self.assert(session["test"], equals: "value")
     }
     controller.respondWith(response, session: session)
+    self.waitForExpectationsWithTimeout(0, handler: nil)
+  }
+  
+  func testRespondWithResponseAndNoSessionSetsRequestSessionInfoOnResponse() {
+    controller = TestController(
+      request: Request(sessionData: ["A": "B"]),
+      response: Response(),
+      actionName: "index",
+      callback: {
+        response in
+        self.callback(response)
+      }
+    )
+    var response = Response()
+    response.appendString("Test Body")
+    var session = controller.request.session
+    session["test"] = "value"
+    let expectation = expectationWithDescription("callback called")
+    self.callback = {
+      response2 in
+      expectation.fulfill()
+      let request = Request(cookies: ["_session": response2.cookies["_session"] ?? ""])
+      let session = request.session
+      self.assert(session["A"], equals: "B")
+    }
+    controller.respondWith(response)
     self.waitForExpectationsWithTimeout(0, handler: nil)
   }
   
@@ -287,10 +312,10 @@ class ControllerTests: TailorTestCase {
       self.assert(response.responseCode, equals: .SeeOther, message: "gives a 302 response")
       self.assert(response.headers, equals: ["Location": "/test/path"], message: "gives a location header")
       
-      let session = Session(request: Request(cookies: response.cookies.cookieDictionary()))
+      let session = Request(cookies: response.cookies.cookieDictionary()).session
       self.assert(session["test1"], equals: "value1")
     }
-    var newSession = controller.session
+    var newSession = controller.request.session
     newSession["test1"] = "value1"
     self.controller.redirectTo("/test/path", session: newSession)
     waitForExpectationsWithTimeout(0.01, handler: nil)
@@ -388,7 +413,7 @@ class ControllerTests: TailorTestCase {
       let session = Session(request: Request(cookies: response.cookies.cookieDictionary()))
       self.assert(session["test2"], equals: "value2")
     }
-    var newSession = controller.session
+    var newSession = controller.request.session
     newSession["test2"] = "value2"
 
     self.controller.redirectTo(TestController.name, actionName: "index", session: newSession)
@@ -441,10 +466,10 @@ class ControllerTests: TailorTestCase {
       self.assert(response.responseCode, equals: .SeeOther, message: "gives a 303 response")
       self.assert(response.headers, equals: ["Location": "/route1"], message: "has a location header")
       
-      let session = Session(request: Request(cookies: response.cookies.cookieDictionary()))
+      let session = Request(cookies: response.cookies.cookieDictionary()).session
       self.assert(session["test3"], equals: "value3")
     }
-    var newSession = controller.session
+    var newSession = controller.request.session
     newSession["test3"] = "value3"
     
     self.controller.redirectTo(TestController.self, actionName: "index", session: newSession)
@@ -551,11 +576,21 @@ class ControllerTests: TailorTestCase {
     assert(newSession["userId"], equals: "0", message: "sets userId to zero")
   }
   
-  func testSignOutClearsCurrentUserAndIdInSession() {
-    controller.signIn(user)
-    controller.signOut()
-    assert(isNil: controller.currentUser)
-    assert(isNil: controller.session["userId"])
+  func testSignOutClearsUserIdIdInSession() {
+    
+    controller = TestController(
+      request: Request(sessionData: ["foo": "bar", "userId": String(user.id!)]),
+      response: Response(),
+      actionName: "index",
+      callback: {
+        response in
+        self.callback(response)
+      }
+    )
+    assert(isNotNil: controller.request.session["userId"])
+    let newSession = controller.signOut()
+    assert(isNil: newSession["userId"])
+    assert(newSession["foo"], equals: "bar")
   }
   
   func testSignInWithEmailAndPasswordSignsIn() {

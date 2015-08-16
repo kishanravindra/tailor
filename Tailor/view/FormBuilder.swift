@@ -85,7 +85,12 @@ import Foundation
     var mergedAttributes = attributes
     mergedAttributes["method"] = method
     mergedAttributes["action"] = path
-    self.template.tag("form", mergedAttributes, with: contents)
+    self.template.tag("form", mergedAttributes) {
+      if let key = template.controller.request.session["csrfKey"] {
+        self.template.tag("input", ["type": "hidden", "name": "_csrfKey", "value": key])
+      }
+      contents()
+    }
   }
   
   /**

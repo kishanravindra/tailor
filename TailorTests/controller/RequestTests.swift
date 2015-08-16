@@ -249,7 +249,7 @@ class RequestTests: TailorTestCase {
   func testInitializerCanInitializeSessionInfo() {
     Application.start()
     let request = Request(sessionData: ["mobile": "1"])
-    let session = Session(request: request)
+    let session = request.session
     let value = session["mobile"]
     XCTAssertNotNil(value, "sets session value")
     if value != nil { assert(value!, equals: "1", message: "sets session value") }

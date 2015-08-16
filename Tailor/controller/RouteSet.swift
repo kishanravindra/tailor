@@ -296,7 +296,7 @@ public class RouteSet {
   private var currentController: ControllerType.Type?
   
   /** The filters that we will apply to the current request. */
-  private var currentFilters: [RequestFilterType] = []
+  private var currentFilters: [RequestFilterType] = [CsrfFilter()]
   
   /**
     This method creates an empty route set.
@@ -383,6 +383,29 @@ public class RouteSet {
     block()
     self.currentFilters = oldFilters
     self.currentPathPrefix = oldPrefix
+  }
+  
+  /**
+    This method removes a request filter from the list of filters for a section
+    of the route set.
+
+    The filter provided will not be applied to any routes added in the block.
+
+    - parameter filter:   The filter we do not want to apply
+    - parameter block:    The block for adding the routes.
+    */
+  public func withoutFilter<FilterType: RequestFilterType where FilterType: Equatable>(filter: FilterType, @noescape block: Void->Void) {
+    let oldFilters = currentFilters
+    self.currentFilters = oldFilters.filter {
+      if let castValue = $0 as? FilterType {
+        return castValue != filter
+      }
+      else {
+        return true
+      }
+    }
+    block()
+    self.currentFilters = oldFilters
   }
   
   /**
@@ -626,12 +649,13 @@ public class RouteSet {
     else {
       if filterIndex < filters.endIndex {
         filters[filterIndex].preProcess(request, response: response) {
-          newResponse, stop in
+          newRequest, newResponse, stop in
           if stop {
-            self.respondWithController(action, actionName: actionName, request: request, response: newResponse, filters: filters, filterIndex: filterIndex, inPostProcessing: true, callback: callback)
+            NSLog("Processing stopped due to filter: %@", String(filters[filterIndex]))
+            self.respondWithController(action, actionName: actionName, request: newRequest, response: newResponse, filters: filters, filterIndex: filterIndex, inPostProcessing: true, callback: callback)
           }
           else {
-            self.respondWithController(action, actionName: actionName, request: request, response: newResponse, filters: filters, filterIndex: filterIndex + 1, inPostProcessing: inPostProcessing, callback: callback)
+            self.respondWithController(action, actionName: actionName, request: newRequest, response: newResponse, filters: filters, filterIndex: filterIndex + 1, inPostProcessing: inPostProcessing, callback: callback)
           }
         }
       }

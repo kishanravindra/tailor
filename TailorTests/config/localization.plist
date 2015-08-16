@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>class</key>
-	<string>Tailor.DatabaseLocalization</string>
+	<string>Tailor.PropertyListLocalization</string>
 	<key>content</key>
 	<dict>
 		<key>en</key>

@@ -18,6 +18,7 @@ class ApplicationTests : TailorTestCase {
   var application: Application!
   override func setUp() {
     super.setUp()
+    NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
     application = Application.sharedApplication()
     APPLICATION_ARGUMENTS = ("tailor.exit", [:])
   }
@@ -33,7 +34,11 @@ class ApplicationTests : TailorTestCase {
   }
   
   @available(*, deprecated) func testInitializationSetsLocalizationClassFromLocalizationFile() {
-    self.assert(Application.configuration.localization("en") is DatabaseLocalization)
+    Application.configuration.localization = { DatabaseLocalization(locale: $0) }
+    
+    NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
+    application = Application.sharedApplication()
+    self.assert(Application.configuration.localization("en") is PropertyListLocalization)
   }
   
   @available(*, deprecated) func testInitializationSetsDatabaseDriverClassFromDatabaseFile() {

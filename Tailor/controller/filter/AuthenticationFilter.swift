@@ -29,17 +29,17 @@ public struct AuthenticationFilter: RequestFilterType, Equatable {
     - parameter response:   The response so far.
     - parameter callback:   The callback to call with the response.
     */
-  public func preProcess(request: Request, var response: Response, callback: (Response, stop: Bool) -> Void) {
-    let session = Session(request: request)
+  public func preProcess(request: Request, var response: Response, callback: (Request, Response, stop: Bool) -> Void) {
+    let session = request.session
     let query = Application.configuration.userType?.query.filter(["id": session["userId"] ?? ""])
     if query?.isEmpty() ?? true {
       response.responseCode = .SeeOther
       response.headers["Location"] = signInUrl
       response.appendString("<html><body>You are being <a href=\"\(signInUrl)\">redirected</a>.")
-      callback(response, stop: true)
+      callback(request, response, stop: true)
     }
     else {
-      callback(response, stop: false)
+      callback(request, response, stop: false)
     }
   }
   

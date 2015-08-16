@@ -36,6 +36,15 @@ import TailorTesting
     assert(template.contents, equals: "<form action=\"/test/path\" method=\"GET\"></form>")
   }
   
+  func testFormPutsFormTagWithCsrfKeyPutsKeyInTemplate() {
+    
+    let controller = TestController(request: Request(sessionData: ["csrfKey": "myKey"]), response: Response(), actionName: "index", callback: {response in })
+    builder = FormBuilder(template: Template(controller: controller), name: "hat")
+    builder.form("/test/path", with: {
+    })
+    assert(template.contents, equals: "<form action=\"/test/path\" method=\"POST\"><input name=\"_csrfKey\" type=\"hidden\" value=\"myKey\"></input></form>")
+  }
+  
   func testInputCallsInputBuilder() {
     let expectation = expectationWithDescription("block called")
     let errors: [ValidationError] = [

@@ -15,7 +15,7 @@ class AuthenticationFilterTests: TailorTestCase {
     let response = Response()
     let expectation = expectationWithDescription("callback called")
     filter.preProcess(request, response: response) {
-      response, stop in
+      request, response, stop in
       expectation.fulfill()
       self.assert(response.responseCode, equals: .Ok)
       self.assert(!stop)
@@ -28,7 +28,7 @@ class AuthenticationFilterTests: TailorTestCase {
     let response = Response()
     let expectation = expectationWithDescription("callback called")
     filter.preProcess(request, response: response) {
-      response, stop in
+      request, response, stop in
       expectation.fulfill()
       self.assert(response.responseCode, equals: .SeeOther)
       self.assert(response.headers["Location"], equals: "/sessions/new")
@@ -43,7 +43,7 @@ class AuthenticationFilterTests: TailorTestCase {
     let response = Response()
     let expectation = expectationWithDescription("callback called")
     filter.preProcess(request, response: response) {
-      response, stop in
+      request, response, stop in
       expectation.fulfill()
       self.assert(response.responseCode, equals: .SeeOther)
       self.assert(response.headers["Location"], equals: "/sessions/new")
@@ -59,7 +59,7 @@ class AuthenticationFilterTests: TailorTestCase {
     Application.configuration.userType = nil
     let expectation = expectationWithDescription("callback called")
     filter.preProcess(request, response: response) {
-      response, stop in
+      request, response, stop in
       expectation.fulfill()
       self.assert(response.responseCode, equals: .SeeOther)
       self.assert(response.headers["Location"], equals: "/sessions/new")

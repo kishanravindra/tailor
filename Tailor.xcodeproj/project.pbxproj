@@ -55,6 +55,8 @@
 		5248283E1B7FEB2C006257F2 /* EtagFilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5248283D1B7FEB2C006257F2 /* EtagFilterTests.swift */; };
 		524828401B7FF3C9006257F2 /* AuthenticationFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5248283F1B7FF3C9006257F2 /* AuthenticationFilter.swift */; };
 		524828421B7FF3D5006257F2 /* AuthenticationFilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 524828411B7FF3D5006257F2 /* AuthenticationFilterTests.swift */; };
+		524828481B80EFF8006257F2 /* CsrfFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 524828471B80EFF8006257F2 /* CsrfFilter.swift */; };
+		5248284A1B810263006257F2 /* CsrfFilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 524828491B810263006257F2 /* CsrfFilterTests.swift */; };
 		524CD7DB1B5EDF60002007C8 /* SmtpEmailAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 524CD7DA1B5EDF60002007C8 /* SmtpEmailAgent.swift */; };
 		524CD7DD1B5EDF95002007C8 /* SmtpEmailAgentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 524CD7DC1B5EDF95002007C8 /* SmtpEmailAgentTests.swift */; };
 		5258989F1A4F289800DD853D /* DatabaseConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5258989E1A4F289800DD853D /* DatabaseConnectionTests.swift */; };
@@ -285,6 +287,8 @@
 		5248283D1B7FEB2C006257F2 /* EtagFilterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EtagFilterTests.swift; sourceTree = "<group>"; };
 		5248283F1B7FF3C9006257F2 /* AuthenticationFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthenticationFilter.swift; sourceTree = "<group>"; };
 		524828411B7FF3D5006257F2 /* AuthenticationFilterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthenticationFilterTests.swift; sourceTree = "<group>"; };
+		524828471B80EFF8006257F2 /* CsrfFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CsrfFilter.swift; sourceTree = "<group>"; };
+		524828491B810263006257F2 /* CsrfFilterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CsrfFilterTests.swift; sourceTree = "<group>"; };
 		524CD7DA1B5EDF60002007C8 /* SmtpEmailAgent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmtpEmailAgent.swift; sourceTree = "<group>"; };
 		524CD7DC1B5EDF95002007C8 /* SmtpEmailAgentTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmtpEmailAgentTests.swift; sourceTree = "<group>"; };
 		5258989E1A4F289800DD853D /* DatabaseConnectionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseConnectionTests.swift; sourceTree = "<group>"; };
@@ -579,6 +583,7 @@
 				52A05A341B7FAA5E00DB1248 /* RequestFilterType.swift */,
 				524828301B7FE95F006257F2 /* EtagFilter.swift */,
 				5248283F1B7FF3C9006257F2 /* AuthenticationFilter.swift */,
+				524828471B80EFF8006257F2 /* CsrfFilter.swift */,
 			);
 			name = filters;
 			path = filter;
@@ -589,6 +594,7 @@
 			children = (
 				5248283D1B7FEB2C006257F2 /* EtagFilterTests.swift */,
 				524828411B7FF3D5006257F2 /* AuthenticationFilterTests.swift */,
+				524828491B810263006257F2 /* CsrfFilterTests.swift */,
 			);
 			path = filters;
 			sourceTree = "<group>";
@@ -1321,6 +1327,7 @@
 				52BD143C19E9DA1D006D72B0 /* Model.swift in Sources */,
 				52C5B4831B47055000F4A5C5 /* TaskType.swift in Sources */,
 				523D655B1A98CBEB000C686B /* DatabaseLocalization.swift in Sources */,
+				524828481B80EFF8006257F2 /* CsrfFilter.swift in Sources */,
 				52A05A2F1B7FAA2800DB1248 /* Cookie.swift in Sources */,
 				52C6251A19EE110B0024453F /* AesEncryptor.swift in Sources */,
 				52C5B47E1B47055000F4A5C5 /* AlterationScript.swift in Sources */,
@@ -1377,6 +1384,7 @@
 				52DD44F11B5C3B8D00312923 /* FileEmailAgentTests.swift in Sources */,
 				5262EE7B1AD0AC9B006F864D /* DictionaryTests.swift in Sources */,
 				526525FE1B691B360043EB12 /* CsvParserTests.swift in Sources */,
+				5248284A1B810263006257F2 /* CsrfFilterTests.swift in Sources */,
 				520BD5021AA90E2600CBC3DC /* PropertyListLocalizationTests.swift in Sources */,
 				5262D11B1B4A06CC00101154 /* JsonPrimitiveTests.swift in Sources */,
 				5232ACC61B6198730043F9A2 /* ExternalProcessTests.swift in Sources */,

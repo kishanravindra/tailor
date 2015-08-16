@@ -3,6 +3,22 @@ import Tailor
 import TailorTesting
 
 class RouteSetTests: TailorTestCase {
+  struct TestFilter: RequestFilterType, Equatable {
+    let greeting: String
+    init(greeting: String = "dawg") {
+      self.greeting = greeting
+    }
+    func preProcess(request: Request, var response: Response, callback: (Request, Response, stop: Bool) -> Void) {
+      response.appendString("Yo \(greeting)\r\n")
+      callback(request, response, stop: false)
+    }
+    func postProcess(request: Request, var response: Response, callback: (Response) -> Void) {
+      response.appendString("\r\nBye")
+      callback(response)
+    }
+  }
+  
+  
   var routeSet = RouteSet()
   
   struct TestController : ControllerType {
@@ -422,16 +438,6 @@ class RouteSetTests: TailorTestCase {
   }
   
   func testWithScopeWithContinuingFilterCallsHandler() {
-    struct TestFilter: RequestFilterType {
-      func preProcess(request: Request, var response: Response, callback: (Response, stop: Bool) -> Void) {
-        response.appendString("Yo\r\n")
-        callback(response, stop: false)
-      }
-      func postProcess(request: Request, var response: Response, callback: (Response) -> Void) {
-        response.appendString("\r\nDawg")
-        callback(response)
-      }
-    }
     routeSet.withScope(filter: TestFilter()) {
       self.routeSet.route(.Get("test"), to: TestController.indexAction, name: "index")
       self.assert(self.getLatestRoute()?.path.pathPattern, equals: "/test", message: "includes normal path in route in block")
@@ -439,44 +445,32 @@ class RouteSetTests: TailorTestCase {
     let route = getLatestRoute()
     route?.handler(createTestRequest()) {
       response in
-      self.assert(response.bodyString, equals: "Yo\r\nTest Controller: index\r\nDawg")
+      self.assert(response.bodyString, equals: "Yo dawg\r\nTest Controller: index\r\nBye")
     }
   }
   
   func testWithScopeWithStoppingFilterDoesNotCallController() {
-    struct TestFilter: RequestFilterType {
-      func preProcess(request: Request, var response: Response, callback: (Response, stop: Bool) -> Void) {
-        response.appendString("Yo\r\n")
-        callback(response, stop: true)
+    struct TestFilterTwo: RequestFilterType {
+      func preProcess(request: Request, response: Response, callback: (Request, Response, stop: Bool) -> Void) {
+        callback(request, response, stop: true)
       }
-      func postProcess(request: Request, var response: Response, callback: (Response) -> Void) {
-        response.appendString("Dawg\r\n")
+      
+      func postProcess(request: Request, response: Response, callback: (Response) -> Void) {
         callback(response)
       }
     }
-
-    routeSet.withScope(filter: TestFilter()) {
+    routeSet.withScope(filter: TestFilterTwo()) {
       self.routeSet.route(.Get("test"), to: TestController.indexAction, name: "index")
       self.assert(self.getLatestRoute()?.path.pathPattern, equals: "/test", message: "includes normal path in route in block")
     }
     let route = getLatestRoute()
     route?.handler(createTestRequest()) {
       response in
-      self.assert(response.bodyString, equals: "Yo\r\nDawg\r\n")
+      self.assert(response.bodyString, equals: "")
     }
   }
   
   func testWithScopeDoesNotCallFilterOnRouteOutsideBlock() {
-    struct TestFilter: RequestFilterType {
-      func preProcess(request: Request, var response: Response, callback: (Response, stop: Bool) -> Void) {
-        response.appendString("Yo\r\n")
-        callback(response, stop: true)
-      }
-      func postProcess(request: Request, var response: Response, callback: (Response) -> Void) {
-        response.appendString("Dawg\r\n")
-        callback(response)
-      }
-    }
     routeSet.withScope(filter: TestFilter()) {
       self.routeSet.route(.Get("test"), to: TestController.indexAction, name: "index")
       self.assert(self.getLatestRoute()?.path.pathPattern, equals: "/test", message: "includes normal path in route in block")
@@ -495,16 +489,6 @@ class RouteSetTests: TailorTestCase {
   }
   
   func testWithScopeWithPathAndFilterAddsPathPrefix() {
-    struct TestFilter: RequestFilterType {
-      func preProcess(request: Request, var response: Response, callback: (Response, stop: Bool) -> Void) {
-        response.appendString("Yo\r\n")
-        callback(response, stop: false)
-      }
-      func postProcess(request: Request, var response: Response, callback: (Response) -> Void) {
-        response.appendString("Dawg\r\n")
-        callback(response)
-      }
-    }
     routeSet.withScope(path: "foo", filter: TestFilter()) {
       self.routeSet.route(.Get("test"), to: TestController.indexAction, name: "index")
       self.assert(self.getLatestRoute()?.path.pathPattern, equals: "/foo/test", message: "includes normal path in route in block")
@@ -520,33 +504,58 @@ class RouteSetTests: TailorTestCase {
   }
   
   func testWithScopeWithMultipleFiltersCallsAllFilters() {
-    struct TestFilter: RequestFilterType {
-      func preProcess(request: Request, var response: Response, callback: (Response, stop: Bool) -> Void) {
+    struct TestFilterTwo: RequestFilterType {
+      func preProcess(var request: Request, var response: Response, callback: (Request, Response, stop: Bool) -> Void) {
+        request.headers["Test"] = "1"
         response.appendString("Yo\r\n")
-        callback(response, stop: false)
+        callback(request, response, stop: false)
       }
       func postProcess(request: Request, response: Response, callback: (Response) -> Void) {
         callback(response)
       }
     }
-    struct TestFilterTwo: RequestFilterType {
-      func preProcess(request: Request, response: Response, callback: (Response, stop: Bool) -> Void) {
-        callback(response, stop: false)
+    struct TestFilterThree: RequestFilterType {
+      func preProcess(request: Request, var response: Response, callback: (Request, Response, stop: Bool) -> Void) {
+        let value = request.headers["Test"] ?? "None"
+        response.appendString("My \(value)\r\n")
+        callback(request, response, stop: false)
       }
       func postProcess(request: Request, var response: Response, callback: (Response) -> Void) {
         response.appendString("\r\nDawg")
         callback(response)
       }
     }
-    routeSet.withScope(filters: [TestFilter(),TestFilterTwo()]) {
+    routeSet.withScope(filters: [TestFilterTwo(),TestFilterThree()]) {
       self.routeSet.route(.Get("test"), to: TestController.indexAction, name: "index")
       self.assert(self.getLatestRoute()?.path.pathPattern, equals: "/test", message: "includes normal path in route in block")
     }
     let route = getLatestRoute()
     route?.handler(createTestRequest()) {
       response in
-      self.assert(response.bodyString, equals: "Yo\r\nTest Controller: index\r\nDawg")
+      self.assert(response.bodyString, equals: "Yo\r\nMy 1\r\nTest Controller: index\r\nDawg")
     }
+  }
+  
+  func testWithoutFilterRemovesFilterFromChain() {
+    routeSet.withScope(filters: [TestFilter(greeting: "dawg"),TestFilter(greeting: "friend")]) {
+      self.routeSet.route(.Get("test"), to: TestController.indexAction, name: "index")
+      self.routeSet.withoutFilter(TestFilter(greeting: "friend")) {
+        self.routeSet.route(.Get("test2"), to: TestController.indexAction, name: "index")
+      }
+    }
+    guard self.routeSet.routes.count == 2 else {
+      assert(false, message: "Failed to generate routes")
+      return
+    }
+    self.routeSet.routes[0].handler(createTestRequest()) {
+      response in
+      self.assert(response.bodyString, equals: "Yo dawg\r\nYo friend\r\nTest Controller: index\r\nBye\r\nBye")
+    }
+    self.routeSet.routes[1].handler(createTestRequest()) {
+      response in
+      self.assert(response.bodyString, equals: "Yo dawg\r\nTest Controller: index\r\nBye")
+    }
+    
   }
   
   func testAddRedirectCreatesRedirectResponse() {
@@ -968,4 +977,8 @@ class RouteSetTests: TailorTestCase {
     assert(route.path.pathPattern, equals: "/sharedTest2")
   }
 
+}
+
+func ==(lhs: RouteSetTests.TestFilter, rhs: RouteSetTests.TestFilter) -> Bool {
+  return lhs.greeting == rhs.greeting
 }

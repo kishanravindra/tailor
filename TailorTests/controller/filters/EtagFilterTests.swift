@@ -12,7 +12,7 @@ class EtagFilterTests: TailorTestCase {
     response.appendString("hello")
     let expectation = expectationWithDescription("callback called")
     filter.preProcess(request, response: response) {
-      response, stop in
+      request, response, stop in
       expectation.fulfill()
       self.assert(response.bodyString, equals: "hello")
       self.assert(!stop)

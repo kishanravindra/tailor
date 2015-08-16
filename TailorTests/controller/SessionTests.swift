@@ -44,7 +44,7 @@ class SessionTests: TailorTestCase {
   }
   
   func createSession(cookieString: String) -> Session {
-    return Session(request: Request(cookies: ["_session": cookieString]))
+    return Session(cookieString: cookieString, clientAddress: "0.0.0.0")
   }
   
   override func setUp() {
@@ -58,8 +58,7 @@ class SessionTests: TailorTestCase {
       ["name": "John", "userId": "5"],
       flashData: ["notice": "Success"]
     )
-    let request = Request(cookies: ["_session": string])
-    let session = Session(request: request)
+    let session = Session(cookieString: string, clientAddress: "0.0.0.0")
     
     let name = session["name"]
     XCTAssertNotNil(name, "has the name in the data")
@@ -87,8 +86,7 @@ class SessionTests: TailorTestCase {
       ["name": "John", "userId": "5"],
       clientAddress: "1.1.1.1"
     )
-    let request = Request(cookies: ["_session": string], clientAddress: "0.0.0.0")
-    let session = Session(request: request)
+    let session = Session(cookieString: string, clientAddress: "0.0.0.0")
     XCTAssertTrue(session.isEmpty(), "has no data in session")
   }
   
@@ -97,8 +95,7 @@ class SessionTests: TailorTestCase {
       ["name": "John", "userId": "5"],
       clientAddress: nil
     )
-    let request = Request(cookies: ["_session": string])
-    let session = Session(request: request)
+    let session = Session(cookieString: string, clientAddress: "0.0.0.0")
     assert(session.isEmpty())
   }
   
@@ -107,8 +104,7 @@ class SessionTests: TailorTestCase {
       ["name": "John", "userId": "5"],
       expirationDate: 1.hour.ago
     )
-    let request = Request(cookies: ["_session": string])
-    let session = Session(request: request)
+    let session = Session(cookieString: string, clientAddress: "0.0.0.0")
     XCTAssertTrue(session.isEmpty(), "has no data in session")
   }
   
@@ -117,20 +113,17 @@ class SessionTests: TailorTestCase {
       ["name": "John", "userId": "5"],
       expirationDate: nil
     )
-    let request = Request(cookies: ["_session": string])
-    let session = Session(request: request)
+    let session = Session(cookieString: string, clientAddress: "0.0.0.0")
     assert(session.isEmpty())
   }
   
   func testInitializationWithGarbageStringLeavesDataEmpty() {
-    let request = Request(cookies: ["_session": "ABC-123"])
-    let session = Session(request: request)
+    let session = Session(cookieString: "ABC-123", clientAddress: "0.0.0.0")
     XCTAssertTrue(session.isEmpty(), "has no data in session")
   }
   
   func testInitializationWithNoSessionCookieLeavesDataEmpty() {
-    let request = Request()
-    let session = Session(request: request)
+    let session = Session(cookieString: "", clientAddress: "0.0.0.0")
     assert(session.isEmpty())
   }
   
@@ -139,8 +132,7 @@ class SessionTests: TailorTestCase {
     let data = NSData(bytes: [1,2,3,4])
     let encryptedData = AesEncryptor(key: key)!.encrypt(data)
     let string = encryptedData.base64EncodedStringWithOptions([])
-    let request = Request(cookies: ["_session": string])
-    let session = Session(request: request)
+    let session = Session(cookieString: string, clientAddress: "0.0.0.0")
     assert(session.isEmpty())
   }
   
@@ -149,8 +141,7 @@ class SessionTests: TailorTestCase {
     let data = "{\"a\":5}".dataUsingEncoding(NSUTF8StringEncoding)!
     let encryptedData = AesEncryptor(key: key)!.encrypt(data)
     let string = encryptedData.base64EncodedStringWithOptions([])
-    let request = Request(cookies: ["_session": string])
-    let session = Session(request: request)
+    let session = Session(cookieString: string, clientAddress: "0.0.0.0")
     assert(session.isEmpty())
   }
   
@@ -158,8 +149,7 @@ class SessionTests: TailorTestCase {
   
   func testCookieStringWithNoChangesIsIdempotent() {
     let string = createCookieString(["name": "John", "userId": "5"])
-    let request = Request(cookies: ["_session": string])
-    let session = Session(request: request)
+    let session = Session(cookieString: string, clientAddress: "0.0.0.0")
     let outputString = session.cookieString()
     assert(string, equals: outputString, message: "cookie string has not changed")
   }
