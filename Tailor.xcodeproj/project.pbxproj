@@ -57,6 +57,8 @@
 		524828421B7FF3D5006257F2 /* AuthenticationFilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 524828411B7FF3D5006257F2 /* AuthenticationFilterTests.swift */; };
 		524828481B80EFF8006257F2 /* CsrfFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 524828471B80EFF8006257F2 /* CsrfFilter.swift */; };
 		5248284A1B810263006257F2 /* CsrfFilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 524828491B810263006257F2 /* CsrfFilterTests.swift */; };
+		5248284C1B812DCC006257F2 /* JobSchedulingTaskType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5248284B1B812DCC006257F2 /* JobSchedulingTaskType.swift */; };
+		5248284E1B812FA1006257F2 /* JobSchedulingTaskTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5248284D1B812FA1006257F2 /* JobSchedulingTaskTypeTests.swift */; };
 		524CD7DB1B5EDF60002007C8 /* SmtpEmailAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 524CD7DA1B5EDF60002007C8 /* SmtpEmailAgent.swift */; };
 		524CD7DD1B5EDF95002007C8 /* SmtpEmailAgentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 524CD7DC1B5EDF95002007C8 /* SmtpEmailAgentTests.swift */; };
 		5258989F1A4F289800DD853D /* DatabaseConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5258989E1A4F289800DD853D /* DatabaseConnectionTests.swift */; };
@@ -289,6 +291,8 @@
 		524828411B7FF3D5006257F2 /* AuthenticationFilterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthenticationFilterTests.swift; sourceTree = "<group>"; };
 		524828471B80EFF8006257F2 /* CsrfFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CsrfFilter.swift; sourceTree = "<group>"; };
 		524828491B810263006257F2 /* CsrfFilterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CsrfFilterTests.swift; sourceTree = "<group>"; };
+		5248284B1B812DCC006257F2 /* JobSchedulingTaskType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobSchedulingTaskType.swift; sourceTree = "<group>"; };
+		5248284D1B812FA1006257F2 /* JobSchedulingTaskTypeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobSchedulingTaskTypeTests.swift; sourceTree = "<group>"; };
 		524CD7DA1B5EDF60002007C8 /* SmtpEmailAgent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmtpEmailAgent.swift; sourceTree = "<group>"; };
 		524CD7DC1B5EDF95002007C8 /* SmtpEmailAgentTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmtpEmailAgentTests.swift; sourceTree = "<group>"; };
 		5258989E1A4F289800DD853D /* DatabaseConnectionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseConnectionTests.swift; sourceTree = "<group>"; };
@@ -668,6 +672,7 @@
 				52C5B47B1B47055000F4A5C5 /* TaskType.swift */,
 				52B710131B6810D80003A6DF /* SeedTaskType.swift */,
 				52C5B47C1B47055000F4A5C5 /* TestTask.swift */,
+				5248284B1B812DCC006257F2 /* JobSchedulingTaskType.swift */,
 			);
 			path = tasks;
 			sourceTree = "<group>";
@@ -960,11 +965,12 @@
 		52E784CB1A5CC5750065C10D /* tasks */ = {
 			isa = PBXGroup;
 			children = (
-				52E784CC1A5CC5A60065C10D /* TaskTests.swift */,
 				52E784D01A5CC7AE0065C10D /* AlterationsTaskTests.swift */,
 				52E784D21A5CCA9F0065C10D /* AlterationTests.swift */,
 				523301A01B46FC4D00C9E5EE /* CreateTestDatabaseAlteration.swift */,
+				5248284D1B812FA1006257F2 /* JobSchedulingTaskTypeTests.swift */,
 				52B710151B6813280003A6DF /* SeedTaskTypeTests.swift */,
+				52E784CC1A5CC5A60065C10D /* TaskTests.swift */,
 			);
 			path = tasks;
 			sourceTree = "<group>";
@@ -1287,6 +1293,7 @@
 				52A05A311B7FAA2800DB1248 /* Request.swift in Sources */,
 				5233011D1B45FC1500C9E5EE /* PersistableEnums.swift in Sources */,
 				522643251B06C7F40081D04E /* FoundationTimes.swift in Sources */,
+				5248284C1B812DCC006257F2 /* JobSchedulingTaskType.swift in Sources */,
 				52BD144219E9DA1D006D72B0 /* Validation.swift in Sources */,
 				52A05A321B7FAA2800DB1248 /* Response.swift in Sources */,
 				52BD144419E9DA1D006D72B0 /* Template.swift in Sources */,
@@ -1411,6 +1418,7 @@
 				52E784C11A5B64030065C10D /* NSDataTests.swift in Sources */,
 				52A95E351AE27537001AED1F /* ValidationTests.swift in Sources */,
 				526254321AABC46300D63024 /* CacheStoreTests.swift in Sources */,
+				5248284E1B812FA1006257F2 /* JobSchedulingTaskTypeTests.swift in Sources */,
 				5233011F1B45FC5B00C9E5EE /* PersistableEnumTests.swift in Sources */,
 				5226432A1B06C8CB0081D04E /* CalendarTests.swift in Sources */,
 				52E784B51A59C12D0065C10D /* SessionTests.swift in Sources */,
