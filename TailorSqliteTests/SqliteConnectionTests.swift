@@ -38,6 +38,22 @@ class SqliteConnectionTests: TailorTestCase {
     }
   }
   
+  func testCanGetUnicodeDataFromSelect() {
+    connection.executeQuery("INSERT INTO `hats` (`color`, `brim_size`) VALUES ('red 🎊', 10)")
+    let results = connection.executeQuery("SELECT * FROM hats")
+    assert(results.count, equals: 1)
+    if results.count == 1 {
+      let result = results[0]
+      assert(result.data["id"], equals: 1.databaseValue)
+      assert(result.data["color"], equals: "red 🎊".databaseValue)
+      assert(result.data["color"]?.stringValue, equals: "red 🎊")
+      assert(result.data["brim_size"], equals: 10.databaseValue)
+      assert(result.data["shelf_id"], equals: DatabaseValue.Null)
+      assert(result.data["created_at"], equals: DatabaseValue.Null)
+      assert(result.data["updated_at"], equals: DatabaseValue.Null)
+    }
+  }
+  
   func testCanGetMultipleRowsFromSelect() {
     connection.executeQuery("INSERT INTO `hats` (`color`, `brim_size`) VALUES ('red', 10), ('tan', 15)")
     let results = connection.executeQuery("SELECT * FROM hats")

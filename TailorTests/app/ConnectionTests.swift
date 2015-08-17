@@ -303,7 +303,7 @@ class ConnectionTests: TailorTestCase {
   //MARK: - Testing with Real IO
   
   func testCanReadRequestWithFileDescriptors() {
-    let fileContents = "GET / HTTP/1.1\r\nHeader: Value\r\nContent-Length: 12\r\n\r\nRequest Body"
+    let fileContents = "GET / HTTP/1.1\r\nHeader: Value\r\nConnection: close\r\nContent-Length: 12\r\n\r\nRequest Body"
     let path = Application.sharedApplication().rootPath() + "/connection.txt"
     let expectation = expectationWithDescription("callback called")
     var responded = false
@@ -323,7 +323,7 @@ class ConnectionTests: TailorTestCase {
       combinedData.appendData(response.data)
       self.assert(writtenData, equals: combinedData)
     }
-    fileContents.dataUsingEncoding(NSUTF8StringEncoding)?.writeToFile(path, atomically: true)
+    NSData(bytes: fileContents.utf8).writeToFile(path, atomically: true)
     guard let connectionHandle = NSFileHandle(forUpdatingAtPath: path) else { NSLog("Handle failed"); return }
     connection.readFromSocket(connectionHandle.fileDescriptor)
     waitForExpectationsWithTimeout(1, handler: nil)

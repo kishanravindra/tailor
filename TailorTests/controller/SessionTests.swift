@@ -138,7 +138,7 @@ class SessionTests: TailorTestCase {
   
   func testInitializationWithIntegerDataInCookieLeavesSesssionEmpty() {
     let key = Application.configuration.sessionEncryptionKey
-    let data = "{\"a\":5}".dataUsingEncoding(NSUTF8StringEncoding)!
+    let data = NSData(bytes: "{\"a\":5}".utf8)
     let encryptedData = AesEncryptor(key: key)!.encrypt(data)
     let string = encryptedData.base64EncodedStringWithOptions([])
     let session = Session(cookieString: string, clientAddress: "0.0.0.0")

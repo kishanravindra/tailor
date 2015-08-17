@@ -44,7 +44,7 @@ class AesEncryptorTests: TailorTestCase {
   
   func testEncryptIsReversible() {
     let encryptor = AesEncryptor(key: AesEncryptor.generateKey())!
-    let inputData = "test data".dataUsingEncoding(NSUTF8StringEncoding) ?? NSData()
+    let inputData = NSData(bytes: "test data".utf8)
     let value = encryptor.encrypt(inputData)
     let decryptedValue = encryptor.decrypt(value)
     let string = NSString(data: decryptedValue, encoding: NSUTF8StringEncoding)
@@ -53,7 +53,7 @@ class AesEncryptorTests: TailorTestCase {
   
   func testEncryptIsIdempotent() {
     let encryptor = AesEncryptor(key: AesEncryptor.generateKey())!
-    let inputData = "test data".dataUsingEncoding(NSUTF8StringEncoding) ?? NSData()
+    let inputData = NSData(bytes: "test data".utf8)
     let value1 = encryptor.encrypt(inputData)
     let value2 = encryptor.encrypt(inputData)
     assert(value1, equals: value2, message: "gets the same data both times")

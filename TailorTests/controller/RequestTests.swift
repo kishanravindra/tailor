@@ -7,7 +7,7 @@ class RequestTests: TailorTestCase {
   let clientAddress = "1.2.3.4"
   
   var request : Request { get { return Request(clientAddress: clientAddress, data: requestData) } }
-  var requestData : NSData { get { return requestString.dataUsingEncoding(NSUTF8StringEncoding)! } }
+  var requestData : NSData { get { return NSData(bytes: requestString.utf8) } }
   
   override func setUp() {
     super.setUp()
@@ -154,7 +154,7 @@ class RequestTests: TailorTestCase {
     if let file = request.uploadedFiles["param2"] {
       assert(file["contentType"] as? String, equals: "text/plain", message: "sets content type")
       
-      let data = "this is a log".dataUsingEncoding(NSUTF8StringEncoding)!
+      let data = NSData(bytes: "this is a log".utf8)
       assert(file["data"] as? NSData, equals: data, message: "sets data")
     }
     else {

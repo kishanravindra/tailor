@@ -575,15 +575,11 @@ public class Application {
     */
   private func registerSubtypes(parentType: Any.Type, matcher: (AnyClass->Bool)) {
     let classCount = objc_getClassList(nil, 0)
-    var allClasses = UnsafeMutablePointer<AnyClass?>(calloc(sizeof(AnyClass), Int(classCount)))
+    var allClasses = Array<AnyClass?>(count: Int(classCount), repeatedValue: nil)
+    objc_getClassList(AutoreleasingUnsafeMutablePointer<AnyClass?>(&allClasses), classCount)
     
-    objc_getClassList(AutoreleasingUnsafeMutablePointer<AnyClass?>(allClasses), classCount)
-    
-    for _ in 0..<classCount {
-      guard let type : AnyClass = allClasses.memory else { continue }
-      
-      allClasses = advance(allClasses, 1)
-      
+    for klass in allClasses {
+      guard let type : AnyClass = klass else { continue }
       if matcher(type) {
         let key = String(reflecting: parentType)
         var subtypes = self.registeredSubtypes[key] ?? []

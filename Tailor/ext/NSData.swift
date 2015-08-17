@@ -29,7 +29,7 @@ public extension NSData {
     */
   public func componentsSeparatedByString(separator: String, limit: Int? = nil) -> [NSData] {
     var components = [NSData]()
-    let separatorData = separator.dataUsingEncoding(NSUTF8StringEncoding) ?? NSData()
+    let separatorData = NSData(bytes: separator.utf8)
     if self.length == 0 {
       return [self]
     }
@@ -60,12 +60,11 @@ public extension NSData {
     This method gets an MD5 hash of the data.
     */
   public var md5Hash: String {
-    var buffer = UnsafeMutablePointer<UInt8>(malloc(CC_MD5_DIGEST_LENGTH))
-    CC_MD5(self.bytes, Int64(self.length), buffer)
+    var buffer = [UInt8](count: CC_MD5_DIGEST_LENGTH, repeatedValue: 0)
+    CC_MD5(self.bytes, Int64(self.length), &buffer)
     let output = NSMutableString(capacity: 2 * CC_MD5_DIGEST_LENGTH)
-    for _ in 0..<CC_MD5_DIGEST_LENGTH {
-      output.appendFormat("%02x", buffer.memory)
-      buffer = advance(buffer, 1)
+    for byte in buffer {
+      output.appendFormat("%02x", byte)
     }
     return output as String
   }

@@ -52,12 +52,10 @@ public struct Connection {
     NSOperationQueue.mainQueue().addOperationWithBlock {
       let connectionDescriptor = Connection.accept(self.socketDescriptor)
       
-      if connectionDescriptor < 0 {
-        return
-      }
-      
-      dispatch_async(Connection.dispatchQueue) {
-        self.readFromSocket(connectionDescriptor)
+      if connectionDescriptor > 0 {
+        dispatch_async(Connection.dispatchQueue) {
+          self.readFromSocket(connectionDescriptor)
+        }
       }
       self.listenToSocket()
     }
@@ -144,8 +142,13 @@ public struct Connection {
       if request.headers["Connection"] == "close" || response.headers["Connection"] == "close" {
         Connection.close(connectionDescriptor)
       }
-      else {
+      else if Connection.stubbing {
         self.readFromSocket(connectionDescriptor)
+      }
+      else {
+        dispatch_async(Connection.dispatchQueue) {
+          self.readFromSocket(connectionDescriptor)
+        }
       }
     }
   }

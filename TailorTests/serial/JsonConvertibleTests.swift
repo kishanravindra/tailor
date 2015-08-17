@@ -107,7 +107,7 @@ class JsonConvertibleTests: TailorTestCase {
     let value = ["key1": "A", "key2": "B"]
     let data = value.toJsonData()
     let expectedString = "{\"key1\":\"A\",\"key2\":\"B\"}"
-    assert(data, equals: expectedString.dataUsingEncoding(NSUTF8StringEncoding)!)
+    assert(data, equals: NSData(bytes: expectedString.utf8))
   }
   
   func testDictionaryConvertibleProvidesJsonImplementation() {

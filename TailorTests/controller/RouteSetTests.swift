@@ -67,7 +67,7 @@ class RouteSetTests: TailorTestCase {
       body += "\(key): \(value)\r\n"
     }
     body += "\r\n"
-    return Request(clientAddress: "0.0.0.0", data: body.dataUsingEncoding(NSUTF8StringEncoding)!)
+    return Request(clientAddress: "0.0.0.0", data: NSData(bytes: body.utf8))
   }
   
   //MARK: - Route Class

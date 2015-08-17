@@ -136,7 +136,7 @@ class JsonPrimitiveTests: TailorTestCase {
       "key1": JsonPrimitive.String("value1"),
       "key2": JsonPrimitive.String("value2")
     ])
-    let expectedData = "{\"key1\":\"value1\",\"key2\":\"value2\"}".dataUsingEncoding(NSUTF8StringEncoding)!
+    let expectedData = NSData(bytes: "{\"key1\":\"value1\",\"key2\":\"value2\"}".utf8)
     do {
       let data = try primitive.jsonData()
       assert(data, equals: expectedData)
@@ -151,7 +151,7 @@ class JsonPrimitiveTests: TailorTestCase {
       JsonPrimitive.String("value1"),
       JsonPrimitive.String("value2")
       ])
-    let expectedData = "[\"value1\",\"value2\"]".dataUsingEncoding(NSUTF8StringEncoding)!
+    let expectedData = NSData(bytes: "[\"value1\",\"value2\"]".utf8)
     do {
       let data = try primitive.jsonData()
       assert(data, equals: expectedData)
@@ -171,7 +171,7 @@ class JsonPrimitiveTests: TailorTestCase {
         ])
       ])
 
-    let expectedData = "{\"aKey1\":\"value1\",\"aKey2\":{\"bKey1\":\"value2\",\"bKey2\":\"value3\"}}".dataUsingEncoding(NSUTF8StringEncoding)!
+    let expectedData = NSData(bytes: "{\"aKey1\":\"value1\",\"aKey2\":{\"bKey1\":\"value2\",\"bKey2\":\"value3\"}}".utf8)
     do {
       let data = try primitive.jsonData()
       assert(data, equals: expectedData)
@@ -188,7 +188,7 @@ class JsonPrimitiveTests: TailorTestCase {
       "aKey2": JsonPrimitive.Null
       ])
     
-    let expectedData = "{\"aKey1\":\"value1\",\"aKey2\":null}".dataUsingEncoding(NSUTF8StringEncoding)!
+    let expectedData = NSData(bytes: "{\"aKey1\":\"value1\",\"aKey2\":null}".utf8)
     do {
       let data = try primitive.jsonData()
       assert(data, equals: expectedData)
@@ -206,7 +206,7 @@ class JsonPrimitiveTests: TailorTestCase {
       "aKey3": JsonPrimitive.Number(3.14)
       ])
     
-    let expectedData = "{\"aKey3\":3.14,\"aKey1\":\"value1\",\"aKey2\":42}".dataUsingEncoding(NSUTF8StringEncoding)!
+    let expectedData = NSData(bytes: "{\"aKey3\":3.14,\"aKey1\":\"value1\",\"aKey2\":42}".utf8)
     do {
       let data = try primitive.jsonData()
       assert(data, equals: expectedData)
@@ -311,7 +311,7 @@ class JsonPrimitiveTests: TailorTestCase {
   
   func testInitWithJsonDataForDictionaryCreatesDictionary() {
     
-    let data = "{\"aKey1\":\"value1\",\"aKey2\":{\"bKey1\":\"value2\",\"bKey2\":\"value3\"}}".dataUsingEncoding(NSUTF8StringEncoding)!
+    let data = NSData(bytes: "{\"aKey1\":\"value1\",\"aKey2\":{\"bKey1\":\"value2\",\"bKey2\":\"value3\"}}".utf8)
     do {
       let primitive = try JsonPrimitive(jsonData: data)
       let expectedPrimitive = JsonPrimitive.Dictionary([

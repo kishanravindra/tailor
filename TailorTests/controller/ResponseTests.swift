@@ -122,7 +122,7 @@ class ResponseTests: TailorTestCase {
   func testAppendStringAppendsToBody() {
     response.appendString("Test")
     response.appendString("String")
-    let data = "TestString".dataUsingEncoding(NSUTF8StringEncoding)!
+    let data = NSData(bytes: "TestString".utf8)
     assert(response.body, equals: data, message: "sets the body data to the combined strings")
   }
   

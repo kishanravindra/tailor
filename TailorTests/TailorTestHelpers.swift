@@ -183,6 +183,8 @@ struct TestUser: UserType, Equatable {
   
   init() {
     id = nil
+    emailAddress = "test@test.com"
+    encryptedPassword = "Foo"
   }
   
   init(databaseRow: DatabaseRow) throws {
