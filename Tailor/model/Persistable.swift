@@ -49,13 +49,6 @@ public protocol Persistable: ModelType, JsonEncodable {
 
 //MARK: - Comparison
 
-/**
-  This method determines if two persistable records are equal.
-
-  - parameter lhs:    The left-hand record
-  - parameter rhs:    The right-hand record.
-  - returns:          Whether they are equal.
-*/
 public func ==<T: Persistable>(lhs: T, rhs: T) -> Bool {
   return  lhs.id != nil &&
     rhs.id != nil &&

@@ -304,20 +304,6 @@ public func !=(lhs: Calendar, rhs: Calendar) -> Bool {
   return !(lhs == rhs)
 }
 
-/**
-  This method determines if two calendars are equal.
-
-  Calendars are equal when they have the same year.
-
-  In practice, this never seems to get invoked. The compiler seems to prefer the
-  version that takes in two Calendar types rather than this genericized version.
-  This is required to allow Calendars to conform to the Equatable protocol,
-  however.
-
-  - parameter lhs:    The first calendar.
-  - parameter rhs:    The second calendar.
-  - returns:          Whether the two calendars are equal.
-  */
 public func ==<T: Calendar>(rhs: T, lhs: T) -> Bool {
   return lhs.year == rhs.year
 }
