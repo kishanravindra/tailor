@@ -48,7 +48,7 @@ class JobSchedulingTaskTypeTests: TailorTestCase {
     let task = TestTask()
     task.entries = []
     task.run(AlterationsTask.self, with: ["foo": "bar", "baz": "bat"], every: 6.hours, at: 20.minutes)
-    assert(task.entries, equals: [JobSchedulingEntry(frequency: 6.hours, startTime: 20.minutes, command: "run_alterations baz=bat foo=bar")])
+    assert(task.entries, equals: [JobSchedulingEntry(frequency: 6.hours, startTime: 20.minutes, command: " run_alterations baz=bat foo=bar")])
   }
   
   func testEveryMethodChangesDefaultFrequencyAndStartTimes() {
@@ -62,6 +62,19 @@ class JobSchedulingTaskTypeTests: TailorTestCase {
       JobSchedulingEntry(frequency: 1.hour, startTime: 15.minutes, command: "ps -ef"),
       JobSchedulingEntry(frequency: 1.day, startTime: 0.minutes, command: "touch /tmp/hi.txt")
     ])
+  }
+  
+  func testEveryMethodWithNoStartTimeChangesDefaultFrequency() {
+    let task = TestTask()
+    task.entries = []
+    task.every(1.hour) {
+      task.run("ps -ef")
+    }
+    task.run("touch /tmp/hi.txt")
+    assert(task.entries, equals: [
+      JobSchedulingEntry(frequency: 1.hour, startTime: 0.minutes, command: "ps -ef"),
+      JobSchedulingEntry(frequency: 1.day, startTime: 0.minutes, command: "touch /tmp/hi.txt")
+      ])
   }
   
   //MARK: - Generating Crontab

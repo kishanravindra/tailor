@@ -309,7 +309,8 @@ extension JobSchedulingTaskType {
                             provided, it uses the current `defaultStartTime`.
     */
   public func run(task: TaskType.Type, with arguments: [String:String], every frequency: TimeInterval? = nil, at startTime: TimeInterval? = nil) {
-    var command = task.commandName
+    var command = Process.arguments.first ?? ""
+    command += " " + task.commandName
     if !arguments.isEmpty {
       let argumentStrings = arguments.map {
         key,value in "\(key)=\(value)"
@@ -327,11 +328,13 @@ extension JobSchedulingTaskType {
     - parameter startTime:    The new default start time.
     - parameter block:        The block to add the jobs.
     */
-  public func every(frequency: TimeInterval, at startTime: TimeInterval, @noescape block: Void->Void) {
+  public func every(frequency: TimeInterval, at startTime: TimeInterval? = nil, @noescape block: Void->Void) {
     let oldFrequency = self.defaultFrequency
     let oldStartTime = self.defaultStartTime
     self.defaultFrequency = frequency
-    self.defaultStartTime = startTime
+    if let time = startTime {
+      self.defaultStartTime = time
+    }
     block()
     self.defaultFrequency = oldFrequency
     self.defaultStartTime = oldStartTime
@@ -381,10 +384,12 @@ extension JobSchedulingTaskType {
     */
   private func updateCrontab(includeNewCrontab includeNewCrontab: Bool) {
     let crontabLocation = "/tmp/tailor_crons.txt"
+    var finished = false
     ExternalProcess(launchPath: "/usr/bin/crontab", arguments: ["-l"]) {
       listResult, listData in
       guard let listText = NSString(data: listData, encoding: NSUTF8StringEncoding) as? String else {
         NSLog("Error listing crontab: %@", listData)
+        finished = true
         return
       }
       var fullCrontab = ""
@@ -419,8 +424,10 @@ extension JobSchedulingTaskType {
           let writeString = NSString(data: writeData, encoding: NSUTF8StringEncoding) ?? String(writeData)
           NSLog("Error writing crontab: %@", writeString)
         }
+        finished = true
       }.launch()
     }.launch()
+    while(!finished) {}
   }
 }
 
