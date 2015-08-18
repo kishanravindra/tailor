@@ -4,7 +4,8 @@ import Foundation
   This method provides an abstract base class for managing database connections
   and executing queries.
 
-  This class has been deprecated in favor of the DatabaseDriver protocol.
+  **NOTE**: This class has been deprecated in favor of the DatabaseDriver
+  protocol.
   */
 @available(*, deprecated, message="Use the DatabaseDriver protocol instead") public class DatabaseConnection: DatabaseDriver {
   public typealias Row = DatabaseRow
@@ -73,6 +74,10 @@ import Foundation
     return sanitizedColumn
   }
   
+  /**
+    This method gets a mapping of the names of the tables in the database to the
+    SQL for creating them.
+    */
   public func tables() -> [String:String] {
     return [:]
   }

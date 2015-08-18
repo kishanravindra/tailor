@@ -274,10 +274,22 @@ extension JobSchedulingTaskType {
     }
   }
   
+  /**
+    This method writes our jobs to the job file.
+    
+    The default implementation for this produces a crontab file and saves it
+    as the user's crontab.
+    */
   public func writeJobs() {
     writeCrontab()
   }
   
+  /**
+    This method removes our jobs from the job file.
+
+    The default implementation looks for our jobs in the user's crontab and
+    removes our entries.
+    */
   public func clearJobs() {
     clearCrontab()
   }

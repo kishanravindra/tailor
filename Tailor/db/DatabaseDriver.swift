@@ -98,6 +98,9 @@ public extension DatabaseDriver {
     return sanitizedColumn
   }
   
+  /**
+    This method gets the names of the tables in the database.
+    */
   public func tableNames() -> [String] {
     return self.tables().keys.array
   }

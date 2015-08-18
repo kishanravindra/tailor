@@ -13,7 +13,7 @@ import Foundation
   You can support a different table name or column layout by subclassing this
   class and overriding the methods in the Persistable protocol.
 
-  This class has been deprecated in favor of the UserType protocol.
+  **NOTE**: This class has been deprecated in favor of the UserType protocol.
   */
 @available(*, deprecated, message="Use the UserType protocol instead") public final class User : UserType, Equatable {
   //MARK: - Structure

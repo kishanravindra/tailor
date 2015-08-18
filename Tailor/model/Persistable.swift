@@ -61,8 +61,8 @@ public func ==<T: Persistable>(lhs: T, rhs: T) -> Bool {
 /**
   This method get the default name for a foreign key for a record class.
 
-  This method is deprecated. You should use the foreignKeyName class method
-  instead.
+  **NOTE**: This method is deprecated. You should use the foreignKeyName class
+  method instead.
 
   It will be the underscored model name, followed by _id.
   - returns: The foreign key name.
@@ -77,7 +77,8 @@ public func ==<T: Persistable>(lhs: T, rhs: T) -> Bool {
   This will look for a field on the other record that contains the id of this
   record.
 
-  This method is deprecated. You should call `toMany` on the record instead.
+  **NOTE**: This method is deprecated. You should call `toMany` on the record
+  instead.
 
   - parameter source:       The record that is on the "one" side of the
                             relationship.
@@ -98,8 +99,8 @@ public func ==<T: Persistable>(lhs: T, rhs: T) -> Bool {
   for a foreign key relationship between the intermediary and the final record
   type.
 
-  This function is deprecated. You should call the `toMany` method on the record
-  instead.
+  **NOTE**: This function is deprecated. You should call the `toMany` method on
+  the record instead.
 
   - parameter through:      The query that contains the intermediary
                             relationship.
@@ -135,8 +136,8 @@ public func ==<T: Persistable>(lhs: T, rhs: T) -> Bool {
   It will also set values for the createdAt and updatedAt fields, if they
   are defined in the column mapping for the record type.
 
-  This function is deprecated. You should use the `save` method on the record
-  instead.
+  **NOTE**: This function is deprecated. You should use the `save` method on the
+  record instead.
 
   - parameter record:     The record that we are saving.
   - returns:              On success, this returns a new record with the latest
@@ -149,8 +150,8 @@ public func ==<T: Persistable>(lhs: T, rhs: T) -> Bool {
 /**
   This method deletes the record from the database.
 
-  This method is deprecated. You should call the `destroy` method on the record
-  instead.
+  **NOTE**: This method is deprecated. You should call the `destroy` method on
+  the record instead.
 
   - parameter record:    The record to delete.
   */
@@ -283,7 +284,7 @@ extension Persistable {
   /**
     This method saves the record to the database by inserting it.
     
-    - returns:   Whether we were able to save the record.
+    - returns:   A new record with the new fields.
     */
   private func insertRecord(values: [String:DatabaseValueConvertible?]) -> Self? {
     var query = "INSERT INTO \(self.dynamicType.tableName) ("
@@ -372,10 +373,21 @@ extension Persistable {
     return self.dynamicType.build(DatabaseRow(data: mappedValues))
   }
   
+  /**
+    This method gets the name of foreign keys pointing to this record type.
+
+    This will be the model name followed by `_id`.
+    */
   public static func foreignKeyName() -> String {
     return self.modelName() + "_id"
   }
   
+  /**
+    This method gets a query for fetching records of this record type.
+
+    The default implementation uses a generic query with this record type and
+    table name.
+    */
   public static var query: QueryType { return GenericQuery(recordType: self, tableName: self.tableName) }
 }
 

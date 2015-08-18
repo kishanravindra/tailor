@@ -46,6 +46,14 @@ public protocol SeedTaskType: TaskType {
 }
 
 extension SeedTaskType {
+  /**
+    This method gets the seed folder where your seeds will live.
+    
+    The default is a path inside project directory, inside a folder with your
+    project name, and then inside "config/seeds".
+    
+    The same project name will be used for your app target and your test target.
+    */
   public static var seedFolder: String {
     var projectName = Application.projectName
     if projectName.hasSuffix("Tests") {
@@ -95,6 +103,9 @@ extension SeedTaskType {
     }
   }
   
+  /**
+    This method loads the database schema from the tables.csv file.
+    */
   public static func loadSchema() {
     let connection = Application.sharedDatabaseConnection()
     for tableName in connection.tableNames() {
@@ -214,7 +225,19 @@ extension SeedTaskType {
   
   //MARK: - Customization
   
+  /**
+    This method provides the names of the tables that should be excluded from
+    the schema when saving the schema.
+    
+    The default is an empty list.
+    */
   public static var excludedTables: [String] { return [] }
   
+
+  /**
+    This method gets the name of the command for loading and saving the seeds.
+
+    The default is "seeds".
+    */
   public static var commandName: String { return "seeds" }
 }

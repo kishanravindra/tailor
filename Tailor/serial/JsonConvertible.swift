@@ -96,6 +96,9 @@ extension Dictionary where Value: JsonEncodable {
     return .Dictionary(dictionary)
   }
   
+  /**
+    This method gets the JSON data for a dictionary.
+    */
   public func toJsonData() -> NSData {
     do {
       return try self.toJson().jsonData()

@@ -64,6 +64,11 @@ public extension Application {
 }
 
 public extension AlterationScript {
+  /**
+    This method provides a human-readable description for the alteration.
+    
+    The default implementation uses the class name.
+    */
   public static var name: String {
     return String(reflecting: self)
   }

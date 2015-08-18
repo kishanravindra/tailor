@@ -102,6 +102,10 @@ public protocol TrackableUserType: UserType {
   var lastSignInTime: Timestamp { get set }
 }
 
+/**
+  This type describes a user that can be locked out of their accounts after
+  multiple failed logins.
+  */
 public protocol LockableUserType: UserType {
   /**
     The number of times that someone has tried to log into the account with the

@@ -17,6 +17,11 @@ public protocol TaskType: class {
 }
 
 extension TaskType {
+  /**
+    The name of the command.
+    
+    The default is the class name, converted to snake case.
+    */
   public static var commandName: String {
     return String(reflecting: self).underscored().componentsSeparatedByString(".").last ?? ""
   }

@@ -63,6 +63,12 @@ public protocol TablePersistableEnum: PersistableEnum, ModelType {
 }
 
 public extension PersistableEnum {
+  /**
+    This method gets the name of a case of an enum.
+    
+    The default value uses the underscored version of the raw value for the
+    case.
+    */
   var caseName: String {
     return self.rawValue.underscored()
   }
@@ -84,6 +90,15 @@ public extension PersistableEnum {
 }
 
 public extension StringPersistableEnum {
+  /**
+    This method creates an enum case from a database value.
+    
+    This interprets the database value as the case name, and looks for a case
+    with that case name.
+
+    - parameter databaseValue:    The case name.
+    - returns:                    The matching case.
+    */
   static func fromDatabaseValue(databaseValue: DatabaseValue?) -> Self? {
     if let caseName = databaseValue?.stringValue {
       return self.fromCaseName(caseName)
@@ -93,12 +108,22 @@ public extension StringPersistableEnum {
     }
   }
   
+  /**
+    This method gets a database value for this enum case.
+
+    This will just be the case name.
+    */
   var databaseValue: DatabaseValue {
     return self.caseName.databaseValue
   }
 }
 
 public extension TablePersistableEnum {
+  /**
+    This method gets the name of the table where we save the enum cases.
+
+    The default implementation uses the pluralized model name.
+    */
   static var tableName: String {
     return self.modelName().pluralized
   }
@@ -135,6 +160,14 @@ public extension TablePersistableEnum {
     return self.fromCaseName(name)
   }
   
+  /**
+    This method creates an enum case from a database value.
+    
+    This interprets an id, and tries to find a case with that id.
+    
+    - parameter databaseValue:    The case id.
+    - returns:                    The matching case.
+    */
   static func fromDatabaseValue(databaseValue: DatabaseValue?) -> Self? {
     guard let id = databaseValue?.intValue else { return nil }
     return self.fromId(id)
@@ -162,6 +195,11 @@ public extension TablePersistableEnum {
     return result[0].data["id"]?.intValue
   }
   
+  /**
+    This method gets a database value for this case.
+
+    This just be the id.
+    */
   var databaseValue: DatabaseValue {
     return self.id?.databaseValue ?? .Null
   }

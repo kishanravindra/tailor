@@ -7,8 +7,8 @@ import Foundation
   Each script should be its own subclass of alteration, and override the "alter"
   method with the script's behavior.
 
-  This class has been deprecated. You should implement the AlterationScript
-  protocol directly.
+  **NOTE**: This class has been deprecated. You should implement the
+  `AlterationScript` protocol instead.
   */
 @available(*, deprecated, message="Use AlterationScript instead") public class Alteration: AlterationScript {
   /**
@@ -23,6 +23,7 @@ import Foundation
     */
   public class func id() -> String { return "" }
 
+  /** This method gets the unique identifier for the alteration. */
   public class var identifier: String { return id() }
   
   /**
@@ -30,8 +31,10 @@ import Foundation
     */
   public class func description() -> String { return NSStringFromClass(self) }
 
+  /** This method gets a human readable description of the alteration. */
   public class var name: String { return description() }
 
+  /** This method runs the alteration. */
   public static func run() {
     self.init().alter()
   }

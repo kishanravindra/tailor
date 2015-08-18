@@ -11,9 +11,10 @@ public protocol LocalizationSource {
     This method gets the locales that we should fall back to if we cannot find
     a translation for the locale we want.
     
-    Locales will allow fallbacks from a country-specific locale to the global
-    one for the same language (e.g. from es-mx to es), and from a language other
-    than English to English (e.g. from es to en).
+    In the default implementation, locales will allow fallbacks from a
+    country-specific locale to the global one for the same language
+    (e.g. from es-mx to es), and from a language other than English to English
+    (e.g. from es to en).
     
     - parameter locale:     The locale that we are supposed to be getting a
                             translation for.
@@ -45,6 +46,18 @@ public protocol LocalizationSource {
 }
 
 public extension LocalizationSource {
+  /**
+    This method gets the locales that we should fall back to if we cannot find
+    a translation for the locale we want.
+    
+    Locales will allow fallbacks from a country-specific locale to the global
+    one for the same language (e.g. from es-mx to es), and from a language other
+    than English to English (e.g. from es to en).
+    
+    - parameter locale:     The locale that we are supposed to be getting a
+                            translation for.
+    - returns:              The locales to try
+    */
   public func fallbackLocales() -> [String] {
     var locales = [String]()
     if locale == "en" {

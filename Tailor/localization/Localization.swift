@@ -3,7 +3,8 @@ import Foundation
 /**
   This class represents a source of localized content.
 
-  This has been deprecated in favor of the LocalizationSource protocol.
+  **NOTE**: This has been deprecated in favor of the LocalizationSource
+  protocol.
   */
 @available(*, deprecated, message="Use LocalizationSource instead") public class Localization: LocalizationSource {
   /** The locale for the content this source provides. */
