@@ -4,9 +4,10 @@ import Foundation
   This class encapsulates a configuration setting or family of configuration
   settings.
 
-  This has been deprecated in favor of the Application.Configuration structure.
+  **NOTE**: This has been deprecated in favor of the Application.Configuration
+  type.
   */
-@available(*, deprecated, message="This has been deprecated in favor of the Application.Configuration structure")
+@available(*, deprecated, message="This has been deprecated in favor of the Application.Configuration type")
 public final class ConfigurationSetting: Equatable {
   /** The raw value in the node. */
   private var _value: String?

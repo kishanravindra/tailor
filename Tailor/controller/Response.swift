@@ -274,8 +274,8 @@ public struct Response: Equatable {
   /**
     The HTTP response code.
   
-    This has been deprecated in favor of the version that takes a Response.Code
-    structure.
+    **NOTE**: This has been deprecated in favor of the version that takes a
+    Response.Code structure.
     */
   @available(*, deprecated, message="Use responseCode instead") public var code: Int {
     get { return responseCode.code }
@@ -398,6 +398,15 @@ public func ==(lhs: Response, rhs: Response) -> Bool {
     lhs.cookies == rhs.cookies
 }
 
+/**
+  This method determines if two response codes are equal.
+
+  The codes are equal if they have the same code and description.
+
+  - parameter lhs:    The left-hand side of the comparison.
+  - parameter rhs:    The right-hand side of the comparison.
+  - returns:          Whether the two codes are equal.
+  */
 public func ==(lhs: Response.Code, rhs: Response.Code) -> Bool {
   return lhs.code == rhs.code && lhs.description == rhs.description
 }

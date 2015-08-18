@@ -5,6 +5,8 @@ import Foundation
 
   Tailor comes with a few built-in tasks for running the server and running
   alterations. 
+
+  **NOTE**: This has been deprecated in favor of the `TaskType` protocol.
   */
 @available(*, deprecated, message="Use TaskType instead") public class Task {
   /**
@@ -34,8 +36,15 @@ import Foundation
     */
   public func run() {
   }
-  
+
+  /**
+    This method gets the command name for the task.
+    */
   public class var commandName: String { return command() }
+  
+  /**
+    This method runs the task.
+    */
   public class func runTask() {
     self.init().run()
   }

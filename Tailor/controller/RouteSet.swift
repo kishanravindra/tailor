@@ -25,14 +25,14 @@ public class RouteSet {
     /**
       The pattern for the path.
     
-      This has been deprecated in favor of the path variable.
+      **NOTE**: This has been deprecated in favor of the path variable.
       */
     @available(*, deprecated, message="Use the path instead") public var pathPattern: String { return path.pathPattern }
     
     /**
       The method for the HTTP request.
     
-      This has been deprecated in favor of the new path variable.
+      **NOTE**: This has been deprecated in favor of the new path variable.
       */
     @available(*, deprecated, message="Use the path instead") public var method: String { return path.methodName }
     
@@ -64,8 +64,8 @@ public class RouteSet {
     /**
       This method initializes a route.
     
-      This method has been deprecated in favor of the version that takes a path
-      enum.
+      **NOTE**: This method has been deprecated in favor of the version that
+      takes a path enum.
 
       - parameter pathPattern:    The pattern for the path.
       - parameter method:         The HTTP method.
@@ -310,7 +310,7 @@ public class RouteSet {
   /**
     This method wraps a block for generating routes.
   
-    This method is deprecated. You should use `withScope` instead.
+    **NOTE**: This method is deprecated. You should use `withScope` instead.
   
     - parameter pathPrefix:    The prefix for the paths of the routes.
     - parameter block:         The block that will provide the routes.
@@ -324,6 +324,9 @@ public class RouteSet {
   
   /**
     This method establishes a block for generating routes.
+  
+    **NOTE**: This has been deprecated in favor of the version that just takes
+    the controller's action method.
 
     - parameter pathPrefix:    The prefix for the paths of the routes.
     - parameter controller:    The controller that will handle the routes.
@@ -428,7 +431,8 @@ public class RouteSet {
   /**
     This method adds a route with a block.
   
-    This method has been deprecated in favor of the version with a path enum.
+    **NOTE**: This method has been deprecated in favor of the version with a
+    path enum.
 
     - parameter pathPattern:   The pattern for the route.
     - parameter handler:       The block that will handle the request.
@@ -465,8 +469,8 @@ public class RouteSet {
   /**
     This method adds a route for a controller action.
   
-    This method has been deprecated in favor of the version that takes a path
-    enum.
+    **NOTE**: This method has been deprecated in favor of the version that takes
+    a path enum.
 
     - parameter pathPattern:    The pattern for the route.
     - parameter method:         The HTTP method for the route.
@@ -501,8 +505,8 @@ public class RouteSet {
   /**
     This method adds a route with a block.
   
-    This method has been deprecated in favor of the version that takes a path
-    enum.
+    **NOTE**: This method has been deprecated in favor of the version that takes
+    a path enum.
 
     - parameter pathPattern:   The pattern for the route.
     - parameter method:        The HTTP method for the route.
@@ -526,12 +530,15 @@ public class RouteSet {
   /**
     This method adds a route that will be handled by a controller.
 
+    **NOTE**: This has been deprecated in favor of the new `route` method.
+  
     - parameter pathPattern:   The pattern for the route.
     - parameter method:        The HTTP method for the route.
     - parameter controller:    The controller that will handle the requests.
     - parameter actionName:    The name of the action in the controller.
     */
-  @available(*, deprecated) public func addRoute(pathPattern: String, method: String, controller controllerType: Controller.Type, actionName: String) {
+  @available(*, deprecated, message="Use the route method instead")
+  public func addRoute(pathPattern: String, method: String, controller controllerType: Controller.Type, actionName: String) {
     let description = NSString(format: "%@#%@", controllerType.name, actionName)
     let handler = {
       (request: Request, callback: Connection.ResponseCallback) -> () in
@@ -543,12 +550,15 @@ public class RouteSet {
   
   /**
     This method adds a route that will be handled by the current controller.
+  
+    **NOTE**: This has been deprecated in favor of the new `route` method.
     
     - parameter pathPattern:   The pattern for the route.
     - parameter method:        The HTTP method for the route.
     - parameter actionName:    The name of the action in the controller.
     */
-  @available(*, deprecated) public func addRoute(pathPattern: String, method: String, actionName: String) {
+  @available(*, deprecated, message="Use the route method instead")
+  public func addRoute(pathPattern: String, method: String, actionName: String) {
     if let type = self.currentController as? Controller.Type {
       self.addRoute(pathPattern, method: method, controller: type, actionName: actionName)
     }
@@ -558,6 +568,9 @@ public class RouteSet {
     This method adds restful routes.
   
     The restful actions are index, new, create, edit, update, and destroy.
+  
+    **NOTE**: This has been deprecated, because it does not fit within the new
+    action model.
   
     - parameter only:     The actions to add. If this is empty, it will add all
                           the actions.
@@ -602,7 +615,7 @@ public class RouteSet {
   /**
     This method adds routes from several controllers.
 
-    - parameters: controllers   The controller whose routes we are adding.
+    - parameter controllers:  The controller whose routes we are adding.
     */
   public func addControllerRoutes(controllers: ControllerType.Type...) {
     for controller in controllers {
@@ -766,8 +779,8 @@ public class RouteSet {
   /**
     This method generates a path using our route set.
   
-    This method has been deprecated in favor of the one that uses a controller
-    type.
+    **NOTE**: This method has been deprecated in favor of the one that uses a
+    controller type.
 
     - parameter controller:     The name of the controller that the link is to.
     - parameter actionName:     The name of the action.

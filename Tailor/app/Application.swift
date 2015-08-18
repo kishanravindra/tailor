@@ -3,8 +3,8 @@ import Foundation
 /**
   This class represents a web application.
 
-  NOTE: Subclassing this class is deprecated. In a future release, it will be
-  made into a final class.
+  **NOTE**: Subclassing this class is deprecated. In a future release, it will
+  be made into a final class.
   */
 public class Application {
   /**
@@ -181,7 +181,8 @@ public class Application {
   /**
     The IP Address that the application listens on.
   
-    This is deprecated. The IP address is now stored on the configuration setting.
+    **NOTE**: This is deprecated. The IP address is now stored on the
+    configuration setting.
     */
   @available(*, deprecated, message="This is deprecated. The IP address is now stored in the configuration")
   public var ipAddress: (Int,Int,Int,Int) {
@@ -196,7 +197,8 @@ public class Application {
   /**
     The port that the application listens on.
   
-    This is deprecated. The port is now stored in the configuration settings.
+    **NOTE**: This is deprecated. The port is now stored in the configuration
+    settings.
     */
   @available(*, deprecated, message="This is deprecated. The port is now stored in the configuration") public var port: Int {
     get {
@@ -210,8 +212,8 @@ public class Application {
   /**
     The routes that process requests for the app.
   
-    This has been deprecated in favor of getting the load and shared methods on
-    RouteSet.
+    **NOTE**: This has been deprecated in favor of `load` and `shared`
+    methods on `RouteSet`.
     */
   @available(*, deprecated, message="Use the shared route set instead") public var routeSet: RouteSet {
     get {
@@ -228,7 +230,12 @@ public class Application {
     }
   }
   
-  /** The formatters that we have available for dates. */
+  /** 
+    The formatters that we have available for dates.
+  
+    **NOTE**: This has been deprecated in favor of the formatters provided by
+    the `TimeFormat` class.
+    */
   @available(*, deprecated, message="You should use the TimeFormat class instead")
   public var dateFormatters: [String:NSDateFormatter] {
     get {
@@ -268,7 +275,7 @@ public class Application {
   /**
     This method initializes the application.
   
-    This initializer is deprecated, because the testing flag has been
+    **NOTE**: This initializer is deprecated, because the testing flag has been
     deprecated.
   
     - parameter testing:    Whether this application is being loaded as part of
@@ -399,8 +406,11 @@ public class Application {
   
   /**
     This method starts a server for this application.
+  
+    **NOTE**: This has been deprecated in favor of just starting the server
+    using `Connection.startServer`.
     */
-  @available(*, deprecated) public func startServer() {
+  @available(*, deprecated, message="Use Connection.startServer instead") public func startServer() {
     Connection.startServer(Application.configuration.ipAddress, port: Application.configuration.port, handler: { RouteSet.shared().handleRequest($0, callback: $1) })
   }
   
@@ -420,10 +430,13 @@ public class Application {
   
     If this cannot find a database driver from the configuration, it will raise
     a fatal error.
+  
+    **NOTE**: This has been deprecated in favor of the
+    `sharedDatabaseConnection` class method.
 
     - returns:   The connection
     */
-  @available(*, deprecated) public func openDatabaseConnection() -> DatabaseConnection {
+  @available(*, deprecated, message="Use the sharedDatabaseConnection method instead") public func openDatabaseConnection() -> DatabaseConnection {
     guard let connection = Application.configuration.databaseDriver?() as? DatabaseConnection else {
       fatalError("Cannot open a database connection because there is no database configuration")
     }
@@ -544,6 +557,8 @@ public class Application {
   
   /**
     This method loads the default date formatters.
+  
+    This has been deprecated.
     */
   private func loadDateFormatters() {
     self._dateFormatters["short"] = NSDateFormatter()
@@ -641,11 +656,15 @@ public class Application {
     
     The type must have previously been passed in to registerSubtypes to load
     the list.
+  
+    **NOTE**: This has been deprecated in favor of the `registeredSubtypeList`
+    method.
     
     - parameter type:   The type to get subclasses of.
     - returns:          The subclasses of the type.
     */
-  @available(*, deprecated) public func registeredSubclassList<ParentType>(type: ParentType.Type) -> [ParentType.Type] {
+  @available(*, deprecated, message="Use registeredSubtypeList instead")
+  public func registeredSubclassList<ParentType>(type: ParentType.Type) -> [ParentType.Type] {
     return self.registeredSubtypeList(type)
   }
   

@@ -23,7 +23,7 @@ public protocol ControllerType {
     This method gets the name of the controller, for debugging and identifying
     routes.
 
-    The default implementation uses the name of the class.
+    The default implementation uses the name of the type.
     */
   static var name: String { get }
   
@@ -191,15 +191,49 @@ extension ControllerType {
 
   /** The user that is signed in. */
   public var currentUser: UserType? { return self.state.currentUser }
-
+  
+  
+  /**
+    This method initializes a controller to handle a request.
+    
+    This initializer will always be invoked when creating controllers to handle
+    a request.
+    
+    The default implementation uses this information to initialize a
+    `ControllerState`, and then invokes the initializer on the controller that
+    takes in the state.
+    
+    - parameter request:      The request that the controller is responding to.
+    - parameter response:     The baseline for the response that the controller
+                              will generate.
+    - parameter actionName:   The name of the action that the controller should
+                              invoke. This is mostly useful for generating
+                              routes, because the actual action method will be
+                              called when the controller needs to respond.
+    - parameter callback      The callback that the controller should invoke
+                              when the response is ready.
+    */
   public init(request: Request, response: Response, actionName: String, callback: Connection.ResponseCallback) {
     self.init(state: ControllerState(request: request, response: response, actionName: actionName, callback: callback))
   }
   
+  /**
+    This method gets the name of the controller, for debugging and identifying
+    routes.
+    
+    The default implementation uses the name of the type.
+    */
   public static var name: String {
     return String(reflecting: self)
   }
   
+  
+  /**
+    This method gets the layout that this controller uses to wrap around its
+    templates.
+    
+    The default implementation uses an empty layout.
+    */
   public static var layout: LayoutType.Type { return EmptyLayout.self }
   
   //MARK: - Responses

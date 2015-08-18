@@ -14,10 +14,10 @@ internal class DeprecationShims: NSObject {
   }
 }
 extension Application {
-  /**: A
+  /**
     The configuration settings for the application.
   
-    This has been deprecated in favor of the static configuration variable.
+    **NOTE**: This has been deprecated in favor of the static configuration variable.
     */
   @available(*, deprecated, message="This has been deprecated in favor of the static configuration variable") public var configuration : ConfigurationSetting {
     LEGACY_CONFIGURATION_SETTING = LEGACY_CONFIGURATION_SETTING ?? ConfigurationSetting()

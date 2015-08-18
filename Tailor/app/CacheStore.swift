@@ -2,9 +2,11 @@
   This class provides a cache store, which is responsible for caching
   information across requests.
 
-  This class has been deprecated in favor of the CacheImplementation protocol.
+  **NOTE**: This class has been deprecated in favor of the CacheImplementation
+  protocol.
   */
-@available(*, deprecated, message="Use the CacheImplementation protocol instead") public class CacheStore: CacheImplementation {
+@available(*, deprecated, message="Use the CacheImplementation protocol instead")
+public class CacheStore: CacheImplementation {
   /**
     This method initializes an empty cache store.
 

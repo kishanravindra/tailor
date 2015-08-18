@@ -35,10 +35,10 @@ public struct Session {
   
   /**
     This method creates a session from request data.
-    
-    This has been deprecated in favor of either using the session field on the
-    request or the new initializer that takes the cookie string and client
-    address.
+  
+    **NOTE**: This has been deprecated in favor of either using the session
+    field on the request, or the new initializer that takes the cookie string
+    and client address.
   
     - parameter request:   The request.
     */

@@ -87,6 +87,11 @@
   */
   public class var actions: [Action] { return [] }
   
+  /**
+    This method defines the routes that this controller supports.
+
+    - parameter routes:   The route set that we should add our routes into.
+    */
   public class func defineRoutes(routes: RouteSet) {
   }
   
@@ -112,6 +117,12 @@
     self.init(state: ControllerState(request: request, response: Response(), actionName: actionName, callback: callback))
   }
   
+  /**
+    This initializer creates a controller with a controller state.
+
+    - parameter state:    The state that holds the information about the
+                          request and how it should be handled.
+    */
   public required init(state: ControllerState) {
     self.state = state
   }
@@ -139,6 +150,9 @@
     }
   }
   
+  /**
+    This method renders a 404 response.
+    */
   public func render404Action() {
     
     if self.responded {
@@ -177,6 +191,9 @@
     }
   }
   
+  /**
+    This method gets the layout within which we render our contents.
+    */
   public class var layout: Layout.Type { return Layout.self }
   
   //MARK: - Responses
