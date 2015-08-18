@@ -627,8 +627,15 @@ public extension TimeFormat {
   /** The time format for HTTP dates and times specified by RFC 822. */
   public static let Rfc822 = TimeFormat(.WeekDayName(abbreviate: true), ", ", .Day, " ", .MonthName(abbreviate: true), " ", .Year, " ", .Hour, ":", .Minute, ":", .Seconds, " ", .TimeZone)
   
+  /**
+    A deprecated format for HTTP dates and times, which we should not send out,
+    but must accept.
+    */
   public static let Rfc850 = TimeFormat(.WeekDayName(abbreviate: false), ", ", .Day, "-", .MonthName(abbreviate: true), "-", .YearWith(padding: "0", length: 2, truncate: true), " ", .Hour, ":", .Minute, ":", .Seconds, " ", .TimeZone)
   
+  /**
+    The date format used by POSIX time functions.
+    */
   public static let Posix = TimeFormat(.WeekDayName(abbreviate: true), " ", .MonthName(abbreviate: true), " ", .DayWith(padding: " "), " ", .Hour, ":", .Minute, ":", .Seconds, " ", .Year)
   
   

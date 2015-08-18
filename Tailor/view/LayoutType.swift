@@ -39,6 +39,11 @@ public struct EmptyLayout: LayoutType {
     self.template = template
   }
   
+  /**
+    This method gets the body of the layout.
+
+    This will just render the template with no enclosing content.
+    */
   public mutating func body() {
     self.renderTemplate(template)
   }

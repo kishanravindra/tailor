@@ -218,14 +218,29 @@ public func ==(lhs: TimeZone, rhs: TimeZone) -> Bool {
 }
 
 extension TimeZone: StringLiteralConvertible {
+  /**
+    This method gets the time zone by name.
+
+    - parameter value:    The name of the time zone.
+    */
   public init(stringLiteral value: String) {
     self.init(name: value)
   }
   
+  /**
+    This method gets the time zone by name.
+    
+    - parameter value:    The name of the time zone.
+    */
   public init(extendedGraphemeClusterLiteral value: String) {
     self.init(stringLiteral: value)
   }
   
+  /**
+    This method gets the time zone by name.
+    
+    - parameter value:    The name of the time zone.
+    */
   public init(unicodeScalarLiteral value: String) {
     self.init(stringLiteral: value)
   }

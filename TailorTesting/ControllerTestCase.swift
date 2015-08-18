@@ -122,6 +122,19 @@ public class ControllerTestCase : TailorTestCase {
   
   //MARK: - Helpers
   
+  /**
+    This method gets the path to a controller route.
+
+    - parameter controllerName:   The name of the controller we are getting the
+                                  route for.
+    - parameter actionName:       The name of the action that we are getting the
+                                  route for.
+    - parameter parameters:       Additional request parameters to include in
+                                  the path.
+    **NOTE**: This is deprecated in favor of the versions that takes a
+              controller type instead of a controller name.
+  
+    */
   @available(*, deprecated) public func pathFor(controllerName: String?, actionName: String, parameters: [String:String] = [:]) -> String? {
     let name: String
     
@@ -134,18 +147,53 @@ public class ControllerTestCase : TailorTestCase {
     return RouteSet.shared().pathFor(name, actionName: actionName, parameters: parameters)
   }
   
+  
+  /**
+    This method gets the path to a controller route.
+  
+    - parameter actionName:       The name of the action that we are getting the
+                                  route for.
+    - parameter parameters:       Additional request parameters to include in
+                                  the path.
+    */
   public func pathFor(actionName actionName: String, parameters: [String:String] = [:]) -> String? {
     guard let type = controllerType else { return nil }
     return RouteSet.shared().pathFor(type, actionName: actionName, parameters: parameters)
   }
   
+  
+  /**
+    This method gets the path to a controller route.
+  
+    - parameter controllerType:   The type of the controller we are getting the
+                                  route for.
+    - parameter actionName:       The name of the action that we are getting the
+                                  route for.
+    - parameter parameters:       Additional request parameters to include in
+                                  the path.
+    */
   public func pathFor(controllerType: ControllerType.Type, actionName: String, parameters: [String:String] = [:]) -> String? {
     return RouteSet.shared().pathFor(controllerType, actionName: actionName, parameters: parameters)
   }
 
 
   //MARK: - Calling Actions
+
+  /**
+    This method calls an action on the controller this test case is testing.
   
+    This will use the route set to get the actual action, so there must be a
+    route defined for it for this method to work.
+
+    - parameter actionName:   The name of the action we are calling.
+    - parameter headers:      Additional headers to include in the request.
+    - parameter file:         The name of the file that is making the call. This
+                              will be supplied automatically.
+    - parameter line:         The line of the file that is making the call. This
+                              will be supplied automatically.
+    - parameter callback:     A callback that will perform checks on the
+                              response.
+    */
   public func callAction(actionName: String, headers: [String:String] = [:], file: String = __FILE__, line: UInt = __LINE__, callback: Response -> Void) {
     var actionParams = params[actionName] ?? [:]
     var sessionData = [String:String]()

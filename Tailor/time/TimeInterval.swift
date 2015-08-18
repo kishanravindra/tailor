@@ -72,7 +72,7 @@ public struct TimeInterval: Equatable,CustomStringConvertible {
   /** This method gets a time that is in the future by this time interval. */
   public var fromNow: Timestamp { return Timestamp.now() + self }
   
-  /* This method gets a time that is in the past by this time interval. */
+  /** This method gets a time that is in the past by this time interval. */
   public var ago: Timestamp { return Timestamp.now() - self }
   
   /**

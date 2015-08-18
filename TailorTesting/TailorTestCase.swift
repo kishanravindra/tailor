@@ -8,6 +8,13 @@ import XCTest
   well as matchers that will be generally useful in test cases.
   */
 public class TailorTestCase: XCTestCase {
+  /**
+    This method configures the application for testing.
+
+    This does nothing by default, but you can re-implement it in an extension to
+    TailorTestCase to provide special configuration for your app in testing,
+    like using a different test database.
+    */
   public dynamic func configure() {
   }
   
@@ -38,6 +45,18 @@ public class TailorTestCase: XCTestCase {
     Application.truncateTables()
   }
   
+  /**
+    This method does the set up for a test case.
+
+    This will freeze the current time to ensure consistent times within tests,
+    and reconfigure the application using the configure method. It will also
+    truncate all the tables.
+
+    If we have not done so already, this will also reset the test database. This
+    requires that you have a task defined that implements `SeedTaskType`. It
+    will use that task to reload the schema. It will also run any pending
+    alterations that have not been saved into the seeds.
+    */
   public override func setUp() {
     super.setUp()
     Timestamp.freeze()
@@ -45,6 +64,12 @@ public class TailorTestCase: XCTestCase {
     resetDatabase()
   }
   
+  /**
+    This method cleans up after a test case.
+    
+    It will unfreeze the current time, allowing it to proceed normally between
+    test cases.
+    */
   public override func tearDown() {
     Timestamp.unfreeze()
     super.tearDown()
