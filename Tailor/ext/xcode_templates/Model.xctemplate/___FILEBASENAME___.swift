@@ -12,8 +12,8 @@ struct ___FILEBASENAME___ : Persistable {
 
     :param: databaseRow   The row in the database.
     */
-  init?(databaseRow: [String : DatabaseValue]) {
-    self.id = databaseRow["id"]?.intValue
+  init(databaseRow: DatabaseRow) throws {
+    self.id = try databaseRow.read("id")
   }
   
   /**

@@ -51,55 +51,38 @@
 	<key>Nodes</key>
 	<array>
 		<string>main.swift</string>
-		<string>app/___PACKAGENAME___Application.swift</string>
-		<string>app/___PACKAGENAME___Routes.swift</string>
+		<string>app/___PACKAGENAME___Configuration.swift</string>
 		<string>models/DeleteThisFile</string>
 		<string>controllers/DeleteThisFile</string>
-		<string>database.plist</string>
 		<string>localization.plist</string>
-		<string>sessions.plist</string>
 	</array>
 	<key>Definitions</key>
 	<dict>
-		<key>app/___PACKAGENAME___Routes.swift</key>
+		<key>app/___PACKAGENAME___Configuration</key>
 		<dict>
 			<key>Group</key>
 			<string>app</string>
 			<key>Path</key>
-			<string>___PACKAGENAME___Routes.swift</string>
+			<string>___PACKAGENAME___Configuration.swift</string>
 		</dict>
 		<key>main.swift</key>
 		<dict>
 			<key>Path</key>
 			<string>main.swift</string>
 		</dict>
-		<key>app/___PACKAGENAME___Application.swift</key>
-		<dict>
-			<key>Group</key>
-			<string>app</string>
-			<key>Path</key>
-			<string>___PACKAGENAME___Application.swift</string>
-		</dict>
 		<key>models/DeleteThisFile</key>
 		<dict>
 			<key>Group</key>
 			<string>models</string>
 			<key>TargetIndices</key>
-			<array />
+			<array/>
 		</dict>
 		<key>controllers/DeleteThisFile</key>
 		<dict>
 			<key>Group</key>
 			<string>controllers</string>
 			<key>TargetIndices</key>
-			<array />
-		</dict>
-		<key>database.plist</key>
-		<dict>
-			<key>Group</key>
-			<string>config</string>
-			<key>Path</key>
-			<string>database.plist</string>
+			<array/>
 		</dict>
 		<key>localization.plist</key>
 		<dict>
@@ -107,13 +90,6 @@
 			<string>config</string>
 			<key>Path</key>
 			<string>localization.plist</string>
-		</dict>
-		<key>sessions.plist</key>
-		<dict>
-			<key>Group</key>
-			<string>config</string>
-			<key>Path</key>
-			<string>sessions.plist</string>
 		</dict>
 	</dict>
 </dict>

@@ -279,7 +279,7 @@
 		5242C35519F4466F00E605D2 /* TemplateInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = TemplateInfo.plist; sourceTree = "<group>"; };
 		5246AE1F1B3A34AF005DBF6E /* CacheStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheStore.swift; sourceTree = "<group>"; };
 		5247FF9E19F4629700C08156 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		5247FF9F19F462C200C08156 /* ___PACKAGENAME___Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "___PACKAGENAME___Application.swift"; sourceTree = "<group>"; };
+		5247FF9F19F462C200C08156 /* ___PACKAGENAME___Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "___PACKAGENAME___Configuration.swift"; sourceTree = "<group>"; };
 		524828301B7FE95F006257F2 /* EtagFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EtagFilter.swift; sourceTree = "<group>"; };
 		524828321B7FEA83006257F2 /* CookieJarTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CookieJarTests.swift; sourceTree = "<group>"; };
 		524828331B7FEA83006257F2 /* CookieTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CookieTests.swift; sourceTree = "<group>"; };
@@ -416,10 +416,7 @@
 		52DD44FE1B5ED2FC00312923 /* EmptyController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptyController.swift; sourceTree = "<group>"; };
 		52DDCF001A538C5800D3A47E /* QueryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = QueryTests.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		52E3E24F1B752233008AC0DE /* Ext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ext.swift; sourceTree = "<group>"; };
-		52E758931AF68AE000EA7EEE /* ___PACKAGENAME___Routes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "___PACKAGENAME___Routes.swift"; sourceTree = "<group>"; };
-		52E758941AF68AE000EA7EEE /* database.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = database.plist; sourceTree = "<group>"; };
 		52E758951AF68AE000EA7EEE /* localization.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = localization.plist; sourceTree = "<group>"; };
-		52E758961AF68AE000EA7EEE /* sessions.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = sessions.plist; sourceTree = "<group>"; };
 		52E784B41A59C12D0065C10D /* SessionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionTests.swift; sourceTree = "<group>"; };
 		52E784B71A59F2030065C10D /* AesEncryptorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AesEncryptorTests.swift; sourceTree = "<group>"; };
 		52E784B91A5A04590065C10D /* PasswordHasherTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordHasherTests.swift; sourceTree = "<group>"; };
@@ -702,11 +699,8 @@
 			children = (
 				5242C35519F4466F00E605D2 /* TemplateInfo.plist */,
 				5247FF9E19F4629700C08156 /* main.swift */,
-				5247FF9F19F462C200C08156 /* ___PACKAGENAME___Application.swift */,
-				52E758931AF68AE000EA7EEE /* ___PACKAGENAME___Routes.swift */,
-				52E758941AF68AE000EA7EEE /* database.plist */,
+				5247FF9F19F462C200C08156 /* ___PACKAGENAME___Configuration.swift */,
 				52E758951AF68AE000EA7EEE /* localization.plist */,
-				52E758961AF68AE000EA7EEE /* sessions.plist */,
 			);
 			path = "Tailor Application.xctemplate";
 			sourceTree = "<group>";
