@@ -1,9 +1,10 @@
 import Tailor
 import TailorSqlite
 
-extension Configuration {
+extension Application.Configuration {
   public dynamic func configure() {
-    databaseDriver = { return SqliteConnection(path: "__PACKAGENAME__.sqlite") }
+    databaseDriver = { return SqliteConnection(path: "___PACKAGENAME___.sqlite") }
+    staticContent = Application.Configuration.configurationFromFile("localization")
     sessionEncryptionKey = ""
     RouteSet.load(loadRoutes)
   }

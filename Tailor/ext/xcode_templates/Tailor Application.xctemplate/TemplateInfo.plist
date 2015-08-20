@@ -51,22 +51,24 @@
 	<key>Nodes</key>
 	<array>
 		<string>main.swift</string>
-		<string>app/___PACKAGENAME___Configuration.swift</string>
+		<string>___PACKAGENAME___Configuration.swift</string>
 		<string>models/DeleteThisFile</string>
 		<string>controllers/DeleteThisFile</string>
 		<string>localization.plist</string>
 	</array>
 	<key>Definitions</key>
 	<dict>
-		<key>app/___PACKAGENAME___Configuration</key>
+		<key>___PACKAGENAME___Configuration.swift</key>
 		<dict>
 			<key>Group</key>
 			<string>app</string>
 			<key>Path</key>
-			<string>___PACKAGENAME___Configuration.swift</string>
+			<string>configuration.swift</string>
 		</dict>
 		<key>main.swift</key>
 		<dict>
+			<key>Group</key>
+			<string>app</string>
 			<key>Path</key>
 			<string>main.swift</string>
 		</dict>
