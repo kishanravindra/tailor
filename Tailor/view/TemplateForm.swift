@@ -41,10 +41,11 @@ public struct TemplateForm {
   /**
     This method creates a form builder.
     
-    The `name` and `modelType` parameters are both optional, but you must
+    The `name` and `type` parameters are both optional, but you must
     provide one of them.
     
-    - parameter template:       The template that we are putting the form in.
+    - parameter controller:     The controller that we are creating the form 
+                                form.
     - parameter name:           The name used for the model object in the input
                                 tags.
     - parameter type:           The type of model that the form is for. This can

@@ -16,14 +16,8 @@ extension Application {
   /**
     This method generates a shared email agent.
   
-    The email agent will be created based on the `email` section of the
-    application configuration. This must have a key called "klass", which must
-    hold the name of the class that provides the email agent. An instance of the
-    class will be instantiated using the rest of the settings in the
-    configuration dictionary.
-  
-    If the email configuration does not exist or does not have a `klass` field,
-    this will create a `FileEmailAgent`.
+    The email agent will be created based on the `emailAgent` section of the
+    application configuration.
 
     - returns:    The email agent.
     */
