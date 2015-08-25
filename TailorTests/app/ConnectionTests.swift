@@ -38,7 +38,7 @@ class ConnectionTests: TailorTestCase {
   }
   
   func testReadFromSocketCanHandleRequestThatExceedsBuffer() {
-    let body = "Request Body " + " ".join(Array<String>(count: 205, repeatedValue: "1234"))
+    let body = "Request Body " + Array<String>(count: 205, repeatedValue: "1234").joinWithSeparator(" ")
     requestContents = ["GET / HTTP/1.1\r\nHeader: Value\r\nContent-Length: 1037\r\nHeader-2: Value 2\r\n\r\n" + body]
     Connection.startStubbing(requestData)
     let expectation = expectationWithDescription("received request")

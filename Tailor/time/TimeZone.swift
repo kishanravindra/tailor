@@ -111,7 +111,7 @@ public struct TimeZone: Equatable,CustomStringConvertible {
     - returns:   The description.
     */
   public var description: String {
-    let policyDescription = ", ".join(policies.map { $0.description })
+    let policyDescription = policies.map { $0.description }.joinWithSeparator(", ")
     return "\(name): (\(policyDescription))"
   }
   

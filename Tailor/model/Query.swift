@@ -127,7 +127,7 @@ extension QueryType {
       clause.query += " AND "
     }
     clause.query += query
-    clause.parameters.extend(parameters.map { $0.databaseValue })
+    clause.parameters.appendContentsOf(parameters.map { $0.databaseValue })
     return self.dynamicType.init(
       copyFrom: self,
       whereClause: clause
@@ -244,7 +244,7 @@ extension QueryType {
       clause.query += " "
     }
     clause.query += query
-    clause.parameters.extend(parameters.map { $0.databaseValue })
+    clause.parameters.appendContentsOf(parameters.map { $0.databaseValue })
     let selectClause = self.selectClause == "*" ? "\(self.tableName).*" : self.selectClause
     return self.dynamicType.init(
       copyFrom: self,
@@ -295,7 +295,7 @@ extension QueryType {
         }
         return reversed
       }
-      orderClause.query = ",".join(components)
+      orderClause.query = components.joinWithSeparator(",")
     }
     return self.dynamicType.init(copyFrom: self, orderClause: orderClause)
   }
@@ -335,7 +335,7 @@ extension QueryType {
     for (prefix, clause) in clauses {
       if !clause.query.isEmpty {
         query += " \(prefix)" + clause.query
-        parameters.extend(clause.parameters)
+        parameters.appendContentsOf(clause.parameters)
       }
     }
     
@@ -351,7 +351,7 @@ extension QueryType {
   public func allRecords() -> [Persistable] {
     let (query, parameters) = self.toSql()
     if self.cacheResults {
-      let parameterString = ",".join(parameters.map { String($0) })
+      let parameterString = parameters.map { String($0) }.joinWithSeparator(",")
       let cacheKey = query + "(" + parameterString + ")"
       
       var cachedIds = Application.cache.read(cacheKey)
@@ -362,7 +362,7 @@ extension QueryType {
       guard let idString = cachedIds else {
         let results = self.dynamicType.init(copyFrom: self, cacheResults: false).allRecords()
         let ids = results.flatMap { $0.id }.map { String($0) }
-        Application.cache.write(cacheKey, value: ",".join(ids), expireIn: nil)
+        Application.cache.write(cacheKey, value: ids.joinWithSeparator(","), expireIn: nil)
         return results
       }
       let ids = idString.componentsSeparatedByString(",").map { Int($0) ?? 0 } ?? []

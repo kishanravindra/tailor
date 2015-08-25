@@ -42,7 +42,7 @@ internal struct TimeZoneReader {
         return 0
       }
       let value = pointer.memory
-      pointer = advance(pointer, 1)
+      pointer = pointer.advancedBy(1)
       remaining -= 1
       return value
     }
@@ -89,7 +89,7 @@ internal struct TimeZoneReader {
       - parameter bytes:   The number of bytes to skip.
       */
     mutating func skip(bytes: Int) {
-      pointer = advance(pointer, bytes)
+      pointer = pointer.advancedBy(bytes)
     }
   }
   

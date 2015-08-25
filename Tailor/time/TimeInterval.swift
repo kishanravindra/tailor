@@ -86,14 +86,14 @@ public struct TimeInterval: Equatable,CustomStringConvertible {
         return nil
       }
       else if value == 1 {
-        let text = text.substringToIndex(advance(text.endIndex, -1))
+        let text = text.substringToIndex(text.endIndex.advancedBy(-1))
         return "\(value) \(text)"
       }
       else {
         return "\(value) \(text)"
       }
     }
-    var text = ", ".join(textComponents)
+    var text = textComponents.joinWithSeparator(", ")
     if nanoseconds != 0 {
       text += String(format: ", %.5f nanoseconds", nanoseconds)
     }

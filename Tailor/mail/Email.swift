@@ -226,11 +226,11 @@ public struct Email: Equatable {
     
     appendHeader(messageData, label: "From", value: sender)
     
-    let recipientList = ",".join(recipients)
+    let recipientList = recipients.joinWithSeparator(",")
     appendHeader(messageData, label: "To", value: recipientList)
     
     if !ccs.isEmpty {
-      let ccList = ",".join(ccs)
+      let ccList = ccs.joinWithSeparator(",")
       appendHeader(messageData, label: "CC", value: ccList)
     }
     
@@ -330,7 +330,7 @@ public struct Email: Equatable {
       }
       else if codeUnit > 126 || codeUnit < 32 || codeUnit == 61 || specialEscapes.contains(codeUnit) {
         if lineLength >= Email.maxLineLength - charactersBeforeNewline - 5 {
-          bytes.extend(lineBreaker)
+          bytes.appendContentsOf(lineBreaker)
           lineLength = charactersAfterNewline
         }
         bytes.append(61)
@@ -342,7 +342,7 @@ public struct Email: Equatable {
       }
       else {
         if lineLength >= Email.maxLineLength - charactersBeforeNewline - 2 {
-          bytes.extend(lineBreaker)
+          bytes.appendContentsOf(lineBreaker)
           lineLength = charactersAfterNewline
         }
         bytes.append(codeUnit)

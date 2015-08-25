@@ -264,7 +264,7 @@ class SqliteConnectionTests: TailorTestCase {
   
   func testTablesCanGetTableSql() {
     let tables = connection.tables()
-    assert(tables.keys.array.sort(), equals: ["hats", "shelfs", "stores", "tailor_alterations", "users"])
+    assert(Array(tables.keys).sort(), equals: ["hats", "shelfs", "stores", "tailor_alterations", "users"])
     assert(tables["hats"], equals: "CREATE TABLE `hats` ( `id` integer NOT NULL PRIMARY KEY, `color` varchar(255), `brim_size` int(11), shelf_id int(11), `created_at` timestamp, `updated_at` timestamp)")
     assert(tables["shelfs"], equals: "CREATE TABLE `shelfs` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255), `store_id` int(11))")
     assert(tables["stores"], equals: "CREATE TABLE `stores` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255))")

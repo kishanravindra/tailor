@@ -837,7 +837,7 @@ class JsonPrimitiveTests: TailorTestCase {
   
   func testDescriptionForDictionaryIsDictionaryDescription() {
     let value = JsonPrimitive.Dictionary(["key1": JsonPrimitive.Number(891), "key2": JsonPrimitive.String("C")])
-    assert(value.description, equals: "[key1: 891, key2: C]")
+    assert(value.description, equals: "[\"key1\": 891, \"key2\": C]")
   }
   
   func testDescriptionForNullIsNull() {

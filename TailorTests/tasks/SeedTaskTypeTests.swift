@@ -34,7 +34,7 @@ class SeedTaskTypeTests: TailorTestCase {
     do {
       for path in try NSFileManager.defaultManager().contentsOfDirectoryAtPath(SeedTask.seedFolder) {
         if path.hasSuffix(".keep") {
-          let newPath = path.substringToIndex(advance(path.startIndex, path.characters.count - 5))
+          let newPath = path.substringToIndex(path.startIndex.advancedBy(path.characters.count - 5))
           try NSFileManager.defaultManager().copyItemAtPath(SeedTask.seedFolder + "/" + path, toPath: SeedTask.seedFolder + "/" + newPath)
         }
       }

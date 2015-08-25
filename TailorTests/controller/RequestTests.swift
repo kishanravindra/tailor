@@ -200,7 +200,7 @@ class RequestTests: TailorTestCase {
   func testDecodeQueryStringLeavesBadEscapeValueUnescaped() {
     let queryString = "key1=1&key%1=2"
     let decoded = Request.decodeQueryString(queryString)
-    assert(decoded.keys.array, equals: ["key1", "key%1"])
+    assert(Array(decoded.keys), equals: ["key1", "key%1"])
   }
   
   func testParseTimeCanParseRfc822Format() {

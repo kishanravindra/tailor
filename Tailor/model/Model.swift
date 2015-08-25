@@ -43,7 +43,7 @@ public extension ModelType {
   public static func modelName() -> String {
     var fullName = String(reflecting: self)
     if let range = fullName.rangeOfString(".", options: NSStringCompareOptions.BackwardsSearch, range: nil, locale: nil) {
-      fullName = fullName.substringFromIndex(advance(range.startIndex, 1))
+      fullName = fullName.substringFromIndex(range.startIndex.advancedBy(1))
     }
     return fullName.underscored()
   }
@@ -104,7 +104,7 @@ public extension ModelType {
 @available(*, deprecated, message="Use the ModelType protocol instead") public func modelName(klass: Any.Type) -> String {
   var fullName = String(reflecting: klass)
   if let range = fullName.rangeOfString(".", options: NSStringCompareOptions.BackwardsSearch, range: nil, locale: nil) {
-    fullName = fullName.substringFromIndex(advance(range.startIndex, 1))
+    fullName = fullName.substringFromIndex(range.startIndex.advancedBy(1))
   }
   return fullName.underscored()
 }

@@ -170,7 +170,6 @@
 		52DD44FF1B5ED2FC00312923 /* EmptyController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DD44FE1B5ED2FC00312923 /* EmptyController.swift */; };
 		52DD45001B5ED8E700312923 /* TailorTesting.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5262EEA31AD0BA3D006F864D /* TailorTesting.framework */; };
 		52DDCF011A538C5800D3A47E /* QueryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DDCF001A538C5800D3A47E /* QueryTests.swift */; };
-		52E3E2501B752233008AC0DE /* Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E3E24F1B752233008AC0DE /* Ext.swift */; };
 		52E784B51A59C12D0065C10D /* SessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784B41A59C12D0065C10D /* SessionTests.swift */; };
 		52E784B81A59F2030065C10D /* AesEncryptorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784B71A59F2030065C10D /* AesEncryptorTests.swift */; };
 		52E784BA1A5A04590065C10D /* PasswordHasherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784B91A5A04590065C10D /* PasswordHasherTests.swift */; };
@@ -415,7 +414,6 @@
 		52DD44FC1B5DC3A600312923 /* SendmailEmailAgentTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendmailEmailAgentTests.swift; sourceTree = "<group>"; };
 		52DD44FE1B5ED2FC00312923 /* EmptyController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptyController.swift; sourceTree = "<group>"; };
 		52DDCF001A538C5800D3A47E /* QueryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = QueryTests.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
-		52E3E24F1B752233008AC0DE /* Ext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ext.swift; sourceTree = "<group>"; };
 		52E758951AF68AE000EA7EEE /* localization.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = localization.plist; sourceTree = "<group>"; };
 		52E784B41A59C12D0065C10D /* SessionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionTests.swift; sourceTree = "<group>"; };
 		52E784B71A59F2030065C10D /* AesEncryptorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AesEncryptorTests.swift; sourceTree = "<group>"; };
@@ -847,7 +845,6 @@
 			isa = PBXGroup;
 			children = (
 				522B56C91A18C849009BBE32 /* Array.swift */,
-				52E3E24F1B752233008AC0DE /* Ext.swift */,
 				521E87471A0FCEDA00D84B7B /* NSData.swift */,
 				52BD141719E9DA1D006D72B0 /* NSString.swift */,
 				52BD141819E9DA1D006D72B0 /* String.swift */,
@@ -1344,7 +1341,6 @@
 				52B417341B3DF5DD00B274F7 /* TemplateForm.swift in Sources */,
 				521E87481A0FCEDA00D84B7B /* NSData.swift in Sources */,
 				52B2B6F219F3F7FC0086261B /* SanitizedText.swift in Sources */,
-				52E3E2501B752233008AC0DE /* Ext.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

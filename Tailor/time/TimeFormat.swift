@@ -114,7 +114,7 @@ public struct TimeFormat: TimeFormatter {
         }
         else {
           components.append(.Literal(workingString))
-          components.extend(newComponents)
+          components.appendContentsOf(newComponents)
           workingString = ""
         }
         inEscape = false
@@ -137,7 +137,7 @@ public struct TimeFormat: TimeFormatter {
     - returns:           The formatted string.
     */
   public func formatTime(timestamp: Timestamp) -> String {
-    return "".join(self.components.map { $0.formatTime(timestamp) })
+    return self.components.map { $0.formatTime(timestamp) }.joinWithSeparator("")
   }
   
   /**
@@ -315,7 +315,7 @@ public enum TimeFormatComponent: TimeFormatter {
       }
       let currentLength = year.characters.count
       if truncate && currentLength > length {
-        year = year.substringFromIndex(advance(year.endIndex, length - currentLength))
+        year = year.substringFromIndex(year.endIndex.advancedBy(length - currentLength))
       }
       return year
     case let .MonthWith(padding):
@@ -405,7 +405,7 @@ public enum TimeFormatComponent: TimeFormatter {
       return (0,nil)
     }
     
-    var substring = string.substringToIndex(advance(string.startIndex, length))
+    var substring = string.substringToIndex(string.startIndex.advancedBy(length))
     var realStartIndex = -1
     for (index,character) in substring.unicodeScalars.enumerate() {
       
@@ -418,9 +418,9 @@ public enum TimeFormatComponent: TimeFormatter {
         realStartIndex = index
       }
     }
-    substring = substring.substringFromIndex(advance(substring.startIndex, realStartIndex))
+    substring = substring.substringFromIndex(substring.startIndex.advancedBy(realStartIndex))
     if let value = Int(substring) {
-      return (value, string.substringFromIndex(advance(string.startIndex, length)))
+      return (value, string.substringFromIndex(string.startIndex.advancedBy(length)))
     }
     else {
       return (0,nil)
@@ -446,7 +446,7 @@ public enum TimeFormatComponent: TimeFormatter {
     for value in range {
       if let textValue = localization.fetch("dates.\(calendar.identifier).\(key).\(value)") {
         if string.hasPrefix(textValue) {
-          return (value,string.substringFromIndex(advance(string.startIndex, textValue.characters.count)))
+          return (value,string.substringFromIndex(string.startIndex.advancedBy(textValue.characters.count)))
         }
       }
     }
@@ -473,7 +473,7 @@ public enum TimeFormatComponent: TimeFormatter {
     switch(self) {
     case let .Literal(literal):
       if string.hasPrefix(literal) {
-        return string.substringFromIndex(advance(string.startIndex, literal.characters.count))
+        return string.substringFromIndex(string.startIndex.advancedBy(literal.characters.count))
       }
       else {
         return nil
@@ -537,7 +537,7 @@ public enum TimeFormatComponent: TimeFormatter {
       return nil
     case .TimeZone:
       if string.characters.count >= 3 {
-        let index = advance(string.startIndex, 3)
+        let index = string.startIndex.advancedBy(3)
         let timeZoneName = string.substringToIndex(index)
         let remainder = string.substringFromIndex(index)
         container.timeZone = Tailor.TimeZone(name: timeZoneName)
@@ -550,20 +550,20 @@ public enum TimeFormatComponent: TimeFormatter {
       if string.characters.count < 6 {
         return nil
       }
-      if (string[string.startIndex] != "+" && string[string.startIndex] != "-") || string[advance(string.startIndex, 3)] != ":" {
+      if (string[string.startIndex] != "+" && string[string.startIndex] != "-") || string[string.startIndex.advancedBy(3)] != ":" {
         return nil
       }
-      let hours = Int(string.substringWithRange(advance(string.startIndex, 1)...advance(string.startIndex, 2)))
-      let minutes = Int(string.substringWithRange(advance(string.startIndex, 4)...advance(string.startIndex, 5)))
+      let hours = Int(string.substringWithRange(string.startIndex.advancedBy(1)...string.startIndex.advancedBy(2)))
+      let minutes = Int(string.substringWithRange(string.startIndex.advancedBy(4)...string.startIndex.advancedBy(5)))
       if hours == nil || minutes == nil {
         return nil
       }
-      return string.substringFromIndex(advance(string.startIndex, 6))
+      return string.substringFromIndex(string.startIndex.advancedBy(6))
     case .Meridian:
       if string.characters.count < 2 {
         return nil
       }
-      let index = advance(string.startIndex, 2)
+      let index = string.startIndex.advancedBy(2)
       let meridian = string.substringToIndex(index)
       switch(meridian) {
       case "AM":

@@ -46,7 +46,7 @@ class PasswordHasherTests: TailorTestCase {
   
   func testIsMatchWithMalformedHashReturnsFalse() {
     let encryptedHash = PasswordHasher().encrypt("test")
-    let badHash = "A" + encryptedHash.substringFromIndex(advance(encryptedHash.startIndex, 1))
+    let badHash = "A" + encryptedHash.substringFromIndex(encryptedHash.startIndex.advancedBy(1))
     assert(!PasswordHasher.isMatch("test", encryptedHash: badHash))
   }
 }

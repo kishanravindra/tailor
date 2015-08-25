@@ -53,8 +53,8 @@ public struct PasswordHasher {
                                   given input.
     */
   public static func isMatch(input: String, encryptedHash: String) -> Bool {
-    let saltLength = Int(encryptedHash.substringToIndex(advance(encryptedHash.startIndex, 2))) ?? 0
-    let encodedSalt = encryptedHash.substringWithRange(Range(start: advance(encryptedHash.startIndex, 2), end: advance(encryptedHash.startIndex, 2 + saltLength)))
+    let saltLength = Int(encryptedHash.substringToIndex(encryptedHash.startIndex.advancedBy(2))) ?? 0
+    let encodedSalt = encryptedHash.substringWithRange(Range(start: encryptedHash.startIndex.advancedBy(2), end: encryptedHash.startIndex.advancedBy(2 + saltLength)))
     let salt = NSData(base64EncodedString: encodedSalt, options: [])
     let hasher = PasswordHasher(salt: salt)
     return hasher.encrypt(input) == encryptedHash

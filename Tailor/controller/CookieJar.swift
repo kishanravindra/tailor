@@ -129,7 +129,7 @@ public struct CookieJar: Equatable {
       }.map {
         "Set-Cookie: \($0.headerString)\r\n"
       }
-      return "".join(headers)
+      return headers.joinWithSeparator("")
     }
   }
 }

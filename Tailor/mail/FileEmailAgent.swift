@@ -40,7 +40,7 @@ public struct FileEmailAgent: EmailAgent {
         return
       }
       bytesWritten += newBytes
-      advance(buffer, bytesWritten)
+      buffer.advancedBy(bytesWritten)
     }
     var closingBytes: [UInt8] = [13, 10]
     stream.write(&closingBytes, maxLength: 2)

@@ -96,7 +96,7 @@ public class RouteSet {
       parameterPattern.enumerateMatchesInString(path.pathPattern, options: [], range: NSMakeRange(0, path.pathPattern.characters.count), usingBlock: {
         (match, _, _) in
         guard let match = match else { return }
-        let range = Range<String.Index>(start: advance(path.pathPattern.startIndex, match.range.location + 1), end: advance(path.pathPattern.startIndex, match.range.location + match.range.length))
+        let range = Range<String.Index>(start: path.pathPattern.startIndex.advancedBy(match.range.location + 1), end: path.pathPattern.startIndex.advancedBy(match.range.location + match.range.length))
         parameterNames.append(path.pathPattern.substringWithRange(range))
       })
       

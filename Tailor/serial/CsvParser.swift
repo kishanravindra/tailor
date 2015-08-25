@@ -104,7 +104,7 @@ public struct CsvParser {
     */
   internal mutating func parse(data: NSData) {
     var pointer = UnsafePointer<UInt8>(data.bytes)
-    let endPointer = advance(pointer, data.length)
+    let endPointer = pointer.advancedBy(data.length)
     while pointer != endPointer {
       let (bytes, newPointer) = self.extractNextLine(pointer, end: endPointer)
       pointer = newPointer

@@ -39,7 +39,7 @@ public final class ConfigurationSetting: Equatable {
     get {
       guard let path = self.keyPath else { return _value }
       if path.hasPrefix("localization.content.") {
-        return Application.configuration.staticContent[path.substringFromIndex(advance(path.startIndex, 21))]
+        return Application.configuration.staticContent[path.substringFromIndex(path.startIndex.advancedBy(21))]
       }
       switch(path) {
       case "application.port":
@@ -77,7 +77,7 @@ public final class ConfigurationSetting: Equatable {
         return
       }
       if path.hasPrefix("localization.content.") {
-        Application.configuration.staticContent[path.substringFromIndex(advance(path.startIndex, 21))] = newValue
+        Application.configuration.staticContent[path.substringFromIndex(path.startIndex.advancedBy(21))] = newValue
       }
       switch(path) {
       case "application.port":

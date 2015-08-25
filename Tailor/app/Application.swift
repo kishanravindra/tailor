@@ -224,7 +224,7 @@ public class Application {
         routes in
         for route in newValue.routes {
           let path = route.pathPattern
-          routes.addRoute(path.substringFromIndex(advance(path.startIndex, 1)), method: route.method, handler: route.handler, description: route.description, controller: route.controller, actionName: route.actionName)
+          routes.addRoute(path.substringFromIndex(path.startIndex.advancedBy(1)), method: route.method, handler: route.handler, description: route.description, controller: route.controller, actionName: route.actionName)
         }
       }
     }
@@ -513,7 +513,7 @@ public class Application {
     }
     
     for (index,task) in tasks.enumerate() {
-      print("\(index + 1). \(task.commandName)\n", appendNewline: false)
+      print("\(index + 1). \(task.commandName)\n", terminator: "")
     }
     let keyboard = NSFileHandle.fileHandleWithStandardInput()
     let inputData = keyboard.availableData

@@ -102,7 +102,7 @@ public extension DatabaseDriver {
     This method gets the names of the tables in the database.
     */
   public func tableNames() -> [String] {
-    return self.tables().keys.array
+    return Array(self.tables().keys)
   }
 }
 

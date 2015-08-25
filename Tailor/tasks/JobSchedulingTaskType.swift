@@ -52,8 +52,8 @@ public struct JobSchedulingEntry: Equatable {
   private func cronExpression(frequency: Int, start: Int, max: Int, defaultToWildcard: Bool) -> String {
     if start != 0 {
       if frequency != 0 {
-        let values = stride(from: start, through: max, by: frequency)
-        return ",".join(values.map { String($0) })
+        let values = start.stride(through: max, by: frequency)
+        return values.map { String($0) }.joinWithSeparator(",")
       }
       else {
         return "\(start)"
@@ -327,7 +327,7 @@ extension JobSchedulingTaskType {
       let argumentStrings = arguments.map {
         key,value in "\(key)=\(value)"
       }.sort()
-      command += " " + " ".join(argumentStrings)
+      command += " " + argumentStrings.joinWithSeparator(" ")
     }
     self.run(command, every: frequency, at: startTime)
   }
@@ -369,7 +369,7 @@ extension JobSchedulingTaskType {
     footer sections.
     */
   public var crontab: String {
-    return cronHeaderLine + "\n" + "\n".join(entries.map { $0.cronLine }) + "\n" + cronFooterLine
+    return cronHeaderLine + "\n" + entries.map { $0.cronLine }.joinWithSeparator("\n") + "\n" + cronFooterLine
   }
   
   /**

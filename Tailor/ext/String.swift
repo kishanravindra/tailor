@@ -4,8 +4,7 @@ public extension String {
   /** The string with the first character lowercased. */
   public var lowercaseInitial: String {
     get {
-      return String(self[self.startIndex]).lowercaseString +
-        self.substringFromIndex(advance(self.startIndex, 1))
+      return String(self[self.startIndex]).lowercaseString + self.substringFromIndex(self.startIndex.advancedBy(1))
       
     }
   }
@@ -14,7 +13,7 @@ public extension String {
   public var capitalizeInitial: String {
     get {
       return String(self[self.startIndex]).capitalizedString +
-        self.substringFromIndex(advance(self.startIndex, 1))
+        self.substringFromIndex(self.startIndex.advancedBy(1))
       
     }
   }
@@ -28,7 +27,7 @@ public extension String {
     ]
     for (suffix, pluralSuffix) in replacements {
       if self.hasSuffix(suffix) {
-        return self.substringToIndex(advance(self.startIndex, self.characters.count - suffix.characters.count)) + pluralSuffix
+        return self.substringToIndex(self.startIndex.advancedBy(self.characters.count - suffix.characters.count)) + pluralSuffix
       }
     }
     return self + "s"

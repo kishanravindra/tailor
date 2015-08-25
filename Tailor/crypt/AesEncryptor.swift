@@ -68,7 +68,7 @@ public final class AesEncryptor {
       }
     case 2:
       guard let top = self.getHex(String(byte[byte.startIndex])),
-        let bottom = self.getHex(String(byte[advance(byte.startIndex, 1)]))
+        let bottom = self.getHex(String(byte[byte.startIndex.advancedBy(1)]))
         else {
           return nil
       }
@@ -96,7 +96,7 @@ public final class AesEncryptor {
       return nil
     }
     for indexOfByte in (0..<hexKey.characters.count/2) {
-      let range = Range(start: advance(hexKey.startIndex, indexOfByte), end: advance(hexKey.startIndex, indexOfByte + 2))
+      let range = Range(start: hexKey.startIndex.advancedBy(indexOfByte), end: hexKey.startIndex.advancedBy(indexOfByte + 2))
       if var byte = AesEncryptor.getHex(hexKey.substringWithRange(range)) {
         keyData.appendBytes(&byte, length: 1)
       }

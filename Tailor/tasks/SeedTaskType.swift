@@ -57,7 +57,7 @@ extension SeedTaskType {
   public static var seedFolder: String {
     var projectName = Application.projectName
     if projectName.hasSuffix("Tests") {
-      projectName = projectName.substringToIndex(advance(projectName.startIndex, projectName.characters.count - 5))
+      projectName = projectName.substringToIndex(projectName.startIndex.advancedBy(projectName.characters.count - 5))
     }
     return Application.projectPath + "/" + projectName + "/config/seeds"
   }
@@ -143,7 +143,7 @@ extension SeedTaskType {
     let records = Application.sharedDatabaseConnection().executeQuery("SELECT * FROM `\(table)`")
     let data: NSData
     if !records.isEmpty {
-      let keys = records[0].data.keys.array.sort()
+      let keys = Array(records[0].data.keys).sort()
       var rows = [keys]
       for record in records {
         let values = record.data
@@ -191,9 +191,9 @@ extension SeedTaskType {
     if rows.count == 0 {
       return
     }
-    let keys = "`,`".join(rows[0])
+    let keys = rows[0].joinWithSeparator("`,`")
     let connection = Application.sharedDatabaseConnection()
-    let placeholders = ",".join(rows[0].map { _ in return "?" })
+    let placeholders = rows[0].map { _ in return "?" }.joinWithSeparator(",")
     let query = "INSERT INTO `\(table)` (`\(keys)`) VALUES (\(placeholders))"
     for index in 1..<rows.count {
       let row = rows[index].map { $0.databaseValue }

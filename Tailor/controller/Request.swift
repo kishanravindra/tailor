@@ -190,7 +190,7 @@ public struct Request: Equatable {
       if let disposition = subRequest.headers["Content-Disposition"] {
         for dispositionComponent in disposition.componentsSeparatedByString("; ") {
           if dispositionComponent.hasPrefix("name=") {
-            parameterName = dispositionComponent.substringFromIndex(advance(dispositionComponent.startIndex, 5)).stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: "\""))
+            parameterName = dispositionComponent.substringFromIndex(dispositionComponent.startIndex.advancedBy(5)).stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: "\""))
           }
         }
       }
@@ -236,8 +236,8 @@ public struct Request: Equatable {
       for index in 1..<result.numberOfRanges {
         let range = result.rangeAtIndex(index)
         if range.location == NSNotFound { continue }
-        let startIndex = advance(line.startIndex, range.location)
-        let endIndex = advance(startIndex, range.length)
+        let startIndex = line.startIndex.advancedBy(range.location)
+        let endIndex = startIndex.advancedBy(range.length)
         let section = line.substringWithRange(Range(start: startIndex, end: endIndex))
         sections.append(section)
       }

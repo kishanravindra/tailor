@@ -7,7 +7,7 @@ class DictionaryTests: TailorTestCase {
     let d1 = ["a": "27", "b": "15"]
     let d2 = ["b": "19", "c": "28"]
     let result = merge(d1, d2)
-    let keys = result.keys.array.sort()
+    let keys = Array(result.keys).sort()
     assert(keys, equals: ["a", "b", "c"], message: "has all keys from the two inputs")
     if keys == ["a", "b", "c"] {
       assert(result["a"]!, equals: "27", message: "gets a value from the first dictionary")
