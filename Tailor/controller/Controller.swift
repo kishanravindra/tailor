@@ -79,6 +79,9 @@
   /** The state of the controller. */
   public var state: ControllerState
   
+  /** The controller's session information. */
+  public var session: Session
+  
   /**
   The actions that this controller supports.
   
@@ -125,6 +128,12 @@
     */
   public required init(state: ControllerState) {
     self.state = state
+    self.session = state.request.session
+    
+    self.action = self.dynamicType.actions.filter { $0.name == actionName }.first ?? Action(
+      name: actionName,
+      body: Controller.render404
+    )
   }
   
   /**
@@ -194,7 +203,58 @@
   /**
     This method gets the layout within which we render our contents.
     */
-  public class var layout: Layout.Type { return Layout.self }
+  public class var layout: LayoutType.Type { return Layout.self }
+  
+  
+  /**
+  This method signs a user in for our session.
+  
+  This will set them in the controller's user field and store their id in the
+  session for future requests.
+  
+  :param: user    The user to sign in.
+  */
+  public func signIn(user: UserType) -> Session {
+    self.state.currentUser = user
+    self.session["userId"] = String(user.id ?? 0)
+    return self.session
+  }
+  
+  /**
+    This method signs in a user by providing their credentials.
+    
+    This will not modify any information on the controller. Instead, it provides
+    a new session that you can feed into the response.
+    
+    - parameter emailAddress:   The email address the user has provided.
+    - parameter password:       The password the user has provided.
+    - returns:                  If we were able to sign them in, this will
+                                return a new session with the user signed in.
+                                If we were not able to sign them in, this will
+                                rethrow the exception from the
+                                `UserType.authenticate` method.
+    */
+  public func signIn(emailAddress: String, password: String) throws -> Session {
+    guard let type = Application.configuration.userType else {
+      throw UserLoginError.WrongEmailAddress
+    }
+    let user = try type.authenticate(emailAddress, password: password)
+    return self.signIn(user)
+  }
+  
+  /**
+  This method signs a user out for our session.
+  
+  This will not modify any information on the controller. Instead, it provides
+  a new session that you can feed into the response.
+  
+  - returns:    The new session information with the user signed out.
+  */
+  public func signOut() -> Session {
+    self.session["userId"] = nil
+    self.state.currentUser = nil
+    return session
+  }
   
   //MARK: - Responses
   
@@ -205,4 +265,117 @@
     self.action.run(self)
   }
   
+  /**
+    This method generates a response object and passes it to a block.
+    This will set the cookies on the response before giving it to the block,
+    and after the block is done it will give the response to the controller's
+    handler.
+    */
+  public func generateResponse(contents: (inout Response)->()) {
+    if self.responded {
+      NSLog("Error: Controller attempted to respond twice for %@:%@. Subsequent responses will be ignored.", self.dynamicType.name, self.actionName)
+      return
+    }
+    var response = Response()
+    response.cookies = request.cookies
+    contents(&response)
+    session.storeInCookies(&response.cookies)
+    self.responded = true
+    self.callback(response)
+  }
+  
+  
+  /**
+  This method generates a response with a template.
+  
+  - parameter template:    The template to use for the request.
+  */
+  public func respondWith(template: TemplateType) {
+    var layout = self.dynamicType.layout.init(controller: self, template: template)
+    let contents = layout.generate()
+    var response = self.state.response
+    response.renderedTemplates.append(template)
+    if let castTemplate = template as? Template {
+      self.renderedTemplates.append(castTemplate)
+    }
+    response.appendString(contents)
+    self.respondWith(response)
+  }
+  
+  
+  /**
+  This method calls an action manually on a controller. It is intended for use
+  in testing.
+  :param: actionName  The name of the action to call.
+  :param: request     The request to provide to the controller.
+  :param: callback    The callback to call with the response.
+  */
+  public class func callAction(actionName: String, _ request: Request, callback: (Response,Controller)->()) {
+    var controller: Controller!
+    
+    controller = self.init(
+      request: request,
+      response: Response(),
+      actionName: actionName,
+      callback: { response in callback(response, controller) }
+    )
+    controller.action.run(controller)
+  }
+  
+  
+  /**
+  This method calls an action manually on a controller. It is intended for use
+  in testing.
+  
+  This will give the controller a request with no parameters.
+  :param: action    The name of the action to call.
+  :param: callback  The callback to call with the response.
+  */
+  public class func callAction(action: String, callback: (Response,Controller)->()) {
+    self.callAction(action, Request(), callback: callback)
+  }
+  
+  /**
+  This method calls an action manually on a controller. It is intended for use
+  in testing.
+  
+  :param: action        The name of the action to call.
+  :param: user          The user for the request.
+  :param: parameters    The request parameters.
+  :param: callback      The callback to call with the response.
+  */
+  public class func callAction(action: String, user: User?, parameters: [String:String], callback: (Response,Controller)->()) {
+    var sessionData = [String:String]()
+    if let id = user?.id {
+      sessionData["userId"] = String(id)
+    }
+    else {
+      sessionData["userId"] = ""
+    }
+    self.callAction(action, Request(parameters: parameters, sessionData: sessionData), callback: callback)
+  }
+  
+  /**
+  This method calls an action manually on a controller. It is intended for use
+  in testing.
+  
+  :param: action        The name of the action to call.
+  :param: parameters    The request parameters.
+  :param: callback      The callback to call with the response.
+  */
+  public class func callAction(action: String, parameters: [String:String], callback: (Response,Controller)->()) {
+    self.callAction(action, user: nil, parameters: parameters, callback: callback)
+  }
+  
+  /**
+  This method calls an action manually on a controller. It is intended for use
+  in testing.
+  
+  :param: action        The name of the action to call.
+  :param: user          The user for the request.
+  :param: callback      The callback to call with the response.
+  */
+  public class func callAction(action: String, user: User?, callback: (Response,Controller)->()) {
+    self.callAction(action, user: user, parameters: [:], callback: callback)
+  }
 }

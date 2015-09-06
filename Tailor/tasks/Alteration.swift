@@ -105,7 +105,7 @@ import Foundation
         query += component + "\n"
       }
     }
-    let results = DatabaseConnection.sharedConnection().executeQuery(query, parameterValues: parameters)
+    let results = Application.sharedDatabaseConnection().executeQuery(query, parameterValues: parameters)
     if !results.isEmpty && results[0].error != nil {
       NSLog("Error running query")
       NSLog("%@ %@", query, parameters.map { String($0.databaseValue) })

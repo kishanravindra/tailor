@@ -6,7 +6,7 @@ import TailorTesting
   class TestApplication : Application {
     var connectionCount = 0
     
-    override func openDatabaseConnection() -> DatabaseConnection {
+    override func openDatabaseConnection() -> DatabaseDriver {
       connectionCount += 1
       return DatabaseConnection(config: [:])
     }

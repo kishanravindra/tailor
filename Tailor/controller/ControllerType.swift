@@ -116,7 +116,7 @@ public struct ControllerState {
 
   /** The localization that the controller should use to localize text. */
   public var localization: LocalizationSource
-
+  
   /**
     This method initializes a controller state for an incoming request.
 
@@ -192,6 +192,12 @@ extension ControllerType {
   /** The user that is signed in. */
   public var currentUser: UserType? { return self.state.currentUser }
   
+  
+  /** The session for the request. */
+  @available(*, deprecated, message="Use the session on the request on instead")
+  public var session: Session {
+    get { return self.state.request.session }
+  }
   
   /**
     This method initializes a controller to handle a request.
@@ -524,7 +530,7 @@ extension ControllerType {
     - parameter emailAddress:   The email address the user has provided.
     - parameter password:       The password the user has provided.
     - returns:                  If we were able to sign them in, this will
-                                return a new session with the user signed out.
+                                return a new session with the user signed in.
                                 If we were not able to sign them in, this will
                                 rethrow the exception from the
                                 `UserType.authenticate` method.

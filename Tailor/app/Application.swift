@@ -224,7 +224,14 @@ public class Application {
         routes in
         for route in newValue.routes {
           let path = route.pathPattern
-          routes.addRoute(path.substringFromIndex(path.startIndex.advancedBy(1)), method: route.method, handler: route.handler, description: route.description, controller: route.controller, actionName: route.actionName)
+          let newPath: String
+          if path.characters.count == 0 {
+            newPath = ""
+          }
+          else {
+            newPath = path.substringFromIndex(path.startIndex.advancedBy(1))
+          }
+          routes.addRoute(newPath, method: route.method, handler: route.handler, description: route.description, controller: route.controller, actionName: route.actionName)
         }
       }
     }
@@ -436,7 +443,7 @@ public class Application {
 
     - returns:   The connection
     */
-  @available(*, deprecated, message="Use the sharedDatabaseConnection method instead") public func openDatabaseConnection() -> DatabaseConnection {
+  @available(*, deprecated, message="Use the sharedDatabaseConnection method instead") public func openDatabaseConnection() -> DatabaseDriver {
     guard let connection = Application.configuration.databaseDriver?() as? DatabaseConnection else {
       fatalError("Cannot open a database connection because there is no database configuration")
     }

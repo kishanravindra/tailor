@@ -27,7 +27,7 @@ import Foundation
     This forces us to open a new connection to serve as the shared connection.
     */
   public class func openSharedConnection() -> DatabaseConnection {
-    return Application.sharedApplication().openDatabaseConnection()
+    return Application.sharedApplication().openDatabaseConnection() as! DatabaseConnection
   }
   
   /**

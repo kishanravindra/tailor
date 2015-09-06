@@ -2,78 +2,56 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class ControllerTests: TailorTestCase {
-  struct TestController : ControllerType {
-    static var name: String {
-      return "TailorTests.TestController"
-    }
-    var state: ControllerState
-    static func defineRoutes(routes: RouteSet) {
-      routes.route(.Get("route1"), to: indexAction, name: "index")
-      routes.route(.Get("route1/:id"), to: showAction, name: "show")
-    }
+@available(*, deprecated) class ControllerTests: TailorTestCase {
+  class TestController : Controller {
+    override class var actions: [Action] { return [
+      Action( name: "index", body: wrap(indexAction), filters: [wrap(checkParams)])
+      ]}
     
     func checkParams() -> Bool {
-      if request.requestParameters["failFilter"] != nil {
+      if let _ = request.requestParameters["failFilter"] {
         var response = Response()
-        response.responseCode = .init(419, "")
+        response.code = 419
         self.callback(response)
         return false
       }
       return true
     }
-    
-    func indexAction() {
+    dynamic func indexAction() {
       var response = Response()
-      response.responseCode = .Ok
+      response.code = 200
       response.appendString("Index Action")
       self.callback(response)
     }
     
-    func showAction() {
-      var response = Response()
-      response.responseCode = .Ok
-      response.appendString("Show Action")
-      self.callback(response)
-    }
-    
-    static var layout: LayoutType.Type = EmptyLayout.self
-  }
-  
-  struct SecondTestController : ControllerType {
-    static var name: String {
-      return "TailorTests.SecondTestController"
-    }
-    var state: ControllerState
-    static func defineRoutes(routes: RouteSet) {
-      routes.route(.Get("route2"), to: indexAction, name: "index")
-    }
-    
-    func indexAction() {
-      
+    required convenience init(request: Request, response: Response, actionName: String, callback: Connection.ResponseCallback) {
+      self.init(state: ControllerState(request: request, response: response, actionName: actionName, callback: callback))
     }
   }
   
-  var user: UserType!
+  class SecondTestController : Controller {
+    
+    required convenience init(request: Request, response: Response, actionName: String, callback: Connection.ResponseCallback) {
+      self.init(state: ControllerState(request: request, response: Response(), actionName: actionName, callback: callback))
+    }
+  }
+  
+  var user: User!
   var callback: Connection.ResponseCallback = {response in }
-  var controller: ControllerType!
-  var routeSet = RouteSet()
+  var controller: Controller!
   
   override func setUp() {
     super.setUp()
-    Application.configuration.localization = { PropertyListLocalization(locale: $0) }
     
-    var user = TestUser()
-    user.emailAddress = "test@test.com"
-    user.password = "test"
-    self.user = user.save()!
+    user = saveRecord(User(emailAddress: "test@test.com", password: "test"))!
     
-    RouteSet.load { routes in
-      TestController.defineRoutes(routes)
-      SecondTestController.defineRoutes(routes)
-    }
+    let routeSet = RouteSet()
+    routeSet.addRoute("route1", method: "GET", controller: TestController.self, actionName: "index")
+    routeSet.addRoute("route1/:id", method: "GET", controller: TestController.self, actionName: "show")
+    routeSet.addRoute("route2", method: "GET", controller: SecondTestController.self, actionName: "index")
+    Application.sharedApplication().routeSet = routeSet
     
-    controller = TestController(
+    controller = Controller(
       request: Request(),
       response: Response(),
       actionName: "index",
@@ -85,14 +63,11 @@ class ControllerTests: TailorTestCase {
   }
   
   override func tearDown() {
-    RouteSet.load { routes in }
-    super.tearDown()
+    Application.sharedApplication().routeSet = RouteSet()
   }
   
   func testInitializeSetsUserFromIdInSession() {
-    SeedTaskTypeTests.SeedTask.saveSchema()
-    SeedTaskTypeTests.SeedTask.saveTable("tailor_alterations")
-    controller = TestController(
+    controller = Controller(
       request: Request(sessionData: ["userId": String(user.id!)]),
       response: Response(),
       actionName: "index",
@@ -104,7 +79,7 @@ class ControllerTests: TailorTestCase {
   }
   
   func testInitializerSetsUserToNilWithBadId() {
-    controller = TestController(
+    controller = Controller(
       request: Request(sessionData: ["userId": String(user.id! + 1)]),
       response: Response(),
       actionName: "index",
@@ -112,11 +87,11 @@ class ControllerTests: TailorTestCase {
         (response) in
       }
     )
-    assert(isNil: controller.currentUser, message: "sets user to nil")
+    XCTAssertNil(controller.currentUser, "sets user to nil")
   }
   
   func testInitializerSetsUserToNilWithNoId() {
-    controller = TestController(
+    controller = Controller(
       request: Request(),
       response: Response(),
       actionName: "index",
@@ -124,151 +99,148 @@ class ControllerTests: TailorTestCase {
         (response) in
       }
     )
-    assert(isNil: controller.currentUser, message: "sets user to nil")
-  }
-  
-  func testInitializeStateWithAllFieldsSetsAllFields() {
-    let request = Request()
-    let response = Response()
-    let user = TestUser().save()!
-    let state = ControllerState(request: request, response: response, callback: {_ in}, actionName: "show", currentUser: user, localization: PropertyListLocalization(locale: "es"))
-    assert(state.request, equals: request)
-    assert(state.actionName, equals: "show")
-    assert(state.currentUser?.id, equals: user.id!)
-    assert(state.localization.locale, equals: "es")
-    assert(state.response, equals: response)
-  }
-  
-  func testInitializerSetsLocaleFromAvailableLocales() {
-    PropertyListLocalization.availableLocales = ["en", "fr"]
-    let request = Request(headers: ["Accept-Language": "fr, en"])
-    let state = ControllerState(request: request, response: Response(), actionName: "index", callback: {_ in})
-    assert(state.localization.locale, equals: "fr")
-  }
-  
-  func testInitializerSetsLocaleWithNoAvailableLocalesDefaultsToEnglish() {
-    PropertyListLocalization.availableLocales = ["en", "fr"]
-    let request = Request(headers: ["Accept-Language": "es-MX,es"])
-    let state = ControllerState(request: request, response: Response(), actionName: "index", callback: {_ in})
-    assert(state.localization.locale, equals: "en")
-  }
-  
-  func testInitializerSetsLocaleWithNoLanguageHeaderDefaultsToEnglish() {
-    PropertyListLocalization.availableLocales = ["en", "fr"]
-    let request = Request()
-    let state = ControllerState(request: request, response: Response(), actionName: "index", callback: {_ in})
-    assert(state.localization.locale, equals: "en")
+    XCTAssertNil(controller.currentUser, "sets user to nil")
   }
   
   //MARK: - Responses
-    func testRespondWithRendersTemplateInLayout() {
-    let expectation = expectationWithDescription("callback called")
-    struct TestTemplate: TemplateType {
-      var state: TemplateState
-
-      init(controller: ControllerType) {
-        self.state = TemplateState(controller)
+  
+  func testRespondMethodCallsActionMethod() {
+    let expectation = expectationWithDescription("method called")
+    
+    controller = TestController(
+      request: Request(),
+      response: Response(),
+      actionName: "index",
+      callback: {
+        response in
+        expectation.fulfill()
+        let data = "Index Action".dataUsingEncoding(NSUTF8StringEncoding)
+        self.assert(response.body, equals: data!, message: "gives the expected response body")
       }
-
-      mutating func body() {
+    )
+    controller.respond()
+    waitForExpectationsWithTimeout(0.01, handler: nil)
+  }
+  
+  func testRespondMethodGives404WithUnsupportedAction() {
+    let expectation = expectationWithDescription("method called")
+    
+    let controller = TestController(
+      request: Request(),
+      response: Response(),
+      actionName: "show",
+      callback: {
+        response in
+        expectation.fulfill()
+        self.assert(response.code, equals: 404, message: "gives a 404 response")
+      }
+    )
+    controller.respond()
+    waitForExpectationsWithTimeout(0.01, handler: nil)
+  }
+  
+  func testRespondMethodCallsFilters() {
+    let expectation = expectationWithDescription("method called")
+    
+    let controller = TestController(
+      request: Request(parameters: ["failFilter": "1"]),
+      response: Response(),
+      actionName: "index",
+      callback: {
+        response in
+        expectation.fulfill()
+        self.assert(response.code, equals: 419, message: "gives a 419 response, from the filter")
+      }
+    )
+    controller.respond()
+    waitForExpectationsWithTimeout(0.01, handler: nil)
+  }
+  
+  func testGenerateResponseGivesResponseToBlock() {
+    let expectation = expectationWithDescription("block called")
+    self.callback = {
+      response in
+      expectation.fulfill()
+      self.assert(response.code, equals: 123, message: "has the response code from the block given to generateResponse")
+    }
+    
+    controller.generateResponse { (inout r: Response) in r.code = 123 }
+    
+    waitForExpectationsWithTimeout(0.01, handler: nil)
+  }
+  
+  func testGenerateResponseWillNotRespondTwice() {
+    var callCount = 0
+    self.callback = {
+      response in
+      callCount += 1
+      self.assert(response.code, equals: 123, message: "has the response code from the block given to generateResponse")
+    }
+    
+    controller.generateResponse { (inout r: Response) in r.code = 123 }
+    controller.generateResponse { (inout r: Response) in r.code = 456 }
+    
+    assert(callCount, equals: 1, message: "only calls the callback once")
+  }
+  
+  func testGenerateResponseSetsCookies() {
+    let expectation = expectationWithDescription("callback called")
+    controller = Controller(
+      request: Request(cookies: ["cookie1": "value1"]),
+      response: Response(),
+      actionName: "index",
+      callback: { self.callback($0) }
+    )
+    
+    controller.generateResponse {
+      (inout response: Response) in
+      response.cookies["cookie2"] = "value2"
+      
+      self.callback = {
+        response in
+        expectation.fulfill()
+        self.assert(response.cookies.cookieDictionary(), equals: [
+          "cookie1": "value1",
+          "cookie2": "value2",
+          "_session": self.controller.session.cookieString()
+          ], message: "gets old cookies, new cookies, and session info")
+      }
+    }
+    
+    waitForExpectationsWithTimeout(0.01, handler: nil)
+  }
+  
+  func testRespondWithRendersTemplateInLayout() {
+    let expectation = expectationWithDescription("callback called")
+    class TestTemplate: Template {
+      override func body() {
         tag("p", text: "Nesting")
       }
     }
-    struct TestLayout: LayoutType {
-      var state: TemplateState
-      let template: TemplateType
-      
-      init(controller: ControllerType, template: TemplateType) {
-        self.state = TemplateState(controller)
-        self.template = template
-      }
-      
-      mutating func body() {
+    class TestLayout: Layout {
+      override func body() {
         self.tag("html") {
           self.tag("body") {
-            self.renderTemplate(self.template)
+            self.renderTemplate(self.template as! Template)
           }
         }
       }
     }
-    
+    class TestController: ControllerTests.TestController {
+      override class var layout: LayoutType.Type { return TestLayout.self }
+      
+      required convenience init(request: Request, response: Response, actionName: String, callback: Connection.ResponseCallback) {
+        self.init(state: ControllerState(request: request, response: response, actionName: actionName, callback: callback))
+      }
+    }
     self.callback = {
       response in
       expectation.fulfill()
-      let body = response.bodyString
+      let body = NSString(data: response.bodyData, encoding: NSUTF8StringEncoding)!
       self.assert(body, equals: "<html><body><p>Nesting</p></body></html>", message: "sets body")
     }
-    
-    TestController.layout = TestLayout.self
-    controller.respondWith(TestTemplate(controller: controller))
-    waitForExpectationsWithTimeout(0.01, handler: nil)
-  }
-  
-  func testRespondWithAddsTemplateToList() {
-    let expectation = expectationWithDescription("callback called")
-    struct TestTemplate: TemplateType {
-      var state: TemplateState
-      let message: String
-      
-      init(controller: ControllerType, message: String = "") {
-        self.state = TemplateState(controller)
-        self.message = message
-      }
-      
-      mutating func body() {
-        tag("p", text: message)
-      }
-    }
-    
-    self.callback = {
-      response in
-      expectation.fulfill()
-      self.assert(response.renderedTemplates.count, equals: 1, message: "has 1 template in the list")
-      if !response.renderedTemplates.isEmpty {
-        let template = response.renderedTemplates[0] as? TestTemplate
-        self.assert(template?.message, equals: "hello", message: "puts the right template in the list")
-      }
-    }
-    
-    controller.respondWith(TestTemplate(controller: controller, message: "hello"))
-    waitForExpectationsWithTimeout(0.01, handler: nil)
-  }
-  
-  func testRespondWithResponseAndSessionCallsCallbackWithResponse() {
-    var response = Response()
-    response.appendString("Test Body")
-    var session = controller.request.session
-    session["test"] = "value"
-    let expectation = expectationWithDescription("callback called")
-    self.callback = {
-      response2 in
-      expectation.fulfill()
-      self.assert(response2.body, equals: response.body)
-    }
-    controller.respondWith(response, session: session)
-    self.waitForExpectationsWithTimeout(0, handler: nil)
-  }
-  
-  func testRespondWithResponseAndSessionSetsSessionInfoOnResponse() {
-    var response = Response()
-    response.appendString("Test Body")
-    var session = controller.request.session
-    session["test"] = "value"
-    let expectation = expectationWithDescription("callback called")
-    self.callback = {
-      response2 in
-      expectation.fulfill()
-      let request = Request(cookies: ["_session": response2.cookies["_session"] ?? ""])
-      let session = request.session
-      self.assert(session["test"], equals: "value")
-    }
-    controller.respondWith(response, session: session)
-    self.waitForExpectationsWithTimeout(0, handler: nil)
-  }
-  
-  func testRespondWithResponseAndNoSessionSetsRequestSessionInfoOnResponse() {
     controller = TestController(
-      request: Request(sessionData: ["A": "B"]),
+      request: Request(),
       response: Response(),
       actionName: "index",
       callback: {
@@ -276,20 +248,37 @@ class ControllerTests: TailorTestCase {
         self.callback(response)
       }
     )
-    var response = Response()
-    response.appendString("Test Body")
-    var session = controller.request.session
-    session["test"] = "value"
+    controller.respondWith(TestTemplate(controller: controller))
+    waitForExpectationsWithTimeout(0.01, handler: nil)
+  }
+  
+  func testRespondWithAddsTemplateToList() {
     let expectation = expectationWithDescription("callback called")
-    self.callback = {
-      response2 in
-      expectation.fulfill()
-      let request = Request(cookies: ["_session": response2.cookies["_session"] ?? ""])
-      let session = request.session
-      self.assert(session["A"], equals: "B")
+    class TestTemplate: Template {
+      let message: String
+      
+      init(controller: Controller, message: String = "") {
+        self.message = message
+        super.init(controller: controller)
+      }
+      override func body() {
+        tag("p", text: message)
+      }
     }
-    controller.respondWith(response)
-    self.waitForExpectationsWithTimeout(0, handler: nil)
+    
+    self.callback = {
+      response in
+      expectation.fulfill()
+      self.assert(self.controller.renderedTemplates.count, equals: 1, message: "has 1 template in the list")
+      if !self.controller.renderedTemplates.isEmpty {
+        let template = self.controller.renderedTemplates[0] as? TestTemplate
+        self.assert(template?.message, equals: "hello", message: "puts the right template in the list")
+      }
+      
+    }
+    
+    controller.respondWith(TestTemplate(controller: controller, message: "hello"))
+    waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
   func testRedirectToGeneratesRedirectResponse() {
@@ -297,56 +286,15 @@ class ControllerTests: TailorTestCase {
     self.callback = {
       response in
       expectation.fulfill()
-      self.assert(response.responseCode, equals: .SeeOther, message: "gives a 302 response")
+      self.assert(response.code, equals: 303, message: "gives a 303 response")
       self.assert(response.headers, equals: ["Location": "/test/path"], message: "gives a location header")
     }
     self.controller.redirectTo("/test/path")
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
-  func testRedirectToWithSessionGeneratesRedirectResponse() {
-    let expectation = expectationWithDescription("callback called")
-    self.callback = {
-      response in
-      expectation.fulfill()
-      self.assert(response.responseCode, equals: .SeeOther, message: "gives a 302 response")
-      self.assert(response.headers, equals: ["Location": "/test/path"], message: "gives a location header")
-      
-      let session = Request(cookies: response.cookies.cookieDictionary()).session
-      self.assert(session["test1"], equals: "value1")
-    }
-    var newSession = controller.request.session
-    newSession["test1"] = "value1"
-    self.controller.redirectTo("/test/path", session: newSession)
-    waitForExpectationsWithTimeout(0.01, handler: nil)
-  }
-
-  @available(*, deprecated) func testPathForWithNameCanGetFullyQualifiedRoute() {
-    let path = self.controller.pathFor(SecondTestController.name, actionName: "index", parameters: ["name": "John"])
-    assert(path, equals: "/route2?name=John", message: "gets the url for the controller and action")
-  }
-  
-  @available(*, deprecated) func testPathForWithNameWithOmittedInformationRoutesToCurrentPath() {
-    let path = self.controller.pathFor(nil, parameters: ["name": "John"])
-    assert(path, equals: "/route1?name=John", message: "gets the url for the controller and action")
-  }
-  
-  @available(*, deprecated) func testPathForWithNameWithParametersInPathReusesThoseParameters() {
-    controller = TestController(
-      request: Request(parameters: ["id": "10"]),
-      response: Response(),
-      actionName: "show",
-      callback: {
-        response in
-        self.callback(response)
-      }
-    )
-    let path = self.controller.pathFor(TestController.name, actionName: "show")
-    assert(path, equals: "/route1/10", message: "gets the url for the controller and action")
-  }
-  
   func testPathForCanGetFullyQualifiedRoute() {
-    let path = self.controller.pathFor(TestController.self, actionName: "index", parameters: ["id": "5"])
+    let path = self.controller.pathFor(TestController.name, actionName: "index", parameters: ["id": "5"])
     assert(path, equals: "/route1?id=5", message: "gets the url for the controller and action")
   }
   
@@ -361,36 +309,17 @@ class ControllerTests: TailorTestCase {
     assert(path, equals: "/route2?confirmed=1", message: "uses the same controller and action, but adds the parameters")
   }
   
-  func testPathForWithParametersInPathReusesParameters() {
-    controller = TestController(
-      request: Request(parameters: ["id": "10"]),
-      response: Response(),
-      actionName: "show",
-      callback: {
-        response in
-        self.callback(response)
-      }
-    )
-    let path = self.controller.pathFor(TestController.self, actionName: "show")
-    assert(path, equals: "/route1/10", message: "gets the url for the controller and action")
-  }
-  
-  @available(*, deprecated) func testPathWithNameForCanGetUrlWithDomain() {
+  func testPathForCanGetUrlWithDomain() {
     let path = self.controller.pathFor(TestController.name, actionName: "index", parameters: ["id": "5"], domain: "test.com")
     assert(path, equals: "https://test.com/route1?id=5", message: "gets the url for the controller and action")
   }
   
-  func testPathForCanGetUrlWithDomain() {
-    let path = self.controller.pathFor(TestController.self, actionName: "index", parameters: ["id": "5"], domain: "test.com")
-    assert(path, equals: "https://test.com/route1?id=5", message: "gets the url for the controller and action")
-  }
-  
   func testPathForGetsNilForInvalidCombination() {
-    let path = self.controller.pathFor(actionName: "new")
+    let path = self.controller.pathFor()
     XCTAssertNil(path, "gives a nil path")
   }
   
-  @available(*, deprecated) func testRedirectToWithControllerNameGeneratesRedirectResponse() {
+  func testRedirectToWithControllerNameGeneratesRedirectResponse() {
     let expectation = expectationWithDescription("callback called")
     self.callback = {
       response in
@@ -402,122 +331,16 @@ class ControllerTests: TailorTestCase {
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
-  @available(*, deprecated) func testRedirectToWithControllerNameWithSessionGeneratesRedirectResponse() {
-    let expectation = expectationWithDescription("callback called")
-    self.callback = {
-      response in
-      expectation.fulfill()
-      self.assert(response.responseCode, equals: .SeeOther, message: "gives a 303 response")
-      self.assert(response.headers, equals: ["Location": "/route1"], message: "has a location header")
-      
-      let session = Session(request: Request(cookies: response.cookies.cookieDictionary()))
-      self.assert(session["test2"], equals: "value2")
-    }
-    var newSession = controller.request.session
-    newSession["test2"] = "value2"
-
-    self.controller.redirectTo(TestController.name, actionName: "index", session: newSession)
-    waitForExpectationsWithTimeout(0.01, handler: nil)
-  }
-  
-  @available(*, deprecated) func testRedirectToWithControllerNameWithInvalidPathRedirectsToRootPath() {
-    let expectation = expectationWithDescription("callback called")
-    self.callback = {
-      response in
-      expectation.fulfill()
-      self.assert(response.responseCode, equals: .SeeOther, message: "gives a 303 response")
-      self.assert(response.headers, equals: ["Location": "/"], message: "has a location header")
-    }
-    
-    self.controller.redirectTo(TestController.name, actionName: "foo")
-    waitForExpectationsWithTimeout(0.01, handler: nil)
-  }
-  
   func testRedirectToWithControllerTypeGeneratesRedirectResponse() {
     let expectation = expectationWithDescription("callback called")
     self.callback = {
       response in
       expectation.fulfill()
-      self.assert(response.responseCode, equals: .SeeOther, message: "gives a 303 response")
-      self.assert(response.headers, equals: ["Location": "/route2"], message: "has a location header")
-      self.assert(response.bodyString, equals: "<html><body>You are being <a href=\"/route2\">redirected</a>.</body></html>")
-    }
-    self.controller.redirectTo(SecondTestController.self, actionName: "index")
-    waitForExpectationsWithTimeout(0.01, handler: nil)
-  }
-  
-  func testRedirectToWithoutControllerTypeGeneratesRedirectToCurrentController() {
-    let expectation = expectationWithDescription("callback called")
-    self.callback = {
-      response in
-      expectation.fulfill()
-      self.assert(response.responseCode, equals: .SeeOther, message: "gives a 303 response")
+      self.assert(response.code, equals: 303, message: "gives a 303 response")
       self.assert(response.headers, equals: ["Location": "/route1"], message: "has a location header")
     }
-    self.controller.redirectTo(actionName: "index")
+    self.controller.redirectTo(TestController.self, actionName: "index")
     waitForExpectationsWithTimeout(0.01, handler: nil)
-  }
-  
-  func testRedirectToWithControllerTypeWithSessionGeneratesRedirectResponse() {
-    let expectation = expectationWithDescription("callback called")
-    self.callback = {
-      response in
-      expectation.fulfill()
-      self.assert(response.responseCode, equals: .SeeOther, message: "gives a 303 response")
-      self.assert(response.headers, equals: ["Location": "/route1"], message: "has a location header")
-      
-      let session = Request(cookies: response.cookies.cookieDictionary()).session
-      self.assert(session["test3"], equals: "value3")
-    }
-    var newSession = controller.request.session
-    newSession["test3"] = "value3"
-    
-    self.controller.redirectTo(TestController.self, actionName: "index", session: newSession)
-    waitForExpectationsWithTimeout(0.01, handler: nil)
-  }
-  
-  func testRedirectToWithControllerTypeWithBadRouteGeneratesRedirectToRootPath() {
-    let expectation = expectationWithDescription("callback called")
-    self.callback = {
-      response in
-      expectation.fulfill()
-      self.assert(response.responseCode, equals: .SeeOther, message: "gives a 303 response")
-      self.assert(response.headers, equals: ["Location": "/"], message: "has a location header")
-    }
-    self.controller.redirectTo(TestController.self, actionName: "foo")
-    waitForExpectationsWithTimeout(0.01, handler: nil)
-  }
-  
-  func testRespondWithJsonGeneratesJsonResponse() {
-    do {
-      let hat = Hat(brimSize: 10, color: "red", shelfId: nil, owner: nil, id: nil)
-      let data = try hat.toJson().jsonData()
-      let expectation = expectationWithDescription("callback called")
-      self.callback = {
-        response in
-        expectation.fulfill()
-        self.assert(response.responseCode, equals: .Ok, message: "gives a success response")
-        self.assert(response.headers, equals: ["Content-Type": "application/json"])
-        self.assert(response.body, equals: data)
-      }
-      self.controller.respondWith(json: hat)
-      waitForExpectationsWithTimeout(0.01, handler: nil)
-    }
-    catch {
-      assert(false, message: "threw unexpected exception")
-    }
-  }
-  
-  func testRespondWithJsonWithStringGives500Response() {
-    let expectation = expectationWithDescription("callback called")
-    self.callback = {
-      response in
-      expectation.fulfill()
-      self.assert(response.responseCode, equals: .InternalServerError, message: "gives an error response")
-    }
-    self.controller.respondWith(json: "Hat")
-    waitForExpectationsWithTimeout(0.01, handler: nil)
-    
   }
   
   func testRender404Gives404Response() {
@@ -525,216 +348,42 @@ class ControllerTests: TailorTestCase {
     self.callback = {
       response in
       expectation.fulfill()
-      self.assert(response.responseCode, equals: .NotFound, message: "gives a 404 response")
+      self.assert(response.code, equals: 404, message: "gives a 404 response")
     }
     self.controller.render404()
-    waitForExpectationsWithTimeout(0.01, handler: nil)
-  }
-  
-  func testDefaultLayoutIsEmptyLayout() {
-    struct TestTemplate: TemplateType {
-      var state: TemplateState
-      mutating func body() {
-        text("Hello")
-      }
-    }
-    let expectation = expectationWithDescription("callback called")
-    self.callback = {
-      response in
-      expectation.fulfill()
-      self.assert(response.bodyString, equals: "Hello")
-    }
-    
-    
-    controller = SecondTestController(
-      request: Request(),
-      response: Response(),
-      actionName: "index",
-      callback: {
-        response in
-        self.callback(response)
-      }
-    )
-
-    controller.respondWith(TestTemplate(state: TemplateState(controller)))
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
   //MARK: - Authentication
   
   func testSignInSetsCurrentUserAndStoresIdInSession() {
-    let user2 = TestUser().save()!
+    let user2 = saveRecord(User(emailAddress: "test2@test.com", password: "test"))!
+    self.controller.signIn(user2)
     
-    let newSession = self.controller.signIn(user2)
-    
-    assert(newSession["userId"], equals: String(user2.id!), message: "sets userId in session")
+    assert(self.controller.currentUser?.id, equals: user2.id!, message: "sets user")
+    assert(self.controller.session["userId"], equals: String(user2.id!), message: "sets userId in session")
   }
   
-  func testSignInWithNewUserSetsUserIdToZero() {
-    let user2 = TestUser()
-    let newSession = self.controller.signIn(user2)
-    assert(newSession["userId"], equals: "0", message: "sets userId to zero")
-  }
-  
-  func testSignOutClearsUserIdIdInSession() {
-    
-    controller = TestController(
-      request: Request(sessionData: ["foo": "bar", "userId": String(user.id!)]),
-      response: Response(),
-      actionName: "index",
-      callback: {
-        response in
-        self.callback(response)
-      }
-    )
-    assert(isNotNil: controller.request.session["userId"])
-    let newSession = controller.signOut()
-    assert(isNil: newSession["userId"])
-    assert(newSession["foo"], equals: "bar")
+  func testSignOutClearsCurrentUserAndIdInSession() {
+    controller.signIn(user)
+    controller.signOut()
+    XCTAssertNil(controller.currentUser)
+    XCTAssertNil(controller.session["userId"])
   }
   
   func testSignInWithEmailAndPasswordSignsIn() {
-    do {
-      let result = try controller.signIn("test@test.com", password: "test")
-      self.assert(result["userId"], equals: String(user.id!), message: "sets user as current user in new session")
-    }
-    catch {
-      assert(false, message: "threw unexpected exception")
-    }
+    _ = try? controller.signIn("test@test.com", password: "test")
+    self.assert(controller.currentUser?.id, equals: user.id!, message: "sets user as controller's current user")
   }
   
-  func testSignInWithInvalidPasswordThrowsException() {
-    do {
-      _ = try controller.signIn("test@test.com", password: "test2")
-      assert(false, message: "should throw exception")
-    }
-    catch {
-      assert(true, message: "threw exception")
-    }
+  func testSignInWithEmailAndPasswordReturnsTrue() {
+    let result = try? controller.signIn("test@test.com", password: "test")
+    XCTAssertNotNil(result, "returns true")
   }
   
-  func testSignInWithTrackableUserSetsTrackingInformation() {
-    Application.configuration.userType = UserTypeTests.TrackableUser.self
-    
-    let connection = Application.sharedDatabaseConnection()
-    connection.executeQuery("ALTER TABLE `users` ADD COLUMN `last_sign_in_ip` varchar(255)")
-    connection.executeQuery("ALTER TABLE `users` ADD COLUMN `last_sign_in_time` timestamp")
-    do {
-      _ = try controller.signIn("test@test.com", password: "test")
-      let user = Query<UserTypeTests.TrackableUser>().first()
-      assert(user?.lastSignInIp, equals: controller.request.clientAddress)
-      assert(user?.lastSignInTime, equals: Timestamp.now().change(nanosecond: 0))
-    }
-    catch {
-      assert(false, message: "threw unexpected exception")
-    }
-    Application.configuration.userType = TestUser.self
-    resetDatabase()
-  }
-  
-  //MARK: - Caching
-  
-  func testCacheWithModificationTimeWithFreshTimestampReturnsNotModifiedResponse() {
-    let data = NSData(bytes: [1,2,3,4])
-    let timestamp = 1.hour.ago
-    let expectation = expectationWithDescription("callback called")
-    
-    controller = TestController(
-      request: Request(headers: ["If-Modified-Since": 30.minutes.ago.format(TimeFormat.Rfc822)]),
-      response: Response(),
-      actionName: "index",
-      callback: {
-        response in
-        expectation.fulfill()
-        self.assert(response.responseCode, equals: .NotModified)
-        self.assert(response.headers["Last-Modified"], equals: timestamp.inTimeZone("GMT").format(TimeFormat.Rfc822))
-        self.assert(response.body.length, equals: 0)
-      }
-    )
-    
-    controller.cacheWithModificationTime(timestamp) {
-      (inout response: Response) -> Void in
-      assert(false, message: "Does not generate the response again")
-      response.appendData(data)
-    }
-    waitForExpectationsWithTimeout(0, handler: nil)
-  }
-  
-  func testCacheWithModificationTimeWithStaleTimestampReturnsFullResponse() {
-    let data = NSData(bytes: [1,2,3,4])
-    let timestamp = 1.hour.ago
-    let expectation = expectationWithDescription("callback called")
-    
-    controller = TestController(
-      request: Request(headers: ["If-Modified-Since": 2.hours.ago.format(TimeFormat.Rfc822)]),
-      response: Response(),
-      actionName: "index",
-      callback: {
-        response in
-        expectation.fulfill()
-        self.assert(response.responseCode, equals: .Ok)
-        self.assert(response.headers["Last-Modified"], equals: timestamp.inTimeZone("GMT").format(TimeFormat.Rfc822))
-        self.assert(response.body, equals: data)
-      }
-    )
-    
-    controller.cacheWithModificationTime(timestamp) {
-      (inout response: Response) -> Void in
-      response.appendData(data)
-    }
-    waitForExpectationsWithTimeout(0, handler: nil)
-  }
-  
-  func testCacheWithModificationTimeWithNoTimestampReturnsFullResponse() {
-    let data = NSData(bytes: [1,2,3,4])
-    let timestamp = 1.hour.ago
-    let expectation = expectationWithDescription("callback called")
-    
-    controller = TestController(
-      request: Request(),
-      response: Response(),
-      actionName: "index",
-      callback: {
-        response in
-        expectation.fulfill()
-        self.assert(response.responseCode, equals: .Ok)
-        self.assert(response.headers["Last-Modified"], equals: timestamp.inTimeZone("GMT").format(TimeFormat.Rfc822))
-        self.assert(response.body, equals: data)
-      }
-    )
-    
-    controller.cacheWithModificationTime(timestamp) {
-      (inout response: Response) -> Void in
-      response.appendData(data)
-    }
-    waitForExpectationsWithTimeout(0, handler: nil)
-  }
-  
-  
-  func testCacheWithModificationTimeWithNon200ResponseDoesNotSetModificationTime() {
-    let data = NSData(bytes: [1,2,3,4])
-    let timestamp = 1.hour.ago
-    let expectation = expectationWithDescription("callback called")
-    
-    controller = TestController(
-      request: Request(),
-      response: Response(),
-      actionName: "index",
-      callback: {
-        response in
-        expectation.fulfill()
-        self.assert(response.responseCode, equals: .Created)
-        self.assert(isNil: response.headers["Last-Modified"])
-        self.assert(response.body, equals: data)
-      }
-    )
-    
-    controller.cacheWithModificationTime(timestamp) {
-      (inout response: Response) -> Void in
-      response.responseCode = .Created
-      response.appendData(data)
-    }
-    waitForExpectationsWithTimeout(0, handler: nil)
+  func testSignInWithInvalidCombinationReturnsFalse() {
+    let result = try? controller.signIn("test@test.com", password: "test2")
+    XCTAssertNil(result, "returns false")
   }
   
   //MARK: - Localization
@@ -742,11 +391,11 @@ class ControllerTests: TailorTestCase {
   func testLocalizationPrefixGetsUnderscoredControllerNameAndAction() {
     let controller = TestController(request: Request(), response: Response(), actionName: "index", callback: {_ in })
     let prefix = controller.localizationPrefix
-    assert(prefix, equals: "tailor_tests.test_controller.index")
+    assert(prefix, equals: "tailor_tests.controller_tests.test_controller.index")
   }
   
   func testLocalizeWithNoLocaleUsesLocalization() {
-    Application.configuration.staticContent["en.controller.test.message"] = "Hello"
+    Application.sharedApplication().configuration["localization.content.en.controller.test.message"] = "Hello"
     let string = controller.localize("controller.test.message")
     assert(string, equals: "Hello", message: "returns the string from the localization")
   }
@@ -754,13 +403,13 @@ class ControllerTests: TailorTestCase {
   func testLocalizeWithDotPrependsPrefix() {
     let key = ".test.message"
     let fullKey = controller.localizationPrefix + key
-    Application.configuration.staticContent["en.\(fullKey)"] = "Hello 2"
+    Application.sharedApplication().configuration["localization.content.en.\(fullKey)"] = "Hello 2"
     let string = controller.localize(key)
     assert(string, equals: "Hello 2", message: "returns the string from the localization")
   }
   
   func testLocalizeWithLocaleSwitchesToThatLanguage() {
-    Application.configuration.staticContent["es.controller.test.message"] = "Hola"
+    Application.sharedApplication().configuration["localization.content.es.controller.test.message"] = "Hola"
     let string = controller.localize("controller.test.message", locale: "es")
     assert(string, equals: "Hola", message: "returns the string from the localization")
   }
@@ -769,28 +418,34 @@ class ControllerTests: TailorTestCase {
   
   func testCallActionCanCallAction() {
     let expectation = expectationWithDescription("respond method called")
-    struct TestController: ControllerType {
-      var state: ControllerState
-      static func defineRoutes(routes: RouteSet) {
-        
+    class TestController: Controller {
+      override class var actions: [Action] { return [
+        Action(name: "runTest", body: wrap(index))
+        ] }
+      
+      required convenience init(request: Request, response: Response, actionName: String, callback: Connection.ResponseCallback) {
+        self.init(state: ControllerState(request: request, response: Response(), actionName: actionName, callback: callback))
       }
       func index() {
-        XCTAssertEqual(actionName, "runTest", "sets the controller's action")
+        XCTAssertEqual(action?.name, "runTest", "sets the controller's action")
         let value1 = request.requestParameters["test1"]
         XCTAssertNotNil(value1)
         if value1 != nil {
           XCTAssertEqual(value1!, "value1")
         }
-        var response = self.state.response
-        response.appendString("Test Response")
-        self.callback(response)
+        self.generateResponse {
+          (inout response: Response) in
+          response.appendString("Test Response")
+        }
       }
     }
     
-    TestController.callAction("runTest", TestController.index, Request(parameters: ["test1": "value1"])) {
+    TestController.callAction("runTest", Request(parameters: ["test1": "value1"])) {
       response, controller in
       expectation.fulfill()
       self.assert(response.bodyString, equals: "Test Response", message: "gets test response")
+      
+      XCTAssertNotNil(controller as? TestController)
     }
     
     waitForExpectationsWithTimeout(0.1, handler: nil)
@@ -798,7 +453,7 @@ class ControllerTests: TailorTestCase {
   
   func testCallActionCanCallActionWithImplicitRequest() {
     let expectation = expectationWithDescription("respond method called")
-    TestController.callAction("index", TestController.indexAction) {
+    TestController.callAction("index") {
       response, _ in
       expectation.fulfill()
       self.assert(response.bodyString, equals: "Index Action", message: "gets body from action")
@@ -808,54 +463,37 @@ class ControllerTests: TailorTestCase {
   
   func testCallActionCanCallActionWithParameters() {
     let expectation = expectationWithDescription("respond method called")
-    struct TestController: ControllerType {
-      var state: ControllerState
-      static func defineRoutes(routes: RouteSet) {
-        
-      }
-      func index() {
-        XCTAssertEqual(actionName, "runTest", "sets the controller's action")
-        let value1 = request.requestParameters["test1"]
-        XCTAssertNotNil(value1)
-        if value1 != nil {
-          XCTAssertEqual(value1!, "value1")
-        }
-        var response = self.state.response
-        response.appendString("Test Response")
-        self.callback(response)
-      }
-    }
-    
-    TestController.callAction("runTest", TestController.index, parameters: ["test1": "value1"]) {
-      response, controller in
+    TestController.callAction("index", parameters: ["failFilter": "1"]) {
+      response, _ in
       expectation.fulfill()
-      self.assert(response.bodyString, equals: "Test Response", message: "gets test response")
+      self.assert(response.code, equals: 419, message: "gets response appropriate for parameters")
     }
-    
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
   func testCallActionCanCallActionWithUserAndParameters() {
     let expectation = expectationWithDescription("respond method called")
-    let user = TestUser().save()!
-    TestController.callAction("index", TestController.indexAction, user: user, parameters: ["id": "5"]) {
+    let user = saveRecord(User(emailAddress: "test@test.com", password: "test"))!
+    TestController.callAction("index", user: user, parameters: ["id": "5"]) {
       response, controller in
       expectation.fulfill()
       self.assert(controller.request.requestParameters, equals: ["id": "5"], message: "sets request parameters")
       let currentUser = controller.currentUser
-      self.assert(currentUser?.id, equals: user.id!, message: "has the user given")
+      XCTAssertNotNil(currentUser, "has a user")
+      if currentUser != nil { self.assert(currentUser!.id!, equals: user.id!, message: "has the user given") }
     }
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
   func testCallActionCanCallActionWithUser() {
     let expectation = expectationWithDescription("respond method called")
-    let user = TestUser().save()!
-    TestController.callAction("index", TestController.indexAction, user: user) {
+    let user = saveRecord(User(emailAddress: "test@test.com", password: "test"))!
+    TestController.callAction("index", user: user) {
       response, controller in
       expectation.fulfill()
       let currentUser = controller.currentUser
-      self.assert(currentUser?.id, equals: user.id!, message: "has the user given")
+      XCTAssertNotNil(currentUser, "has a user")
+      if currentUser != nil { self.assert(currentUser!.id!, equals: user.id!, message: "has the user given") }
     }
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }

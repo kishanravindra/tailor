@@ -349,6 +349,15 @@ public struct Response: Equatable {
   /** A copy of the body data. */
   public var body: NSData { return NSData(data: self.bodyDataForReading) }
   
+  @available(*, deprecated) public var bodyData: NSData {
+    get {
+      return _bodyData
+    }
+    set {
+      _bodyData = NSMutableData(data: newValue)
+    }
+  }
+  
   /** The full HTTP response data. */
   public var data : NSData { get {
     let data = NSMutableData()
