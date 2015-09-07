@@ -161,7 +161,7 @@ import Foundation
   */
   public func link(controllerName controllerName: String? = nil, actionName: String? = nil, parameters: [String:String] = [:], attributes: [String:String] = [:], @noescape with contents: ()->()={}) {
     var mergedAttributes = attributes
-    let path = self.controller.pathFor(controllerName, actionName: actionName, parameters: parameters)
+    let path = self.controller.pathFor(controllerName: controllerName, actionName: actionName, parameters: parameters)
     mergedAttributes["href"] = path ?? ""
     self.tag("a", mergedAttributes, with: contents)
   }

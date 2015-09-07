@@ -322,12 +322,12 @@ class ControllerTypeTests: TailorTestCase {
   }
 
   @available(*, deprecated) func testPathForWithNameCanGetFullyQualifiedRoute() {
-    let path = self.controller.pathFor(SecondTestController.name, actionName: "index", parameters: ["name": "John"])
+    let path = self.controller.pathFor(controllerName: SecondTestController.name, actionName: "index", parameters: ["name": "John"])
     assert(path, equals: "/route2?name=John", message: "gets the url for the controller and action")
   }
   
   @available(*, deprecated) func testPathForWithNameWithOmittedInformationRoutesToCurrentPath() {
-    let path = self.controller.pathFor(nil, parameters: ["name": "John"])
+    let path = self.controller.pathFor(controllerName: nil, parameters: ["name": "John"])
     assert(path, equals: "/route1?name=John", message: "gets the url for the controller and action")
   }
   
@@ -341,7 +341,7 @@ class ControllerTypeTests: TailorTestCase {
         self.callback(response)
       }
     )
-    let path = self.controller.pathFor(TestController.name, actionName: "show")
+    let path = self.controller.pathFor(controllerName: TestController.name, actionName: "show")
     assert(path, equals: "/route1/10", message: "gets the url for the controller and action")
   }
   
@@ -376,7 +376,7 @@ class ControllerTypeTests: TailorTestCase {
   }
   
   @available(*, deprecated) func testPathWithNameForCanGetUrlWithDomain() {
-    let path = self.controller.pathFor(TestController.name, actionName: "index", parameters: ["id": "5"], domain: "test.com")
+    let path = self.controller.pathFor(controllerName: TestController.name, actionName: "index", parameters: ["id": "5"], domain: "test.com")
     assert(path, equals: "https://test.com/route1?id=5", message: "gets the url for the controller and action")
   }
   
@@ -398,7 +398,7 @@ class ControllerTypeTests: TailorTestCase {
       self.assert(response.code, equals: 303, message: "gives a 303 response")
       self.assert(response.headers, equals: ["Location": "/route1"], message: "has a location header")
     }
-    self.controller.redirectTo(TestController.name, actionName: "index")
+    self.controller.redirectTo(controllerName: TestController.name, actionName: "index")
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
@@ -416,7 +416,7 @@ class ControllerTypeTests: TailorTestCase {
     var newSession = controller.request.session
     newSession["test2"] = "value2"
 
-    self.controller.redirectTo(TestController.name, actionName: "index", session: newSession)
+    self.controller.redirectTo(controllerName: TestController.name, actionName: "index", session: newSession)
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
@@ -429,7 +429,7 @@ class ControllerTypeTests: TailorTestCase {
       self.assert(response.headers, equals: ["Location": "/"], message: "has a location header")
     }
     
-    self.controller.redirectTo(TestController.name, actionName: "foo")
+    self.controller.redirectTo(controllerName: TestController.name, actionName: "foo")
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   

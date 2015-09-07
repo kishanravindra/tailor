@@ -224,9 +224,29 @@ extension ControllerType {
   }
   
   /**
+    This method initializes a controller to handle a request.
+    
+    This is deprecated in favor of the version that takes a response.
+    
+    - parameter request:      The request that the controller is responding to.
+    - parameter response:     The baseline for the response that the controller
+                              will generate.
+    - parameter actionName:   The name of the action that the controller should
+                              invoke. This is mostly useful for generating
+                              routes, because the actual action method will be
+                              called when the controller needs to respond.
+    - parameter callback      The callback that the controller should invoke
+                              when the response is ready.
+    */
+  @available(*, deprecated, message="Use the version that takes a response as well")
+  public init(request: Request, actionName: String, callback: Connection.ResponseCallback) {
+    self.init(state: ControllerState(request: request, response: Response(), actionName: actionName, callback: callback))
+  }
+  
+  /**
     This method gets the name of the controller, for debugging and identifying
     routes.
-    
+  
     The default implementation uses the name of the type.
     */
   public static var name: String {
@@ -317,8 +337,8 @@ extension ControllerType {
     - parameter parameters:       Additional parameters for the path.
     - parameter session:          The session information for the response.
   */
-  @available(*, deprecated) public func redirectTo(controllerName: String?, actionName: String? = nil, parameters: [String:String] = [:], session: Session? = nil) {
-    let path = self.pathFor(controllerName, actionName: actionName, parameters: parameters) ?? "/"
+  @available(*, deprecated) public func redirectTo(controllerName controllerName: String?, actionName: String? = nil, parameters: [String:String] = [:], session: Session? = nil) {
+    let path = self.pathFor(controllerName: controllerName, actionName: actionName, parameters: parameters) ?? "/"
     self.redirectTo(path, session: session)
   }
   
@@ -379,7 +399,7 @@ extension ControllerType {
                                   the domain is omitted, this is ignored.
     - returns:                    The path
   */
-  @available(*, deprecated) public func pathFor(controllerName: String?, actionName: String? = nil, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
+  @available(*, deprecated) public func pathFor(controllerName controllerName: String?, actionName: String? = nil, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
     var path = RouteSet.shared().pathFor(
       controllerName ?? self.dynamicType.name,
       actionName: actionName ?? self.actionName,

@@ -228,4 +228,59 @@ public class ControllerTestCase : TailorTestCase {
     }
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
+  
+  /**
+    This method calls an action on the controller this test case is testing.
+    
+    This will use the route set to get the actual action, so there must be a
+    route defined for it for this method to work.
+  
+    This has been deprecated in favor of the version that does not give a
+    controller to the closure.
+    
+    - parameter actionName:   The name of the action we are calling.
+    - parameter headers:      Additional headers to include in the request.
+    - parameter file:         The name of the file that is making the call. This
+                              will be supplied automatically.
+    - parameter line:         The line of the file that is making the call. This
+                              will be supplied automatically.
+    - parameter callback:     A callback that will perform checks on the
+                              response.
+    */
+  @available(*, deprecated, message="The controller parameter to the callback is deprecated")
+  public func callAction(actionName: String, headers: [String:String] = [:], file: String = __FILE__, line: UInt = __LINE__, callback: (Response,Controller) -> Void) {
+    var actionParams = params[actionName] ?? [:]
+    var sessionData = [String:String]()
+    let csrfKey = AesEncryptor.generateKey()
+    sessionData["csrfKey"] = csrfKey
+    actionParams["_csrfKey"] = csrfKey
+    if user != nil {
+      sessionData["userId"] = String(user.id ?? 0)
+    }
+    let routes = RouteSet.shared()
+    
+    guard let type = controllerType as? Controller.Type else { assert(false, message: "Did not have a controller type"); return }
+    let path = routes.pathFor(type, actionName: actionName, parameters: actionParams)
+    let method = routes.routes.filter {
+      route in
+      return route.controller == type && route.actionName == actionName
+      }.first?.path.methodName ?? "GET"
+    if path == nil {
+      recordFailureWithDescription("could not generate route for \(type.name)/\(actionName)", inFile: file, atLine: line, expected: true)
+      return
+    }
+    var request = Request(parameters: actionParams, sessionData: sessionData, path: path!, method: method, headers: headers)
+    if let actionFiles = files[actionName] {
+      request.uploadedFiles = actionFiles
+    }
+    
+    let expectation = expectationWithDescription("response called")
+    let controller = type.init(request: request, response: Response(), actionName: actionName, callback: {_ in })
+    routes.handleRequest(request) {
+      response in
+      expectation.fulfill()
+      callback(response, controller)
+    }
+    waitForExpectationsWithTimeout(0.01, handler: nil)
+  }
 }

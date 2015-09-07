@@ -294,7 +294,7 @@ import TailorTesting
   }
   
   func testPathForCanGetFullyQualifiedRoute() {
-    let path = self.controller.pathFor(TestController.name, actionName: "index", parameters: ["id": "5"])
+    let path = self.controller.pathFor(controllerName: TestController.name, actionName: "index", parameters: ["id": "5"])
     assert(path, equals: "/route1?id=5", message: "gets the url for the controller and action")
   }
   
@@ -310,7 +310,7 @@ import TailorTesting
   }
   
   func testPathForCanGetUrlWithDomain() {
-    let path = self.controller.pathFor(TestController.name, actionName: "index", parameters: ["id": "5"], domain: "test.com")
+    let path = self.controller.pathFor(controllerName: TestController.name, actionName: "index", parameters: ["id": "5"], domain: "test.com")
     assert(path, equals: "https://test.com/route1?id=5", message: "gets the url for the controller and action")
   }
   
@@ -327,7 +327,7 @@ import TailorTesting
       self.assert(response.code, equals: 303, message: "gives a 303 response")
       self.assert(response.headers, equals: ["Location": "/route1"], message: "has a location header")
     }
-    self.controller.redirectTo(TestController.name, actionName: "index")
+    self.controller.redirectTo(controllerName: TestController.name, actionName: "index")
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   

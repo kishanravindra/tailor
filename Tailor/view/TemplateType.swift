@@ -188,7 +188,7 @@ extension TemplateType {
     */
   @available(*, deprecated, message="Use a controller type instead") public mutating func link(controllerName: String?, actionName: String? = nil, parameters: [String:String] = [:], attributes: [String:String] = [:], @noescape with contents: ()->()={}) {
     var mergedAttributes = attributes
-    mergedAttributes["href"] = self.controller.pathFor(controllerName ?? self.controller.dynamicType.name,
+    mergedAttributes["href"] = self.controller.pathFor(controllerName: controllerName ?? self.controller.dynamicType.name,
       actionName: actionName, parameters: parameters) ?? ""
     self.tag("a", mergedAttributes, with: contents)
   }

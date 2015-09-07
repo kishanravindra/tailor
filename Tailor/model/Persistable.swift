@@ -160,6 +160,7 @@ public func ==<T: Persistable>(lhs: T, rhs: T) -> Bool {
 }
 
 extension Persistable {
+  
   /**
     This method builds a record from a row in the database.
     
