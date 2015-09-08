@@ -65,7 +65,7 @@ import TailorTesting
   func testLocalizationPrefixHasClassName() {
     let prefix = template.localizationPrefix
     
-    assert(prefix, equals: "template", message: "has the underscored class name")
+    assert(prefix, equals: "tailor.template", message: "has the underscored class name")
   }
   
   func testLocalizeMethodGetsLocalizationFromController() {
@@ -74,7 +74,7 @@ import TailorTesting
   }
   
   func testLocalizeMethodPrependsPrefixForKeyWithDot() {
-    Application.sharedApplication().configuration["localization.content.en.template.prefix_test"] = "Localized Text with Prefix"
+    Application.sharedApplication().configuration["localization.content.en.tailor.template.prefix_test"] = "Localized Text with Prefix"
     let result = template.localize(".prefix_test")
     assert(result, equals: "Localized Text with Prefix")
   }
