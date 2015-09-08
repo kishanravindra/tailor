@@ -15,7 +15,7 @@ import Foundation
 
   **NOTE**: This class has been deprecated in favor of the UserType protocol.
   */
-@available(*, deprecated, message="Use the UserType protocol instead") public final class User : UserType, Equatable {
+@available(*, deprecated, message="Use the UserType protocol instead") public class User : UserType, Equatable {
   //MARK: - Structure
   
   /** The primary key for the record. */

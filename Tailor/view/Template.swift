@@ -12,6 +12,10 @@ import Foundation
   /** The buffer that we use to build our result. */
   public var buffer: String { return contents }
   
+  public var controller: Controller {
+    return self.state.controller as! Controller
+  }
+  
   /**
     This method initializes a template.
 
@@ -47,7 +51,7 @@ import Foundation
   This is only added to keys that start with a dot.
   */
   public var localizationPrefix: String {
-    return String(self.dynamicType).underscored()
+    return String(reflecting: self.dynamicType).underscored()
   }
   
   /**

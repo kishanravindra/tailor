@@ -406,3 +406,29 @@ extension Persistable {
     return .Dictionary(merge(values, ["id": self.id?.toJson() ?? .Null]))
   }
 }
+
+/**
+  This protocol describes a record type that uses the old initializer from
+  version 1 of the framework.
+
+  This must only be used temporarily during the process of upgrading to version
+  2. It will be removed in the next version.
+
+  Once your code is building, you must replace this initializer with one that
+  takes a `DatabaseRow` and throws an exception on failure.
+  */
+public protocol PersistableWithOldInitializer {
+  /**
+    This method creates a record from a row in the database.
+
+    - parameter databaseRow:    The row in the database we are using to create
+                                the record.
+    */
+  init?(databaseRow: [String:DatabaseValue])
+}
+
+extension PersistableWithOldInitializer {
+  public init(databaseRow: DatabaseRow) throws {
+    self.init(databaseRow: databaseRow.data)!
+  }
+}

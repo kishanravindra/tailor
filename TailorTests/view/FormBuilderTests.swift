@@ -6,14 +6,9 @@ import TailorTesting
   var template : Template { return builder.template }
   var builder : FormBuilder!
   
-  struct TestController: ControllerType {
-    var state: ControllerState
-    static func defineRoutes(routes: RouteSet) {
-      
-    }
-    
-    init(state: ControllerState) {
-      self.state = state
+  class TestController: Controller {
+    required init(state: ControllerState) {
+      super.init(state: state)
     }
   }
   

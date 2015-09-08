@@ -275,12 +275,13 @@ public class ControllerTestCase : TailorTestCase {
     }
     
     let expectation = expectationWithDescription("response called")
-    let controller = type.init(request: request, response: Response(), actionName: actionName, callback: {_ in })
-    routes.handleRequest(request) {
+    var controller = type.init(request: request, response: Response(), actionName: actionName, callback: { _ in })
+    controller = type.init(request: request, response: Response(), actionName: actionName, callback: {
       response in
       expectation.fulfill()
       callback(response, controller)
-    }
+    })
+    controller.respond()
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
 }
