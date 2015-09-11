@@ -15,7 +15,7 @@ extension TailorTestCase {
 final class TestConnection : DatabaseDriver {
   var timeZone: TimeZone
   var queries = [(String,[DatabaseValue])]()
-  var response : [DatabaseConnection.Row] = []
+  var response : [DatabaseRow] = []
   static var connectionCount = 0
   
   init(config: [String : String]) {
@@ -136,12 +136,6 @@ struct Store : Persistable {
   init(databaseRow: DatabaseRow) throws {
     self.name = try databaseRow.read("name")
     self.id = try databaseRow.read("id")
-  }
-}
-
-@available(*, deprecated) extension Controller {
-  convenience init() {
-    self.init(request: Request(), response: Response(), actionName: "index", callback: {_ in })
   }
 }
 

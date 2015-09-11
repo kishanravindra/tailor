@@ -48,6 +48,7 @@ public extension Application {
       previousAlterations = []
     }
     var alterations = Application.sharedApplication().registeredAlterations()
+    NSLog("Raw count is %d", alterations.count)
     alterations = alterations.filter {
       alteration in
       return previousAlterations.filter {

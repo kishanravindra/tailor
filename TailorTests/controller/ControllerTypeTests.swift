@@ -320,30 +320,6 @@ class ControllerTypeTests: TailorTestCase {
     self.controller.redirectTo("/test/path", session: newSession)
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
-
-  @available(*, deprecated) func testPathForWithNameCanGetFullyQualifiedRoute() {
-    let path = self.controller.pathFor(controllerName: SecondTestController.name, actionName: "index", parameters: ["name": "John"])
-    assert(path, equals: "/route2?name=John", message: "gets the url for the controller and action")
-  }
-  
-  @available(*, deprecated) func testPathForWithNameWithOmittedInformationRoutesToCurrentPath() {
-    let path = self.controller.pathFor(controllerName: nil, parameters: ["name": "John"])
-    assert(path, equals: "/route1?name=John", message: "gets the url for the controller and action")
-  }
-  
-  @available(*, deprecated) func testPathForWithNameWithParametersInPathReusesThoseParameters() {
-    controller = TestController(
-      request: Request(parameters: ["id": "10"]),
-      response: Response(),
-      actionName: "show",
-      callback: {
-        response in
-        self.callback(response)
-      }
-    )
-    let path = self.controller.pathFor(controllerName: TestController.name, actionName: "show")
-    assert(path, equals: "/route1/10", message: "gets the url for the controller and action")
-  }
   
   func testPathForCanGetFullyQualifiedRoute() {
     let path = self.controller.pathFor(TestController.self, actionName: "index", parameters: ["id": "5"])
@@ -375,11 +351,6 @@ class ControllerTypeTests: TailorTestCase {
     assert(path, equals: "/route1/10", message: "gets the url for the controller and action")
   }
   
-  @available(*, deprecated) func testPathWithNameForCanGetUrlWithDomain() {
-    let path = self.controller.pathFor(controllerName: TestController.name, actionName: "index", parameters: ["id": "5"], domain: "test.com")
-    assert(path, equals: "https://test.com/route1?id=5", message: "gets the url for the controller and action")
-  }
-  
   func testPathForCanGetUrlWithDomain() {
     let path = self.controller.pathFor(TestController.self, actionName: "index", parameters: ["id": "5"], domain: "test.com")
     assert(path, equals: "https://test.com/route1?id=5", message: "gets the url for the controller and action")
@@ -388,49 +359,6 @@ class ControllerTypeTests: TailorTestCase {
   func testPathForGetsNilForInvalidCombination() {
     let path = self.controller.pathFor(actionName: "new")
     XCTAssertNil(path, "gives a nil path")
-  }
-  
-  @available(*, deprecated) func testRedirectToWithControllerNameGeneratesRedirectResponse() {
-    let expectation = expectationWithDescription("callback called")
-    self.callback = {
-      response in
-      expectation.fulfill()
-      self.assert(response.code, equals: 303, message: "gives a 303 response")
-      self.assert(response.headers, equals: ["Location": "/route1"], message: "has a location header")
-    }
-    self.controller.redirectTo(controllerName: TestController.name, actionName: "index")
-    waitForExpectationsWithTimeout(0.01, handler: nil)
-  }
-  
-  @available(*, deprecated) func testRedirectToWithControllerNameWithSessionGeneratesRedirectResponse() {
-    let expectation = expectationWithDescription("callback called")
-    self.callback = {
-      response in
-      expectation.fulfill()
-      self.assert(response.responseCode, equals: .SeeOther, message: "gives a 303 response")
-      self.assert(response.headers, equals: ["Location": "/route1"], message: "has a location header")
-      
-      let session = Session(request: Request(cookies: response.cookies.cookieDictionary()))
-      self.assert(session["test2"], equals: "value2")
-    }
-    var newSession = controller.request.session
-    newSession["test2"] = "value2"
-
-    self.controller.redirectTo(controllerName: TestController.name, actionName: "index", session: newSession)
-    waitForExpectationsWithTimeout(0.01, handler: nil)
-  }
-  
-  @available(*, deprecated) func testRedirectToWithControllerNameWithInvalidPathRedirectsToRootPath() {
-    let expectation = expectationWithDescription("callback called")
-    self.callback = {
-      response in
-      expectation.fulfill()
-      self.assert(response.responseCode, equals: .SeeOther, message: "gives a 303 response")
-      self.assert(response.headers, equals: ["Location": "/"], message: "has a location header")
-    }
-    
-    self.controller.redirectTo(controllerName: TestController.name, actionName: "foo")
-    waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
   func testRedirectToWithControllerTypeGeneratesRedirectResponse() {

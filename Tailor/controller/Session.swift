@@ -32,22 +32,7 @@ public struct Session {
   
   /** The flash data for the next page. */
   private var nextFlash: [String:String] = [:]
-  
-  /**
-    This method creates a session from request data.
-  
-    **NOTE**: This has been deprecated in favor of either using the session
-    field on the request, or the new initializer that takes the cookie string
-    and client address.
-  
-    - parameter request:   The request.
-    */
-  @available(*, deprecated, message="You should get the session from the request instead") public init(request: Request) {
-    let cookies = request.cookies
-    let cookie = cookies["_session"] ?? ""
-    self.init(cookieString: cookie, clientAddress: request.clientAddress)
-  }
-  
+    
   /**
     This initializer creates a session.
 

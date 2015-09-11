@@ -2,7 +2,7 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class AlterationTests: TailorTestCase {
+class AlterationScriptTests: TailorTestCase {
   class FirstAlteration: AlterationScript {
     static let identifier = "1"
     static func run() {
@@ -31,7 +31,7 @@ class AlterationTests: TailorTestCase {
   }
 
   func testDescriptionGetsClassName() {
-    assert(FirstAlteration.name, equals: "TailorTests.AlterationTests.FirstAlteration", message: "gets class name")
+    assert(FirstAlteration.name, equals: "TailorTests.AlterationScriptTests.FirstAlteration", message: "gets class name")
   }
   
   func testPendingAlterationsFindsAlterationsThatAreNotInTable() {

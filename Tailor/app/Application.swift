@@ -2,11 +2,8 @@ import Foundation
 
 /**
   This class represents a web application.
-
-  **NOTE**: Subclassing this class is deprecated. In a future release, it will
-  be made into a final class.
   */
-public class Application {
+public final class Application {
   /**
     This structure provides the configuration settings for an application.
     */
@@ -176,83 +173,6 @@ public class Application {
     }
   }
   
-  /**
-    The IP Address that the application listens on.
-  
-    **NOTE**: This is deprecated. The IP address is now stored on the
-    configuration setting.
-    */
-  @available(*, deprecated, message="This is deprecated. The IP address is now stored in the configuration")
-  public var ipAddress: (Int,Int,Int,Int) {
-    get {
-      return Application.configuration.ipAddress
-    }
-    set {
-      Application.configuration.ipAddress = newValue
-    }
-  }
-  
-  /**
-    The port that the application listens on.
-  
-    **NOTE**: This is deprecated. The port is now stored in the configuration
-    settings.
-    */
-  @available(*, deprecated, message="This is deprecated. The port is now stored in the configuration") public var port: Int {
-    get {
-      return Application.configuration.port
-    }
-    set {
-      Application.configuration.port = newValue
-    }
-  }
-  
-  /**
-    The routes that process requests for the app.
-  
-    **NOTE**: This has been deprecated in favor of `load` and `shared`
-    methods on `RouteSet`.
-    */
-  @available(*, deprecated, message="Use the shared route set instead") public var routeSet: RouteSet {
-    get {
-      return RouteSet.shared()
-    }
-    set {
-      RouteSet.load {
-        routes in
-        for route in newValue.routes {
-          let path = route.pathPattern
-          let newPath: String
-          if path.characters.count == 0 {
-            newPath = ""
-          }
-          else {
-            newPath = path.substringFromIndex(path.startIndex.advancedBy(1))
-          }
-          routes.addRoute(newPath, method: route.method, handler: route.handler, description: route.description, controller: route.controller, actionName: route.actionName)
-        }
-      }
-    }
-  }
-  
-  /** 
-    The formatters that we have available for dates.
-  
-    **NOTE**: This has been deprecated in favor of the formatters provided by
-    the `TimeFormat` class.
-    */
-  @available(*, deprecated, message="You should use the TimeFormat class instead")
-  public var dateFormatters: [String:NSDateFormatter] {
-    get {
-      return _dateFormatters
-    }
-    set {
-      _dateFormatters = newValue
-    }
-  }
-  
-  private var _dateFormatters: [String:NSDateFormatter] = [:]
-  
   /** The subclasses that we've registered for certain critical base classes. */
   private var registeredSubtypes: [String:[Any.Type]] = [:]
   
@@ -280,30 +200,11 @@ public class Application {
   /**
     This method initializes the application.
   
-    **NOTE**: This initializer is deprecated, because the testing flag has been
-    deprecated.
-  
-    - parameter testing:    Whether this application is being loaded as part of
-                            a test bundle.
-    */
-  @available(*, deprecated, message="The testing flag is deprecated")
-  public convenience init(testing: Bool) {
-    self.init()
-  }
-  /**
-    This method initializes the application.
-  
     This implementation parses command-line arguments, loads date formatters,
     and registers all the subclasses of Task and AlterationScript for use in
     running scripts.
-  
-    This also loads configuration settings in the old format from the
-    localization, sessions, and database plist files. This behavior is
-    deprecated, and will be removed in a future release. Instead, you should
-    set configuration in code prior to starting the application.
     */
   public required init() {
-    self.loadDateFormatters()
     self.registerSubtypes(TaskType.self) { $0 is TaskType.Type }
     self.registerSubtypes(AlterationScript.self) { $0 is AlterationScript.Type }
     
@@ -319,8 +220,6 @@ public class Application {
       self.extractArguments()
     }
     APPLICATION_ARGUMENTS = (self.command, self.flags)
-    
-    DeprecationShims().performSelector(Selector("loadLegacyConfigurationSettings:"), withObject: DeprecationShims.ApplicationWrapper(self))
     
     Application.configuration.setDefaultContent("en.model.errors.blank", value: "cannot be blank")
     Application.configuration.setDefaultContent("en.model.errors.blank", value: "cannot be blank")
@@ -370,18 +269,10 @@ public class Application {
   
   /** The application that we are running. */
   public class func sharedApplication() -> Application {
-    return NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] as? Application ?? {
-      var applicationClass = self
-      for bundle in NSBundle.allBundles() {
-        for key in ["NSPrincipalClass", "TailorApplicationClass"] {
-          if let className = bundle.infoDictionary?[key] as? String,
-            let bundleClass = NSClassFromString(className) as? Application.Type {
-            applicationClass = bundleClass
-          }
-        }
-      }
-      let application = applicationClass.init()
-      NSThread.currentThread().threadDictionary["SHARED_APPLICATION"] = application
+    let dictionary = NSThread.currentThread().threadDictionary
+    return dictionary["SHARED_APPLICATION"] as? Application ?? {
+      let application = Application.init()
+      dictionary["SHARED_APPLICATION"] = application
       return application
     }()
   }
@@ -409,44 +300,9 @@ public class Application {
     exit(1)
   }
   
-  /**
-    This method starts a server for this application.
-  
-    **NOTE**: This has been deprecated in favor of just starting the server
-    using `Connection.startServer`.
-    */
-  @available(*, deprecated, message="Use Connection.startServer instead") public func startServer() {
-    Connection.startServer(Application.configuration.ipAddress, port: Application.configuration.port, handler: { RouteSet.shared().handleRequest($0, callback: $1) })
-  }
-  
   /** Starts a version of this application as the shared application. */
   public class func start() {
     self.sharedApplication().start()
-  }
-  
-  /**
-    This method opens a database connection.
-    
-    This will pull the `database` section of the application's configuration,
-    and look for a field called `class`. If this field exists and has the name
-    of a class that conforms to the `DatabaseDriver` protocol, then this will
-    return an instance of the class, initialized with the rest of the database
-    configuration.
-  
-    If this cannot find a database driver from the configuration, it will raise
-    a fatal error.
-  
-    **NOTE**: This has been deprecated in favor of the
-    `sharedDatabaseConnection` class method.
-
-    - returns:   The connection
-    */
-  @available(*, deprecated, message="Use the sharedDatabaseConnection method instead") public func openDatabaseConnection() -> DatabaseDriver {
-    guard let connection = Application.configuration.databaseDriver?() as? DatabaseConnection else {
-      fatalError("Cannot open a database connection because there is no database configuration")
-    }
-    
-    return connection
   }
   
   //MARK: - Loading
@@ -557,28 +413,6 @@ public class Application {
         }.map { String($0).stringByReplacingOccurrencesOfString("\"", withString: "") }
       (self.command, self.flags) = self.dynamicType.parseArguments(arguments)
     }
-
-  }
-  
-  /**
-    This method loads the default date formatters.
-  
-    This has been deprecated.
-    */
-  private func loadDateFormatters() {
-    self._dateFormatters["short"] = NSDateFormatter()
-    self._dateFormatters["long"] = NSDateFormatter()
-    self._dateFormatters["shortDate"] = NSDateFormatter()
-    self._dateFormatters["longDate"] = NSDateFormatter()
-    self._dateFormatters["db"] = NSDateFormatter()
-    
-    self._dateFormatters["short"]?.dateFormat = "hh:mm Z"
-    self._dateFormatters["long"]?.dateFormat = "dd MMMM, yyyy, hh:mm z"
-    
-    self._dateFormatters["shortDate"]?.dateFormat = "dd MMMM"
-    self._dateFormatters["longDate"]?.dateFormat = "dd MMMM, yyyy"
-    
-    self._dateFormatters["db"]?.dateFormat = "yyyy-MM-dd HH:mm:ss"
   }
   
   /**
@@ -655,24 +489,7 @@ public class Application {
     let classes = self.registeredSubtypes[description] ?? []
     return classes.flatMap { $0 as? TaskType.Type }
   }
-  
-  /**
-    This method fetches subclasses of a type.
     
-    The type must have previously been passed in to registerSubtypes to load
-    the list.
-  
-    **NOTE**: This has been deprecated in favor of the `registeredSubtypeList`
-    method.
-    
-    - parameter type:   The type to get subclasses of.
-    - returns:          The subclasses of the type.
-    */
-  @available(*, deprecated, message="Use registeredSubtypeList instead")
-  public func registeredSubclassList<ParentType>(type: ParentType.Type) -> [ParentType.Type] {
-    return self.registeredSubtypeList(type)
-  }
-  
   /**
     This method fetches subtypes of a type.
     
@@ -709,39 +526,6 @@ public class Application {
       }
     }
     return mainBundle.resourcePath ?? "."
-  }
-  
-  /**
-    This method loads configuration from a file into the application's settings.
-  
-    The settings will be put into the configuration with a prefix taken from the
-    filename of the path.
-  
-    This has been deprecated in favor of the static configuration variable.
-  
-    - parameter path:     The path to the file, relative to the application's
-                          root path.
-    */
-  @available(*, deprecated, message="Use the static configuration variable instead") public func loadConfigFromFile(path: String) {
-    let name = ((path as NSString).lastPathComponent as NSString).stringByDeletingPathExtension
-    let fullPath = self.rootPath() + "/" + path
-    self.configuration.child(name).addDictionary(ConfigurationSetting(contentsOfFile: fullPath).toDictionary())
-  }
-  
-  /**
-    This method constructs a localization based on the configuration settings.
-  
-    The localization class name will be taken from the `localization.class`
-    setting. It will default to `PropertyListLocalization`.
-  
-    This has been deprecated in favor of the static configuration variable.
-  
-    - parameter locale:     The locale for the localization
-    - returns:              The localization
-    */
-  @available(*, deprecated, message="Use the localization on the configuration instead")
-  public func localization(locale: String) -> LocalizationSource {
-    return Application.configuration.localization(locale)
   }
   
   /**

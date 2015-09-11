@@ -22,20 +22,6 @@ public class RouteSet {
       */
     public let path: RoutePath
     
-    /**
-      The pattern for the path.
-    
-      **NOTE**: This has been deprecated in favor of the path variable.
-      */
-    @available(*, deprecated, message="Use the path instead") public var pathPattern: String { return path.pathPattern }
-    
-    /**
-      The method for the HTTP request.
-    
-      **NOTE**: This has been deprecated in favor of the new path variable.
-      */
-    @available(*, deprecated, message="Use the path instead") public var method: String { return path.methodName }
-    
     /** The implementation of the response handler. */
     public let handler: Connection.RequestHandler
     
@@ -60,22 +46,6 @@ public class RouteSet {
     
     /** The name of the action in the controller. */
     public private(set) var actionName: String?
-    
-    /**
-      This method initializes a route.
-    
-      **NOTE**: This method has been deprecated in favor of the version that
-      takes a path enum.
-
-      - parameter pathPattern:    The pattern for the path.
-      - parameter method:         The HTTP method.
-      - parameter handler:        The response handler.
-      - parameter description:    The description for the route.
-      */
-    @available(*, deprecated, message="This has been deprecated in favor of the version that takes a path") public init(pathPattern: String, method: String, handler: Connection.RequestHandler, description: String) {
-      let path = RoutePath.build(method, pathPattern: pathPattern) ?? RoutePath.Get(pathPattern)
-      self.init(path: path, handler: handler, description: description)
-    }
     
     /**
       This method initializes a route.
@@ -306,41 +276,6 @@ public class RouteSet {
   }
   
   //MARK: - Managing Routes
-
-  /**
-    This method wraps a block for generating routes.
-  
-    **NOTE**: This method is deprecated. You should use `withScope` instead.
-  
-    - parameter pathPrefix:    The prefix for the paths of the routes.
-    - parameter block:         The block that will provide the routes.
-    */
-  @available(*, deprecated, message="Use withScope instead") public func withPrefix(pathPrefix: String, @noescape block: ()->()) {
-    let oldPrefix = self.currentPathPrefix
-    self.currentPathPrefix += "/" + pathPrefix
-    block()
-    self.currentPathPrefix = oldPrefix
-  }
-  
-  /**
-    This method establishes a block for generating routes.
-  
-    **NOTE**: This has been deprecated in favor of the version that just takes
-    the controller's action method.
-
-    - parameter pathPrefix:    The prefix for the paths of the routes.
-    - parameter controller:    The controller that will handle the routes.
-    - parameter block:         The block that will provide the routes.
-    */
-  @available(*, deprecated) public func withPrefix(pathPrefix: String, controller: Controller.Type, @noescape block: ()->()) {
-    let oldPrefix = self.currentPathPrefix
-    let oldController = self.currentController
-    self.currentPathPrefix += "/" + pathPrefix
-    self.currentController = controller
-    block()
-    self.currentController = oldController
-    self.currentPathPrefix = oldPrefix
-  }
   
   /**
     This method creates a scope that will apply to several routes.
@@ -430,23 +365,6 @@ public class RouteSet {
   
   /**
     This method adds a route with a block.
-  
-    **NOTE**: This method has been deprecated in favor of the version with a
-    path enum.
-
-    - parameter pathPattern:   The pattern for the route.
-    - parameter handler:       The block that will handle the request.
-    - parameter description:   The description of the route implementation.
-    - parameter controller:    The controller that will handle the request.
-    - parameter actionName:    The name of the action that will handle the request.
-    */
-  @available(*, deprecated, message="Use the version that takes a path enum instead") public func addRoute(pathPattern: String, method: String, handler: Connection.RequestHandler, description: String, controller: ControllerType.Type? = nil, actionName: String? = nil) {
-    let path = RoutePath.build(method, pathPattern: pathPattern) ?? .Get(pathPattern)
-    self.addRoute(path, handler: handler, description: description, controller: controller, actionName: actionName)
-  }
-  
-  /**
-    This method adds a route with a block.
     
     - parameter path:           The path for the route.
     - parameter description:    The description of the route implementation.
@@ -465,24 +383,6 @@ public class RouteSet {
     route.actionName = actionName
     self.routes.append(route)
   }
-  
-  /**
-    This method adds a route for a controller action.
-  
-    **NOTE**: This method has been deprecated in favor of the version that takes
-    a path enum.
-
-    - parameter pathPattern:    The pattern for the route.
-    - parameter method:         The HTTP method for the route.
-    - parameter actionName:     The name of the action, for use in debugging
-                                and looking up routes by name.
-    - parameter action          The body of the action.
-    */
-  @available(*, deprecated, message="Use the version that takes a path enum instead") public func addRoute<T: ControllerType>(pathPattern: String, method: String, actionName: String, action: (T)->()->()) {
-    let path = RoutePath.build(method, pathPattern: pathPattern) ?? .Get(pathPattern)
-    self.route(path, to: action, name: actionName)
-  }
-  
   
   /**
     This method adds a route for a controller action.
@@ -505,111 +405,11 @@ public class RouteSet {
   /**
     This method adds a route with a block.
   
-    **NOTE**: This method has been deprecated in favor of the version that takes
-    a path enum.
-
-    - parameter pathPattern:   The pattern for the route.
-    - parameter method:        The HTTP method for the route.
-    - parameter handler:       The block that will handle the request.
-  */
-  @available(*, deprecated, message="Use the version that takes a path enum instead") public func addRoute(pathPattern: String, method: String, handler: Connection.RequestHandler) {
-    let path = RoutePath.build(method, pathPattern: pathPattern) ?? .Get(pathPattern)
-    self.addRoute(path, handler: handler)
-  }
-  
-  /**
-    This method adds a route with a block.
-  
     - parameter path:           The path for the route.
     - parameter handler:        The block that will handle the request.
     */
   public func addRoute(path: RoutePath, handler: Connection.RequestHandler) {
     self.addRoute(path, handler: handler, description: "custom block")
-  }
-  
-  /**
-    This method adds a route that will be handled by a controller.
-
-    **NOTE**: This has been deprecated in favor of the new `route` method.
-  
-    - parameter pathPattern:   The pattern for the route.
-    - parameter method:        The HTTP method for the route.
-    - parameter controller:    The controller that will handle the requests.
-    - parameter actionName:    The name of the action in the controller.
-    */
-  @available(*, deprecated, message="Use the route method instead")
-  public func addRoute(pathPattern: String, method: String, controller controllerType: Controller.Type, actionName: String) {
-    let description = NSString(format: "%@#%@", controllerType.name, actionName)
-    let handler = {
-      (request: Request, callback: Connection.ResponseCallback) -> () in
-      let controller = controllerType.init(request: request, response: Response(), actionName: actionName, callback: callback)
-      controller.action.run(controller)
-    }
-    self.addRoute(pathPattern, method: method, handler: handler, description: description as String, controller: controllerType, actionName: actionName)
-  }
-  
-  /**
-    This method adds a route that will be handled by the current controller.
-  
-    **NOTE**: This has been deprecated in favor of the new `route` method.
-    
-    - parameter pathPattern:   The pattern for the route.
-    - parameter method:        The HTTP method for the route.
-    - parameter actionName:    The name of the action in the controller.
-    */
-  @available(*, deprecated, message="Use the route method instead")
-  public func addRoute(pathPattern: String, method: String, actionName: String) {
-    if let type = self.currentController as? Controller.Type {
-      self.addRoute(pathPattern, method: method, controller: type, actionName: actionName)
-    }
-  }
-  
-  /**
-    This method adds restful routes.
-  
-    The restful actions are index, new, create, edit, update, and destroy.
-  
-    **NOTE**: This has been deprecated, because it does not fit within the new
-    action model.
-  
-    - parameter only:     The actions to add. If this is empty, it will add all
-                          the actions.
-    - parameter except:   The actions to skip.
-  */
-  @available(*, deprecated) public func addRestfulRoutes(only only: [String] = [], except: [String] = []) {
-    var actions = (only.isEmpty ? ["index", "new", "create", "show", "edit", "update", "destroy"] : only)
-    
-    for action in except {
-      if let index = actions.indexOf(action) {
-        actions.removeAtIndex(index)
-      }
-    }
-    
-    for action in actions {
-      var route = ""
-      var method = "GET"
-      
-      switch action {
-      case "create", "update", "destroy":
-        method = "POST"
-      default:
-        break
-      }
-      
-      switch(action) {
-      case "show", "update":
-        route = ":id"
-      case "edit":
-        route = ":id/edit"
-      case "destroy":
-        route = ":id/destroy"
-      case "new":
-        route = "new"
-      default:
-        break
-      }
-      self.addRoute(route, method: method, actionName: action)
-    }
   }
   
   /**
@@ -775,60 +575,6 @@ public class RouteSet {
   }
   
   //MARK: - Generating URLs
-  
-  /**
-    This method generates a path using our route set.
-  
-    **NOTE**: This method has been deprecated in favor of the one that uses a
-    controller type.
-
-    - parameter controller:     The name of the controller that the link is to.
-    - parameter actionName:     The name of the action.
-    - parameter parameters:     The parameters to interpolate into the route.
-    - parameter domain:         The domain to use for a full URL. If this is
-                                omitted, this will just give the path rather
-                                than a URL.
-    - parameter https:          Whether the URL should use the https protocol.
-                                If the domain is omitted, this value will be
-                                ignored.
-    - returns:                  The path, if we could match it up.
-    */
-  @available(*, deprecated, message="Use a controller type instead") public func pathFor(controllerName: String, actionName: String, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
-    var matchingPath: String? = nil
-    for route in self.routes {
-      guard let routeController = route.controller, let routeAction = route.actionName else { continue }
-      if routeController.name == controllerName && routeAction == actionName {
-        var path = route.path.pathPattern
-        var hasQuery = false
-        for (key, value) in parameters {
-          if let range = path.rangeOfString(":" + key, options: [], range: nil, locale: nil) {
-            path = path.stringByReplacingCharactersInRange(range, withString: value.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.alphanumericCharacterSet()) ?? "")
-          }
-          else {
-            if hasQuery {
-              path += "&"
-            }
-            else {
-              path += "?"
-              hasQuery = true
-            }
-            path += key.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.alphanumericCharacterSet()) ?? ""
-            path += "="
-            path += value.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.alphanumericCharacterSet()) ?? ""
-          }
-        }
-        matchingPath = path
-        break
-      }
-    }
-    
-    if let path = matchingPath, let domain = domain {
-      let httpProtocol = https ? "https" : "http"
-      matchingPath = "\(httpProtocol)://\(domain)\(path)"
-    }
-    return matchingPath
-
-  }
   
   /**
     This method generates a path using our route set.

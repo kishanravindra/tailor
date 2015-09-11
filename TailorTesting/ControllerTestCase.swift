@@ -86,67 +86,7 @@ public class ControllerTestCase : TailorTestCase {
     }
   }
   
-  /**
-    This method asserts that a controller rendered a template of a given type.
-  
-    - parameter controller:         The controller whose templates we are
-                                    checking.
-    - parameter renderedTemplate:   The type of template that we want to examine.
-    - parameter message:            A message to show if the assertion fails.
-    - parameter file:               The file that the assertion is coming from.
-                                    You should generally omit this, since it
-                                    will be provided automatically.
-    - parameter line:               The line that the assertion is coming from.
-                                    You should generally omit this, since it
-                                    will be provided automatically.
-    - parameter templateChecker:    A block that can perform additional checks
-                                    on the
-                                    template.
-    */
-  @available(*, deprecated) public func assert<TemplateType: Template>(controller: Controller, renderedTemplate: TemplateType.Type, message: String = "", file: String = __FILE__, line: UInt = __LINE__, _ templateChecker: (TemplateType)->() = {_ in}) {
-    var found = false
-    for template in controller.renderedTemplates {
-      if let castTemplate = template as? TemplateType {
-        found = true
-        templateChecker(castTemplate)
-      }
-    }
-    if(!found) {
-      var failureMessage = "Did not render a matching template"
-      if !message.isEmpty {
-        failureMessage += " - \(message)"
-      }
-      self.recordFailureWithDescription(failureMessage, inFile: file, atLine: line, expected: true)
-    }
-  }
-  
   //MARK: - Helpers
-  
-  /**
-    This method gets the path to a controller route.
-
-    - parameter controllerName:   The name of the controller we are getting the
-                                  route for.
-    - parameter actionName:       The name of the action that we are getting the
-                                  route for.
-    - parameter parameters:       Additional request parameters to include in
-                                  the path.
-    **NOTE**: This is deprecated in favor of the versions that takes a
-              controller type instead of a controller name.
-  
-    */
-  @available(*, deprecated) public func pathFor(controllerName: String?, actionName: String, parameters: [String:String] = [:]) -> String? {
-    let name: String
-    
-    if let type = controllerType {
-      name = controllerName ?? type.name
-    }
-    else {
-      name = controllerName ?? ""
-    }
-    return RouteSet.shared().pathFor(name, actionName: actionName, parameters: parameters)
-  }
-  
   
   /**
     This method gets the path to a controller route.
@@ -226,62 +166,6 @@ public class ControllerTestCase : TailorTestCase {
       expectation.fulfill()
       callback(response)
     }
-    waitForExpectationsWithTimeout(0.01, handler: nil)
-  }
-  
-  /**
-    This method calls an action on the controller this test case is testing.
-    
-    This will use the route set to get the actual action, so there must be a
-    route defined for it for this method to work.
-  
-    This has been deprecated in favor of the version that does not give a
-    controller to the closure.
-    
-    - parameter actionName:   The name of the action we are calling.
-    - parameter headers:      Additional headers to include in the request.
-    - parameter file:         The name of the file that is making the call. This
-                              will be supplied automatically.
-    - parameter line:         The line of the file that is making the call. This
-                              will be supplied automatically.
-    - parameter callback:     A callback that will perform checks on the
-                              response.
-    */
-  @available(*, deprecated, message="The controller parameter to the callback is deprecated")
-  public func callAction(actionName: String, headers: [String:String] = [:], file: String = __FILE__, line: UInt = __LINE__, callback: (Response,Controller) -> Void) {
-    var actionParams = params[actionName] ?? [:]
-    var sessionData = [String:String]()
-    let csrfKey = AesEncryptor.generateKey()
-    sessionData["csrfKey"] = csrfKey
-    actionParams["_csrfKey"] = csrfKey
-    if user != nil {
-      sessionData["userId"] = String(user.id ?? 0)
-    }
-    let routes = RouteSet.shared()
-    
-    guard let type = controllerType as? Controller.Type else { assert(false, message: "Did not have a controller type"); return }
-    let path = routes.pathFor(type, actionName: actionName, parameters: actionParams)
-    let method = routes.routes.filter {
-      route in
-      return route.controller == type && route.actionName == actionName
-      }.first?.path.methodName ?? "GET"
-    if path == nil {
-      recordFailureWithDescription("could not generate route for \(type.name)/\(actionName)", inFile: file, atLine: line, expected: true)
-      return
-    }
-    var request = Request(parameters: actionParams, sessionData: sessionData, path: path!, method: method, headers: headers)
-    if let actionFiles = files[actionName] {
-      request.uploadedFiles = actionFiles
-    }
-    
-    let expectation = expectationWithDescription("response called")
-    var controller = type.init(request: request, response: Response(), actionName: actionName, callback: { _ in })
-    controller = type.init(request: request, response: Response(), actionName: actionName, callback: {
-      response in
-      expectation.fulfill()
-      callback(response, controller)
-    })
-    controller.respond()
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
 }

@@ -271,17 +271,6 @@ public struct Response: Equatable {
     */
   public var responseCode = Code.Ok
   
-  /**
-    The HTTP response code.
-  
-    **NOTE**: This has been deprecated in favor of the version that takes a
-    Response.Code structure.
-    */
-  @available(*, deprecated, message="Use responseCode instead") public var code: Int {
-    get { return responseCode.code }
-    set { responseCode = .init(newValue, "") }
-  }
-  
   /** The response headers. */
   public var headers: [String:String] = [:]
   
@@ -348,15 +337,6 @@ public struct Response: Equatable {
   
   /** A copy of the body data. */
   public var body: NSData { return NSData(data: self.bodyDataForReading) }
-  
-  @available(*, deprecated) public var bodyData: NSData {
-    get {
-      return _bodyData
-    }
-    set {
-      _bodyData = NSMutableData(data: newValue)
-    }
-  }
   
   /** The full HTTP response data. */
   public var data : NSData { get {

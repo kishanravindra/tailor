@@ -6,16 +6,6 @@ import Foundation
   */
 public protocol CacheImplementation {
   /**
-    This method initializes an empty cache store.
-  
-    This has been deprecated. Cache implementations are no longer required to
-    provide any specific initializer, since they will be initialized with the
-    specific type and initializer in the configuration settings.
-    */
-  @available(*, deprecated) init()
-  
-  
-  /**
     This method reads a value from the cache.
     
     - parameter key:    The key for the cache entry.

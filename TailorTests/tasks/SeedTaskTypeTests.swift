@@ -277,7 +277,7 @@ class SeedTaskTypeTests: TailorTestCase {
     Application.start()
     
     let alterationCount = Application.pendingAlterations().count
-    assert(alterationCount, equals: 3)
+    assert(alterationCount, equals: 2)
   }
   
   func testRunTaskWithSaveCommandSavesSchema() {

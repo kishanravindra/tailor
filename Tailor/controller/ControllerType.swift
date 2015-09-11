@@ -192,13 +192,6 @@ extension ControllerType {
   /** The user that is signed in. */
   public var currentUser: UserType? { return self.state.currentUser }
   
-  
-  /** The session for the request. */
-  @available(*, deprecated, message="Use the session on the request on instead")
-  public var session: Session {
-    get { return self.state.request.session }
-  }
-  
   /**
     This method initializes a controller to handle a request.
     
@@ -221,26 +214,6 @@ extension ControllerType {
     */
   public init(request: Request, response: Response, actionName: String, callback: Connection.ResponseCallback) {
     self.init(state: ControllerState(request: request, response: response, actionName: actionName, callback: callback))
-  }
-  
-  /**
-    This method initializes a controller to handle a request.
-    
-    This is deprecated in favor of the version that takes a response.
-    
-    - parameter request:      The request that the controller is responding to.
-    - parameter response:     The baseline for the response that the controller
-                              will generate.
-    - parameter actionName:   The name of the action that the controller should
-                              invoke. This is mostly useful for generating
-                              routes, because the actual action method will be
-                              called when the controller needs to respond.
-    - parameter callback      The callback that the controller should invoke
-                              when the response is ready.
-    */
-  @available(*, deprecated, message="Use the version that takes a response as well")
-  public init(request: Request, actionName: String, callback: Connection.ResponseCallback) {
-    self.init(state: ControllerState(request: request, response: Response(), actionName: actionName, callback: callback))
   }
   
   /**
@@ -328,24 +301,6 @@ extension ControllerType {
   /**
     This method generates a response with a redirect to a generated URL.
   
-    This method has been deprecated in favor of the version that takes a
-    controller type.
-    
-    - parameter controllerName:   The controller to link to. This will default to
-                                  the current controller.
-    - parameter actionName:       The action to link to.
-    - parameter parameters:       Additional parameters for the path.
-    - parameter session:          The session information for the response.
-  */
-  @available(*, deprecated) public func redirectTo(controllerName controllerName: String?, actionName: String? = nil, parameters: [String:String] = [:], session: Session? = nil) {
-    let path = self.pathFor(controllerName: controllerName, actionName: actionName, parameters: parameters) ?? "/"
-    self.redirectTo(path, session: session)
-  }
-  
-  
-  /**
-    This method generates a response with a redirect to a generated URL.
-  
     - parameter actionName:       The name of the action to link to.
     - parameter parameters:       Additional parameters for the path.
     - parameter session:          The session information for the response.
@@ -376,45 +331,6 @@ extension ControllerType {
     response.responseCode = .NotFound
     response.appendString("Page Not Found")
     self.respondWith(response)
-  }
-  
-  /**
-    This method gets the path for a route.
-    
-    It defaults to the current controller and action. It will also substitute
-    any of the current request's parameters into the new path, if they are part
-    of that path.
-  
-    This method has been deprecated in favor of the version that takes a
-    controller type.
-    
-    - parameter controllerName:   The controller to link to. This will default
-                                  to the current controller.
-    - parameter actionName:       The action to link to.
-    - parameter parameters:       Additional parameters for the path.
-    - parameter domain:           The domain to use for the URL. If this is
-                                  omitted, the result will just be the path part
-                                  of the URL.
-    - parameter https:            Whether the URL should be https or http. If
-                                  the domain is omitted, this is ignored.
-    - returns:                    The path
-  */
-  @available(*, deprecated) public func pathFor(controllerName controllerName: String?, actionName: String? = nil, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
-    var path = RouteSet.shared().pathFor(
-      controllerName ?? self.dynamicType.name,
-      actionName: actionName ?? self.actionName,
-      parameters: parameters,
-      domain: domain,
-      https: https
-    )
-    if path != nil {
-      for (key,value) in self.request.requestParameters {
-        if !key.isEmpty {
-          path = path?.stringByReplacingOccurrencesOfString(":\(key)", withString: value)
-        }
-      }
-    }
-    return path
   }
   
   /**

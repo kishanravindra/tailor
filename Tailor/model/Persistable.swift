@@ -55,110 +55,6 @@ public func ==<T: Persistable>(lhs: T, rhs: T) -> Bool {
     lhs.id == rhs.id &&
     lhs.dynamicType.tableName == rhs.dynamicType.tableName
 }
-
-//MARK: - Associations
-
-/**
-  This method get the default name for a foreign key for a record class.
-
-  **NOTE**: This method is deprecated. You should use the foreignKeyName class
-  method instead.
-
-  It will be the underscored model name, followed by _id.
-  - returns: The foreign key name.
-  */
-@available(*, deprecated, message="Use the foreignKeyName class method instead") public func foreignKeyName(klass: Any.Type) -> String {
-  return modelName(klass) + "_id"
-}
-
-/**
-  This method fetches a relationship from one record to many related records.
-
-  This will look for a field on the other record that contains the id of this
-  record.
-
-  **NOTE**: This method is deprecated. You should call `toMany` on the record
-  instead.
-
-  - parameter source:       The record that is on the "one" side of the
-                            relationship.
-  - parameter foreignKey:   The field on the other record type that contains the
-                            ids of the source record. If this is omitted, we
-                            will use the foreign key name specified by the
-                            `foriegnKeyName` method.
-  - returns:                The records on the "many" side of the relationship.
-*/
-@available(*, deprecated, message="Use toMany on the record instead") public func toManyRecords<RecordType: Persistable, OtherRecordType: Persistable>(source: RecordType, foreignKey inputForeignKey: String? = nil) -> Query<OtherRecordType> {
-  return source.toMany(foreignKey: inputForeignKey)
-}
-
-/**
-  This method fetches a relationship from one record to many related records.
-
-  This will use another relationship on the record as an intermediary, looking
-  for a foreign key relationship between the intermediary and the final record
-  type.
-
-  **NOTE**: This function is deprecated. You should call the `toMany` method on
-  the record instead.
-
-  - parameter through:      The query that contains the intermediary
-                            relationship.
-  - parameter foreignKey:   The attribute on the intermediary record that
-                            contains the id. If this is not provided, it will be 
-                            the default foreign key name for the appropriate 
-                            model.
-  - parameter joinToMany:   Whether the join between the intermediary and the
-                            final table should join from a foreign key on the
-                            final to the id on the intermediate, rather than
-                            from a foreign key on the intermediate to the id
-                            on the final.
-  - returns:                The fetched records.
-*/
-@available(*, deprecated, message="Use toMany on the record instead") public func toManyRecords<OtherRecordType : Persistable, IntermediaryRecordType: Persistable>(through through: Query<IntermediaryRecordType>, foreignKey inputForeignKey: String? = nil, joinToMany: Bool = false) -> Query<OtherRecordType> {
-  var query = Query<OtherRecordType>()
-  if joinToMany {
-    let foreignKey = inputForeignKey ?? (foreignKeyName(IntermediaryRecordType.self))
-    query = query.join(IntermediaryRecordType.self, fromColumn: "id", toColumn: foreignKey)
-    
-  }
-  else {
-    let foreignKey = inputForeignKey ?? (foreignKeyName(OtherRecordType.self))
-    query = query.join(IntermediaryRecordType.self, fromColumn: foreignKey, toColumn: "id")
-  }
-  return query.filter(through.whereClause.query, through.whereClause.parameters.map { $0 as DatabaseValueConvertible })
-}
-
-//MARK: - Persistence
-/**
-  This method saves a record to the database.
-
-  It will also set values for the createdAt and updatedAt fields, if they
-  are defined in the column mapping for the record type.
-
-  **NOTE**: This function is deprecated. You should use the `save` method on the
-  record instead.
-
-  - parameter record:     The record that we are saving.
-  - returns:              On success, this returns a new record with the latest
-                          saved information. On failure, this will return nil.
-  */
-@available(*, deprecated, message="Use the save method on the record instead") public func saveRecord<RecordType: Persistable>(record: RecordType) -> RecordType? {
-  return record.save()
-}
-
-/**
-  This method deletes the record from the database.
-
-  **NOTE**: This method is deprecated. You should call the `destroy` method on
-  the record instead.
-
-  - parameter record:    The record to delete.
-  */
-@available(*, deprecated, message="Use the destroy method on the record instead") public func destroyRecord<RecordType: Persistable>(record: RecordType) {
-  record.destroy()
-}
-
 extension Persistable {
   
   /**
@@ -319,7 +215,7 @@ extension Persistable {
     
     let results = Application.sharedDatabaseConnection().executeQuery(query, parameters: parameters)
     
-    let result : DatabaseConnection.Row? = results.isEmpty ? nil : results[0]
+    let result : DatabaseRow? = results.isEmpty ? nil : results[0]
     
     if result == nil {
       return nil

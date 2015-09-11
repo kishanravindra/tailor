@@ -175,113 +175,6 @@ class TemplateTypeTests: TailorTestCase {
     template.tag("p", text: "Hello", attributes: ["class": "greeting", "data-hover": "Hi"])
     assert(template.contents, equals: "<p class=\"greeting\" data-hover=\"Hi\">Hello</p>")
   }
-
-  @available(*, deprecated) func testLinkByControllerNamePutsLinkTagInBuffer() {
-    struct InnerTestController: ControllerType {
-      var state: ControllerState
-      static func defineRoutes(routes: RouteSet) {
-        
-      }
-    }
-    
-    RouteSet.load {
-      routes in
-      routes.route(.Get("test/path"), to: TestController.indexAction, name: "index")
-      ()
-    }
-    var template2 = EmptyTemplate(state: TemplateState(InnerTestController(
-      request: controller.request,
-      response: Response(),
-      actionName: "show",
-      callback: controller.callback
-    )))
-    template2.link("TestController", actionName: "index", parameters: ["id": "5"], attributes: ["class": "btn"]) {
-      template2.text("Click here")
-    }
-    assert(template2.contents, equals: "<a class=\"btn\" href=\"/test/path?id=5\">Click here</a>", message: "puts the tag in the buffer")
-  }
-  
-  @available(*, deprecated) func testLinkByControllerNameWithNoContentsPutsLinkTagInBuffer() {
-    struct InnerTestController: ControllerType {
-      var state: ControllerState
-      static func defineRoutes(routes: RouteSet) {
-        
-      }
-    }
-    
-    RouteSet.load {
-      routes in
-      routes.route(.Get("test/path"), to: TestController.indexAction, name: "index")
-      ()
-    }
-    var template2 = EmptyTemplate(state: TemplateState(InnerTestController(
-      request: controller.request,
-      response: Response(),
-      actionName: "show",
-      callback: controller.callback
-      )))
-    template2.link("TestController", actionName: "index", parameters: ["id": "5"], attributes: ["class": "btn"])
-    assert(template2.contents, equals: "<a class=\"btn\" href=\"/test/path?id=5\"></a>", message: "puts the tag in the buffer")
-  }
-  
-  @available(*, deprecated) func testLinkByControllerNameWithNilPutsLinkToCurrentControllerInBuffer() {
-    struct InnerTestController: ControllerType {
-      var state: ControllerState
-      static func defineRoutes(routes: RouteSet) {
-        
-      }
-      
-      func indexAction() {
-        
-      }
-    }
-    
-    RouteSet.load {
-      routes in
-      routes.route(.Get("test/path"), to: TestController.indexAction, name: "index")
-      routes.route(.Get("test/path2"), to: InnerTestController.indexAction, name: "index")
-      ()
-    }
-    var template2 = EmptyTemplate(state: TemplateState(InnerTestController(
-      request: controller.request,
-      response: Response(),
-      actionName: "show",
-      callback: controller.callback
-      )))
-    template2.link(nil, actionName: "index", parameters: ["id": "5"], attributes: ["class": "btn"]) {
-      template2.text("Click here")
-    }
-    assert(template2.contents, equals: "<a class=\"btn\" href=\"/test/path2?id=5\">Click here</a>", message: "puts the tag in the buffer")
-  }
-  
-  @available(*, deprecated) func testLinkByControllerNameWithInvalidPathPutsEmptyLinkInBuffer() {
-    struct InnerTestController: ControllerType {
-      var state: ControllerState
-      static func defineRoutes(routes: RouteSet) {
-        
-      }
-      
-      func indexAction() {
-        
-      }
-    }
-    
-    RouteSet.load {
-      routes in
-      routes.route(.Get("test/path"), to: TestController.indexAction, name: "index")
-      ()
-    }
-    var template2 = EmptyTemplate(state: TemplateState(InnerTestController(
-      request: controller.request,
-      response: Response(),
-      actionName: "show",
-      callback: controller.callback
-      )))
-    template2.link(nil, actionName: "index", parameters: ["id": "5"], attributes: ["class": "btn"]) {
-      template2.text("Click here")
-    }
-    assert(template2.contents, equals: "<a class=\"btn\" href=\"\">Click here</a>", message: "puts the tag in the buffer")
-  }
   
   func testLinkPutsLinkTagInBuffer() {
     struct InnerTestController: ControllerType {
@@ -602,13 +495,6 @@ class TemplateTypeTests: TailorTestCase {
     let name1 = template.attributeName(Hat.self, "brimSize")
     assert(name1, equals: "Brim Size", message: "gets a capitalized name from a model")
     let name2 = template.attributeName(Shelf.self, "store")
-    assert(name2, equals: "Hat Store", message: "gets a capitalized name from the localization")
-  }
-  
-  @available(*, deprecated) func testAttributeNameWithModelNameGetsNameFromModel() {
-    let name1 = template.attributeName("hat", "brimSize")
-    assert(name1, equals: "Brim Size", message: "gets a capitalized name from a model")
-    let name2 = template.attributeName("shelf", "store")
     assert(name2, equals: "Hat Store", message: "gets a capitalized name from the localization")
   }
 }

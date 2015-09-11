@@ -5,18 +5,6 @@ public protocol DatabaseDriver: class {
   /** The time zone that the database is using. */
   var timeZone: TimeZone { get }
   
-  
-  /**
-    This method creates the connection.
-  
-    This must open the connection and do everything necessary to prepare for
-    query execution.
-  
-    This has been deprecated. Database drivers are encouraged to now provide
-    initializers with explicit arguments.
-    */
-  @available(*, deprecated) init(config: [String:String])
-  
   /**
     This method executes a query and returns a result set.
     

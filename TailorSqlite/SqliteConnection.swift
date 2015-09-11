@@ -14,21 +14,6 @@ public final class SqliteConnection: DatabaseDriver {
   /**
     This method initializes a connection to a SQLite database.
   
-    The configuration must provide a `path` key with a path to the database
-    file.
-  
-    This has been deprecated in favor of `init(path:)`
-
-    - parameter config:   The configuration for the connection.
-    */
-  @available(*, deprecated, message="Use the init(path:) instead") public convenience init(config: [String: String]) {
-    guard let path = config["path"] else { fatalError("Could not create sqlite connection with no path") }
-    self.init(path: path)
-  }
-  
-  /**
-    This method initializes a connection to a SQLite database.
-  
     - parameter path:   The path to the file.
     */
   public init(path: String) {

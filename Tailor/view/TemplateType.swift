@@ -176,26 +176,6 @@ extension TemplateType {
   /**
     This method adds a tag for linking to a path.
   
-    This method has been deprecated in favor of the version that takes a
-    controller type.
-    
-    - parameter controllerName:   The controller to link to. This will default to
-                                  the current controller.
-    - parameter actionName:       The action to link to.
-    - parameter parameters:       Additional parameters for the path.
-    - parameter attributes:       Additional attributes for the tag.
-    - parameter with:             A closure that adds the contents of the link.
-    */
-  @available(*, deprecated, message="Use a controller type instead") public mutating func link(controllerName: String?, actionName: String? = nil, parameters: [String:String] = [:], attributes: [String:String] = [:], @noescape with contents: ()->()={}) {
-    var mergedAttributes = attributes
-    mergedAttributes["href"] = self.controller.pathFor(controllerName: controllerName ?? self.controller.dynamicType.name,
-      actionName: actionName, parameters: parameters) ?? ""
-    self.tag("a", mergedAttributes, with: contents)
-  }
-  
-  /**
-    This method adds a tag for linking to a path.
-  
     - parameter actionName:       The action to link to.
     - parameter parameters:       Additional parameters for the path.
     - parameter attributes:       Additional attributes for the tag.
@@ -348,19 +328,5 @@ extension TemplateType {
     */
   public func attributeName(modelType: ModelType.Type, _ attributeName: String) -> String {
     return modelType.attributeName(attributeName, localization: self.localization, capitalize: true)
-  }
-  
-  /**
-    This method gets a localized, capitalized attribute name.
-    
-    This method is deprecated. You should use the version that has a model
-    type.
-    
-    - parameter modelName:        The name of the model whose attribute this is.
-    - parameter attributeName:    The name of the attribute to localize.
-    - returns:                    The localized attribute.
-    */
-  @available(*, deprecated, message="Use the version with a model type instead") public func attributeName(modelName: String, _ attributeName: String) -> String {
-    return modelAttributeName(modelName, key: attributeName, localization: self.localization, capitalize: true)
   }
 }

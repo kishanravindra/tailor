@@ -206,18 +206,6 @@ class ResponseTests: TailorTestCase {
     assert(response.body.length, equals: 0)
   }
   
-  @available(*, deprecated) func testCodeGetsResponseCode() {
-    setUpFullResponse()
-    assert(response.code, equals: 200)
-  }
-  
-  @available(*, deprecated) func testSettingCodeSetsGenericResponseCode() {
-    setUpFullResponse()
-    response.code = 303
-    assert(response.responseCode.code, equals: 303)
-    assert(response.responseCode.description, equals: "")
-  }
-  
   //MARK: - Comparisons
   
   func testResponsesAreEqualWithSameInformation() {

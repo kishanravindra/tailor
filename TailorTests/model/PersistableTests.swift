@@ -73,54 +73,6 @@ class PersistableTests: TailorTestCase {
     assert(joinClause.parameters.count, equals: 0, message: "has no parameters in the join clause")
   }
   
-  @available(*, deprecated) func testForeignKeyNameFromFreeFunctionIsModelNamePlusId() {
-    assert(foreignKeyName(Hat.self), equals: "hat_id")
-  }
-  
-  @available(*, deprecated) func testToManyFromFreeFunctionFetchesRecordsByForeignKey() {
-    let shelf = Shelf(name: "").save()!
-    let query : Query<Hat> = toManyRecords(shelf)
-    let clause = query.whereClause
-    assert(clause.query, equals: "hats.shelf_id=?", message: "has the shelf ID in the query")
-    assert(clause.parameters, equals: [DatabaseValue.Integer(shelf.id!)], message: "has the id as the parameter")
-  }
-  
-  @available(*, deprecated) func testToManyFromFreeFunctionWithSpecificForeignKeyUsesThatForeignKey() {
-    let shelf = Shelf(name: "").save()!
-    let query : Query<Hat> = toManyRecords(shelf, foreignKey: "shelfId")
-    let clause = query.whereClause
-    assert(clause.query, equals: "hats.shelfId=?", message: "has the shelf ID in the query")
-    assert(clause.parameters, equals: [shelf.id!.databaseValue], message: "has the id as the parameter")
-  }
-  
-  @available(*, deprecated) func testToManyThroughFromFreeFunctionFetchesManyRecordsByForeignKey() {
-    let store = Store(name: "New Store").save()!
-    let shelfQuery : Query<Shelf> = toManyRecords(store)
-    let query : Query<Hat> = toManyRecords(through: shelfQuery, joinToMany: true)
-    
-    let whereClause = query.whereClause
-    assert(whereClause.query, equals: "shelfs.store_id=?")
-    assert(whereClause.parameters, equals: [store.id!.databaseValue], message: "has the id as the parameter")
-    
-    let joinClause = query.joinClause
-    assert(joinClause.query, equals: "INNER JOIN shelfs ON shelfs.id = hats.shelf_id", message: "joins between shelves and hats in the join clause")
-    assert(joinClause.parameters.count, equals: 0, message: "has no parameters in the join clause")
-  }
-  
-  @available(*, deprecated) func testToManyThroughFromFreeFunctionFetchesOneRecordsByForeignKey() {
-    let hat = Hat(shelfId: 1).save()!
-    let shelfQuery = Shelf.query.filter(["id": hat.shelfId])
-    let query : Query<Store> = toManyRecords(through: shelfQuery, joinToMany: false)
-    
-    let whereClause = query.whereClause
-    assert(whereClause.query, equals: "shelfs.id=?")
-    assert(whereClause.parameters, equals: [hat.shelfId!.databaseValue], message: "has the id as the parameter")
-    
-    let joinClause = query.joinClause
-    assert(joinClause.query, equals: "INNER JOIN shelfs ON shelfs.store_id = stores.id", message: "joins between shelves and stores in the join clause")
-    assert(joinClause.parameters.count, equals: 0, message: "has no parameters in the join clause")
-  }
-  
   //MARK: - Persisting
   
   func testSaveSetsTimestampsForNewRecord() {
@@ -305,44 +257,6 @@ class PersistableTests: TailorTestCase {
     TestConnection.withTestConnection {
       connection in
       shelf.destroy()
-      self.assert(connection.queries.count, equals: 1, message: "executes one query")
-      if connection.queries.count == 1 {
-        let (query, parameters) = connection.queries[0]
-        self.assert(query, equals: "DELETE FROM shelfs WHERE id = ?", message: "executes a destroy query")
-        let data = shelf.id!.databaseValue
-        self.assert(parameters, equals: [data], message: "has the id as the parameter for the query")
-      }
-    }
-  }
-  
-  @available(*, deprecated) func testSaveFromFreeFunctionInsertsNewRecord() {
-    Application.sharedDatabaseConnection()
-    
-    assert(Hat.query.count(), equals: 0, message: "starts out with 0 records")
-    let hat = Hat()
-    saveRecord(hat)
-    assert(Hat.query.count(), equals: 1, message: "ends with 1 record")
-  }
-  
-  @available(*, deprecated) func testSaveFromFreeFunctionUpdatesExistingRecord() {
-    var hat = Hat(color: "black")
-    
-    saveRecord(hat)
-    assert(Hat.query.count(), equals: 1, message: "starts out with 1 record")
-    assert(Hat.query.first()?.color, equals: "black", message: "starts out with a black hat")
-    hat = Hat.query.first()!
-    hat.color = "tan"
-    saveRecord(hat)
-    
-    assert(Hat.query.count(), equals: 1, message: "ends with 1 record")
-    assert(Hat.query.first()?.color, equals: "tan", message: "ends with a tan hat")
-  }
-  
-  @available(*, deprecated) func testDestroyFromFreeFunctionExecutesDeleteQuery() {
-    let shelf = Shelf(name: "Shelf").save()!
-    TestConnection.withTestConnection {
-      connection in
-      destroyRecord(shelf)
       self.assert(connection.queries.count, equals: 1, message: "executes one query")
       if connection.queries.count == 1 {
         let (query, parameters) = connection.queries[0]
