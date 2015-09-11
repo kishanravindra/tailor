@@ -103,6 +103,16 @@ class SqliteConnectionTests: TailorTestCase {
     }
   }
   
+  func testCanInsertEmptyString() {
+    connection.executeQuery("INSERT INTO `hats` (`color`, `brim_size`) VALUES (?,?)", "", 10)
+    let results = connection.executeQuery("SELECT * FROM hats")
+    assert(results.count, equals: 1)
+    if results.count == 1 {
+      let result = results[0]
+      assert(result.data["color"], equals: DatabaseValue.String(""))
+    }
+  }
+  
   func testCanHandleTimestampParameter() {
     let timestamp = 20.minutes.ago
     let results = connection.executeQuery("INSERT INTO `hats` (`created_at`) VALUES (?)", timestamp)
