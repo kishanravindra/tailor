@@ -14,6 +14,7 @@ import TailorTesting
   
   override func setUp() {
     super.setUp()
+    _ = Application()
     let controller = TestController(request: Request(), response: Response(), actionName: "index", callback: {response in })
     builder = FormBuilder(template: Template(controller: controller), name: "hat")
   }
