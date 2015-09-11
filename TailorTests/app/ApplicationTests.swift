@@ -488,7 +488,7 @@ class ApplicationTests : TailorTestCase {
     self.assert(value, equals: "test_value", message: "has the setting from the file")
   }
   
-  func testLocalizationBuildsLocalizationFromFunctionInConfiguration() {
+  @available(*, deprecated) func testLocalizationBuildsLocalizationFromFunctionInConfiguration() {
     Application.configuration.localization = { DatabaseLocalization(locale: $0) }
     let localization = application.localization("en")
     self.assert(localization.locale, equals: "en", message: "sets the localization")
@@ -498,7 +498,7 @@ class ApplicationTests : TailorTestCase {
   
   func testLocalizationWithNoSettingIsPropertyListLocalization() {
     Application.configuration = Application.Configuration()
-    let localization = application.localization("en")
+    let localization = Application.configuration.localization("en")
     assert(localization is PropertyListLocalization)
   }
   

@@ -101,26 +101,30 @@ public enum JsonPrimitive: Equatable, CustomStringConvertible {
     - parameter jsonObject:   The JSON object.
     */
   public init(jsonObject: AnyObject) throws {
-    switch(jsonObject) {
-    case let s as Swift.String:
+    if let s = jsonObject as? Swift.String {
       self = String(s)
-    case let d as [Swift.String:AnyObject]:
+    }
+    else if let d = jsonObject as? [Swift.String:AnyObject] {
       var mappedDictionary: [Swift.String: JsonPrimitive] = [:]
       for (key,value) in d {
         mappedDictionary[key] = try JsonPrimitive(jsonObject: value)
       }
       self = Dictionary(mappedDictionary)
-    case let a as [AnyObject]:
+    }
+    else if let a = jsonObject as? [AnyObject] {
       var mappedArray = [JsonPrimitive]()
       for value in a {
         try mappedArray.append(JsonPrimitive(jsonObject: value))
       }
       self = Array(mappedArray)
-    case _ as NSNull:
+    }
+    else if jsonObject is NSNull {
       self = Null
-    case let n as NSNumber:
+    }
+    else if let n = jsonObject as? NSNumber {
       self = Number(n)
-    default:
+    }
+    else {
       throw JsonParsingError.UnsupportedType(jsonObject.dynamicType)
     }
   }

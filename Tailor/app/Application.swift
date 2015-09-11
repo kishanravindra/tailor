@@ -104,15 +104,13 @@ public class Application {
       var result = [String:String]()
       for (key,value) in dictionary {
         guard let keyString = key as? String else { continue }
-        switch(value) {
-        case let s as String:
+        if let s = value as? String {
           result[keyString] = s
-        case let d as NSDictionary:
+        }
+        else if let d = value as? NSDictionary {
           for (innerKey, innerValue) in flattenDictionary(d) {
             result[keyString + "." + innerKey] = innerValue
           }
-        default:
-          continue
         }
       }
       return result
@@ -741,7 +739,8 @@ public class Application {
     - parameter locale:     The locale for the localization
     - returns:              The localization
     */
-   public func localization(locale: String) -> LocalizationSource {
+  @available(*, deprecated, message="Use the localization on the configuration instead")
+  public func localization(locale: String) -> LocalizationSource {
     return Application.configuration.localization(locale)
   }
   

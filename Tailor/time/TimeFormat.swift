@@ -327,7 +327,7 @@ public enum TimeFormatComponent: TimeFormatter {
         return month
       }
     case let .MonthName(abbreviate):
-      let localization = Application.sharedApplication().localization("en")
+      let localization = Application.configuration.localization("en")
       let key: String
       if abbreviate {
         key = "dates.\(timestamp.calendar.identifier).month_names.abbreviated.\(timestamp.month)"
@@ -365,7 +365,7 @@ public enum TimeFormatComponent: TimeFormatter {
     case .Seconds: return pad(String(timestamp.second), with: "0", length: 2)
     case .WeekDay: return String(timestamp.weekDay)
     case let .WeekDayName(abbreviate):
-      let localization = Application.sharedApplication().localization("en")
+      let localization = Application.configuration.localization("en")
       let key: String
       if abbreviate {
         key = "dates.\(timestamp.calendar.identifier).week_day_names.abbreviated.\(timestamp.weekDay)"
@@ -442,7 +442,7 @@ public enum TimeFormatComponent: TimeFormatter {
                             the number will be zero and the string will be nil.
     */
   private func parseText(from string: String, key: String, calendar: Calendar, range: Range<Int>) -> (Int,String?) {
-    let localization = Application.sharedApplication().localization("en")
+    let localization = Application.configuration.localization("en")
     for value in range {
       if let textValue = localization.fetch("dates.\(calendar.identifier).\(key).\(value)") {
         if string.hasPrefix(textValue) {
