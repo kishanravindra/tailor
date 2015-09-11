@@ -3,7 +3,12 @@ import Tailor
 import TailorTesting
 import TailorSqlite
 
-class DatabaseDriverTests: TailorTestCase {
+class DatabaseDriverTests: XCTestCase, TailorTestable {
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
+  
   //MARK: - Initialization
   
   override func tearDown() {

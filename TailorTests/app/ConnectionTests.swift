@@ -2,9 +2,14 @@ import XCTest
 @testable import Tailor
 import TailorTesting
 
-class ConnectionTests: TailorTestCase {
+class ConnectionTests: XCTestCase, TailorTestable {
   var requestContents = ["GET / HTTP/1.1\r\nHeader: Value\r\nContent-Length: 12\r\n\r\nRequest Body"]
   var requestData: [NSData] { return requestContents.map { NSData(bytes: $0.utf8) } }
+  
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
   
   //MARK: - Reading from Socket
   

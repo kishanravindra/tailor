@@ -2,8 +2,7 @@ import XCTest
 import Tailor
 import TailorTesting
 
-
-class TemplateTypeTests: TailorTestCase {
+class TemplateTypeTests: XCTestCase, TailorTestable {
   var controller: TestController!
   var template: TemplateType!
   
@@ -23,6 +22,7 @@ class TemplateTypeTests: TailorTestCase {
   }
   override func setUp() {
     super.setUp()
+    setUpTestCase()
     let request = Request(clientAddress: "1.1.1.1", data: NSData())
     let callback = {
       (response: Response) -> () in

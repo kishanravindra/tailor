@@ -2,7 +2,12 @@
 import TailorTesting
 import XCTest
 
-class EmailAgentTests: TailorTestCase {
+class EmailAgentTests: XCTestCase, TailorTestable {
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
+  
   func testSharedEmailAgentCreatesEmailAgentBasedOnConfiguration() {
     struct MyAgent: EmailAgent {
       func deliver(email: Email, callback: Email.ResultHandler) {

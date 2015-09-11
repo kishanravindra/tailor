@@ -1,7 +1,12 @@
 import XCTest
 import TailorTesting
 
-class StringTests: TailorTestCase {
+class StringTests: XCTestCase, TailorTestable {
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
+  
   func testLowercaseInitialLowercasesFirstLetter() {
     let input = "Test_Astring"
     let output = input.lowercaseInitial

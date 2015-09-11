@@ -2,10 +2,11 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class DatabaseLocalizationTests: TailorTestCase {
+class DatabaseLocalizationTests: XCTestCase, TailorTestable {
   var localization: LocalizationSource!
   override func setUp() {
     super.setUp()
+    setUpTestCase()
     Application.sharedDatabaseConnection().executeQuery("DELETE FROM `tailor_translations`")
     localization = DatabaseLocalization(locale: "en")
     DatabaseLocalization.Translation(translationKey: "database.message", locale: "en", translatedText: "Hello").save()

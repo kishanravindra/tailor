@@ -2,7 +2,12 @@
 import TailorTesting
 import XCTest
 
-class ExternalProcessTests: TailorTestCase {
+class ExternalProcessTests: XCTestCase, TailorTestable {
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
+  
   func testInitializationSetsLaunchPathAndArguments() {
     let process = ExternalProcess(launchPath: "/usr/bin/echo", arguments: ["Hello"])
     

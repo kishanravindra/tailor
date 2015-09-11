@@ -1,7 +1,8 @@
 import Tailor
 import TailorTesting
+import XCTest
 
-class PersistableEnumTests: TailorTestCase {
+class PersistableEnumTests: XCTestCase, TailorTestable {
   enum Color: String, StringPersistableEnum {
     case Red
     case DarkBlue
@@ -18,6 +19,7 @@ class PersistableEnumTests: TailorTestCase {
   
   override func setUp() {
     super.setUp()
+    setUpTestCase()
     Application.sharedDatabaseConnection().executeQuery("DROP TABLE IF EXISTS hat_types")
     Application.sharedDatabaseConnection().executeQuery("CREATE TABLE hat_types (id integer PRIMARY KEY, name string)")
     Application.sharedDatabaseConnection().executeQuery("INSERT INTO hat_types VALUES (1,'feathered')")

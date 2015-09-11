@@ -140,6 +140,7 @@
 		52C5B4841B47055000F4A5C5 /* TestTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C5B47C1B47055000F4A5C5 /* TestTask.swift */; };
 		52C6251A19EE110B0024453F /* AesEncryptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C6251919EE110B0024453F /* AesEncryptor.swift */; };
 		52C6252019EE12810024453F /* PasswordHasher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C6251F19EE12810024453F /* PasswordHasher.swift */; };
+		52C72EFB1BA370DA0008E2B2 /* TailorTestable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C72EFA1BA370DA0008E2B2 /* TailorTestable.swift */; settings = {ASSET_TAGS = (); }; };
 		52DD44E81B57362800312923 /* Email.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DD44E71B57362800312923 /* Email.swift */; };
 		52DD44EB1B5736AE00312923 /* EmailTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DD44EA1B5736AE00312923 /* EmailTests.swift */; };
 		52DD44ED1B5C380500312923 /* EmailAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DD44EC1B5C380500312923 /* EmailAgent.swift */; };
@@ -365,6 +366,7 @@
 		52C5B47C1B47055000F4A5C5 /* TestTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestTask.swift; sourceTree = "<group>"; };
 		52C6251919EE110B0024453F /* AesEncryptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AesEncryptor.swift; sourceTree = "<group>"; };
 		52C6251F19EE12810024453F /* PasswordHasher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordHasher.swift; sourceTree = "<group>"; };
+		52C72EFA1BA370DA0008E2B2 /* TailorTestable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TailorTestable.swift; sourceTree = "<group>"; };
 		52DD44E71B57362800312923 /* Email.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Email.swift; sourceTree = "<group>"; };
 		52DD44EA1B5736AE00312923 /* EmailTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailTests.swift; sourceTree = "<group>"; };
 		52DD44EC1B5C380500312923 /* EmailAgent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailAgent.swift; sourceTree = "<group>"; };
@@ -464,6 +466,7 @@
 				5218B9721AB64EAF0036ED34 /* Info.plist */,
 				5218B9881AB64F5A0036ED34 /* Application.swift */,
 				5218B9C31AB8DBC80036ED34 /* TailorTestCase.swift */,
+				52C72EFA1BA370DA0008E2B2 /* TailorTestable.swift */,
 				5218B9C51AB95B2C0036ED34 /* ControllerTestCase.swift */,
 				5218B9C91AB966ED0036ED34 /* TemplateTestCase.swift */,
 				52FC9E0F1B3CC1E9001F783B /* Response.swift */,
@@ -1169,6 +1172,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52C72EFB1BA370DA0008E2B2 /* TailorTestable.swift in Sources */,
 				5218B9891AB64F5A0036ED34 /* Application.swift in Sources */,
 				5218B9CA1AB966ED0036ED34 /* TemplateTestCase.swift in Sources */,
 				5218B9C41AB8DBC80036ED34 /* TailorTestCase.swift in Sources */,

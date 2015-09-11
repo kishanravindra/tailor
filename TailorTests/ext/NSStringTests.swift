@@ -1,7 +1,12 @@
 import XCTest
 import TailorTesting
 
-class NSStringTests: TailorTestCase {
+class NSStringTests: XCTestCase, TailorTestable {
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
+  
   func testCamelCaseCanConvertString() {
     let result = "test_string".camelCase()
     assert(result, equals: "testString", message: "converts to camel case")

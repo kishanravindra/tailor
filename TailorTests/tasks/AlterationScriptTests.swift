@@ -2,7 +2,12 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class AlterationScriptTests: TailorTestCase {
+class AlterationScriptTests: XCTestCase, TailorTestable {
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
+  
   class FirstAlteration: AlterationScript {
     static let identifier = "1"
     static func run() {

@@ -2,11 +2,19 @@ import Tailor
 import TailorTesting
 import XCTest
 
-class ValidationTests: TailorTestCase {
+class ValidationTests: XCTestCase, TailorTestable {
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
+  
   //MARK: - Initialization
   
   func testInitializationSetsModelNameAndErrors() {
-    
+    let errors = [ValidationError(modelName: "Hat", key: "color", message: "blank")]
+    let validation = Validation("Hat", errors: errors)
+    assert(validation.modelName, equals: "Hat")
+    assert(validation.errors, equals: errors)
   }
   
   //MARK: - Running Validations

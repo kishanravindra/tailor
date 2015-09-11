@@ -1,8 +1,14 @@
 import Tailor
 import TailorTesting
+import XCTest
 
-class CsrfFilterTests: TailorTestCase {
+class CsrfFilterTests: XCTestCase, TailorTestable {
   let filter = CsrfFilter()
+  
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
   
   func testPreProcessWithNoCsrfKeyPutsOneInSession() {
     let expectation = expectationWithDescription("callback called")

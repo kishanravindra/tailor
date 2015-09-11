@@ -2,13 +2,18 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class ResponseTests: TailorTestCase {
+class ResponseTests: XCTestCase, TailorTestable {
   var response = Response()
   
   var responseLines: [String] { get {
     let responseString = NSString(data: response.data, encoding: NSUTF8StringEncoding)
     return responseString!.componentsSeparatedByString("\r\n") as [String]
   }}
+  
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
   
   func setUpFullResponse() {
     response.cookies.addHeaderString("key1=value1; key2=value2")

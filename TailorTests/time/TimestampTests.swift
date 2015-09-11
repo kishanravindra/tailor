@@ -1,7 +1,13 @@
 import TailorTesting
 import Tailor
+import XCTest
 
-class TimestampTests: TailorTestCase {
+class TimestampTests: XCTestCase, TailorTestable {
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
+  
   func testInitializationWithEpochSecondsSetsLocalComponents() {
     let timestamp = Timestamp(epochSeconds: 1431346472.5, timeZone: TimeZone(name: "America/Sao_Paulo"), calendar: GregorianCalendar())
     assert(timestamp.epochSeconds, equals: 1431346472.5)

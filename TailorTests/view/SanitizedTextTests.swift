@@ -2,7 +2,12 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class SanitizedTextTests: TailorTestCase {
+class SanitizedTextTests: XCTestCase, TailorTestable {
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
+  
   func testCanInitializeWithStringLiteral() {
     let text : SanitizedText = "abc"
     assert(text.text, equals: "abc", message: "uses the string literal as the text")

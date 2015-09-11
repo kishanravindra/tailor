@@ -2,7 +2,12 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class SanitizerTests: TailorTestCase {
+class SanitizerTests: XCTestCase, TailorTestable {
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
+  
   let testSanitizer = Sanitizer(["é": "e", "ø": "o", "æ": "ae"])
   
   func testIsSanitizedIsTrueWhenSanitizerIsApplied() {

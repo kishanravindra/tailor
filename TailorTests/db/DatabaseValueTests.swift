@@ -2,7 +2,12 @@ import Tailor
 import TailorTesting
 import XCTest
 
-class DatabaseValueTests: TailorTestCase {
+class DatabaseValueTests: XCTestCase, TailorTestable {
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
+  
   //MARK: - Casting
   
   func testStringValueWithStringTypeReturnsString() {

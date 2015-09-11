@@ -2,7 +2,7 @@ import XCTest
 import TailorTesting
 import Tailor
 
-class TimeFormatTests: TailorTestCase {
+class TimeFormatTests: XCTestCase, TailorTestable {
   var timestampSeconds = 1431788231.0
   var timestamp: Timestamp { return Timestamp(epochSeconds: timestampSeconds, timeZone: TimeZone(name: "UTC")) }
   var formatter: TimeFormatter! = nil
@@ -10,6 +10,7 @@ class TimeFormatTests: TailorTestCase {
   
   override func setUp() {
     super.setUp()
+    setUpTestCase()
     Application.configuration.localization = { PropertyListLocalization(locale: $0) }
   }
   //MARK: - Time Format Components

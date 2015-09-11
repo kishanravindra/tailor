@@ -6,8 +6,10 @@ import XCTest
 
   It provides a setUp method that gets the application in a testable state, as
   well as matchers that will be generally useful in test cases.
+
+  This has been deprecated in favor of the TailorTestable protocol.
   */
-public class TailorTestCase: XCTestCase {
+@available(*, deprecated, message="Use TailorTestable instead") public class TailorTestCase: XCTestCase {
   /**
     This method configures the application for testing.
 

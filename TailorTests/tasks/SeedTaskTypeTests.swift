@@ -1,7 +1,8 @@
 import Tailor
 import TailorTesting
+import XCTest
 
-class SeedTaskTypeTests: TailorTestCase {
+class SeedTaskTypeTests: XCTestCase, TailorTestable {
   final class SeedTask: SeedTaskType {
     static func saveModels() {
       saveModel(Hat.self)
@@ -15,6 +16,7 @@ class SeedTaskTypeTests: TailorTestCase {
   
   override func setUp() {
     super.setUp()
+    setUpTestCase()
     do {
       for file in ["tables", "hats", "shelfs"] {
         try NSFileManager.defaultManager().removeItemAtPath(SeedTask.pathForFile(file))

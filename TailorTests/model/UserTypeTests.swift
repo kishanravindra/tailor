@@ -1,8 +1,8 @@
 import Tailor
 import TailorTesting
+import XCTest
 
-class UserTypeTests: TailorTestCase {
-  
+class UserTypeTests: XCTestCase, TailorTestable {
   struct TrackableUser: TrackableUserType {
     let id: Int?
     var emailAddress: String = ""
@@ -65,6 +65,7 @@ class UserTypeTests: TailorTestCase {
   var user = TestUser()
   override func setUp() {
     super.setUp()
+    setUpTestCase()
     user = TestUser()
     user.emailAddress = "test@test.com"
     user.password = "Monkey"

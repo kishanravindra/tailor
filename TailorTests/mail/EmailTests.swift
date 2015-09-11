@@ -2,7 +2,7 @@
 import TailorTesting
 import XCTest
 
-class EmailTests: TailorTestCase {
+class EmailTests: XCTestCase, TailorTestable {
   struct TestTemplate: TemplateType {
     var state: TemplateState
     
@@ -16,6 +16,11 @@ class EmailTests: TailorTestCase {
     mutating func body() {
       tag("p") { text("Hello") }
     }
+  }
+  
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
   }
   
   func testInitializeSetsFields() {

@@ -2,7 +2,7 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class LocalizationSourceTests: TailorTestCase {
+class LocalizationSourceTests: XCTestCase, TailorTestable {
   final class TestLocalization: LocalizationSource {
     let locale: String
     
@@ -31,6 +31,11 @@ class LocalizationSourceTests: TailorTestCase {
     }
     
     static var availableLocales: [String] { return [] }
+  }
+  
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
   }
   
   func testFallbackLocalesWithGlobalEnglishIsEmpty() {

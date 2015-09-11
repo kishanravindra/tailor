@@ -2,8 +2,14 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class CookieTests: TailorTestCase {
-  var cookie = Cookie(key: "testCookie", value: "27")  
+class CookieTests: XCTestCase, TailorTestable {
+  var cookie = Cookie(key: "testCookie", value: "27")
+  
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
+  
   //MARK: - Header String
   
   func testGetsHeaderStringForSimpleCookie() {

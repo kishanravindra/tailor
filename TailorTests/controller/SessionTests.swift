@@ -2,7 +2,7 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class SessionTests: TailorTestCase {
+class SessionTests: XCTestCase, TailorTestable {
   let session: Session! = nil
   
   func createCookieString(data: [String:String] = [:], flashData: [String:String] = [:], clientAddress: String? = "0.0.0.0", expirationDate: Timestamp? = 1.hour.fromNow) -> String {
@@ -49,6 +49,7 @@ class SessionTests: TailorTestCase {
   
   override func setUp() {
     super.setUp()
+    setUpTestCase()
     Application.configuration.localization = { PropertyListLocalization(locale: $0) }
   }
   //MARK: - Creation

@@ -2,7 +2,7 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class RequestTests: TailorTestCase {
+class RequestTests: XCTestCase, TailorTestable {
   var requestString = "GET /test/path HTTP/1.1\r\nX-Custom-Field: header value\r\nReferer: searchtheweb.com\r\nCookie: key1=value1; key2=value2\r\nCookie: key3=value3\r\n\r\nRequest Body"
   let clientAddress = "1.2.3.4"
   
@@ -11,6 +11,7 @@ class RequestTests: TailorTestCase {
   
   override func setUp() {
     super.setUp()
+    setUpTestCase()
     Application.configuration.localization = { PropertyListLocalization(locale: $0) }
   }
   

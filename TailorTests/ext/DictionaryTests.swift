@@ -2,7 +2,12 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class DictionaryTests: TailorTestCase {
+class DictionaryTests: XCTestCase, TailorTestable {
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
+  
   func testMergeContainsValues() {
     let d1 = ["a": "27", "b": "15"]
     let d2 = ["b": "19", "c": "28"]

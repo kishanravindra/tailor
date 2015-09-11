@@ -2,7 +2,12 @@ import XCTest
 import TailorTesting
 import Tailor
 
-class TimeIntervalTests: TailorTestCase {
+class TimeIntervalTests: XCTestCase, TailorTestable {
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
+  
   func testInvertInvertsAllComponents() {
     let interval1 = TimeInterval(years: 1, months: 5, days: -10)
     let interval2 = interval1.invert()

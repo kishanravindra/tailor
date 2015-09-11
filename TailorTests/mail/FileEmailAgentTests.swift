@@ -2,7 +2,12 @@ import Tailor
 import TailorTesting
 import XCTest
 
-class FileEmailAgentTests: TailorTestCase {
+class FileEmailAgentTests: XCTestCase, TailorTestable {
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
+  
   func testInitializationWithFullConfigSetsFields() {
     let agent = FileEmailAgent(path: "/tmp/test_mail.txt")
     assert(agent.path, equals: "/tmp/test_mail.txt")

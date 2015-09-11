@@ -1,7 +1,13 @@
 import Tailor
 import TailorTesting
+import XCTest
 
-class TimeZoneTests: TailorTestCase {
+class TimeZoneTests: XCTestCase, TailorTestable {
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
+  
   func testPolicyDescriptionGetsInformation() {
     let policy = TimeZone.Policy(beginningTimestamp: 12345, abbreviation: "EST", offset: -18800, isDaylightTime: false)
     assert(policy.description, equals: "12345.0: UTC+-18800 (EST)")

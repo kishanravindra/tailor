@@ -1,7 +1,13 @@
 @testable import Tailor
 import TailorTesting
+import XCTest
 
-class CsvParserTests: TailorTestCase {
+class CsvParserTests: XCTestCase, TailorTestable {
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
+  
   func testInitializeWithNoParametersGivesEmptyRows() {
     let parser = CsvParser()
     assert(parser.rows, equals: [])

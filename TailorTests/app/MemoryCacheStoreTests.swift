@@ -1,10 +1,13 @@
 import Tailor
 import TailorTesting
+import XCTest
 
-class MemoryCacheStoreTests: TailorTestCase {
+class MemoryCacheStoreTests: XCTestCase, TailorTestable {
   let store = MemoryCacheStore()
   
   override func setUp() {
+    super.setUp()
+    setUpTestCase()
     store.write("key1", value: "value1")
     store.write("key2", value: "value2")
   }

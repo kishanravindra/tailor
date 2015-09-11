@@ -2,7 +2,12 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class QueryTests: TailorTestCase {
+class QueryTests: XCTestCase, TailorTestable {
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
+  
   let baseQuery = GenericQuery(
     selectClause: "hats.id,hats.color,hats.brim_size",
     whereClause: ("hats.store_id=?", [DatabaseValue.Integer(5)]),

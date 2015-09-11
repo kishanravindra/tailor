@@ -1,7 +1,13 @@
 import Tailor
 import TailorTesting
+import XCTest
 
-class JsonPrimitiveTests: TailorTestCase {
+class JsonPrimitiveTests: XCTestCase, TailorTestable {
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
+  
   //MARK: - Converting to JSON
   
   var complexJsonDictionary: [String:JsonPrimitive] = [

@@ -1,7 +1,13 @@
 import Tailor
 import TailorTesting
+import XCTest
 
-class DateTests: TailorTestCase {
+class DateTests: XCTestCase, TailorTestable {
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
+  
   func testDatesAreEqualWithSameInfo() {
     let date1 = Date(year: 2008, month: 9, day: 17)
     let date2 = Date(year: 2008, month: 9, day: 17)

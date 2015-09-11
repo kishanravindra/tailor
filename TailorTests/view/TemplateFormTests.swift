@@ -1,7 +1,8 @@
 import Tailor
 import TailorTesting
+import XCTest
 
-class TemplateFormTests: TailorTestCase {
+class TemplateFormTests: XCTestCase, TailorTestable {
   var form: TemplateForm!
   var template : TemplateType { return form.template }
   var controller: ControllerType!
@@ -24,6 +25,7 @@ class TemplateFormTests: TailorTestCase {
   
   override func setUp() {
     super.setUp()
+    setUpTestCase()
     controller = TestController(request: Request(), response: Response(), actionName: "index", callback: {response in })
     form = TemplateForm(controller: controller, name: "hat")
   }

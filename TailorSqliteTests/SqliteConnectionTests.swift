@@ -3,7 +3,12 @@ import TailorTesting
 import TailorSqlite
 import XCTest
 
-class SqliteConnectionTests: TailorTestCase {
+class SqliteConnectionTests: XCTestCase, TailorTestable {
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
+  
   lazy var connection: SqliteConnection = Application.sharedDatabaseConnection() as! SqliteConnection
   
   //MARK: - Executing Query

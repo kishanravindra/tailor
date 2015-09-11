@@ -2,7 +2,12 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class PasswordHasherTests: TailorTestCase {
+class PasswordHasherTests: XCTestCase, TailorTestable {
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
+  
   func testInitWithoutComponentsGeneratesRandomSalt() {
     let encryptor1 = PasswordHasher()
     let encryptor2 = PasswordHasher()

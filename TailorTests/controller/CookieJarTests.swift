@@ -2,8 +2,13 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class CookieJarTests: TailorTestCase {
+class CookieJarTests: XCTestCase, TailorTestable {
   var cookieJar = CookieJar()
+  
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
   
   //MARK: - Modifying Cookies
   

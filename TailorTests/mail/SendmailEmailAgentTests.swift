@@ -2,9 +2,10 @@
 import TailorTesting
 import XCTest
 
-class SendmailEmailAgentTests: TailorTestCase {
+class SendmailEmailAgentTests: XCTestCase, TailorTestable {
   override func setUp() {
     super.setUp()
+    setUpTestCase()
     ExternalProcess.startStubbing()
   }
   

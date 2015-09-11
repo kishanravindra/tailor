@@ -2,7 +2,7 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class CacheImplementationTests: TailorTestCase {
+class CacheImplementationTests: XCTestCase, TailorTestable {
   final class TestCacheStore : CacheImplementation {
     var data = [String:String]()
     var expiries = [String:TimeInterval]()
@@ -31,6 +31,7 @@ class CacheImplementationTests: TailorTestCase {
   
   override func setUp() {
     super.setUp()
+    setUpTestCase()
     Application.start()
     SHARED_CACHE_STORE = nil
   }

@@ -2,7 +2,12 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class AlterationsTaskTests: TailorTestCase {
+class AlterationsTaskTests: XCTestCase, TailorTestable {
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
+  
   func testRunTaskRunsPendingAlterations() {
     Application.sharedDatabaseConnection().executeQuery("DROP TABLE IF EXISTS tailor_alterations")
     Application.sharedDatabaseConnection().executeQuery("CREATE TABLE tailor_alterations ( id varchar(255) PRIMARY KEY )")

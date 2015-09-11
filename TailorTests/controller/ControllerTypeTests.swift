@@ -2,7 +2,7 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class ControllerTypeTests: TailorTestCase {
+class ControllerTypeTests: XCTestCase, TailorTestable {
   struct TestController : ControllerType {
     static var name: String {
       return "TailorTests.TestController"
@@ -61,6 +61,7 @@ class ControllerTypeTests: TailorTestCase {
   
   override func setUp() {
     super.setUp()
+    setUpTestCase()
     Application.configuration.localization = { PropertyListLocalization(locale: $0) }
     
     var user = TestUser()

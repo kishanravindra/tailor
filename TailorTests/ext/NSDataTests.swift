@@ -1,7 +1,12 @@
 import XCTest
 import TailorTesting
 
-class NSDataTests: TailorTestCase {
+class NSDataTests: XCTestCase, TailorTestable {
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
+  
   func testInitializeSetsBytes() {
     let bytes : [UInt8] = [1,2,3,4,5]
     let data = NSData(bytes: bytes)

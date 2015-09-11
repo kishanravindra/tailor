@@ -2,7 +2,12 @@ import XCTest
 @testable import Tailor
 import TailorTesting
 
-class PersistableTests: TailorTestCase {
+class PersistableTests: XCTestCase, TailorTestable {
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
+  
   //MARK: - Comparison
   
   func testRecordsWithSameIdAreEqual() {

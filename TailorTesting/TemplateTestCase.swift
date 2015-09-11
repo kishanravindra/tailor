@@ -1,4 +1,5 @@
 import Tailor
+import XCTest
 
 /**
   This class provides helpers for building a test suite around a template.

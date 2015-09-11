@@ -2,7 +2,7 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class RouteSetTests: TailorTestCase {
+class RouteSetTests: XCTestCase, TailorTestable {
   struct TestFilter: RequestFilterType, Equatable {
     let greeting: String
     init(greeting: String = "dawg") {
@@ -18,6 +18,10 @@ class RouteSetTests: TailorTestCase {
     }
   }
   
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
   
   var routeSet = RouteSet()
   
@@ -45,10 +49,6 @@ class RouteSetTests: TailorTestCase {
       response.appendString("Test Controller: show \(id)")
       callback(response)
     }
-  }
-  
-  override func setUp() {
-    super.setUp()
   }
   
   func createTestRoute(pattern: String) -> RouteSet.Route {

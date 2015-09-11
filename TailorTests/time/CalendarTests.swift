@@ -2,7 +2,12 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class CalendarTests: TailorTestCase {
+class CalendarTests: XCTestCase, TailorTestable {
+  
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
   
   func checkTimestamps(timestamps: [Double], foundationCalendar: NSCalendar, calendar: Calendar, zoneName: String, file: String = __FILE__, line: UInt = __LINE__) {
     let foundationCalendar = foundationCalendar

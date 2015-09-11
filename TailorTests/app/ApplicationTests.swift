@@ -4,12 +4,13 @@ import XCTest
 import TailorTesting
 import TailorSqlite
 
-class ApplicationTests : TailorTestCase {
+class ApplicationTests : XCTestCase, TailorTestable {
   //MARK: Initialization
   
   var application: Application!
   override func setUp() {
     super.setUp()
+    setUpTestCase()
     NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
     application = Application.sharedApplication()
     APPLICATION_ARGUMENTS = ("tailor.exit", [:])

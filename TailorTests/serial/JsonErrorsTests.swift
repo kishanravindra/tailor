@@ -1,7 +1,13 @@
 import TailorTesting
 import Tailor
+import XCTest
 
-class JsonErrorsTests: TailorTestCase {
+class JsonErrorsTests: XCTestCase, TailorTestable {
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
+  
   func testUnsupportedTypeErrorsWithSameTypeAreEqual() {
     let value1 = JsonParsingError.UnsupportedType(String.self)
     let value2 = JsonParsingError.UnsupportedType(String.self)

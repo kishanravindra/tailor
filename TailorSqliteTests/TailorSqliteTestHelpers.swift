@@ -2,7 +2,7 @@ import TailorTesting
 import TailorSqlite
 import Tailor
 
-extension TailorTestCase {
+extension TailorTestable {
   public func configure() {
     APPLICATION_ARGUMENTS = ("tailor.exit", [:])
     Application.configuration.databaseDriver = { SqliteConnection(path: "sqlite_testing.sqlite") }

@@ -2,10 +2,15 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class ModelTests: TailorTestCase {
+class ModelTests: XCTestCase, TailorTestable {
   
   class HatForModel: ModelType {
     
+  }
+  
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
   }
   
   //MARK: - Structure

@@ -1,9 +1,15 @@
 import Tailor
 import TailorTesting
+import XCTest
 
-class EtagFilterTests: TailorTestCase {
+class EtagFilterTests: XCTestCase, TailorTestable {
   let bodyText = "Hello"
   let tag = NSData(bytes: "Hello".utf8).md5Hash
+  
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
   
   func testPreProcessDoesNotModifyResponse() {
     let filter = EtagFilter()

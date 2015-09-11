@@ -1,8 +1,14 @@
 import Tailor
 import TailorTesting
+import XCTest
 
-class AesEncryptorTests: TailorTestCase {
+class AesEncryptorTests: XCTestCase, TailorTestable {
   //MARK: - Encodings
+  
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
   
   func testGetHexStringWorksForSingleDigit() {
     assert(AesEncryptor.getHexString(1, pad: true), equals: "01", message: "gets padded single digit")

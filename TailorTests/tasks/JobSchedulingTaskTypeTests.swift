@@ -1,7 +1,8 @@
 @testable import Tailor
 import TailorTesting
+import XCTest
 
-class JobSchedulingTaskTypeTests: TailorTestCase {
+class JobSchedulingTaskTypeTests: XCTestCase, TailorTestable {
   final class TestTask: JobSchedulingTaskType {
     var entries = [JobSchedulingEntry]()
     var defaultFrequency = 1.day
@@ -14,6 +15,7 @@ class JobSchedulingTaskTypeTests: TailorTestCase {
   
   override func setUp() {
     super.setUp()
+    setUpTestCase()
     NSThread.currentThread().threadDictionary.removeAllObjects()
   }
   

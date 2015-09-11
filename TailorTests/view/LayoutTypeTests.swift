@@ -1,7 +1,13 @@
 import TailorTesting
 import Tailor
+import XCTest
 
-class LayoutTypeTests: TailorTestCase {
+class LayoutTypeTests: XCTestCase, TailorTestable {
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
+  
   func testEmptyLayoutRendersInnerTemplate() {
     struct TestTemplate: TemplateType {
       var state: TemplateState

@@ -1,11 +1,13 @@
 import Tailor
 import TailorTesting
+import XCTest
 
-class AuthenticationFilterTests: TailorTestCase {
+class AuthenticationFilterTests: XCTestCase, TailorTestable {
   let filter = AuthenticationFilter("/sessions/new")
   
   override func setUp() {
     super.setUp()
+    setUpTestCase()
     Application.configuration.userType = TestUser.self
     TestUser().save()
   }

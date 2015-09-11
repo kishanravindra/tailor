@@ -1,7 +1,13 @@
 import Tailor
 import TailorTesting
+import XCTest
 
-class TimeTests: TailorTestCase {
+class TimeTests: XCTestCase, TailorTestable {
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
+  
   func testTimesAreEqualWithSameInfo() {
     let time1 = Time(hour: 17, minute: 22, second: 15, nanosecond: 1.5)
     let time2 = Time(hour: 17, minute: 22, second: 15, nanosecond: 1.5)

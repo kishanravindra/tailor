@@ -1,7 +1,13 @@
 import Tailor
 import TailorTesting
+import XCTest
 
-class JsonConvertibleTests: TailorTestCase {
+class JsonConvertibleTests: XCTestCase, TailorTestable {
+  override func setUp() {
+    super.setUp()
+    setUpTestCase()
+  }
+  
   func testStringCanInitializeFromJsonPrimitive() {
     let primitive = JsonPrimitive.String("Hello")
     do {
