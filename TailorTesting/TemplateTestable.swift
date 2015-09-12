@@ -21,17 +21,26 @@ extension TemplateTestable {
   //MARK: - Template Information
   
   /**
-    The contents of the template after rendering.
-  
+    The state of the template after rendering.
+    
     Note: This will re-render the template on every call, so if you are going
     to test the template multiple times in one call, you should cache the
     result.
     */
-  public var contents: String {
+  public var renderedState: TemplateState {
     var template = self.template
     template.generate()
-    return template.contents
+    return template.state
   }
+  
+  /**
+    The contents of the template after rendering.
+    
+    Note: This will re-render the template on every call, so if you are going
+    to test the template multiple times in one call, you should cache the
+    result.
+    */
+  public var contents: String { return renderedState.contents }
   
   
   /**

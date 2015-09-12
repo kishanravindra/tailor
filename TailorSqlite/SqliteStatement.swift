@@ -103,7 +103,6 @@ public final class SqliteStatement {
       data = NSData(bytes: string.utf8)
     }
     let result = sqlite3_bind_text(statement, column, UnsafePointer<CChar>(data.bytes), Int32(data.length), {_ in})
-    NSLog("Result is %d", result)
   }
   
   /**
