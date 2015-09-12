@@ -102,7 +102,7 @@ public final class SqliteStatement {
     else {
       data = NSData(bytes: string.utf8)
     }
-    let result = sqlite3_bind_text(statement, column, UnsafePointer<CChar>(data.bytes), Int32(data.length), {_ in})
+    sqlite3_bind_text(statement, column, UnsafePointer<CChar>(data.bytes), Int32(data.length), {_ in})
   }
   
   /**
