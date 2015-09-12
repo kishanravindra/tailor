@@ -3,7 +3,10 @@ import Tailor
 
 /**
   This class provides helper methods for a test suite for testing a controller.
+
+  This class has been deprecated in favor of the ControllerTestable protocol.
   */
+@available(*, deprecated, message="Use ControllerTestable instead")
 public class ControllerTestCase : TailorTestCase {
   //MARK: - Request Information
   

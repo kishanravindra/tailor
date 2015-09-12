@@ -3,7 +3,10 @@ import XCTest
 
 /**
   This class provides helpers for building a test suite around a template.
+
+  This has been deprecated in favor of the TemplateTestable protocol.
   */
+@available(*, deprecated, message="Use TemplateTestable instead")
 public class TemplateTestCase: TailorTestCase {
   //MARK: - Template Information
 
