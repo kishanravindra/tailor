@@ -455,17 +455,27 @@ public enum TimeFormatComponent: TimeFormatter {
                             the index.
     - parameter calendar:   The calendar that the date is formatted in.
     - parameter range:      The range of valid values for the component.
+    - parameter fallbacks:  Fallback translations to use if we don't have one
+                            defined.
     - returns:              A tuple containing the number and the unconsumed
                             part of the string. If we cannot read the number,
                             the number will be zero and the string will be nil.
     */
-  private func parseText(from string: String, key: String, calendar: Calendar, range: Range<Int>) -> (Int,String?) {
+  private func parseText(from string: String, key: String, calendar: Calendar, range: Range<Int>, fallbacks: [String] = []) -> (Int,String?) {
     let localization = Application.configuration.localization("en")
     for value in range {
-      if let textValue = localization.fetch("dates.\(calendar.identifier).\(key).\(value)") {
-        if string.hasPrefix(textValue) {
-          return (value,string.substringFromIndex(string.startIndex.advancedBy(textValue.characters.count)))
-        }
+      let textValue: String
+      if let translation = localization.fetch("dates.\(calendar.identifier).\(key).\(value)") {
+        textValue = translation
+      }
+      else if value < fallbacks.count {
+        textValue = fallbacks[value]
+      }
+      else {
+        textValue = "\(value)"
+      }
+      if string.hasPrefix(textValue) {
+        return (value,string.substringFromIndex(string.startIndex.advancedBy(textValue.characters.count)))
       }
     }
     return (0,nil)
@@ -513,7 +523,8 @@ public enum TimeFormatComponent: TimeFormatter {
       return result
     case let .MonthName(abbreviated):
       let key = abbreviated ? "month_names.abbreviated" : "month_names.full"
-      let (month,result) = parseText(from: string, key: key, calendar: calendar, range: 1...calendar.months)
+      let fallbacks = abbreviated ? TimeFormat.AbbreviatedMonthNames : TimeFormat.MonthNames
+      let (month,result) = parseText(from: string, key: key, calendar: calendar, range: 1...calendar.months, fallbacks: fallbacks)
       if result != nil {
         container.month = month
       }
@@ -549,7 +560,8 @@ public enum TimeFormatComponent: TimeFormatter {
       return result
     case let .WeekDayName(abbreviate):
       let key = abbreviate ? "week_day_names.abbreviated" : "week_day_names.full"
-      let (_, result) = parseText(from: string, key: key, calendar: calendar, range: 1...calendar.daysInWeek)
+      let fallbacks = abbreviate ? TimeFormat.AbbreviatedWeekDayNames : TimeFormat.WeekDayNames
+      let (_, result) = parseText(from: string, key: key, calendar: calendar, range: 1...calendar.daysInWeek, fallbacks: fallbacks)
       return result
     case .EpochSeconds:
       return nil

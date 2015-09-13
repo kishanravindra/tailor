@@ -472,6 +472,35 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   }
   
   func testParseTimeComponentWithMonthNameGetsMonth() {
+    Application.configuration.staticContent["en.dates.gregorian.month_names.full.11"] = "noviembre"
+    formatter = TimeFormatComponent.MonthName(abbreviate: false)
+    let result = formatter.parseTime(from: "noviembre 3", into: &timeComponents, calendar: calendar)
+    assert(timeComponents.year, equals: 0)
+    assert(timeComponents.month, equals: 11)
+    assert(timeComponents.day, equals: 0)
+    assert(timeComponents.hour, equals: 0)
+    assert(timeComponents.minute, equals: 0)
+    assert(timeComponents.second, equals: 0)
+    assert(timeComponents.nanosecond, equals: 0.0)
+    assert(result, equals: " 3")
+  }
+  
+  func testParseTimeComponentWithAbbreviatedMonthNameGetsMonth() {
+    Application.configuration.staticContent["en.dates.gregorian.month_names.abbreviated.12"] = "dez"
+    formatter = TimeFormatComponent.MonthName(abbreviate: true)
+    let result = formatter.parseTime(from: "dezo 3", into: &timeComponents, calendar: calendar)
+    assert(timeComponents.year, equals: 0)
+    assert(timeComponents.month, equals: 12)
+    assert(timeComponents.day, equals: 0)
+    assert(timeComponents.hour, equals: 0)
+    assert(timeComponents.minute, equals: 0)
+    assert(timeComponents.second, equals: 0)
+    assert(timeComponents.nanosecond, equals: 0.0)
+    assert(result, equals: "o 3")
+  }
+  
+  func testParseTimeComponentWithNoTranslationParsesEnglishMonth() {
+    Application.configuration.staticContent = [:]
     formatter = TimeFormatComponent.MonthName(abbreviate: false)
     let result = formatter.parseTime(from: "November 3", into: &timeComponents, calendar: calendar)
     assert(timeComponents.year, equals: 0)
@@ -484,7 +513,8 @@ class TimeFormatTests: XCTestCase, TailorTestable {
     assert(result, equals: " 3")
   }
   
-  func testParseTimeComponentWithAbbreviatedMonthNameGetsMonth() {
+  func testParseTimeComponentWithAbbreviatedMonthNameWithNoTranslationParsesEnglishMonth() {
+    Application.configuration.staticContent = [:]
     formatter = TimeFormatComponent.MonthName(abbreviate: true)
     let result = formatter.parseTime(from: "December 3", into: &timeComponents, calendar: calendar)
     assert(timeComponents.year, equals: 0)
@@ -497,9 +527,35 @@ class TimeFormatTests: XCTestCase, TailorTestable {
     assert(result, equals: "ember 3")
   }
   
+  func testParseTimeComponentWithMonthOutsideBoundsParsesMonthNumber() {
+    formatter = TimeFormatComponent.MonthName(abbreviate: false)
+    let result = formatter.parseTime(from: "13 15", into: &timeComponents, calendar: WeirdCalendar(year: 0))
+    assert(timeComponents.year, equals: 0)
+    assert(timeComponents.month, equals: 13)
+    assert(timeComponents.day, equals: 0)
+    assert(timeComponents.hour, equals: 0)
+    assert(timeComponents.minute, equals: 0)
+    assert(timeComponents.second, equals: 0)
+    assert(timeComponents.nanosecond, equals: 0.0)
+    assert(result, equals: " 15")
+  }
+  
   func testParseTimeComponentWithInvalidMonthNameIsNil() {
     formatter = TimeFormatComponent.MonthName(abbreviate: true)
-    let result = formatter.parseTime(from: "Wednesday", into: &timeComponents, calendar: calendar)
+    let result = formatter.parseTime(from: "noviembre", into: &timeComponents, calendar: calendar)
+    assert(timeComponents.year, equals: 0)
+    assert(timeComponents.month, equals: 0)
+    assert(timeComponents.day, equals: 0)
+    assert(timeComponents.hour, equals: 0)
+    assert(timeComponents.minute, equals: 0)
+    assert(timeComponents.second, equals: 0)
+    assert(timeComponents.nanosecond, equals: 0.0)
+    assert(isNil: result)
+  }
+  
+  func testParseTimeComponentWithMonthNumberWithinBoundsIsNil() {
+    formatter = TimeFormatComponent.MonthName(abbreviate: true)
+    let result = formatter.parseTime(from: "12 14", into: &timeComponents, calendar: calendar)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -718,6 +774,21 @@ class TimeFormatTests: XCTestCase, TailorTestable {
     assert(result, equals: " at noon")
   }
   
+  func testParseTimeWithWeekDayNameWithValidNameWithNoTranslationDoesNotChangeTime() {
+    Application.configuration.staticContent = [:]
+    formatter = TimeFormatComponent.WeekDayName(abbreviate: false)
+    let result = formatter.parseTime(from: "Wednesday at noon", into: &timeComponents, calendar: calendar)
+    assert(timeComponents.year, equals: 0)
+    assert(timeComponents.month, equals: 0)
+    assert(timeComponents.day, equals: 0)
+    assert(timeComponents.hour, equals: 0)
+    assert(timeComponents.minute, equals: 0)
+    assert(timeComponents.second, equals: 0)
+    assert(timeComponents.nanosecond, equals: 0.0)
+    assert(result, equals: " at noon")
+  }
+
+  
   func testParseTimeWithWeekDayNameWithInvalidNameReturnsNil() {
     formatter = TimeFormatComponent.WeekDayName(abbreviate: false)
     let result = formatter.parseTime(from: "January", into: &timeComponents, calendar: calendar)
@@ -732,6 +803,20 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   }
   
   func testParseTimeWithWeekDayNameWithAbbreviatedNameOnlyConsumesAbbreviatedName() {
+    formatter = TimeFormatComponent.WeekDayName(abbreviate: true)
+    let result = formatter.parseTime(from: "Wednesday", into: &timeComponents, calendar: calendar)
+    assert(timeComponents.year, equals: 0)
+    assert(timeComponents.month, equals: 0)
+    assert(timeComponents.day, equals: 0)
+    assert(timeComponents.hour, equals: 0)
+    assert(timeComponents.minute, equals: 0)
+    assert(timeComponents.second, equals: 0)
+    assert(timeComponents.nanosecond, equals: 0.0)
+    assert(result, equals: "nesday")
+  }
+  
+  func testParseTimeWithWeekDayNameWithAbbreviatedNameWithNoTranslationOnlyConsumesAbbreviatedName() {
+    Application.configuration.staticContent = [:]
     formatter = TimeFormatComponent.WeekDayName(abbreviate: true)
     let result = formatter.parseTime(from: "Wednesday", into: &timeComponents, calendar: calendar)
     assert(timeComponents.year, equals: 0)
