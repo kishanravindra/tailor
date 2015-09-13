@@ -13,6 +13,33 @@ class TimeFormatTests: XCTestCase, TailorTestable {
     setUpTestCase()
     Application.configuration.localization = { PropertyListLocalization(locale: $0) }
   }
+  
+  override func tearDown() {
+    Application.configuration.staticContent = [:]
+    Application.configuration.loadDefaultContent()
+    super.tearDown()
+  }
+  
+  struct WeirdCalendar: Calendar {
+    let year: Int
+    let days = 300
+    let months = 13
+    let hoursPerDay = 24
+    let minutesPerHour = 60
+    let secondsPerMinute = 60
+    let identifier = "weird_calendar"
+    
+    func inYear(year: Int) -> Calendar {
+      return WeirdCalendar(year: year)
+    }
+    
+    func daysInMonth(month: Int) -> Int {
+      return month == 1 ? 24 : 23
+    }
+    
+    var daysInWeek: Int { return 8 }
+    let unixEpochTime = (1970, 0.0, 1)
+  }
   //MARK: - Time Format Components
   
   func testTimeFormatComponentWithLiteralGetsLiteral() {
@@ -56,22 +83,40 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   }
   
   func testFormatComponentWithMonthNameGetsFullName() {
+    Application.configuration.staticContent["en.dates.gregorian.month_names.full.6"] = "junio"
     timestampSeconds += 86400 * 30
     formatter = TimeFormatComponent.MonthName(abbreviate: false)
-    assert(formatted, equals: "June")
+    assert(formatted, equals: "junio")
   }
   
   func testFormatComponentWithAbbreviateMonthNameGetsAbbreviatedName() {
+    Application.configuration.staticContent["en.dates.gregorian.month_names.abbreviated.6"] = "jun"
     timestampSeconds += 86400 * 30
     formatter = TimeFormatComponent.MonthName(abbreviate: true)
+    assert(formatted, equals: "jun")
+  }
+  
+  func testFormatComponentsWithMonthNameWithUntranslatedMonthGetsEnglishMonthName() {
+    Application.configuration.staticContent = [:]
+    timestampSeconds += 86400 * 30
+    let formatter = TimeFormatComponent.MonthName(abbreviate: false)
+    let formatted = formatter.formatTime(timestamp)
+    assert(formatted, equals: "June")
+  }
+  
+  func testFormatComponentsWithAbbreviatedMonthNameWithUntranslatedMonthGetsEnglishMonthName() {
+    Application.configuration.staticContent = [:]
+    timestampSeconds += 86400 * 30
+    let formatter = TimeFormatComponent.MonthName(abbreviate: true)
+    let formatted = formatter.formatTime(timestamp)
     assert(formatted, equals: "Jun")
   }
   
-  func testFormatComponentsWithMonthNameWithUntranslatedMonthGetsMonthNumber() {
-    let timestamp = self.timestamp.inCalendar(IslamicCalendar())
+  func testFormatComponentsWithMonthNameBeyondBoundsGetsMonthNumber() {
+    let timestamp = self.timestamp.inCalendar(WeirdCalendar(year: 0)).change(month: 13)
     let formatter = TimeFormatComponent.MonthName(abbreviate: false)
     let formatted = formatter.formatTime(timestamp)
-    assert(formatted, equals: "7")
+    assert(formatted, equals: "13")
   }
   
   func testFormatComponentWithTwoDigitMonthGetsTwoDigitMonth() {
@@ -146,20 +191,38 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   }
   
   func testFormatComponentWithWeekDayNameGetsFullName() {
+    Application.configuration.staticContent["en.dates.gregorian.week_day_names.full.7"] = "Sabado"
     formatter = TimeFormatComponent.WeekDayName(abbreviate: false)
+    assert(formatted, equals: "Sabado")
+  }
+  
+  func testFormatComponentsWithWeekDayNameWithUntranslatedNameGetsEnglishName() {
+    Application.configuration.staticContent = [:]
+    let formatter = TimeFormatComponent.WeekDayName(abbreviate: false)
+    let formatted = formatter.formatTime(timestamp)
     assert(formatted, equals: "Saturday")
   }
   
-  func testFormatComponentsWithWeekDayNameWithUntranslatedNameGetsNumber() {
-    let timestamp = self.timestamp.inCalendar(IslamicCalendar())
-    let formatter = TimeFormatComponent.WeekDayName(abbreviate: false)
-    let formatted = formatter.formatTime(timestamp)
-    assert(formatted, equals: "7")
+  func testFormatComponentWithAbbreviatedWeekDayNameGetsAbbreviatedName() {
+    Application.configuration.staticContent["en.dates.gregorian.week_day_names.abbreviated.7"] = "Sab"
+    formatter = TimeFormatComponent.WeekDayName(abbreviate: true)
+    assert(formatted, equals: "Sab")
   }
   
-  func testFormatComponentWithAbbreviatedWeekDayNameGetsAbbreviatedName() {
-    formatter = TimeFormatComponent.WeekDayName(abbreviate: true)
+  func testFormatComponentsWithAbbreviatedWeekDayNameWithUntranslatedNameGetsEnglishName() {
+    Application.configuration.staticContent = [:]
+    let formatter = TimeFormatComponent.WeekDayName(abbreviate: true)
+    let formatted = formatter.formatTime(timestamp)
     assert(formatted, equals: "Sat")
+  }
+  
+  func testFormatComponentsWithAbbreviatedWeekDayNameWithDayOutsideBoundsGetsDayNumber() {
+    var timestamp = self.timestamp.inCalendar(WeirdCalendar(year: 0))
+    timestamp = timestamp + (8 - timestamp.weekDay).days
+    Application.configuration.staticContent = [:]
+    let formatter = TimeFormatComponent.WeekDayName(abbreviate: true)
+    let formatted = formatter.formatTime(timestamp)
+    assert(formatted, equals: "8")
   }
   
   func testFormatComponentWithEpochSecondsGetsFullTimestamp() {

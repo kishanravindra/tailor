@@ -329,13 +329,22 @@ public enum TimeFormatComponent: TimeFormatter {
     case let .MonthName(abbreviate):
       let localization = Application.configuration.localization("en")
       let key: String
+      let fallbacks: [String]
       if abbreviate {
         key = "dates.\(timestamp.calendar.identifier).month_names.abbreviated.\(timestamp.month)"
+        fallbacks = TimeFormat.AbbreviatedMonthNames
       }
       else {
         key = "dates.\(timestamp.calendar.identifier).month_names.full.\(timestamp.month)"
+        fallbacks = TimeFormat.MonthNames
       }
-      return localization.fetch(key) ?? "\(timestamp.month)"
+      if let value = localization.fetch(key) { return value }
+      if timestamp.month < fallbacks.count {
+        return fallbacks[timestamp.month]
+      }
+      else {
+        return "\(timestamp.month)"
+      }
     case let .DayWith(padding):
       let day = String(timestamp.day)
       if let padding = padding {
@@ -367,13 +376,22 @@ public enum TimeFormatComponent: TimeFormatter {
     case let .WeekDayName(abbreviate):
       let localization = Application.configuration.localization("en")
       let key: String
+      let fallbacks: [String]
       if abbreviate {
         key = "dates.\(timestamp.calendar.identifier).week_day_names.abbreviated.\(timestamp.weekDay)"
+        fallbacks = TimeFormat.AbbreviatedWeekDayNames
       }
       else {
         key = "dates.\(timestamp.calendar.identifier).week_day_names.full.\(timestamp.weekDay)"
+        fallbacks = TimeFormat.WeekDayNames
       }
-      return localization.fetch(key) ?? "\(timestamp.weekDay)"
+      if let value = localization.fetch(key) { return value }
+      if timestamp.weekDay < fallbacks.count {
+        return fallbacks[timestamp.weekDay]
+      }
+      else {
+        return "\(timestamp.weekDay)"
+      }
     case .EpochSeconds: return String(Int(timestamp.epochSeconds))
     case .TimeZone:
       let policy = timestamp.timeZone.policy(timestamp: timestamp.epochSeconds)
@@ -680,4 +698,16 @@ public extension TimeFormat {
     This gets a date in a format suitable for headers in emails.
     */
   public static let Rfc2822 = TimeFormat(.DayWith(padding: nil), " ", .MonthName(abbreviate: true), " ", .Year, " ", .Hour, ":", .Minute, ":", .Seconds, " ", .TimeZoneOffset)
+  
+  /** The English names for months. */
+  public static let MonthNames = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  
+  /** The abbreviated English names for months. */
+  public static let AbbreviatedMonthNames = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  
+  /** The English names for days of the week. */
+  public static let WeekDayNames = ["", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+  
+  /** The abbreviated English names for days of the week. */
+  public static let AbbreviatedWeekDayNames = ["", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 }
