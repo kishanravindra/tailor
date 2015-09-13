@@ -5,9 +5,6 @@
   `StringPersistableEnum` or `TablePersistableEnum`.
   */
 public protocol PersistableEnum: DatabaseValueConvertible {
-  /** The raw value for the case. */
-  var rawValue: String { get }
-  
   /**
     This method gets the name of a case of an enum.
   
@@ -66,11 +63,11 @@ public extension PersistableEnum {
   /**
     This method gets the name of a case of an enum.
     
-    The default value uses the underscored version of the raw value for the
+    The default value uses the underscored version of the string value for the
     case.
     */
   var caseName: String {
-    return self.rawValue.underscored()
+    return String(self).underscored()
   }
   
   /**
