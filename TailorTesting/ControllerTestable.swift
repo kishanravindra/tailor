@@ -70,7 +70,12 @@ extension ControllerTestable {
     }
     let routes = RouteSet.shared()
   
-    let path = routes.pathFor(TestedControllerType.self, actionName: actionName, parameters: actionParams)
+    var path = routes.pathFor(TestedControllerType.self, actionName: actionName, parameters: actionParams)
+    
+    if let queryStringLocation = path?.rangeOfString("?", options: NSStringCompareOptions.BackwardsSearch) {
+      path = path?.substringToIndex(queryStringLocation.startIndex)
+    }
+    
     let method = routes.routes.filter {
       route in
       return route.controller == TestedControllerType.self && route.actionName == actionName

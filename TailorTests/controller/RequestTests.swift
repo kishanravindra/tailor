@@ -263,7 +263,8 @@ class RequestTests: XCTestCase, TailorTestable {
   func testInitializerWithGetRequestPutsQueryStringInPath() {
     let params = ["key1": "value1", "key2/key3": "value2&value3"]
     let request = Request(clientAddress: "127.0.0.1", method: "GET", parameters: params, path: "/home")
-    assert(request.fullPath, equals: "/home?key1=value1&key2%2Fkey3=value2%26value3", message: "includes the query string in the path")
+    assert(request.path, equals: "/home", message: "does not include the query string in the short path")
+    assert(request.fullPath, equals: "/home?key1=value1&key2%2Fkey3=value2%26value3", message: "includes the query string in the full path")
     assert(request.bodyText, equals: "", message: "leaves the body blank")
     assert(request.requestParameters, equals: params, message: "sets request parameters")
     assert(request.method, equals: "GET", message: "sets method")
