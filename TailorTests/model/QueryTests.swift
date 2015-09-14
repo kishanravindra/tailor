@@ -138,6 +138,34 @@ class QueryTests: XCTestCase, TailorTestable {
   }
   
   func testOrderAppendsNewOrdering() {
+    let query = baseQuery.order("hats.color ASC")
+    
+    assert(query.selectClause, equals: baseQuery.selectClause, message: "copies select clause")
+    assert(query.whereClause.query, equals: baseQuery.whereClause.query, message: "copies where clause")
+    assert(query.whereClause.parameters, equals: baseQuery.whereClause.parameters, message: "copies where clause")
+    assert(query.orderClause.query, equals: "hats.created_at ASC, hats.color ASC", message: "sets order clause")
+    assert(query.orderClause.parameters, equals: [], message: "sets order clause")
+    assert(query.limitClause.query, equals: baseQuery.limitClause.query, message: "copies limit clause")
+    assert(query.limitClause.parameters, equals: baseQuery.limitClause.parameters, message: "copies limit clause")
+    assert(query.joinClause.query, equals: baseQuery.joinClause.query, message: "copies join clause")
+    assert(query.joinClause.parameters, equals: baseQuery.joinClause.parameters, message: "copies join clause")
+  }
+  
+  func testOrderWithNoOrderSetsOrdering() {
+    let query = GenericQuery(copyFrom: baseQuery, orderClause: ("", [])).order("hats.color ASC")
+    
+    assert(query.selectClause, equals: baseQuery.selectClause, message: "copies select clause")
+    assert(query.whereClause.query, equals: baseQuery.whereClause.query, message: "copies where clause")
+    assert(query.whereClause.parameters, equals: baseQuery.whereClause.parameters, message: "copies where clause")
+    assert(query.orderClause.query, equals: "hats.color ASC", message: "sets order clause")
+    assert(query.orderClause.parameters, equals: [], message: "sets order clause")
+    assert(query.limitClause.query, equals: baseQuery.limitClause.query, message: "copies limit clause")
+    assert(query.limitClause.parameters, equals: baseQuery.limitClause.parameters, message: "copies limit clause")
+    assert(query.joinClause.query, equals: baseQuery.joinClause.query, message: "copies join clause")
+    assert(query.joinClause.parameters, equals: baseQuery.joinClause.parameters, message: "copies join clause")
+  }
+  
+  func testOrderWithComponentsAppendsNewOrdering() {
     let query = baseQuery.order("color", .OrderedAscending)
     
     assert(query.selectClause, equals: baseQuery.selectClause, message: "copies select clause")
@@ -437,5 +465,65 @@ class QueryTests: XCTestCase, TailorTestable {
     Hat(color: "black").save()!
     let secondResults = query.all()
     assert(secondResults.count, equals: 3, message: "gets three results after one is created")
+  }
+
+  func testQueriesWithSameInformationAreEqual() {
+    let query1 = baseQuery
+    let query2 = baseQuery
+    assert(query1, equals: query2)
+  }
+  
+  func testQueriesWithDifferentSelectClauseAreNotEqual() {
+    let query1 = baseQuery
+    let query2 = baseQuery.select("*")
+    assert(query1, doesNotEqual: query2)
+  }
+  
+  func testQueriesWithDifferentWhereClauseAreNotEqual() {
+    let query1 = baseQuery
+    let query2 = baseQuery.filter(["color": "red"])
+    assert(query1, doesNotEqual: query2)
+  }
+  
+  func testQueriesWithDifferentWhereParametersClauseAreNotEqual() {
+    let query1 = baseQuery.filter(["color": "blue"])
+    let query2 = baseQuery.filter(["color": "red"])
+    assert(query1, doesNotEqual: query2)
+  }
+  
+  func testQueriesWithDifferentOrderClauseAreNotEqual() {
+    let query1 = baseQuery
+    let query2 = baseQuery.order("color", .OrderedAscending)
+    assert(query1, doesNotEqual: query2)
+  }
+  
+  func testQueriesWithDifferentLimitClauseAreNotEqual() {
+    let query1 = baseQuery
+    let query2 = GenericQuery(copyFrom: baseQuery, limitClause: ("LIMIT 7", []))
+    assert(query1, doesNotEqual: query2)
+  }
+  
+  func testQueriesWithDifferentJoinClauseAreNotEqual() {
+    let query1 = baseQuery
+    let query2 = baseQuery.filter(["color": "red"])
+    assert(query1, doesNotEqual: query2)
+  }
+  
+  func testQueriesWithDifferentTableNameAreNotEqual() {
+    let query1 = baseQuery
+    let query2 = GenericQuery(copyFrom: baseQuery, tableName: "foo")
+    assert(query1, doesNotEqual: query2)
+  }
+  
+  func testTypedQueryWithSameInfoAreEqual() {
+    let query1 = Query<Hat>(copyFrom: baseQuery)
+    let query2 = Query<Hat>(copyFrom: baseQuery)
+    assert(query1, equals: query2)
+  }
+  
+  func testTYpedQueryWithDifferentWhereClausesAreNotEqual() {
+    let query1 = Query<Hat>(copyFrom: baseQuery)
+    let query2 = Query<Hat>(copyFrom: baseQuery, whereClause: ("color=?", ["red".databaseValue]))
+    assert(query1, doesNotEqual: query2)
   }
 }

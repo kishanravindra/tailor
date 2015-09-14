@@ -175,16 +175,21 @@ extension QueryType {
     - returns:                The new query.
   */
   public func order(columnName: String, _ order: NSComparisonResult) -> Self {
-    var clause = orderClause
-    if !clause.query.isEmpty {
-      clause.query += ", "
-    }
     let orderDescription = order == .OrderedAscending ? "ASC" : "DESC"
-    clause.query += "\(tableName).\(columnName) \(orderDescription)"
-    return self.dynamicType.init(
-      copyFrom: self,
-      orderClause: clause
-    )
+    return self.order("\(tableName).\(columnName) \(orderDescription)")
+  }
+  
+  /**
+    This method adds to the order clause on the query.
+
+    - parameter orderClause:    The new segment to add to the order clause.
+    - returns:                  The modified query.
+    */
+  public func order(orderClause: String) -> Self {
+    var newOrderClause = (self.orderClause.query, self.orderClause.parameters)
+    if !newOrderClause.0.isEmpty { newOrderClause.0 += ", " }
+    newOrderClause.0 += orderClause
+    return self.dynamicType.init(copyFrom: self, orderClause: newOrderClause)
   }
   
   /**
@@ -408,7 +413,7 @@ extension QueryType {
 /**
   This type provides a query that can be built with a dynamically specified type.
   */
-public struct GenericQuery: QueryType {
+public struct GenericQuery: QueryType, Equatable {
   /** The fields that the query will select. */
   public let selectClause: String
   
@@ -465,7 +470,6 @@ public struct GenericQuery: QueryType {
     self.cacheResults = cacheResults
     self.recordType = recordType
     self.tableName = tableName
-    
   }
 }
 /**
@@ -473,7 +477,7 @@ public struct GenericQuery: QueryType {
   type. It also provides convenience methods for fetching records with the
   provided type.
   */
-public struct Query<RecordType: Persistable>: QueryType {
+public struct Query<RecordType: Persistable>: QueryType, Equatable {
   //MARK: - Structure
   
   /** A portion of a SQL query that contains a query and the bind parameters. */
@@ -588,4 +592,62 @@ public struct Query<RecordType: Persistable>: QueryType {
   public func find(id: Int) -> RecordType? {
     return self.filter(["id": id]).first()
   }
+}
+
+/**
+  This method determines if two SQL fragments are equal.
+
+  They are equal if they have the same query and parameters.
+
+  - parameter lhs:    The left-hand side of the comparison.
+  - parameter rhs:    The right-hand side of the comparison.
+  - returns:          Whether the two fragments are equal.
+  */
+public func ==(lhs: SqlFragment, rhs: SqlFragment) -> Bool {
+  return lhs.query == rhs.query && lhs.parameters == rhs.parameters
+}
+
+/**
+  This method determines if two queries are equal.
+
+  They are equal if they have the same clauses and table names.
+
+  - parameter lhs:    The left-hand side of the comparison.
+  - parameter rhs:    The right-hand side of the comparison.
+  - returns:          Whether the two queries are equal.
+  */
+public func ==(lhs: QueryType, rhs: QueryType) -> Bool {
+  return lhs.selectClause == rhs.selectClause &&
+    lhs.whereClause == rhs.whereClause &&
+    lhs.orderClause == rhs.orderClause &&
+    lhs.limitClause == rhs.limitClause &&
+    lhs.joinClause == rhs.joinClause &&
+    lhs.tableName == rhs.tableName
+}
+
+/**
+  This method determines if two queries are equal.
+
+  They are equal if they have the same clauses and table names.
+
+  - parameter lhs:    The left-hand side of the comparison.
+  - parameter rhs:    The right-hand side of the comparison.
+  - returns:          Whether the two queries are equal.
+  */
+public func ==(lhs: GenericQuery, rhs: GenericQuery) -> Bool {
+  return (lhs as QueryType) == (rhs as QueryType)
+}
+
+
+/**
+  This method determines if two queries are equal.
+
+  They are equal if they have the same clauses and table names.
+
+  - parameter lhs:    The left-hand side of the comparison.
+  - parameter rhs:    The right-hand side of the comparison.
+  - returns:          Whether the two queries are equal.
+  */
+public func ==<T: Persistable>(lhs: Query<T>, rhs: Query<T>) -> Bool {
+  return (lhs as QueryType) == (rhs as QueryType)
 }
