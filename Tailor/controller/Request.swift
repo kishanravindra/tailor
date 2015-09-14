@@ -260,7 +260,7 @@ public struct Request: Equatable {
     }
     
     if let contentType = headers["Content-Type"] {
-      if  contentType == "application/x-www-form-urlencoded" {
+      if contentType.hasPrefix("application/x-www-form-urlencoded") {
         for (key,value) in Request.decodeQueryString(self.bodyText) {
           self.params[key] = value
         }

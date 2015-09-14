@@ -117,6 +117,15 @@ class RequestTests: XCTestCase, TailorTestable {
     assert(request.params["id"], equals: "6", message: "sets id parameter")
   }
   
+  func testParseRequestParametersGetsParametersFromPostRequestWithCharsetInContentType() {
+    requestString = requestString.stringByReplacingOccurrencesOfString("GET", withString: "POST")
+    requestString = requestString.stringByReplacingOccurrencesOfString("X-Custom-Field: header value", withString: "Content-Type: application/x-www-form-urlencoded charset=\"UTF8\"")
+    requestString = requestString.stringByReplacingOccurrencesOfString("Request Body", withString: "count=5&id=6")
+    assert(request.params["count"], equals: "5", message: "sets count parameter")
+    assert(request.params["id"], equals: "6", message: "sets id parameter")
+  }
+
+  
   func testParseRequestParametersGetsParametersFromMultipartForm() {
     let boundary = "----TestFormBoundaryK7Slx2O95dkvjQ14"
     requestString = requestString.stringByReplacingOccurrencesOfString("GET", withString: "POST")
