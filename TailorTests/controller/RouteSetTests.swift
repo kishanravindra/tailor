@@ -147,6 +147,20 @@ class RouteSetTests: XCTestCase, TailorTestable {
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
+  func testHandleRequestPercentDecodesParametersFromPath() {
+    let expectation = expectationWithDescription("handler called")
+    let route = RouteSet.Route(path: .Get("/test/route/:id"), handler: {
+      request, responseHandler in
+      self.assert(request.requestParameters["id"], equals: "en-co/5")
+      expectation.fulfill()
+      }, description: "test route")
+    route.handleRequest(createTestRequest("/test/route/en%2Dco%2F5")) {
+      response in
+    }
+    waitForExpectationsWithTimeout(0.01, handler: nil)
+  }
+
+  
   func testHandleRequestWithBadRegexCallsHandler() {
     let expectation = expectationWithDescription("handler called")
     let route = RouteSet.Route(path: .Get("/test/route("), handler: {
@@ -730,6 +744,18 @@ class RouteSetTests: XCTestCase, TailorTestable {
     TestController.defineRoutes(routeSet)
     let path = routeSet.pathFor(TestController.self, actionName: "show", parameters: ["id": "17"])
     self.assert(path, equals: "/hats/17", message: "generates correct route")
+  }
+  
+  func testPathForEscapesReservedCharactersInPath() {
+    TestController.defineRoutes(routeSet)
+    let path = routeSet.pathFor(TestController.self, actionName: "show", parameters: ["id": "17?", "a/b": "47?"])
+    self.assert(path, equals: "/hats/17%3F?a%2Fb=47%3F", message: "generates correct route")
+  }
+  
+  func testPathForDoesNotEscapeUnreservedCharactersInPath() {
+    TestController.defineRoutes(routeSet)
+    let path = routeSet.pathFor(TestController.self, actionName: "show", parameters: ["id": "en-co_2", "ab": "~47.5"])
+    self.assert(path, equals: "/hats/en-co_2?ab=~47.5", message: "generates correct route")
   }
   
   func testPathForGetsPathWithQueryString() {

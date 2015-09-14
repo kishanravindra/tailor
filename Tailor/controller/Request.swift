@@ -267,6 +267,7 @@ public struct Request: Equatable {
     - returns:              The parameters.
     */
   public static func decodeQueryString(string: String) -> [String:String] {
+    if string == "" { return [:] }
     var params: [String:String] = [:]
     let simplifiedString = string.stringByReplacingOccurrencesOfString("+", withString: "%20")
     for param in simplifiedString.componentsSeparatedByString("&") {
@@ -297,7 +298,26 @@ public struct Request: Equatable {
     - parameter headers:          Additional headers to put in the request.
     - parameter path:             The path that the request should go to.
     */
-  public init(clientAddress: String = "0.0.0.0", method: String = "GET", parameters: [String: String] = [:], sessionData: [String: String] = [:], cookies: [String:String] = [:], headers: [String:String] = [:], path: String = "/") {
+  public init(clientAddress: String = "0.0.0.0", method: String = "GET", parameters: [String: String] = [:], sessionData: [String: String] = [:], cookies: [String:String] = [:], headers: [String:String] = [:], var path: String = "/") {
+    
+    
+    var queryString = ""
+    
+    for (key, value) in parameters {
+      if !queryString.isEmpty {
+        queryString += "&"
+      }
+      let convertedKey = key.stringByAddingPercentEncodingWithAllowedCharacters(.URLParameterAllowedCharacterSet()) ?? ""
+      let convertedValue = value.stringByAddingPercentEncodingWithAllowedCharacters(.URLParameterAllowedCharacterSet()
+        ) ?? ""
+      queryString += convertedKey + "=" + convertedValue
+    }
+    
+    if method == "GET" {
+      path += "?" + queryString
+    }
+
+    
     var lines = [
       "\(method) \(path) HTTP/1.1"
     ]
@@ -319,18 +339,9 @@ public struct Request: Equatable {
     }
     
     lines.append("")
-    
-    var queryString = ""
-    
-    for (key, value) in parameters {
-      if !queryString.isEmpty {
-        queryString += "&"
-      }
-      let convertedValue = value.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet()
-) ?? ""
-      queryString += key + "=" + convertedValue
+    if method != "GET" {
+      lines.append(queryString)
     }
-    lines.append(queryString)
     let stringData = lines.reduce("") { buffer, element in buffer.isEmpty ? element : buffer + "\r\n" + element }
     let data = NSData(bytes: stringData.utf8)
     self.init(clientAddress: clientAddress, data: data)

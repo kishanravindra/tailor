@@ -186,6 +186,7 @@ class RequestTests: XCTestCase, TailorTestable {
     let queryString = "key1=value1&key2=value%3da+b"
     let decoded = Request.decodeQueryString(queryString)
     
+    assert(decoded.keys.count, equals: 2)
     assert(decoded["key1"], equals: "value1", message: "gets simple param")
     assert(decoded["key2"], equals: "value=a b", message: "decodes param with escapes")
   }
@@ -240,10 +241,32 @@ class RequestTests: XCTestCase, TailorTestable {
   //MARK: - Test Helpers
   
   func testInitializerCanInitializeRequestInfo() {
-    let params = ["key1": "value1", "key2": "value2"]
-    let request = Request(clientAddress: "127.0.0.1", method: "POST", parameters: params)
+    let params = ["key1": "value1", "key2": "value2_value3"]
+    let request = Request(clientAddress: "127.0.0.1", method: "POST", parameters: params, path: "/home")
+    assert(request.fullPath, equals: "/home")
+    assert(request.bodyText, equals: "key1=value1&key2=value2_value3")
     assert(request.requestParameters, equals: params, message: "sets request parameters")
     assert(request.method, equals: "POST", message: "sets method")
+    assert(request.clientAddress, equals: "127.0.0.1", message: "sets client address")
+  }
+  
+  func testInitializerSanitizesReservedCharactersInParameters() {
+    let params = ["key1": "value1", "key2/key3": "value2&value3"]
+    let request = Request(clientAddress: "127.0.0.1", method: "POST", parameters: params, path: "/home")
+    assert(request.fullPath, equals: "/home")
+    assert(request.bodyText, equals: "key1=value1&key2%2Fkey3=value2%26value3")
+    assert(request.requestParameters, equals: params, message: "sets request parameters")
+    assert(request.method, equals: "POST", message: "sets method")
+    assert(request.clientAddress, equals: "127.0.0.1", message: "sets client address")
+  }
+  
+  func testInitializerWithGetRequestPutsQueryStringInPath() {
+    let params = ["key1": "value1", "key2/key3": "value2&value3"]
+    let request = Request(clientAddress: "127.0.0.1", method: "GET", parameters: params, path: "/home")
+    assert(request.fullPath, equals: "/home?key1=value1&key2%2Fkey3=value2%26value3", message: "includes the query string in the path")
+    assert(request.bodyText, equals: "", message: "leaves the body blank")
+    assert(request.requestParameters, equals: params, message: "sets request parameters")
+    assert(request.method, equals: "GET", message: "sets method")
     assert(request.clientAddress, equals: "127.0.0.1", message: "sets client address")
   }
   

@@ -122,7 +122,7 @@ public class RouteSet {
       
       let parameterValues = Request.extractWithPattern(path, pattern: self.regex?.pattern ?? "")
       for (index, key) in self.pathParameters.enumerate() {
-        requestCopy.requestParameters[key] = parameterValues[index]
+        requestCopy.requestParameters[key] = parameterValues[index].stringByRemovingPercentEncoding
       }
       
       NSLog("Parameters: %@", requestCopy.requestParameters)
@@ -599,7 +599,7 @@ public class RouteSet {
         var hasQuery = false
         for (key, value) in parameters {
           if let range = path.rangeOfString(":" + key, options: [], range: nil, locale: nil) {
-            path = path.stringByReplacingCharactersInRange(range, withString: value.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.alphanumericCharacterSet()) ?? "")
+            path = path.stringByReplacingCharactersInRange(range, withString: value.stringByAddingPercentEncodingWithAllowedCharacters(.URLParameterAllowedCharacterSet()) ?? "")
           }
           else {
             if hasQuery {
@@ -609,9 +609,9 @@ public class RouteSet {
               path += "?"
               hasQuery = true
             }
-            path += key.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.alphanumericCharacterSet()) ?? ""
+            path += key.stringByAddingPercentEncodingWithAllowedCharacters(.URLParameterAllowedCharacterSet()) ?? ""
             path += "="
-            path += value.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.alphanumericCharacterSet()) ?? ""
+            path += value.stringByAddingPercentEncodingWithAllowedCharacters(.URLParameterAllowedCharacterSet()) ?? ""
           }
         }
         matchingPath = path
