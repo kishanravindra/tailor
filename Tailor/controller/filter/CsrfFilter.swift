@@ -38,7 +38,7 @@ public struct CsrfFilter: RequestFilterType, Equatable {
       key = AesEncryptor.generateKey()
       request.session["csrfKey"] = key
     }
-    let parameterKey = request.requestParameters["_csrfKey"]
+    let parameterKey = request.params["_csrfKey"] as String
     if parameterKey != key && request.method != "GET" {
       NSLog("Request cannot continue because it lacks a valid CSRF token. See documentation for CsrfFilter for more information.")
       response.responseCode = .Forbidden

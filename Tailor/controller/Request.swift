@@ -1,9 +1,99 @@
 import Foundation
 
 /**
-  This class represents a request from the client.
+  This type represents a request from the client.
   */
 public struct Request: Equatable {
+  /**
+    This type represents a dictionary of request parameters.
+
+    It wraps around the raw dictionary and provides automatic type
+    conversion and fallbacks.
+    */
+  public struct ParameterDictionary: Equatable {
+    //MARK: - Structure
+    
+    /** The raw request parameters. */
+    public var raw: [String:String]
+    
+    /**
+      This initializer creates a parameter dictionary with request
+      parameters.
+
+      - parameter rawParameters:    The request parameters.
+      */
+    public init(_ rawParameters: [String:String] = [:]) {
+      self.raw = rawParameters
+    }
+    
+    //MARK: - Parameter Access
+    
+    /**
+      This subscript looks up a value as an optional string.
+      */
+    public subscript(key: String) -> String? {
+      get {
+        return self.raw[key]
+      }
+      set {
+        self.raw[key] = newValue
+      }
+    }
+    
+    /**
+      This subscript looks up a value as a non-optional string.
+
+      If the value is missing, this will return an empty string.
+      */
+    public subscript(key: String) -> String {
+      get {
+        return self[key] as String? ?? ""
+      }
+    }
+    
+    /**
+      This subscript looks up a value as an optional integer.
+
+      If the value is missing, or is not an integer, this will return nil.
+      */
+    public subscript(key: String) -> Int? {
+      get {
+        return Int(self[key] as String)
+      }
+      set {
+        self[key] = String(newValue)
+      }
+    }
+    
+    /**
+      This subscript looks up a value as a non-optional integer.
+      
+      If the value is missing, or is not an integer, this will return zero.
+      */
+    public subscript(key: String) -> Int {
+      get {
+        return self[key] as Int? ?? 0
+      }
+    }
+    
+    /**
+      This method gets a subset of the keys in the parameter dictionary.
+
+      - parameter keys:   The keys to fetch
+      - returns:          A dictionary with the values from the dictionary
+                          matching those keys.
+      */
+    public func slice(keys: String...) -> [String:String] {
+      var results = [String:String]()
+      for key in keys {
+        if let value = self.raw[key] {
+          results[key] = value
+        }
+      }
+      return results
+    }
+  }
+  
   /** The client's IP address. */
   public let clientAddress: String
   
@@ -29,7 +119,22 @@ public struct Request: Equatable {
   public var body: NSData
   
   /** The request parameters. */
-  public var requestParameters: [String:String] = [:]
+  public var params = ParameterDictionary()
+  
+  /**
+    The request parameters.
+  
+    This has been deprecated in favor of the new `params` dictionary.
+    */
+  @available(*, deprecated, message="Use params instead")
+  public var requestParameters: [String:String] {
+    get {
+      return params.raw
+    }
+    set {
+      params.raw = newValue
+    }
+  }
   
   /** The session information. */
   public var session: Session
@@ -150,14 +255,14 @@ public struct Request: Equatable {
     if let queryStringLocation = self.fullPath.rangeOfString("?", options: NSStringCompareOptions.BackwardsSearch) {
       let queryString = self.fullPath.substringFromIndex(queryStringLocation.startIndex.successor())
       for (key, value) in Request.decodeQueryString(queryString) {
-        self.requestParameters[key] = value
+        self.params[key] = value
       }
     }
     
     if let contentType = headers["Content-Type"] {
       if  contentType == "application/x-www-form-urlencoded" {
         for (key,value) in Request.decodeQueryString(self.bodyText) {
-          self.requestParameters[key] = value
+          self.params[key] = value
         }
       }
       if contentType.hasPrefix("multipart/form-data") {
@@ -204,10 +309,9 @@ public struct Request: Equatable {
         ]
       }
       else {
-        self.requestParameters[name] = NSString(data: subRequest.body, encoding: NSUTF8StringEncoding) as? String
+        self.params[name] = NSString(data: subRequest.body, encoding: NSUTF8StringEncoding) as? String
       }
     }
-
   }
   
   //MARK: - Helper Methods
@@ -585,4 +689,27 @@ public func ==(lhs: Request.ContentPreference.Option, rhs: Request.ContentPrefer
     lhs.subtype == rhs.subtype &&
     lhs.flags == rhs.flags &&
     lhs.quality == rhs.quality
+}
+
+/**
+  This method determines if two parameter dictionaries are equal.
+
+  - parameter lhs:    The left-hand side of the comparison.
+  - parameter rhs:    The right-hand side of the comparison.
+  - returns:          Whether the two dictionaries are equal.
+  */
+public func ==(lhs: Request.ParameterDictionary, rhs: Request.ParameterDictionary) -> Bool {
+  return lhs.raw == rhs.raw
+}
+
+
+/**
+  This method determines if two parameter dictionaries are equal.
+
+  - parameter lhs:    The left-hand side of the comparison.
+  - parameter rhs:    The right-hand side of the comparison.
+  - returns:          Whether the two dictionaries are equal.
+  */
+public func ==(lhs: Request.ParameterDictionary, rhs: [String:String]) -> Bool {
+  return lhs.raw == rhs
 }

@@ -295,8 +295,7 @@ extension TemplateType {
     This method gets a single request parameter from the controller.
     */
   public func requestParameter(key: String) -> String? {
-    let params = self.controller.request.requestParameters
-    return params[key]
+    return self.controller.request.params[key]
   }
   
   /**
@@ -306,7 +305,7 @@ extension TemplateType {
     - returns:          A hash with the extracted values.
     */
   public func requestParameters(keys: String...) -> [String:String] {
-    let params = self.controller.request.requestParameters
+    let params = self.controller.request.params.raw
     var filteredParams = [String:String]()
     for key in keys {
       filteredParams[key] = params[key]

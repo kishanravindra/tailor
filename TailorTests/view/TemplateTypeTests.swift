@@ -460,7 +460,7 @@ class TemplateTypeTests: XCTestCase, TailorTestable {
   
   func testRequestParametersGetsKeysFromRequest() {
     var request = controller.request
-    request.requestParameters = ["id": "5", "color": "red", "size": "10"]
+    request.params.raw = ["id": "5", "color": "red", "size": "10"]
     let template = EmptyTemplate(state: TemplateState(TestController(
       request: request,
       response: Response(),
@@ -473,7 +473,7 @@ class TemplateTypeTests: XCTestCase, TailorTestable {
   
   func testRequestParameterGetsKeyFromRequest() {
     var request = controller.request
-    request.requestParameters = ["id": "5", "color": "red", "size": "10"]
+    request.params.raw = ["id": "5", "color": "red", "size": "10"]
     let template = EmptyTemplate(state: TemplateState(TestController(
       request: request,
       response: Response(),

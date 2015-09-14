@@ -45,7 +45,7 @@ class RouteSetTests: XCTestCase, TailorTestable {
     
     func showAction() {
       var response = self.state.response
-      let id = request.requestParameters["id"] ?? "None"
+      let id = request.params["id"] ?? "None"
       response.appendString("Test Controller: show \(id)")
       callback(response)
     }
@@ -138,7 +138,7 @@ class RouteSetTests: XCTestCase, TailorTestable {
     let expectation = expectationWithDescription("handler called")
     let route = RouteSet.Route(path: .Get("/test/route/:id"), handler: {
       request, responseHandler in
-      self.assert(request.requestParameters["id"], equals: "5")
+      self.assert(request.params["id"], equals: "5")
       expectation.fulfill()
       }, description: "test route")
     route.handleRequest(createTestRequest("/test/route/5")) {
@@ -151,7 +151,7 @@ class RouteSetTests: XCTestCase, TailorTestable {
     let expectation = expectationWithDescription("handler called")
     let route = RouteSet.Route(path: .Get("/test/route/:id"), handler: {
       request, responseHandler in
-      self.assert(request.requestParameters["id"], equals: "en-co/5")
+      self.assert(request.params["id"], equals: "en-co/5")
       expectation.fulfill()
       }, description: "test route")
     route.handleRequest(createTestRequest("/test/route/en%2Dco%2F5")) {
@@ -650,7 +650,7 @@ class RouteSetTests: XCTestCase, TailorTestable {
     routeSet.addRoute(.Get("hats/:id")) {
       request, callback in
       var response = Response()
-      let id = request.requestParameters["id"]!
+      let id = request.params["id"] ?? 0
       response.appendString("Request 2: \(id)")
       callback(response)
     }
@@ -693,7 +693,7 @@ class RouteSetTests: XCTestCase, TailorTestable {
     routeSet.addRoute(.Get("hats/:id")) {
       request, callback in
       var response = Response()
-      let id = request.requestParameters["id"]!
+      let id = request.params["id"] ?? 0
       response.appendString("Request 2: \(id)")
       callback(response)
     }

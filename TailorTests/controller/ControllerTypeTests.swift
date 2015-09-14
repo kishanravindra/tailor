@@ -14,7 +14,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     }
     
     func checkParams() -> Bool {
-      if request.requestParameters["failFilter"] != nil {
+      if request.params.raw["failFilter"] != nil {
         var response = Response()
         response.responseCode = .init(419, "")
         self.callback(response)
@@ -705,11 +705,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
       }
       func index() {
         XCTAssertEqual(actionName, "runTest", "sets the controller's action")
-        let value1 = request.requestParameters["test1"]
-        XCTAssertNotNil(value1)
-        if value1 != nil {
-          XCTAssertEqual(value1!, "value1")
-        }
+        XCTAssertEqual(request.params["test1"], "value1")
         var response = self.state.response
         response.appendString("Test Response")
         self.callback(response)
@@ -744,11 +740,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
       }
       func index() {
         XCTAssertEqual(actionName, "runTest", "sets the controller's action")
-        let value1 = request.requestParameters["test1"]
-        XCTAssertNotNil(value1)
-        if value1 != nil {
-          XCTAssertEqual(value1!, "value1")
-        }
+        XCTAssertEqual(request.params["test1"], "value1")
         var response = self.state.response
         response.appendString("Test Response")
         self.callback(response)
@@ -770,7 +762,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     TestController.callAction("index", TestController.indexAction, user: user, parameters: ["id": "5"]) {
       response, controller in
       expectation.fulfill()
-      self.assert(controller.request.requestParameters, equals: ["id": "5"], message: "sets request parameters")
+      self.assert(controller.request.params == ["id": "5"], message: "sets request parameters")
       let currentUser = controller.currentUser
       self.assert(currentUser?.id, equals: user.id!, message: "has the user given")
     }

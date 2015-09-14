@@ -65,9 +65,7 @@ class RequestTests: XCTestCase, TailorTestable {
   
   func testInitializationSetsRequestParameters() {
     requestString = requestString.stringByReplacingOccurrencesOfString("/test/path", withString: "/test/path?count=5")
-    let param = request.requestParameters["count"]
-
-    assert(param, equals: "5", message: "sets request parameter to correct value")
+    assert(request.params["count"], equals: "5", message: "sets request parameter to correct value")
   }
   
   func testInitializationWithBadlyEncodedDataSetsEmptyHeaders() {
@@ -107,20 +105,16 @@ class RequestTests: XCTestCase, TailorTestable {
   
   func testParseRequestParametersGetsParametersFromQueryString() {
     requestString = requestString.stringByReplacingOccurrencesOfString("/test/path", withString: "/test/path?count=5&id=6")
-    let params = request.requestParameters
-    
-    assert(params["count"], equals: "5", message: "sets count parameter")
-    assert(params["id"], equals: "6", message: "sets id parameter")
+    assert(request.params["count"], equals: "5", message: "sets count parameter")
+    assert(request.params["id"], equals: "6", message: "sets id parameter")
   }
   
   func testParseRequestParametersGetsParametersFromPostRequest() {
     requestString = requestString.stringByReplacingOccurrencesOfString("GET", withString: "POST")
     requestString = requestString.stringByReplacingOccurrencesOfString("X-Custom-Field: header value", withString: "Content-Type: application/x-www-form-urlencoded")
     requestString = requestString.stringByReplacingOccurrencesOfString("Request Body", withString: "count=5&id=6")
-    let params = request.requestParameters
-    
-    assert(params["count"], equals: "5", message: "sets count parameter")
-    assert(params["id"], equals: "6", message: "sets id parameter")
+    assert(request.params["count"], equals: "5", message: "sets count parameter")
+    assert(request.params["id"], equals: "6", message: "sets id parameter")
   }
   
   func testParseRequestParametersGetsParametersFromMultipartForm() {
@@ -128,7 +122,7 @@ class RequestTests: XCTestCase, TailorTestable {
     requestString = requestString.stringByReplacingOccurrencesOfString("GET", withString: "POST")
     requestString = requestString.stringByReplacingOccurrencesOfString("X-Custom-Field: header value", withString: "Content-Type: multipart/form-data; boundary=\(boundary)")
     requestString = requestString.stringByReplacingOccurrencesOfString("Request Body", withString: "--\(boundary)\r\nContent-Disposition: form-data; name=\"param1\"\r\n\r\nvalue1\r\n--\(boundary)\r\nContent-Disposition: form-data; name=\"param2\"\r\n\r\nvalue2\r\n--\(boundary)--")
-    let params = request.requestParameters
+    let params = request.params
 
     assert(params["param1"], equals: "value1", message: "sets param1")
     assert(params["param2"], equals: "value2", message: "sets param2")
@@ -139,8 +133,7 @@ class RequestTests: XCTestCase, TailorTestable {
     requestString = requestString.stringByReplacingOccurrencesOfString("GET", withString: "POST")
     requestString = requestString.stringByReplacingOccurrencesOfString("X-Custom-Field: header value", withString: "Content-Type: multipart/form-data")
     requestString = requestString.stringByReplacingOccurrencesOfString("Request Body", withString: "--\(boundary)\r\nContent-Disposition: form-data; name=\"param1\"\r\n\r\nvalue1\r\n--\(boundary)\r\nContent-Disposition: form-data; name=\"param2\"\r\n\r\nvalue2\r\n--\(boundary)--")
-    let params = request.requestParameters
-    assert(params.isEmpty)
+    assert(request.params.raw.isEmpty)
   }
   
   func testParseRequestParametersGetsFileFromMultipartForm() {
@@ -148,9 +141,7 @@ class RequestTests: XCTestCase, TailorTestable {
     requestString = requestString.stringByReplacingOccurrencesOfString("GET", withString: "POST")
     requestString = requestString.stringByReplacingOccurrencesOfString("X-Custom-Field: header value", withString: "Content-Type: multipart/form-data; boundary=\(boundary)")
     requestString = requestString.stringByReplacingOccurrencesOfString("Request Body", withString: "--\(boundary)\r\nContent-Disposition: form-data; name=\"param1\"\r\n\r\nvalue1\r\n--\(boundary)\r\nContent-Disposition: form-data; name=\"param2\"; filename=\"record.log\"\r\nContent-Type: text/plain\r\n\r\nthis is a log\r\n--\(boundary)--")
-    let params = request.requestParameters
-    
-    assert(params["param1"], equals: "value1", message: "sets param1")
+    assert(request.params["param1"], equals: "value1", message: "sets param1")
     
     if let file = request.uploadedFiles["param2"] {
       assert(file["contentType"] as? String, equals: "text/plain", message: "sets content type")
@@ -161,6 +152,93 @@ class RequestTests: XCTestCase, TailorTestable {
     else {
       XCTFail("sets param2")
     }
+  }
+  
+  @available(*, deprecated) func testRequestParametersGetsParametersFromDictionary() {
+    var request = Request()
+    request.params = Request.ParameterDictionary(["foo": "bar", "baz": "bat"])
+    assert(request.requestParameters, equals: ["foo": "bar", "baz": "bat"])
+  }
+  
+  @available(*, deprecated) func testRequestParametersSetsParametersInDictionary() {
+    var request = Request()
+    request.params = Request.ParameterDictionary(["foo": "bar", "baz": "bat"])
+    request.requestParameters["a"] = "b"
+    assert(request.requestParameters, equals: ["foo": "bar", "baz": "bat", "a": "b"])
+  }
+  
+  func testParameterDictionarySubscriptWithStringGetsValue() {
+    let params = Request.ParameterDictionary(["foo": "bar"])
+    let value = params["foo"] as String
+    assert(value, equals: "bar")
+  }
+  
+  func testParameterDictionarySubscriptWithStringWithMissingValueGetsEmptyString() {
+    let params = Request.ParameterDictionary(["foo": "bar"])
+    let value = params["baz"] as String
+    assert(value, equals: "")
+  }
+  
+  func testParameterDictionarySubscriptWithNullableStringGetsValue() {
+    let params = Request.ParameterDictionary(["foo": "bar"])
+    let value = params["foo"] as String?
+    assert(value, equals: "bar")
+  }
+  
+  func testParameterDictionarySubscriptWithNullableStringWithMissingValueIsNil() {
+    let params = Request.ParameterDictionary(["foo": "bar"])
+    let value = params["baz"] as String?
+    assert(isNil: value)
+    assert(params["baz"] ?? "bat", equals: "bat")
+  }
+  
+  func testParameterDictionarySubscriptCanTriggerGuardStatements() {
+    let params = Request.ParameterDictionary(["foo": "bar"])
+    guard let value = params["foo"] as String? else {
+      assert(false, message: "got nil in a guard statement for a present value")
+      return
+    }
+    assert(value, equals: "bar")
+    guard let _ = params["baz"] as String? else {
+      assert(true, message: "got nil in a guard statement for a missing value")
+      return
+    }
+  }
+  
+  func testParameterDictionarySubscriptWithIntegerGetsValue() {
+    let params = Request.ParameterDictionary(["foo": "27"])
+    let value = params["foo"] as Int
+    assert(value, equals: 27)
+  }
+  
+  func testParameterDictionarySubscriptWithIntegerWithMissingValueGetsZero() {
+    let params = Request.ParameterDictionary(["foo": "bar"])
+    let value = params["baz"] as Int
+    assert(value, equals: 0)
+  }
+  
+  func testParameterDictionarySubscriptWithIntegerWithNonIntegerValueGetsZero() {
+    let params = Request.ParameterDictionary(["foo": "bar"])
+    let value = params["foo"] as Int
+    assert(value, equals: 0)
+  }
+  
+  func testParameterDictionarySubscriptWithNullableIntegerGetsValue() {
+    let params = Request.ParameterDictionary(["foo": "27"])
+    let value = params["foo"] as Int?
+    assert(value, equals: 27)
+  }
+  
+  func testParameterDictionarySubscriptWithNullableIntegerWithMissingValueGetsNil() {
+    let params = Request.ParameterDictionary(["foo": "bar"])
+    let value: Int? = params["baz"]
+    assert(isNil: value)
+  }
+  
+  func testParameterDictionarySubscriptWithNullableIntegerWithNonIntegerValueGetsZero() {
+    let params = Request.ParameterDictionary(["foo": "bar"])
+    let value: Int? = params["foo"]
+    assert(isNil: value)
   }
 
   //MARK: - Helper Methods
@@ -245,7 +323,7 @@ class RequestTests: XCTestCase, TailorTestable {
     let request = Request(clientAddress: "127.0.0.1", method: "POST", parameters: params, path: "/home")
     assert(request.fullPath, equals: "/home")
     assert(request.bodyText, equals: "key1=value1&key2=value2_value3")
-    assert(request.requestParameters, equals: params, message: "sets request parameters")
+    assert(request.params, equals: Request.ParameterDictionary(params), message: "sets request parameters")
     assert(request.method, equals: "POST", message: "sets method")
     assert(request.clientAddress, equals: "127.0.0.1", message: "sets client address")
   }
@@ -255,7 +333,7 @@ class RequestTests: XCTestCase, TailorTestable {
     let request = Request(clientAddress: "127.0.0.1", method: "POST", parameters: params, path: "/home")
     assert(request.fullPath, equals: "/home")
     assert(request.bodyText, equals: "key1=value1&key2%2Fkey3=value2%26value3")
-    assert(request.requestParameters, equals: params, message: "sets request parameters")
+    assert(request.params, equals: Request.ParameterDictionary(params), message: "sets request parameters")
     assert(request.method, equals: "POST", message: "sets method")
     assert(request.clientAddress, equals: "127.0.0.1", message: "sets client address")
   }
@@ -266,7 +344,7 @@ class RequestTests: XCTestCase, TailorTestable {
     assert(request.path, equals: "/home", message: "does not include the query string in the short path")
     assert(request.fullPath, equals: "/home?key1=value1&key2%2Fkey3=value2%26value3", message: "includes the query string in the full path")
     assert(request.bodyText, equals: "", message: "leaves the body blank")
-    assert(request.requestParameters, equals: params, message: "sets request parameters")
+    assert(request.params, equals: Request.ParameterDictionary(params), message: "sets request parameters")
     assert(request.method, equals: "GET", message: "sets method")
     assert(request.clientAddress, equals: "127.0.0.1", message: "sets client address")
   }
@@ -291,7 +369,7 @@ class RequestTests: XCTestCase, TailorTestable {
     let data = NSData(bytes: [0xD8, 0x00])
     let badString = NSString(data: data, encoding: NSUTF16BigEndianStringEncoding)! as String
     let request = Request(parameters: ["key": badString])
-    assert(request.requestParameters["key"], equals: "")
+    assert(request.params.raw["key"], equals: "")
   }
   
   //MARK: - Equality
@@ -305,6 +383,20 @@ class RequestTests: XCTestCase, TailorTestable {
     let request1 = Request(parameters: ["a": "b"])
     let request2 = Request(parameters: ["a": "c"])
     assert(request1, doesNotEqual: request2)
+  }
+  
+  func testParameterDictionariesAreEqualWithSameDictionaries() {
+    let dictionary1 = Request.ParameterDictionary(["a": "b", "c": "d"])
+    let dictionary2 = Request.ParameterDictionary(["a": "b", "c": "d"])
+    assert(dictionary1, equals: dictionary2)
+  }
+  
+  func testParameterDictionariesAreUnequalWithDifferentDictionaries() {
+    let dictionary1 = Request.ParameterDictionary(["a": "b", "c": "d"])
+    let dictionary2 = Request.ParameterDictionary(["a": "b", "c": "e"])
+    let dictionary3 = Request.ParameterDictionary(["a": "b", "e": "d"])
+    assert(dictionary1, doesNotEqual: dictionary2)
+    assert(dictionary1, doesNotEqual: dictionary3)
   }
   
   //MARK: - Content Preferences

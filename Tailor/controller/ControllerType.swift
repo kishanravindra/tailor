@@ -379,7 +379,7 @@ extension ControllerType {
       https: https
     )
     if path != nil {
-      for (key,value) in self.request.requestParameters {
+      for (key,value) in self.request.params.raw {
         if !key.isEmpty {
           path = path?.stringByReplacingOccurrencesOfString(":\(key)", withString: value)
         }

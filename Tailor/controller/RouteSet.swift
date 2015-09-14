@@ -122,10 +122,10 @@ public class RouteSet {
       
       let parameterValues = Request.extractWithPattern(path, pattern: self.regex?.pattern ?? "")
       for (index, key) in self.pathParameters.enumerate() {
-        requestCopy.requestParameters[key] = parameterValues[index].stringByRemovingPercentEncoding
+        requestCopy.params[key] = parameterValues[index].stringByRemovingPercentEncoding
       }
       
-      NSLog("Parameters: %@", requestCopy.requestParameters)
+      NSLog("Parameters: %@", requestCopy.params.raw)
       self.handler(requestCopy, callback)
     }
   }
