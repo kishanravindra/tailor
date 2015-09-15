@@ -162,8 +162,41 @@ extension ControllerTestable {
   }
 }
 
-extension ControllerType {
-  public init() throws {
-    try self.init(state: ControllerState(request: Request(), response: Response(), actionName: "index", callback: {_ in}))
+extension ControllerState {
+  /**
+    This initializer creates a controller state with an empty request.
+    */
+  public init() {
+    self.init(request: Request())
+  }
+  
+  /**
+    This initializer creates a controller state with just a request.
+
+    - parameter request:    The request that the controller will handle.
+    */
+  public init(request: Request) {
+    self.init(request: request, response: Response(), actionName: "index", callback: {_ in})
+  }
+}
+
+/**
+  This protocol describes a controller that has an initializer that cannot throw
+  exceptions.
+
+  You can add this protocol to your controllers in testing so that you can get a
+  default initializer with no parameters. This can be helpful in setting up
+  dummy controllers for view tests.
+  */
+public protocol ControllerTypeWithCleanInitializer {
+  init(state: ControllerState)
+}
+
+extension ControllerTypeWithCleanInitializer {
+  /**
+    This method creates a controller with an empty request.
+    */
+  public init() {
+    self.init(state: ControllerState())
   }
 }
