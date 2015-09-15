@@ -27,12 +27,12 @@ class TemplateTypeTests: XCTestCase, TailorTestable {
     let callback = {
       (response: Response) -> () in
     }
-    self.controller = TestController(
+    self.controller = TestController(state: ControllerState(
       request: request,
       response: Response(),
       actionName: "index",
       callback: callback
-    )
+    ))
     self.controller.state.localization = PropertyListLocalization(locale: "en")
     Application.configuration.staticContent["en.template.test"] = "Localized Text"
     Application.configuration.staticContent["en.template.test_raw"] = "<b>Hello</b>"
@@ -189,12 +189,12 @@ class TemplateTypeTests: XCTestCase, TailorTestable {
       routes.route(.Get("test/path"), to: TestController.indexAction, name: "index")
       ()
     }
-    var template2 = EmptyTemplate(state: TemplateState(InnerTestController(
+    var template2 = EmptyTemplate(state: TemplateState(InnerTestController(state: ControllerState(
       request: controller.request,
       response: Response(),
       actionName: "show",
       callback: controller.callback
-      )))
+      ))))
     template2.link(TestController.self, actionName: "index", parameters: ["id": "5"], attributes: ["class": "btn"]) {
       template2.text("Click here")
     }
@@ -214,12 +214,12 @@ class TemplateTypeTests: XCTestCase, TailorTestable {
       routes.route(.Get("test/path"), to: TestController.indexAction, name: "index")
       ()
     }
-    var template2 = EmptyTemplate(state: TemplateState(InnerTestController(
+    var template2 = EmptyTemplate(state: TemplateState(InnerTestController(state: ControllerState(
       request: controller.request,
       response: Response(),
       actionName: "show",
       callback: controller.callback
-      )))
+      ))))
     template2.link(TestController.self, actionName: "index", parameters: ["id": "5"], attributes: ["class": "btn"])
     assert(template2.contents, equals: "<a class=\"btn\" href=\"/test/path?id=5\"></a>", message: "puts the tag in the buffer")
   }
@@ -241,12 +241,12 @@ class TemplateTypeTests: XCTestCase, TailorTestable {
       routes.route(.Get("test/path2"), to: InnerTestController.indexAction, name: "index")
       ()
     }
-    var template2 = EmptyTemplate(state: TemplateState(InnerTestController(
+    var template2 = EmptyTemplate(state: TemplateState(InnerTestController(state: ControllerState(
       request: controller.request,
       response: Response(),
       actionName: "show",
       callback: controller.callback
-      )))
+      ))))
     template2.link(actionName: "index", parameters: ["id": "5"], attributes: ["class": "btn"]) {
       template2.text("Click here")
     }
@@ -270,12 +270,12 @@ class TemplateTypeTests: XCTestCase, TailorTestable {
       routes.route(.Get("test/path2"), to: InnerTestController.indexAction, name: "index")
       ()
     }
-    var template2 = EmptyTemplate(state: TemplateState(InnerTestController(
+    var template2 = EmptyTemplate(state: TemplateState(InnerTestController(state: ControllerState(
       request: controller.request,
       response: Response(),
       actionName: "show",
       callback: controller.callback
-      )))
+      ))))
     template2.link(actionName: "index", parameters: ["id": "5"], attributes: ["class": "btn"])
     assert(template2.contents, equals: "<a class=\"btn\" href=\"/test/path2?id=5\"></a>", message: "puts the tag in the buffer")
   }
@@ -293,12 +293,12 @@ class TemplateTypeTests: XCTestCase, TailorTestable {
       routes.route(.Get("test/path"), to: TestController.indexAction, name: "index")
       ()
     }
-    var template2 = EmptyTemplate(state: TemplateState(InnerTestController(
+    var template2 = EmptyTemplate(state: TemplateState(InnerTestController(state: ControllerState(
       request: controller.request,
       response: Response(),
       actionName: "show",
       callback: controller.callback
-      )))
+      ))))
     template2.link(InnerTestController.self, actionName: "index", parameters: ["id": "5"], attributes: ["class": "btn"]) {
       template2.text("Click here")
     }
@@ -461,12 +461,12 @@ class TemplateTypeTests: XCTestCase, TailorTestable {
   func testRequestParametersGetsKeysFromRequest() {
     var request = controller.request
     request.params.raw = ["id": "5", "color": "red", "size": "10"]
-    let template = EmptyTemplate(state: TemplateState(TestController(
+    let template = EmptyTemplate(state: TemplateState(TestController(state: ControllerState(
       request: request,
       response: Response(),
       actionName: "test",
       callback: controller.callback
-    )))
+    ))))
     let parameters = template.requestParameters("id", "color", "shelf")
     assert(parameters, equals: ["id": "5", "color": "red"], message: "gets a subset of the request parameters")
   }
@@ -474,12 +474,12 @@ class TemplateTypeTests: XCTestCase, TailorTestable {
   func testRequestParameterGetsKeyFromRequest() {
     var request = controller.request
     request.params.raw = ["id": "5", "color": "red", "size": "10"]
-    let template = EmptyTemplate(state: TemplateState(TestController(
+    let template = EmptyTemplate(state: TemplateState(TestController(state: ControllerState(
       request: request,
       response: Response(),
       actionName: "test",
       callback: controller.callback
-      )))
+      ))))
     if let param1 = template.requestParameter("id") {
       assert(param1, equals: "5", message: "gets the parameter from the controller")
     }

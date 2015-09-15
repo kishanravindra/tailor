@@ -473,11 +473,24 @@ public class RouteSet {
         }
       }
       else {
-        let controller = SpecificType(request: request, response: response, actionName: actionName) {
-          newResponse in
-          self.respondWithController(action, actionName: actionName, request: request, response: newResponse, filters: filters, filterIndex: filters.endIndex - 1, inPostProcessing: true, callback: callback)
+        do {
+          let state = ControllerState(request: request, response: response, actionName: actionName) {
+            newResponse in
+            self.respondWithController(action, actionName: actionName, request: request, response: newResponse, filters: filters, filterIndex: filters.endIndex - 1, inPostProcessing: true, callback: callback)
+          }
+          let controller = try SpecificType(state: state)
+          action(controller)()
         }
-        action(controller)()
+        catch let ControllerErrors.UnprocessableRequest(response) {
+          NSLog("Controller threw error due to unprocessable request")
+          callback(response)
+        }
+        catch let error {
+          NSLog("Error initializing controller: %@", String(error))
+          var response = Response()
+          response.responseCode = .BadRequest
+          callback(response)
+        }
       }
     }
   }

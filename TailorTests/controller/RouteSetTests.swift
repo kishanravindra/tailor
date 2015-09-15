@@ -732,6 +732,62 @@ class RouteSetTests: XCTestCase, TailorTestable {
     waitForExpectationsWithTimeout(0, handler: nil)
   }
   
+  func testHandleRequestWithUnprocessableRequestErrorFromControllerPassesAlongResponse() {
+    struct TestController: ControllerType {
+      let name: String
+      let state: ControllerState
+      static let name = "TestController"
+      static func defineRoutes(routes: RouteSet) {
+        routes.route(.Get("test"), to: test, name: "test")
+      }
+      init(state: ControllerState) throws {
+        self.state = state
+        guard let name = state.request.params["name"] as String? else {
+          var response = Response()
+          response.responseCode = .PreconditionFailed
+          response.appendString("Name parameter is required")
+          throw ControllerErrors.UnprocessableRequest(response)
+        }
+        self.name = name
+      }
+      
+      func test() {
+        respondWith(Response())
+      }
+    }
+    
+    routeSet.addControllerRoutes(TestController.self)
+    routeSet.handleRequest(createTestRequest("/test?foo=bar")) {
+      response in
+      self.assert(response.responseCode, equals: .PreconditionFailed)
+      self.assert(response.bodyString, equals: "Name parameter is required")
+    }
+  }
+  
+  func testHandleRequestWithGeneralErrorFromControllerGivesBadRequestResponse() {
+    struct TestController: ControllerType {
+      let state: ControllerState
+      static func defineRoutes(routes: RouteSet) {
+        routes.route(.Get("test"), to: test, name: "test")
+      }
+      init(state: ControllerState) throws {
+        self.state = state
+        throw NSError(domain: "tailorframe.work", code: 1, userInfo: nil)
+      }
+      
+      func test() {
+        respondWith(Response())
+      }
+    }
+    
+    routeSet.addControllerRoutes(TestController.self)
+    routeSet.handleRequest(createTestRequest("/test?foo=bar")) {
+      response in
+      self.assert(response.responseCode, equals: .BadRequest)
+      self.assert(response.bodyString, equals: "")
+    }
+  }
+  
   //MARK: - Generating URLs
     
   func testPathForGetsSimplePath() {

@@ -59,6 +59,11 @@ extension TemplateTestable {
     if user != nil {
       request = Request(sessionData: ["userId": String(user.id ?? 0)])
     }
-    controller = TestedControllerType.init(request: request, response: Response(), actionName: actionName, callback: {_ in})
+    do {
+      controller = try TestedControllerType.init(state: ControllerState(request: request, response: Response(), actionName: actionName, callback: {_ in}))
+    }
+    catch let error {
+      NSLog("Error creating test controller: %@", String(error))
+    }
   }
 }

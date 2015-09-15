@@ -44,6 +44,9 @@ public protocol ControllerType {
     The default implementation uses this information to initialize a
     `ControllerState`, and then invokes the initializer on the controller that
     takes in the state.
+  
+    This has been deprecated in favor of the version that takes a controller
+    state.
 
     - parameter request:      The request that the controller is responding to.
     - parameter response:     The baseline for the response that the controller
@@ -55,18 +58,24 @@ public protocol ControllerType {
     - parameter callback      The callback that the controller should invoke
                               when the response is ready.
     */
-  init(request: Request, response: Response, actionName: String, callback: Connection.ResponseCallback)
+  @available(*, deprecated, message="Use the initializer with a controller state instead")
+  init(request: Request, response: Response, actionName: String, callback: Connection.ResponseCallback) throws
 
   /**
     This method initializes a controller with its state.
 
     We wrap this state in a `ControllerState` to make it easier for controllers
     to conform to the protocol without lots of boiler plate.
+  
+    If the request cannot be processed by the controller, for instance because
+    it is missing a required field, this should throw an exception.
+    The `ControllerErrors.UnprocessableRequest` error can be particularly
+    helpful here.
 
     - parameter state:    The state that tells the controller about the request and
                           how it should respond.
     */
-  init(state: ControllerState)
+  init(state: ControllerState) throws
   
   /**
     This attribute gets the state for the controller.
@@ -212,8 +221,9 @@ extension ControllerType {
     - parameter callback      The callback that the controller should invoke
                               when the response is ready.
     */
-  public init(request: Request, response: Response, actionName: String, callback: Connection.ResponseCallback) {
-    self.init(state: ControllerState(request: request, response: response, actionName: actionName, callback: callback))
+  @available(*, deprecated)
+  public init(request: Request, response: Response, actionName: String, callback: Connection.ResponseCallback) throws {
+    try self.init(state: ControllerState(request: request, response: response, actionName: actionName, callback: callback))
   }
   
   /**
@@ -518,35 +528,50 @@ extension ControllerType {
   /**
     This method calls an action manually on a controller. It is intended for use
     in testing.
+  
+    This method is deprecated because it cannot support exceptions in
+    initialization. If the controller initialization throws an error, this will
+    raise a fatal error.
 
     - parameter actionName:  The name of the action to call.
     - parameter request:     The request to provide to the controller.
     - parameter callback:    The callback to call with the response.
     */
+  @available(*, deprecated, message="This is deprecated because it cannot support exceptions")
   public static func callAction<T:ControllerType>(actionName: String, _ action: (T)->Void->Void, _ request: Request, callback: (Response,T)->()) {
     
     var controller: T
     let response = Response()
-    controller = T(request: request, response: response, actionName: actionName, callback: {_ in })
-    controller = T(
-      request: request,
-      response: response,
-      actionName: actionName,
-      callback: { response in callback(response, controller) }
-    )
-    
-    action(controller)()
+    do {
+      controller = try T(state: ControllerState(request: request, response: response, actionName: actionName, callback: {_ in }))
+      controller = try T(state: ControllerState(
+        request: request,
+        response: response,
+        actionName: actionName,
+        callback: { response in callback(response, controller) }
+      ))
+      
+      action(controller)()
+    }
+    catch {
+      fatalError("Got exception when creating controller")
+    }
   }
   
   /**
     This method calls an action manually on a controller. It is intended for use
     in testing.
+    
+    This method is deprecated because it cannot support exceptions in
+    initialization. If the controller initialization throws an error, this will
+    raise a fatal error.
   
     This will give the controller a request with no parameters.
 
     - parameter action:    The name of the action to call.
     - parameter callback:  The callback to call with the response.
     */
+  @available(*, deprecated, message="This is deprecated because it cannot support exceptions")
   public static func callAction<T:ControllerType>(actionName: String, _ action: (T)->(Void->Void), callback: (Response,T)->()) {
     self.callAction(actionName, action, Request(), callback: callback)
   }
@@ -555,11 +580,16 @@ extension ControllerType {
     This method calls an action manually on a controller. It is intended for use
     in testing.
     
+    This method is deprecated because it cannot support exceptions in
+    initialization. If the controller initialization throws an error, this will
+    raise a fatal error.
+  
     - parameter action:        The name of the action to call.
     - parameter user:          The user for the request.
     - parameter parameters:    The request parameters.
     - parameter callback:      The callback to call with the response.
   */
+  @available(*, deprecated, message="This is deprecated because it cannot support exceptions")
   public static func callAction<T:ControllerType>(actionName: String, _ action: (T)->(Void->Void), user: UserType?, parameters: [String:String], callback: (Response,T)->()) {
     var sessionData = [String:String]()
     if let id = user?.id {
@@ -575,10 +605,15 @@ extension ControllerType {
     This method calls an action manually on a controller. It is intended for use
     in testing.
     
+    This method is deprecated because it cannot support exceptions in
+    initialization. If the controller initialization throws an error, this will
+    raise a fatal error.
+  
     - parameter action:        The name of the action to call.
     - parameter parameters:    The request parameters.
     - parameter callback:      The callback to call with the response.
   */
+  @available(*, deprecated, message="This is deprecated because it cannot support exceptions")
   public static func callAction<T:ControllerType>(actionName: String, _ action: (T)->(Void->Void), parameters: [String:String], callback: (Response,T)->()) {
     self.callAction(actionName, action, user: nil, parameters: parameters, callback: callback)
   }
@@ -587,11 +622,30 @@ extension ControllerType {
     This method calls an action manually on a controller. It is intended for use
     in testing.
     
+    This method is deprecated because it cannot support exceptions in
+    initialization. If the controller initialization throws an error, this will
+    raise a fatal error.
+  
     - parameter action:        The name of the action to call.
     - parameter user:          The user for the request.
     - parameter callback:      The callback to call with the response.
   */
+  @available(*, deprecated, message="This is deprecated because it cannot support exceptions")
   public static func callAction<T:ControllerType>(actionName: String, _ action: (T)->(Void->Void), user: UserType?, callback: (Response,T)->()) {
     self.callAction(actionName, action, user: user, parameters: [:], callback: callback)
   }
+}
+
+/**
+  This enum provides errors that controllers can throw during initialization.
+  */
+public enum ControllerErrors: ErrorType {
+  /**
+    This error indicates that a request did not have enough information for the
+    controller to process it.
+
+    This wraps around a custom response explaining more about the problem with
+    the request.
+    */
+  case UnprocessableRequest(Response)
 }

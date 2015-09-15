@@ -163,7 +163,7 @@ extension ControllerTestable {
 }
 
 extension ControllerType {
-  public init() {
-    self.init(request: Request(), response: Response(), actionName: "index", callback: {_ in})
+  public init() throws {
+    try self.init(state: ControllerState(request: Request(), response: Response(), actionName: "index", callback: {_ in}))
   }
 }

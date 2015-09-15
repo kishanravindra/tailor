@@ -74,7 +74,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
       SecondTestController.defineRoutes(routes)
     }
     
-    controller = TestController(
+    controller = TestController(state: ControllerState(
       request: Request(),
       response: Response(),
       actionName: "index",
@@ -82,7 +82,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
         response in
         self.callback(response)
       }
-    )
+    ))
   }
   
   override func tearDown() {
@@ -93,38 +93,38 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
   func testInitializeSetsUserFromIdInSession() {
     SeedTaskTypeTests.SeedTask.saveSchema()
     SeedTaskTypeTests.SeedTask.saveTable("tailor_alterations")
-    controller = TestController(
+    controller = TestController(state: ControllerState(
       request: Request(sessionData: ["userId": String(user.id!)]),
       response: Response(),
       actionName: "index",
       callback: {
         (response) in
       }
-    )
+    ))
     assert(controller.currentUser?.id, equals: user.id!, message: "sets user to the one with the id given")
   }
   
   func testInitializerSetsUserToNilWithBadId() {
-    controller = TestController(
+    controller = TestController(state: ControllerState(
       request: Request(sessionData: ["userId": String(user.id! + 1)]),
       response: Response(),
       actionName: "index",
       callback: {
         (response) in
       }
-    )
+    ))
     assert(isNil: controller.currentUser, message: "sets user to nil")
   }
   
   func testInitializerSetsUserToNilWithNoId() {
-    controller = TestController(
+    controller = TestController(state: ControllerState(
       request: Request(),
       response: Response(),
       actionName: "index",
       callback: {
         (response) in
       }
-    )
+    ))
     assert(isNil: controller.currentUser, message: "sets user to nil")
   }
   
@@ -268,7 +268,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
   }
   
   func testRespondWithResponseAndNoSessionSetsRequestSessionInfoOnResponse() {
-    controller = TestController(
+    controller = TestController(state: ControllerState(
       request: Request(sessionData: ["A": "B"]),
       response: Response(),
       actionName: "index",
@@ -276,7 +276,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
         response in
         self.callback(response)
       }
-    )
+    ))
     var response = Response()
     response.appendString("Test Body")
     var session = controller.request.session
@@ -328,18 +328,18 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
   }
   
   func testPathForCanGetPathForSameAction() {
-    self.controller = SecondTestController(
+    self.controller = SecondTestController(state: ControllerState(
       request: Request(),
       response: Response(),
       actionName: "index",
       callback: { self.callback($0) }
-    )
+    ))
     let path = self.controller.pathFor(parameters: ["confirmed": "1"])
     assert(path, equals: "/route2?confirmed=1", message: "uses the same controller and action, but adds the parameters")
   }
   
   func testPathForWithParametersInPathReusesParameters() {
-    controller = TestController(
+    controller = TestController(state: ControllerState(
       request: Request(parameters: ["id": "10"]),
       response: Response(),
       actionName: "show",
@@ -347,7 +347,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
         response in
         self.callback(response)
       }
-    )
+    ))
     let path = self.controller.pathFor(TestController.self, actionName: "show")
     assert(path, equals: "/route1/10", message: "gets the url for the controller and action")
   }
@@ -475,7 +475,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     }
     
     
-    controller = SecondTestController(
+    controller = SecondTestController(state: ControllerState(
       request: Request(),
       response: Response(),
       actionName: "index",
@@ -483,7 +483,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
         response in
         self.callback(response)
       }
-    )
+    ))
 
     controller.respondWith(TestTemplate(state: TemplateState(controller)))
     waitForExpectationsWithTimeout(0.01, handler: nil)
@@ -507,7 +507,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
   
   func testSignOutClearsUserIdIdInSession() {
     
-    controller = TestController(
+    controller = TestController(state: ControllerState(
       request: Request(sessionData: ["foo": "bar", "userId": String(user.id!)]),
       response: Response(),
       actionName: "index",
@@ -515,7 +515,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
         response in
         self.callback(response)
       }
-    )
+    ))
     assert(isNotNil: controller.request.session["userId"])
     let newSession = controller.signOut()
     assert(isNil: newSession["userId"])
@@ -568,7 +568,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     let timestamp = 1.hour.ago
     let expectation = expectationWithDescription("callback called")
     
-    controller = TestController(
+    controller = TestController(state: ControllerState(
       request: Request(headers: ["If-Modified-Since": 30.minutes.ago.format(TimeFormat.Rfc822)]),
       response: Response(),
       actionName: "index",
@@ -579,7 +579,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
         self.assert(response.headers["Last-Modified"], equals: timestamp.inTimeZone("GMT").format(TimeFormat.Rfc822))
         self.assert(response.body.length, equals: 0)
       }
-    )
+    ))
     
     controller.cacheWithModificationTime(timestamp) {
       (inout response: Response) -> Void in
@@ -594,7 +594,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     let timestamp = 1.hour.ago
     let expectation = expectationWithDescription("callback called")
     
-    controller = TestController(
+    controller = TestController(state: ControllerState(
       request: Request(headers: ["If-Modified-Since": 2.hours.ago.format(TimeFormat.Rfc822)]),
       response: Response(),
       actionName: "index",
@@ -605,7 +605,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
         self.assert(response.headers["Last-Modified"], equals: timestamp.inTimeZone("GMT").format(TimeFormat.Rfc822))
         self.assert(response.body, equals: data)
       }
-    )
+    ))
     
     controller.cacheWithModificationTime(timestamp) {
       (inout response: Response) -> Void in
@@ -619,7 +619,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     let timestamp = 1.hour.ago
     let expectation = expectationWithDescription("callback called")
     
-    controller = TestController(
+    controller = TestController(state: ControllerState(
       request: Request(),
       response: Response(),
       actionName: "index",
@@ -630,7 +630,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
         self.assert(response.headers["Last-Modified"], equals: timestamp.inTimeZone("GMT").format(TimeFormat.Rfc822))
         self.assert(response.body, equals: data)
       }
-    )
+    ))
     
     controller.cacheWithModificationTime(timestamp) {
       (inout response: Response) -> Void in
@@ -645,7 +645,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     let timestamp = 1.hour.ago
     let expectation = expectationWithDescription("callback called")
     
-    controller = TestController(
+    controller = TestController(state: ControllerState(
       request: Request(),
       response: Response(),
       actionName: "index",
@@ -656,7 +656,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
         self.assert(isNil: response.headers["Last-Modified"])
         self.assert(response.body, equals: data)
       }
-    )
+    ))
     
     controller.cacheWithModificationTime(timestamp) {
       (inout response: Response) -> Void in
@@ -669,7 +669,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
   //MARK: - Localization
   
   func testLocalizationPrefixGetsUnderscoredControllerNameAndAction() {
-    let controller = TestController(request: Request(), response: Response(), actionName: "index", callback: {_ in })
+    let controller = TestController(state: ControllerState(request: Request(), response: Response(), actionName: "index", callback: {_ in }))
     let prefix = controller.localizationPrefix
     assert(prefix, equals: "tailor_tests.test_controller.index")
   }
@@ -696,7 +696,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
   
   //MARK: - Test Helpers
   
-  func testCallActionCanCallAction() {
+  @available(*, deprecated) func testCallActionCanCallAction() {
     let expectation = expectationWithDescription("respond method called")
     struct TestController: ControllerType {
       var state: ControllerState
@@ -721,7 +721,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     waitForExpectationsWithTimeout(0.1, handler: nil)
   }
   
-  func testCallActionCanCallActionWithImplicitRequest() {
+  @available(*, deprecated) func testCallActionCanCallActionWithImplicitRequest() {
     let expectation = expectationWithDescription("respond method called")
     TestController.callAction("index", TestController.indexAction) {
       response, _ in
@@ -731,7 +731,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
-  func testCallActionCanCallActionWithParameters() {
+  @available(*, deprecated) func testCallActionCanCallActionWithParameters() {
     let expectation = expectationWithDescription("respond method called")
     struct TestController: ControllerType {
       var state: ControllerState
@@ -756,7 +756,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
-  func testCallActionCanCallActionWithUserAndParameters() {
+  @available(*, deprecated) func testCallActionCanCallActionWithUserAndParameters() {
     let expectation = expectationWithDescription("respond method called")
     let user = TestUser().save()!
     TestController.callAction("index", TestController.indexAction, user: user, parameters: ["id": "5"]) {
@@ -769,7 +769,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
-  func testCallActionCanCallActionWithUser() {
+  @available(*, deprecated) func testCallActionCanCallActionWithUser() {
     let expectation = expectationWithDescription("respond method called")
     let user = TestUser().save()!
     TestController.callAction("index", TestController.indexAction, user: user) {

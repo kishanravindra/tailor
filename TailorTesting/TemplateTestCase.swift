@@ -45,7 +45,12 @@ public class TemplateTestCase: TailorTestCase {
     if user != nil {
       request = Request(sessionData: ["userId": String(user.id ?? 0)])
     }
-    controller = type.init(request: request, response: Response(), actionName: actionName, callback: {_ in})
+    do {
+      controller = try type.init(state: ControllerState(request: request, response: Response(), actionName: actionName, callback: {_ in}))
+    }
+    catch let error {
+      NSLog("Error initializing controller: %@", String(error))
+    }
   }
   
   /**

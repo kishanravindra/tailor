@@ -26,7 +26,7 @@ class TemplateFormTests: XCTestCase, TailorTestable {
   override func setUp() {
     super.setUp()
     setUpTestCase()
-    controller = TestController(request: Request(), response: Response(), actionName: "index", callback: {response in })
+    controller = TestController(state: ControllerState(request: Request(), response: Response(), actionName: "index", callback: {response in }))
     form = TemplateForm(controller: controller, name: "hat")
   }
   
@@ -66,7 +66,7 @@ class TemplateFormTests: XCTestCase, TailorTestable {
   
   func testFormWithCsrfKeyPutsKeyInTemplate() {
     
-    let controller = TestController(request: Request(sessionData: ["csrfKey": "myKey"]), response: Response(), actionName: "index", callback: {response in })
+    let controller = TestController(state: ControllerState(request: Request(sessionData: ["csrfKey": "myKey"]), response: Response(), actionName: "index", callback: {response in }))
     form = TemplateForm(controller: controller)
     assert(form.template.contents, equals: "<input name=\"_csrfKey\" type=\"hidden\" value=\"myKey\"></input>")
   }

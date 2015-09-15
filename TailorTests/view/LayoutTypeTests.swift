@@ -20,7 +20,7 @@ class LayoutTypeTests: XCTestCase, TailorTestable {
       static func defineRoutes(routes: RouteSet) {}
     }
     
-    let controller = TestController(request: Request(), response: Response(), actionName: "index", callback: {response in})
+    let controller = TestController(state: ControllerState(request: Request(), response: Response(), actionName: "index", callback: {response in}))
     let template = TestTemplate(state: TemplateState(controller))
     var layout = EmptyLayout(controller: controller, template: template)
     layout.generate()
