@@ -666,6 +666,62 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     waitForExpectationsWithTimeout(0, handler: nil)
   }
   
+  //MARK: - Request Parameters
+  
+  func testFetchRecordWithValidIdFetchesRecord() {
+    Hat().save()
+    let hat = Hat().save()!
+    let request = Request(parameters: ["id": String(hat.id!)])
+    assert(try? EmptyController.fetchRecord(ControllerState(request: request)), equals: hat)
+  }
+  
+  func testFetchRecordWithInvalidIdThrowsException() {
+    Hat().save()
+    let hat = Hat().save()!
+    let request = Request(parameters: ["id": String(hat.id! + 1)])
+    do {
+      let _ = try EmptyController.fetchRecord(ControllerState(request: request)) as Hat
+      assert(false, message: "should throw exception")
+    }
+    catch let ControllerErrors.UnprocessableRequest(response) {
+      assert(response.responseCode, equals: .NotFound)
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
+  func testFetchRecordWithNoIdGivesFallback() {
+    Hat().save()
+    let request = Request()
+    let record: Hat? = try? EmptyController.fetchRecord(ControllerState(request: request), fallback: Hat())
+    assert(isNotNil: record)
+    assert(isNil: record?.id)
+  }
+  
+  func testFetchRecordWithNoIdOrFallbackThrowsException() {
+    _ = Hat().save()
+    let request = Request()
+    do {
+      let _ = try EmptyController.fetchRecord(ControllerState(request: request)) as Hat
+      assert(false, message: "should throw exception")
+    }
+    catch let ControllerErrors.UnprocessableRequest(response) {
+      assert(response.responseCode, equals: .NotFound)
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
+  func testFetchRecordCanFetchRecordWithDifferentParameterName() {
+    Hat().save()
+    let hat = Hat().save()!
+    let request = Request(parameters: ["hatId": String(hat.id!)])
+    assert(try? EmptyController.fetchRecord(ControllerState(request: request), from: "hatId"), equals: hat)
+  }
+
+  
   //MARK: - Localization
   
   func testLocalizationPrefixGetsUnderscoredControllerNameAndAction() {

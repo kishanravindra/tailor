@@ -489,6 +489,40 @@ extension ControllerType {
     return self.signIn(user)
   }
   
+  //MARK: - Request Parameters
+  
+  /**
+    This method fetches a record based from request parameters.
+    
+    If the record cannot be found, this will throw an UnprocessableRequest
+    exception with a 404 response.
+    
+    If a fallback is provided, and there is no value for the given parameter,
+    this will use the fallback. If there is a value, but it doesn't match any
+    record's id, this will *not* use the fallback.
+    
+    - parameter state:        The controller state with the request.
+    - parameter parameter:    The name of the parameter containing the id.
+    - parameter fallback:     A fallback to use if there is no value for the
+                              parameter.
+    - returns:                The fetched record.
+    */
+  public static func fetchRecord<T: Persistable>(state: ControllerState, from parameter: String = "id", fallback: T? = nil) throws -> T {
+    func failure(allowFallback allowFallback: Bool) throws -> T {
+      var response = Response()
+      response.responseCode = .NotFound
+      if allowFallback {
+        if let value = fallback {
+          return value
+        }
+      }
+      throw ControllerErrors.UnprocessableRequest(response)
+    }
+    guard let id = state.request.params[parameter] as String? else { return try failure(allowFallback: true) }
+    guard let value = Query<T>().filter(["id": id]).first() else { return try failure(allowFallback: false) }
+    return value
+  }
+  
   //MARK: - Caching
   
   /**

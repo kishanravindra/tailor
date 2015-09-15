@@ -19,6 +19,39 @@ public struct AuthenticationFilter: RequestFilterType, Equatable {
   }
   
   /**
+    This method generates a redirect response from an authentication failure.
+
+    - parameter response:   The initial response from the other filters.
+    - returns:              The redirect response.
+    */
+  private func redirectResponse(var response: Response) -> Response {
+    response.responseCode = .SeeOther
+    response.headers["Location"] = signInUrl
+    response.appendString("<html><body>You are being <a href=\"\(signInUrl)\">redirected</a>.")
+    return response
+  }
+  
+  /**
+    This method gets a user from the request information.
+    
+    If the user cannot be fetched, this will throw an error giving a redirect
+    to the sign-in page.
+  
+    - parameter request:    The request that we are responding to.
+    - parameter response:   The initial response from the other filters.
+    - returns:              The fetched user.
+    */
+  public func fetchUser<T: UserType>(request: Request, response: Response) throws -> T {
+    let userId = Int(request.session["userId"] ?? "0") ?? 0
+    let query = T.query.filter(["id": userId]).limit(1)
+    let record = query.allRecords().first
+    guard let user = record as? T else {
+      throw ControllerErrors.UnprocessableRequest(redirectResponse(response))
+    }
+    return user
+  }
+  
+  /**
     This method does the preprocessing for the filter.
 
     This will look for a user using the userId in the request's session. If the
@@ -29,14 +62,11 @@ public struct AuthenticationFilter: RequestFilterType, Equatable {
     - parameter response:   The response so far.
     - parameter callback:   The callback to call with the response.
     */
-  public func preProcess(request: Request, var response: Response, callback: (Request, Response, stop: Bool) -> Void) {
+  public func preProcess(request: Request, response: Response, callback: (Request, Response, stop: Bool) -> Void) {
     let session = request.session
     let query = Application.configuration.userType?.query.filter(["id": session["userId"] ?? ""])
     if query?.isEmpty() ?? true {
-      response.responseCode = .SeeOther
-      response.headers["Location"] = signInUrl
-      response.appendString("<html><body>You are being <a href=\"\(signInUrl)\">redirected</a>.")
-      callback(request, response, stop: true)
+      callback(request, redirectResponse(response), stop: true)
     }
     else {
       callback(request, response, stop: false)

@@ -12,6 +12,45 @@ class AuthenticationFilterTests: XCTestCase, TailorTestable {
     TestUser().save()
   }
   
+  func testFetchUserWithValidUserIdReturnsUser() {
+    let request = Request(sessionData: ["userId": "1"])
+    let response = Response()
+    let user = try? filter.fetchUser(request, response: response) as TestUser
+    assert(user?.id, equals: 1)
+  }
+  
+  func testFetchUserWithInvalidUserIdRedirectsToSignInUrl() {
+    let request = Request(sessionData: ["userId": "2"])
+    let response = Response()
+    do {
+      try filter.fetchUser(request, response: response) as TestUser
+      assert(false, message: "should throw an exception")
+    }
+    catch let ControllerErrors.UnprocessableRequest(response) {
+      assert(response.responseCode, equals: .SeeOther)
+      assert(response.headers["Location"], equals: filter.signInUrl)
+    }
+    catch {
+      assert(false, message: "threw unexpected error")
+    }
+  }
+  
+  func testFetchUserWithNoUserIdRedirectsToSignInUrl() {
+    let request = Request()
+    let response = Response()
+    do {
+      try filter.fetchUser(request, response: response) as TestUser
+      assert(false, message: "should throw an exception")
+    }
+    catch let ControllerErrors.UnprocessableRequest(response) {
+      assert(response.responseCode, equals: .SeeOther)
+      assert(response.headers["Location"], equals: filter.signInUrl)
+    }
+    catch {
+      assert(false, message: "threw unexpected error")
+    }
+  }
+  
   func testPreProcessWithValidUserIdDoesNotChangeResponse() {
     let request = Request(sessionData: ["userId": "1"])
     let response = Response()
