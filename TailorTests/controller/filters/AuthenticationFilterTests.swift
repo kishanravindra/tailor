@@ -26,7 +26,7 @@ class AuthenticationFilterTests: XCTestCase, TailorTestable {
       try filter.fetchUser(request, response: response) as TestUser
       assert(false, message: "should throw an exception")
     }
-    catch let ControllerErrors.UnprocessableRequest(response) {
+    catch let ControllerError.UnprocessableRequest(response) {
       assert(response.responseCode, equals: .SeeOther)
       assert(response.headers["Location"], equals: filter.signInUrl)
     }
@@ -42,7 +42,7 @@ class AuthenticationFilterTests: XCTestCase, TailorTestable {
       try filter.fetchUser(request, response: response) as TestUser
       assert(false, message: "should throw an exception")
     }
-    catch let ControllerErrors.UnprocessableRequest(response) {
+    catch let ControllerError.UnprocessableRequest(response) {
       assert(response.responseCode, equals: .SeeOther)
       assert(response.headers["Location"], equals: filter.signInUrl)
     }

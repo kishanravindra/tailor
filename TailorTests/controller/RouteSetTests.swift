@@ -746,7 +746,7 @@ class RouteSetTests: XCTestCase, TailorTestable {
           var response = Response()
           response.responseCode = .PreconditionFailed
           response.appendString("Name parameter is required")
-          throw ControllerErrors.UnprocessableRequest(response)
+          throw ControllerError.UnprocessableRequest(response)
         }
         self.name = name
       }

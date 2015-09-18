@@ -481,7 +481,7 @@ public class RouteSet {
           let controller = try SpecificType(state: state)
           action(controller)()
         }
-        catch let ControllerErrors.UnprocessableRequest(response) {
+        catch let ControllerError.UnprocessableRequest(response) {
           NSLog("Controller threw error due to unprocessable request")
           callback(response)
         }

@@ -2,7 +2,7 @@ import TailorTesting
 import Tailor
 import XCTest
 
-class JsonErrorsTests: XCTestCase, TailorTestable {
+class JsonErrorTests: XCTestCase, TailorTestable {
   override func setUp() {
     super.setUp()
     setUpTestCase()

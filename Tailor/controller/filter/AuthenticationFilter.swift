@@ -46,7 +46,7 @@ public struct AuthenticationFilter: RequestFilterType, Equatable {
     let query = T.query.filter(["id": userId]).limit(1)
     let record = query.allRecords().first
     guard let user = record as? T else {
-      throw ControllerErrors.UnprocessableRequest(redirectResponse(response))
+      throw ControllerError.UnprocessableRequest(redirectResponse(response))
     }
     return user
   }

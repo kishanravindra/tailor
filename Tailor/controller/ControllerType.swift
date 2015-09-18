@@ -69,7 +69,7 @@ public protocol ControllerType {
   
     If the request cannot be processed by the controller, for instance because
     it is missing a required field, this should throw an exception.
-    The `ControllerErrors.UnprocessableRequest` error can be particularly
+    The `ControllerError.UnprocessableRequest` error can be particularly
     helpful here.
 
     - parameter state:    The state that tells the controller about the request and
@@ -516,7 +516,7 @@ extension ControllerType {
           return value
         }
       }
-      throw ControllerErrors.UnprocessableRequest(response)
+      throw ControllerError.UnprocessableRequest(response)
     }
     guard let id = state.request.params[parameter] as String? else { return try failure(allowFallback: true) }
     guard let value = Query<T>().filter(["id": id]).first() else { return try failure(allowFallback: false) }
@@ -673,7 +673,7 @@ extension ControllerType {
 /**
   This enum provides errors that controllers can throw during initialization.
   */
-public enum ControllerErrors: ErrorType {
+public enum ControllerError: ErrorType {
   /**
     This error indicates that a request did not have enough information for the
     controller to process it.

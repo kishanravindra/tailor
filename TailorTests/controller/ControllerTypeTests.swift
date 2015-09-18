@@ -683,7 +683,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
       let _ = try EmptyController.fetchRecord(ControllerState(request: request)) as Hat
       assert(false, message: "should throw exception")
     }
-    catch let ControllerErrors.UnprocessableRequest(response) {
+    catch let ControllerError.UnprocessableRequest(response) {
       assert(response.responseCode, equals: .NotFound)
     }
     catch {
@@ -706,7 +706,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
       let _ = try EmptyController.fetchRecord(ControllerState(request: request)) as Hat
       assert(false, message: "should throw exception")
     }
-    catch let ControllerErrors.UnprocessableRequest(response) {
+    catch let ControllerError.UnprocessableRequest(response) {
       assert(response.responseCode, equals: .NotFound)
     }
     catch {
