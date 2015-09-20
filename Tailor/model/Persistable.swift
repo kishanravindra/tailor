@@ -211,6 +211,11 @@ extension Persistable {
       parameterString += "?"
       parameters.append(databaseValue)
     }
+    
+    if values.isEmpty {
+      query += "id"
+      parameterString = "NULL"
+    }
     query += ") VALUES (\(parameterString))"
     
     let results = Application.sharedDatabaseConnection().executeQuery(query, parameters: parameters)

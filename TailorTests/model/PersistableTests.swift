@@ -202,6 +202,36 @@ class PersistableTests: XCTestCase, TailorTestable {
     }
   }
   
+  func testSaveInsertCanSaveRecordWithNoFieldsTwo() {
+    struct TestHat: Persistable {
+      let id: Int?
+      init() { self.id = nil }
+      init(databaseRow: DatabaseRow) throws {
+        self.id = try databaseRow.read("id")
+      }
+      func valuesToPersist() -> [String : DatabaseValueConvertible?] {
+        return [:]
+      }
+      static let tableName = "hats"
+    }
+    TestConnection.withTestConnection {
+      connection in
+      self.assert(connection.queries.count, equals: 0)
+      let hat = TestHat()
+      hat.save()
+      self.assert(connection.queries.count, equals: 1, message: "executes one query")
+      if connection.queries.count > 0 {
+        let (query, parameters) = connection.queries[0]
+        self.assert(query, equals: "INSERT INTO hats (id) VALUES (NULL)", message: "has the query to insert the record")
+        self.assert(parameters.isEmpty, message: "ha no parameters for the query")
+      }
+      
+    }
+    let hat = TestHat().save()
+    assert(isNotNil: hat, message: "can save a record with no fields")
+    assert(isNotNil: hat?.id, message: "still sets the primary key with no fields")
+  }
+  
   func testSaveUpdateCreatesUpdateQuery() {
     var shelf = Shelf(name: "Top Shelf", storeId: 1)
     shelf = shelf.save() ?? shelf

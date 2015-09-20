@@ -81,7 +81,7 @@ public final class DatabaseLocalization: LocalizationSource {
     }
     
     /** A query for fetching translations. */
-    static let query = Query<Translation>()
+    public static let query = Query<Translation>()
   }
   
   /**
