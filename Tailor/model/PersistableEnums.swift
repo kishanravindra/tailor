@@ -29,8 +29,6 @@ public protocol PersistableEnum: DatabaseValueConvertible {
   This protocol describes an enum that can be persisted to a string value in
   the database.
 
-  This can only be implemented by enum types that have strings as raw values.
-
   The only method you need to implement for the protocol is the `cases`
   method. The protocol provides the rest.
   */
@@ -41,8 +39,6 @@ public protocol StringPersistableEnum: PersistableEnum {
   This protocol describes an enum that can be persisted to an integer value
   in the database, which will be mapped to a foreign key holding all the
   possible enum cases.
-
-  This can only be implemented by enum types that have strings as raw values.
 
   The only method you need to implement for the protocol is the `cases`
   method. The protocol provides the rest.
