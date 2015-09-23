@@ -46,7 +46,7 @@ public protocol StringPersistableEnum: PersistableEnum {
   This requires that the table has two columns: `id` and `name`. `id` must be
   an auto-incrementing primary key, and `name` must be a string column.
   */
-public protocol TablePersistableEnum: PersistableEnum, ModelType {
+public protocol TablePersistableEnum: PersistableEnum, Persistable {
   /**
     This method gets the name of the table that holds the cases for the enum.
 
@@ -195,5 +195,21 @@ public extension TablePersistableEnum {
     */
   var databaseValue: DatabaseValue {
     return self.id?.databaseValue ?? .Null
+  }
+  
+  /**
+    This method creates an enum case from a row in the database.
+  
+    - parameter databaseRow:    The row in the database.
+    */
+  init(databaseRow: DatabaseRow) throws {
+    self = try databaseRow.readEnum(name: "name")
+  }
+  
+  /**
+    This method gets the values that we save in the database for an enum record.
+    */
+  func valuesToPersist() -> [String:DatabaseValueConvertible?] {
+    return ["name": caseName]
   }
 }

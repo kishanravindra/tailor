@@ -89,4 +89,15 @@ class PersistableEnumTests: XCTestCase, TailorTestable {
     assert(HatType.fromDatabaseValue(3.databaseValue) == nil)
   }
 
+  func testDatabasePersistableEnumGetsValuesToPersistWithCaseName() {
+    let record = HatType.WideBrim
+    let values = record.valuesToPersist()
+    assert(Array(values.keys), equals: ["name"])
+    assert(values["name"] as? String, equals: record.caseName)
+  }
+  
+  func testDatabasePersistableEnumCanBeInitializedFromDatabaseRowWithCaseName() {
+    let record = try? HatType(databaseRow: DatabaseRow(rawData: ["name": "wide_brim"]))
+    assert(record, equals: HatType.WideBrim)
+  }
 }
