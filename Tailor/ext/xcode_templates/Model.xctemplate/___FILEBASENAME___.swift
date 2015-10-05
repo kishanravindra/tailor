@@ -1,8 +1,8 @@
 import Tailor
 
-struct ___FILEBASENAME___ : Persistable {
+struct ___FILEBASENAME___ : Persistable, Equatable {
   /** The id for the record. */
-  let id: Int?
+  let id: UInt
 
   /**
     This method initializes a record from a row in the database.
@@ -10,7 +10,7 @@ struct ___FILEBASENAME___ : Persistable {
     You should extract the fields that your record needs, and return nil if any
     required fields are missing.
 
-    :param: databaseRow   The row in the database.
+    - parameter databaseRow:  The row in the database.
     */
   init(databaseRow: DatabaseRow) throws {
     self.id = try databaseRow.read("id")
@@ -25,6 +25,6 @@ struct ___FILEBASENAME___ : Persistable {
     return [:]
   }
   
-  /** The name of the table that holds posts. */
-  static var tableName: String { return "___FILEBASENAME___s" }
+  /** A query for fetching records. */
+  static let query = Query<___FILEBASENAME___>()
 }
