@@ -41,14 +41,14 @@ public final class DatabaseLocalization: LocalizationSource {
       self.translationKey = translationKey
       self.locale = locale
       self.translatedText = translatedText
-      self.id = nil
+      self.id = 0
     }
 
 
     //MARK: - Persistence
 
     /** The primary key of the record */
-    public let id: Int?
+    public let id: UInt
     
     /** The name of the table in the database. */
     public static var tableName: String { return "tailor_translations" }

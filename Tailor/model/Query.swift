@@ -370,11 +370,11 @@ extension QueryType {
         Application.cache.write(cacheKey, value: ids.joinWithSeparator(","), expireIn: nil)
         return results
       }
-      let ids = idString.componentsSeparatedByString(",").map { Int($0) ?? 0 } ?? []
+      let ids = idString.componentsSeparatedByString(",").map { UInt($0) ?? 0 } ?? []
       let results = self.dynamicType.init().filter("id IN (\(idString))").allRecords()
       return results.sort {
         (record1, record2) -> Bool in
-        guard let id1 = record1.id, id2 = record2.id else { return false }
+        let id1 = record1.id, id2 = record2.id
         guard let index1 = ids.indexOf(id1), let index2 = ids.indexOf(id2) else { return false }
         return index1 < index2
       }
@@ -590,6 +590,15 @@ public struct Query<RecordType: Persistable>: QueryType, Equatable {
     - returns:   The fetched record.
     */
   public func find(id: Int) -> RecordType? {
+    return self.filter(["id": id]).first()
+  }
+  
+  /**
+    This method finds a record with an id.
+    
+    - returns:   The fetched record.
+    */
+  public func find(id: UInt) -> RecordType? {
     return self.filter(["id": id]).first()
   }
 }

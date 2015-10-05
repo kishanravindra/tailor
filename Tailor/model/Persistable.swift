@@ -14,7 +14,7 @@ public protocol Persistable: ModelType, JsonEncodable {
   init(databaseRow: DatabaseRow) throws
   
   /** The unique identifier for the record. */
-  var id: Int? { get }
+  var id: UInt { get }
   
   /**
     This method provides name of the table that backs this class.
@@ -50,9 +50,7 @@ public protocol Persistable: ModelType, JsonEncodable {
 //MARK: - Comparison
 
 public func ==<T: Persistable>(lhs: T, rhs: T) -> Bool {
-  return  lhs.id != nil &&
-    rhs.id != nil &&
-    lhs.id == rhs.id &&
+  return lhs.id == rhs.id &&
     lhs.dynamicType.tableName == rhs.dynamicType.tableName
 }
 extension Persistable {
@@ -84,6 +82,9 @@ extension Persistable {
     }
     return nil
   }
+  
+  /** Whether the record has been saved to the database. */
+  public var persisted: Bool { return self.id > 0 }
 
   /**
     This method saves a record to the database.
@@ -108,7 +109,7 @@ extension Persistable {
       values["updated_at"] = Timestamp.now()
     }
     
-    if self.id != nil {
+    if self.persisted {
       return updateRecord(values)
     }
     else {
@@ -120,10 +121,8 @@ extension Persistable {
     This method deletes the record from the database.
     */
   public func destroy() {
-    if let id = self.id {
-      let query = "DELETE FROM \(self.dynamicType.tableName) WHERE id = ?"
-      Application.sharedDatabaseConnection().executeQuery(query, parameters: [id.databaseValue])
-    }
+    let query = "DELETE FROM \(self.dynamicType.tableName) WHERE id = ?"
+    Application.sharedDatabaseConnection().executeQuery(query, parameters: [id.databaseValue])
   }
 
   /**
@@ -239,7 +238,6 @@ extension Persistable {
     var parameters = [DatabaseValue]()
     var mappedValues = [String:DatabaseValue]()
     
-    guard let id = self.id else { return nil }
     var firstParameter = true
     for key in values.keys.sort() {
       guard let value = values[key] else { continue }
@@ -304,7 +302,7 @@ extension Persistable {
     */
   public func toJson() -> JsonPrimitive {
     let values = self.valuesToPersist().map { $0?.databaseValue.toJson() ?? .Null }
-    return .Dictionary(merge(values, ["id": self.id?.toJson() ?? .Null]))
+    return .Dictionary(merge(values, ["id": self.id.toJson() ?? .Null]))
   }
 }
 

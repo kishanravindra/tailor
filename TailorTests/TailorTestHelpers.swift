@@ -45,16 +45,16 @@ final class TestConnection : DatabaseDriver {
 }
 
 struct Hat : Persistable, Equatable {
-  let id: Int?
+  let id: UInt
   var brimSize: Int
   var color: String
-  var shelfId: Int?
+  var shelfId: UInt?
   var owner: String?
   var createdAt: Timestamp?
   var updatedAt: Timestamp?
   static let query = Query<Hat>()
   
-  init(brimSize: Int = 0, color: String = "", shelfId: Int? = nil, owner: String? = nil, id: Int? = nil) {
+  init(brimSize: Int = 0, color: String = "", shelfId: UInt? = nil, owner: String? = nil, id: UInt = 0) {
     self.brimSize = brimSize
     self.color = color
     self.shelfId = shelfId
@@ -84,12 +84,12 @@ struct Hat : Persistable, Equatable {
 }
 
 struct Shelf : Persistable, Equatable {
-  let id: Int?
+  let id: UInt
   var name: String?
   var storeId: Int
   static let query = Query<Shelf>()
   
-  init(name: String?, storeId: Int = 0, id: Int? = nil) {
+  init(name: String?, storeId: Int = 0, id: UInt = 0) {
     self.name = name
     self.storeId = storeId
     self.id = id
@@ -116,10 +116,10 @@ struct Shelf : Persistable, Equatable {
 }
 
 struct Store : Persistable {
-  let id: Int?
+  let id: UInt
   var name: String
   
-  init(name: String, id: Int?=nil) {
+  init(name: String, id: UInt=0) {
     self.name = name
     self.id = id
   }
@@ -171,12 +171,12 @@ extension NSObject {
 
 
 struct TestUser: UserType, Equatable {
-  let id: Int?
+  let id: UInt
   var emailAddress: String = ""
   var encryptedPassword: String = ""
   
   init() {
-    id = nil
+    id = 0
     emailAddress = "test@test.com"
     encryptedPassword = "Foo"
   }

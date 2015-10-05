@@ -4,14 +4,14 @@ import XCTest
 
 class UserTypeTests: XCTestCase, TailorTestable {
   struct TrackableUser: TrackableUserType {
-    let id: Int?
+    let id: UInt
     var emailAddress: String = ""
     var encryptedPassword: String = ""
     var lastSignInIp: String = ""
     var lastSignInTime: Timestamp = Timestamp(epochSeconds: 0)
     
     init() {
-      id = nil
+      id = 0
     }
     
     init(databaseRow: DatabaseRow) throws {
@@ -35,13 +35,13 @@ class UserTypeTests: XCTestCase, TailorTestable {
   }
   
   struct LockableUser: LockableUserType {
-    let id: Int?
+    let id: UInt
     var emailAddress: String = ""
     var encryptedPassword: String = ""
     var failedLogins: Int = 0
     
     init() {
-      id = nil
+      id = 0
     }
     
     init(databaseRow: DatabaseRow) throws {
@@ -89,7 +89,7 @@ class UserTypeTests: XCTestCase, TailorTestable {
   func testAuthenticateReturnsUserWithMatchingEmailAndPassword() {
     do {
       let result = try TestUser.authenticate("test@test.com", password: "Monkey")
-      assert(result.id, equals: user.id!, message: "returns the matching user")
+      assert(result.id, equals: user.id, message: "returns the matching user")
     }
     catch {
       assert(false, message: "threw unexpected error")

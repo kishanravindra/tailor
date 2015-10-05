@@ -271,6 +271,15 @@ extension Int: DatabaseValueConvertible {
 }
 
 /**
+  This extension provides a helper for converting an integer into a wrapped
+  database value.
+  */
+extension UInt: DatabaseValueConvertible {
+  /** The wrapped database value. */
+  public var databaseValue: DatabaseValue { return DatabaseValue.Integer(Int(self)) }
+}
+
+/**
   This extension provides a helper for converting a double into a wrapped
   database value.
   */

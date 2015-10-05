@@ -174,7 +174,7 @@ public extension TablePersistableEnum {
     This will always return a value, unless the table does not have the
     necessary structure to support the protocol.
     */
-  var id: Int? {
+  var id: UInt {
     let connection = Application.sharedDatabaseConnection()
     let tableName = self.dynamicType.tableName
     let caseName = self.caseName
@@ -182,10 +182,10 @@ public extension TablePersistableEnum {
     if result.isEmpty {
       result = connection.executeQuery("INSERT INTO \(tableName) (name) VALUES (?)", caseName)
       if result.isEmpty {
-        return nil
+        return 0
       }
     }
-    return result[0].data["id"]?.intValue
+    return UInt(result[0].data["id"]?.intValue ?? 0)
   }
   
   /**
@@ -194,7 +194,7 @@ public extension TablePersistableEnum {
     This just be the id.
     */
   var databaseValue: DatabaseValue {
-    return self.id?.databaseValue ?? .Null
+    return self.id.databaseValue
   }
   
   /**

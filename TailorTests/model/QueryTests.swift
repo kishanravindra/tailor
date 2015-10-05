@@ -363,7 +363,7 @@ class QueryTests: XCTestCase, TailorTestable {
     Hat(color: "red").save()!
     let hat2 = Hat(color: "black").save()!
     
-    if let id=hat2.id, let record = Hat.query.find(id) {
+    if let record = Hat.query.find(hat2.id) {
       assert(record, equals: hat2, message: "fetches the correct record")
     }
     else {
@@ -375,8 +375,8 @@ class QueryTests: XCTestCase, TailorTestable {
     Hat(color: "red").save()!
     let hat2 = Hat(color: "black").save()!
     
-    XCTAssertTrue(Hat.query.find(hat2.id! + 1) == nil, "returns nil with no matching id")
-    XCTAssertTrue(Hat.query.filter(["color": "red"]).find(hat2.id!) == nil, "returns nil when id fails other constraints")
+    XCTAssertTrue(Hat.query.find(hat2.id + 1) == nil, "returns nil with no matching id")
+    XCTAssertTrue(Hat.query.filter(["color": "red"]).find(hat2.id) == nil, "returns nil when id fails other constraints")
   }
   
   func testCountGetsNumberOfMatchingRecords() {

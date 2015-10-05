@@ -113,6 +113,33 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  func testReadWithUnsignedIntegerValueCanReadIntegerValue() {
+    let row = DatabaseRow(data: ["key1": DatabaseValue.Integer(12)])
+    do {
+      let value = try row.read("key1") as UInt
+      assert(value, equals: 12)
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
+  func testReadWithUnsignedIntegerValueThrowsExceptionForStringValue() {
+    let row = DatabaseRow(data: ["key1": DatabaseValue.String("hello")])
+    do {
+      _ = try row.read("key1") as UInt
+      assert(false, message: "threw unexpected exception")
+    }
+    catch let DatabaseError.FieldType(name, actualType, desiredType) {
+      assert(name, equals: "key1")
+      assert(actualType, equals: "String")
+      assert(desiredType, equals: "UInt")
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
   func testReadWithTimestampValueCanReadTimestampValue() {
     let row = DatabaseRow(data: ["key1": DatabaseValue.Timestamp(Timestamp.now())])
     do {
@@ -399,7 +426,7 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
   
   func testReadWithPersistableTypeWithOptionalWithMissingIdIsNil() {
     let record = Hat().save()!
-    let row = DatabaseRow(rawData: ["hats_id": record.id!])
+    let row = DatabaseRow(rawData: ["hats_id": record.id])
     do {
       let result = try row.read("hat_id") as Hat?
       assert(isNil: result)
@@ -411,7 +438,7 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
   
   func testReadWithPersistableTypeWithOptionalWithValidIdReturnsRecord() {
     let record = Hat().save()!
-    let row = DatabaseRow(rawData: ["hat_id": record.id!])
+    let row = DatabaseRow(rawData: ["hat_id": record.id])
     do {
       let result = try row.read("hat_id") as Hat?
       assert(result, equals: record)
@@ -423,7 +450,7 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
   
   func testReadWithPersistableTypeWithOptionalWithInvalidIdReturnsNil() {
     let record = Hat().save()!
-    let row = DatabaseRow(rawData: ["hat_id": record.id! + 1])
+    let row = DatabaseRow(rawData: ["hat_id": record.id + 1])
     do {
       let result = try row.read("hat_id") as Hat?
       assert(isNil: result)
@@ -452,7 +479,7 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
   
   func testReadWithPersistableTypeWithValidIdReturnsRecord() {
     let record = Hat().save()!
-    let row = DatabaseRow(rawData: ["hat_id": record.id!])
+    let row = DatabaseRow(rawData: ["hat_id": record.id])
     do {
       let result = try row.read("hat_id") as Hat
       assert(result, equals: record)
@@ -464,7 +491,7 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
   
   func testReadWithPersistableTypeWithInvalidIdThrowsException() {
     let record = Hat().save()!
-    let row = DatabaseRow(rawData: ["hat_id": record.id! + 1])
+    let row = DatabaseRow(rawData: ["hat_id": record.id + 1])
     do {
       _ = try row.read("hat_id") as Hat
     }
@@ -497,7 +524,7 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     typealias HatType = PersistableEnumTests.HatType
     let color1 = PersistableEnumTests.HatType.Feathered
     _ = PersistableEnumTests.HatType.WideBrim
-    let row = DatabaseRow(data: ["key1": color1.id!.databaseValue])
+    let row = DatabaseRow(data: ["key1": color1.id.databaseValue])
     do {
       let value = try row.readEnum(id: "key1") as PersistableEnumTests.HatType?
       assert(value, equals: .Feathered)
@@ -511,7 +538,7 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     typealias HatType = PersistableEnumTests.HatType
     _ = PersistableEnumTests.HatType.Feathered
     let color2 = PersistableEnumTests.HatType.WideBrim
-    let row = DatabaseRow(data: ["key1": (color2.id! + 1).databaseValue])
+    let row = DatabaseRow(data: ["key1": (color2.id + 1).databaseValue])
     do {
       let value = try row.readEnum(id: "key1") as PersistableEnumTests.HatType?
       assert(isNil: value)
@@ -525,7 +552,7 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     typealias HatType = PersistableEnumTests.HatType
     let color1 = PersistableEnumTests.HatType.Feathered
     _ = PersistableEnumTests.HatType.WideBrim
-    let row = DatabaseRow(data: ["key2": color1.id!.databaseValue])
+    let row = DatabaseRow(data: ["key2": color1.id.databaseValue])
     do {
       let value = try row.readEnum(id: "key1") as PersistableEnumTests.HatType?
       assert(isNil: value)
@@ -558,7 +585,7 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     typealias HatType = PersistableEnumTests.HatType
     let color1 = PersistableEnumTests.HatType.Feathered
     _ = PersistableEnumTests.HatType.WideBrim
-    let row = DatabaseRow(data: ["key1": color1.id!.databaseValue])
+    let row = DatabaseRow(data: ["key1": color1.id.databaseValue])
     do {
       let value = try row.readEnum(id: "key1") as PersistableEnumTests.HatType
       assert(value, equals: .Feathered)
@@ -572,7 +599,7 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     typealias HatType = PersistableEnumTests.HatType
     _ = PersistableEnumTests.HatType.Feathered
     let color2 = PersistableEnumTests.HatType.WideBrim
-    let row = DatabaseRow(data: ["key1": (color2.id! + 1).databaseValue])
+    let row = DatabaseRow(data: ["key1": (color2.id + 1).databaseValue])
     do {
       _ = try row.readEnum(id: "key1") as PersistableEnumTests.HatType
       assert(false, message: "should throw exception")

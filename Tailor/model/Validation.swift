@@ -172,9 +172,9 @@ public struct Validation: Equatable {
       }
     }
     
-    if let id = record.id {
+    if record.id > 0 {
       parameterString += " AND id != ?"
-      parameters.append(id.databaseValue)
+      parameters.append(record.id.databaseValue)
     }
     
     query += parameterString

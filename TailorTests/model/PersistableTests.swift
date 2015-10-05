@@ -22,12 +22,6 @@ class PersistableTests: XCTestCase, TailorTestable {
     XCTAssertNotEqual(lhs, rhs, "records are not equal")
   }
   
-  func testRecordsWithNilIdsAreUnequal() {
-    let lhs = Hat()
-    let rhs = Hat()
-    XCTAssertNotEqual(lhs, rhs, "records are not equal")
-  }
-  
   //MARK: - Association
   
   func testForeignKeyNameIsModelNamePlusId() {
@@ -39,7 +33,7 @@ class PersistableTests: XCTestCase, TailorTestable {
     let query : Query<Hat> = shelf.toMany()
     let clause = query.whereClause
     assert(clause.query, equals: "hats.shelf_id=?", message: "has the shelf ID in the query")
-    assert(clause.parameters, equals: [DatabaseValue.Integer(shelf.id!)], message: "has the id as the parameter")
+    assert(clause.parameters, equals: [DatabaseValue.Integer(Int(shelf.id))], message: "has the id as the parameter")
   }
   
   func testToManyWithSpecificForeignKeyUsesThatForeignKey() {
@@ -47,7 +41,7 @@ class PersistableTests: XCTestCase, TailorTestable {
     let query : Query<Hat> = shelf.toMany(foreignKey: "shelfId")
     let clause = query.whereClause
     assert(clause.query, equals: "hats.shelfId=?", message: "has the shelf ID in the query")
-    assert(clause.parameters, equals: [shelf.id!.databaseValue], message: "has the id as the parameter")
+    assert(clause.parameters, equals: [shelf.id.databaseValue], message: "has the id as the parameter")
   }
   
   func testToManyThroughFetchesManyRecordsByForeignKey() {
@@ -57,7 +51,7 @@ class PersistableTests: XCTestCase, TailorTestable {
     
     let whereClause = query.whereClause
     assert(whereClause.query, equals: "shelfs.store_id=?")
-    assert(whereClause.parameters, equals: [store.id!.databaseValue], message: "has the id as the parameter")
+    assert(whereClause.parameters, equals: [store.id.databaseValue], message: "has the id as the parameter")
     
     let joinClause = query.joinClause
     assert(joinClause.query, equals: "INNER JOIN shelfs ON shelfs.id = hats.shelf_id", message: "joins between shelves and hats in the join clause")
@@ -204,8 +198,8 @@ class PersistableTests: XCTestCase, TailorTestable {
   
   func testSaveInsertCanSaveRecordWithNoFieldsTwo() {
     struct TestHat: Persistable {
-      let id: Int?
-      init() { self.id = nil }
+      let id: UInt
+      init() { self.id = 0 }
       init(databaseRow: DatabaseRow) throws {
         self.id = try databaseRow.read("id")
       }
@@ -248,7 +242,7 @@ class PersistableTests: XCTestCase, TailorTestable {
         let expectedParameters = [
           "Bottom Shelf".databaseValue,
           2.databaseValue,
-          shelf.id!.databaseValue
+          shelf.id.databaseValue
         ]
         self.assert(parameters, equals: expectedParameters, message: "has the name, store ID, and id as parameters")
       }
@@ -269,7 +263,7 @@ class PersistableTests: XCTestCase, TailorTestable {
         
         let expectedParameters = [
           1.databaseValue,
-          shelf.id!.databaseValue
+          shelf.id.databaseValue
         ]
         self.assert(parameters, equals: expectedParameters, message: "has the storeId and id as parameters")
       }
@@ -296,29 +290,29 @@ class PersistableTests: XCTestCase, TailorTestable {
       if connection.queries.count == 1 {
         let (query, parameters) = connection.queries[0]
         self.assert(query, equals: "DELETE FROM shelfs WHERE id = ?", message: "executes a destroy query")
-        let data = shelf.id!.databaseValue
+        let data = shelf.id.databaseValue
         self.assert(parameters, equals: [data], message: "has the id as the parameter for the query")
       }
     }
   }
   
   func testBuildWithNoErrorBuildsRecord() {
-    let hat = Hat.build(DatabaseRow(data: ["brim_size": 10.databaseValue, "color": "red".databaseValue]))
+    let hat = Hat.build(DatabaseRow(data: ["brim_size": 10.databaseValue, "color": "red".databaseValue, "id": 1.databaseValue]))
     assert(isNotNil: hat)
   }
   
   func testBuildWithGeneralErrorIsNil() {
-    let shelf = Shelf.build(DatabaseRow(data: ["name": "hi".databaseValue, "throwError": true.databaseValue]))
+    let shelf = Shelf.build(DatabaseRow(data: ["name": "hi".databaseValue, "throwError": true.databaseValue, "id": 1.databaseValue]))
     assert(isNil: shelf)
   }
   
   func testBuildWithMissingFieldReturnsNil() {
-    let hat = Hat.build(DatabaseRow(data: ["brim_size": 10.databaseValue]))
+    let hat = Hat.build(DatabaseRow(data: ["brim_size": 10.databaseValue, "id": 1.databaseValue]))
     assert(isNil: hat)
   }
   
   func testBuildWithWrongFieldTypeReturnsNil() {
-    let hat = Hat.build(DatabaseRow(data: ["brim_size": 10.databaseValue, "color": 5.databaseValue]))
+    let hat = Hat.build(DatabaseRow(data: ["brim_size": 10.databaseValue, "color": 5.databaseValue, "id": 1.databaseValue]))
     assert(isNil: hat)
   }
   
@@ -337,11 +331,11 @@ class PersistableTests: XCTestCase, TailorTestable {
   
   func testCanFetchResultsFromQueryOnClass() {
     class TestShelf: Persistable {
-      let id: Int?
+      let id: UInt
       var name: String?
       var storeId: Int
       
-      init(name: String?, storeId: Int = 0, id: Int? = nil) {
+      init(name: String?, storeId: Int = 0, id: UInt = 0) {
         self.name = name
         self.storeId = storeId
         self.id = id
@@ -367,7 +361,7 @@ class PersistableTests: XCTestCase, TailorTestable {
     assert(results.count, equals: 1)
     if results.count > 0 {
       let shelf2 = results[0] as? TestShelf
-      assert(shelf2?.id, equals: shelf.id!)
+      assert(shelf2?.id, equals: shelf.id)
     }
   }
 }

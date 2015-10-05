@@ -68,6 +68,8 @@ public struct DatabaseRow {
       }
     case is Int.Type:
       if let cast = value.intValue as? OutputType { return cast }
+    case is UInt.Type:
+      if let int = value.intValue, let cast = UInt(int) as? OutputType { return cast }
     case is Timestamp.Type:
       if let cast = value.timestampValue as? OutputType { return cast }
     case is Date.Type:

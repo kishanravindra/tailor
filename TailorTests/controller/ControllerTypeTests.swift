@@ -94,19 +94,19 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     SeedTaskTypeTests.SeedTask.saveSchema()
     SeedTaskTypeTests.SeedTask.saveTable("tailor_alterations")
     controller = TestController(state: ControllerState(
-      request: Request(sessionData: ["userId": String(user.id!)]),
+      request: Request(sessionData: ["userId": String(user.id)]),
       response: Response(),
       actionName: "index",
       callback: {
         (response) in
       }
     ))
-    assert(controller.currentUser?.id, equals: user.id!, message: "sets user to the one with the id given")
+    assert(controller.currentUser?.id, equals: user.id, message: "sets user to the one with the id given")
   }
   
   func testInitializerSetsUserToNilWithBadId() {
     controller = TestController(state: ControllerState(
-      request: Request(sessionData: ["userId": String(user.id! + 1)]),
+      request: Request(sessionData: ["userId": String(user.id + 1)]),
       response: Response(),
       actionName: "index",
       callback: {
@@ -135,7 +135,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     let state = ControllerState(request: request, response: response, callback: {_ in}, actionName: "show", currentUser: user, localization: PropertyListLocalization(locale: "es"))
     assert(state.request, equals: request)
     assert(state.actionName, equals: "show")
-    assert(state.currentUser?.id, equals: user.id!)
+    assert(state.currentUser?.id, equals: user.id)
     assert(state.localization.locale, equals: "es")
     assert(state.response, equals: response)
   }
@@ -419,7 +419,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
   
   func testRespondWithJsonGeneratesJsonResponse() {
     do {
-      let hat = Hat(brimSize: 10, color: "red", shelfId: nil, owner: nil, id: nil)
+      let hat = Hat(brimSize: 10, color: "red", shelfId: nil, owner: nil, id: 0)
       let data = try hat.toJson().jsonData()
       let expectation = expectationWithDescription("callback called")
       self.callback = {
@@ -496,7 +496,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     
     let newSession = self.controller.signIn(user2)
     
-    assert(newSession["userId"], equals: String(user2.id!), message: "sets userId in session")
+    assert(newSession["userId"], equals: String(user2.id), message: "sets userId in session")
   }
   
   func testSignInWithNewUserSetsUserIdToZero() {
@@ -508,7 +508,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
   func testSignOutClearsUserIdIdInSession() {
     
     controller = TestController(state: ControllerState(
-      request: Request(sessionData: ["foo": "bar", "userId": String(user.id!)]),
+      request: Request(sessionData: ["foo": "bar", "userId": String(user.id)]),
       response: Response(),
       actionName: "index",
       callback: {
@@ -525,7 +525,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
   func testSignInWithEmailAndPasswordSignsIn() {
     do {
       let result = try controller.signIn("test@test.com", password: "test")
-      self.assert(result["userId"], equals: String(user.id!), message: "sets user as current user in new session")
+      self.assert(result["userId"], equals: String(user.id), message: "sets user as current user in new session")
     }
     catch {
       assert(false, message: "threw unexpected exception")
@@ -671,14 +671,14 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
   func testFetchRecordWithValidIdFetchesRecord() {
     Hat().save()
     let hat = Hat().save()!
-    let request = Request(parameters: ["id": String(hat.id!)])
+    let request = Request(parameters: ["id": String(hat.id)])
     assert(try? EmptyController.fetchRecord(ControllerState(request: request)), equals: hat)
   }
   
   func testFetchRecordWithInvalidIdThrowsException() {
     Hat().save()
     let hat = Hat().save()!
-    let request = Request(parameters: ["id": String(hat.id! + 1)])
+    let request = Request(parameters: ["id": String(hat.id + 1)])
     do {
       let _ = try EmptyController.fetchRecord(ControllerState(request: request)) as Hat
       assert(false, message: "should throw exception")
@@ -695,8 +695,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     Hat().save()
     let request = Request()
     let record: Hat? = try? EmptyController.fetchRecord(ControllerState(request: request), fallback: Hat())
-    assert(isNotNil: record)
-    assert(isNil: record?.id)
+    assert(record?.id, equals: 0)
   }
   
   func testFetchRecordWithNoIdOrFallbackThrowsException() {
@@ -717,7 +716,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
   func testFetchRecordCanFetchRecordWithDifferentParameterName() {
     Hat().save()
     let hat = Hat().save()!
-    let request = Request(parameters: ["hatId": String(hat.id!)])
+    let request = Request(parameters: ["hatId": String(hat.id)])
     assert(try? EmptyController.fetchRecord(ControllerState(request: request), from: "hatId"), equals: hat)
   }
 
@@ -820,7 +819,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
       expectation.fulfill()
       self.assert(controller.request.params == ["id": "5"], message: "sets request parameters")
       let currentUser = controller.currentUser
-      self.assert(currentUser?.id, equals: user.id!, message: "has the user given")
+      self.assert(currentUser?.id, equals: user.id, message: "has the user given")
     }
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
@@ -832,7 +831,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
       response, controller in
       expectation.fulfill()
       let currentUser = controller.currentUser
-      self.assert(currentUser?.id, equals: user.id!, message: "has the user given")
+      self.assert(currentUser?.id, equals: user.id, message: "has the user given")
     }
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }

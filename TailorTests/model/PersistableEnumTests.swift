@@ -60,18 +60,18 @@ class PersistableEnumTests: XCTestCase, TailorTestable {
     assert(value2.databaseValue, equals: DatabaseValue.Integer(2))
   }
   
-  func testDatabasePersistableEnumWithProblemInsertingRecordReturnsNull() {
+  func testDatabasePersistableEnumWithProblemInsertingRecordReturnsZero() {
     Application.sharedDatabaseConnection().executeQuery("DROP TABLE hat_types")
     Application.sharedDatabaseConnection().executeQuery("CREATE TABLE hat_types (id integer PRIMARY KEY, name string CHECK(length(name)>10))")
     let value = HatType.Feathered
-    assert(value.databaseValue, equals: DatabaseValue.Null)
+    assert(value.databaseValue, equals: DatabaseValue.Integer(0))
   }
   
-  func testDatabasePersistableEnumWithBadStructureReturnsNull() {
+  func testDatabasePersistableEnumWithBadStructureReturnsZero() {
     Application.sharedDatabaseConnection().executeQuery("DROP TABLE hat_types")
     Application.sharedDatabaseConnection().executeQuery("CREATE TABLE hat_types (id integer PRIMARY KEY)")
     let value = HatType.Feathered
-    assert(value.databaseValue, equals: DatabaseValue.Null)
+    assert(value.databaseValue, equals: DatabaseValue.Integer(0))
   }
   
   func testDatabasePersistableEnumCanGenerateValueFromId() {

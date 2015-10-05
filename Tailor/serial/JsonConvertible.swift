@@ -56,6 +56,25 @@ extension Int: JsonConvertible {
   }
 }
 
+extension UInt: JsonConvertible {
+  /**
+  This method creates an instance from a JSON primitive.
+  
+  - parameter json:   The JSON primitive value.
+  */
+  public init(json: JsonPrimitive) throws {
+    try self.init(json.read() as Int)
+  }
+  
+  /**
+  This method gets a JSON primitive representing this value.
+  */
+  public func toJson() -> JsonPrimitive {
+    return JsonPrimitive.Number(self)
+  }
+}
+
+
 
 extension JsonPrimitive: JsonConvertible {
   /**
