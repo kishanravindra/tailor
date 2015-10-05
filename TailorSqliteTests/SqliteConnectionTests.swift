@@ -247,6 +247,29 @@ class SqliteConnectionTests: XCTestCase, TailorTestable {
     connection.executeQuery("DROP TABLE `temp_table`")
   }
   
+  func testCanHandleEmptyDataParameter() {
+    let data = NSData()
+    connection.executeQuery("CREATE TABLE `temp_table` (`id` integer NOT NULL PRIMARY KEY, `image` blob)")
+    let results = connection.executeQuery("INSERT INTO `temp_table` (`image`) VALUES (?)", data)
+    assert(results.count, equals: 1)
+    if results.count == 1 {
+      let result = results[0]
+      assert(result.data["id"], equals: 1.databaseValue)
+      assert(isNil: result.error)
+    }
+    
+    let selectResults = connection.executeQuery("SELECT * FROM `temp_table`")
+    assert(selectResults.count, equals: 1)
+    
+    if selectResults.count == 1 {
+      let result = selectResults[0]
+      let data2 = result.data["image"]?.dataValue
+      assert(data2, equals: data)
+    }
+    
+    connection.executeQuery("DROP TABLE `temp_table`")
+  }
+  
   func testCanHandleBooleanParameter() {
     let flag = true
     connection.executeQuery("CREATE TABLE `temp_table` (`id` integer NOT NULL PRIMARY KEY, `flag` int(1))")

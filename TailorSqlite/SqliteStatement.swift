@@ -134,7 +134,12 @@ public final class SqliteStatement {
       case let .Double(double):
         sqlite3_bind_double(statement, column, double)
       case let .Data(data):
-        sqlite3_bind_blob(statement, column, data.bytes, Int32(data.length), {_ in })
+        if data.length == 0 {
+          sqlite3_bind_blob(statement, column, "", Int32(data.length), {_ in })
+        }
+        else {
+          sqlite3_bind_blob(statement, column, data.bytes, Int32(data.length), {_ in })
+        }
       case let .Boolean(boolean):
         sqlite3_bind_int(statement, column, Int32(boolean ? 1 : 0))
         continue
