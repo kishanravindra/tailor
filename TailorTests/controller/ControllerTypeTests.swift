@@ -140,25 +140,11 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     assert(state.response, equals: response)
   }
   
-  func testInitializerSetsLocaleFromAvailableLocales() {
-    PropertyListLocalization.availableLocales = ["en", "fr"]
-    let request = Request(headers: ["Accept-Language": "fr, en"])
-    let state = ControllerState(request: request, response: Response(), actionName: "index", callback: {_ in})
-    assert(state.localization.locale, equals: "fr")
-  }
-  
-  func testInitializerSetsLocaleWithNoAvailableLocalesDefaultsToEnglish() {
-    PropertyListLocalization.availableLocales = ["en", "fr"]
-    let request = Request(headers: ["Accept-Language": "es-MX,es"])
-    let state = ControllerState(request: request, response: Response(), actionName: "index", callback: {_ in})
-    assert(state.localization.locale, equals: "en")
-  }
-  
-  func testInitializerSetsLocaleWithNoLanguageHeaderDefaultsToEnglish() {
-    PropertyListLocalization.availableLocales = ["en", "fr"]
-    let request = Request()
-    let state = ControllerState(request: request, response: Response(), actionName: "index", callback: {_ in})
-    assert(state.localization.locale, equals: "en")
+  func testInitializerSetsLocaleFromConfigurationSettings() {
+    Application.configuration.localizationForRequest = { request in return PropertyListLocalization(locale: "es") }
+    let state = ControllerState(request: Request(), response: Response(), actionName: "index", callback: {_ in})
+    assert(state.localization.locale, equals: "es")
+    Application.configuration = Application.Configuration()
   }
   
   //MARK: - Responses

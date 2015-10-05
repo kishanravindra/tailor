@@ -17,6 +17,42 @@ public final class Application {
     /** A function for creating the localization for a given locale. */
     public var localization: (String->LocalizationSource) = { PropertyListLocalization(locale: $0) }
     
+    /**
+      A function for fetching the localization for a given request.
+    
+      The default implementation gets the locale from the request headers, using
+      the `localizationFromContentPreferences` method. It will also use the
+      `localization` field to get the localization source using that locale. If
+      you only need to customize the type of localization source, for instance
+      to use a database instead of a property list, you should change the
+      `localization` field. If you need to change what part of the request we
+      look at for the locale, for instance to get the locale from a part of the
+      request path, you should change this field.
+      */
+    public var localizationForRequest: (Request->LocalizationSource) = { return Application.configuration.localizationFromContentPreferences($0) }
+    
+    /**
+      This method gets the localization for a given request from the content
+      preferences in the request.
+    
+      This will read the Accept-Language header from the request, and compare it
+      against the available locales from the localization source specified in
+      the `localization` field. It will then use that `localization` field to
+      build a new localization with the best match for the locale. If there is
+      no match with the available locales and the acceptable languages, this
+      will default to English.
+    
+      - parameter request:    The request that we are building a localization
+                              for.
+      - returns:              The localization for the request.
+      */
+    public func localizationFromContentPreferences(request: Request) -> LocalizationSource {
+      let localization = self.localization("en")
+      let locales = localization.dynamicType.availableLocales
+      let preferredLocale = Request.ContentPreference(fromHeader: request.headers["Accept-Language"] ?? "").bestMatch(locales) ?? "en"
+      return self.localization(preferredLocale)
+    }
+    
     /** The static content for a property list localization. */
     public var staticContent = [String:String]()
     

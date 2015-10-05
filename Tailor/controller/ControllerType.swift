@@ -149,11 +149,7 @@ public struct ControllerState {
     self.request = request
     self.response = response
     self.callback = callback
-    
-    let localization = Application.configuration.localization("en")
-    let locales = localization.dynamicType.availableLocales
-    let preferredLocale = Request.ContentPreference(fromHeader: request.headers["Accept-Language"] ?? "").bestMatch(locales) ?? "en"
-    self.localization = Application.configuration.localization(preferredLocale)
+    self.localization = Application.configuration.localizationForRequest(request)
     self.actionName = actionName
     
     if let userId = Int(self.request.session["userId"] ?? "") {

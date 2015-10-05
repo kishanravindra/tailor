@@ -90,6 +90,36 @@ class ApplicationTests : XCTestCase, TailorTestable {
     assert(isNil: Application.Configuration().databaseDriver)
   }
   
+  func testDefaultConfigurationBuildLocalizationFromRequestHeaders() {
+    PropertyListLocalization.availableLocales = ["en", "fr"]
+    let request = Request(headers: ["Accept-Language": "fr, en"])
+    let configuration = Application.Configuration()
+    let localization = configuration.localizationForRequest(request)
+    assert(localization is PropertyListLocalization)
+    assert(localization.locale, equals: "fr")
+  }
+  
+  func testLocalizationFromContentPreferencesSetsLocaleFromAvailableLocales() {
+    PropertyListLocalization.availableLocales = ["en", "fr"]
+    let request = Request(headers: ["Accept-Language": "fr, en"])
+    let localization = Application.configuration.localizationFromContentPreferences(request)
+    assert(localization.locale, equals: "fr")
+  }
+  
+  func testLocalizationFromContentPreferencesSetsLocaleWithNoAvailableLocalesDefaultsToEnglish() {
+    PropertyListLocalization.availableLocales = ["en", "fr"]
+    let request = Request(headers: ["Accept-Language": "es-MX,es"])
+    let localization = Application.configuration.localizationFromContentPreferences(request)
+    assert(localization.locale, equals: "en")
+  }
+  
+  func testLocalizationFromContentPreferencesWithNoLanguageHeaderDefaultsToEnglish() {
+    PropertyListLocalization.availableLocales = ["en", "fr"]
+    let request = Request()
+    let localization = Application.configuration.localizationFromContentPreferences(request)
+    assert(localization.locale, equals: "en")
+  }
+  
   func testFlattenDictionaryCombinesStringKeys() {
     let result = Application.Configuration.flattenDictionary([
       "key1": "value1",
