@@ -316,6 +316,10 @@ class PersistableTests: XCTestCase, TailorTestable {
     assert(isNil: hat)
   }
   
+  func testTableNameIsPluralModelName() {
+    assert(TopHat.tableName, equals: "top_hats")
+  }
+  
   func testToJsonCreatesJsonDictionaryBasedOnDataMapping() {
     let hat = Hat(brimSize: 10, color: "red", shelfId: nil, owner: "John", id: 5)
     let json = hat.toJson()

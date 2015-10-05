@@ -18,6 +18,10 @@ public protocol Persistable: ModelType, JsonEncodable {
   
   /**
     This method provides name of the table that backs this class.
+  
+    The default implementation uses the name of the type, in snake case, and
+    pluralized.
+    
     - returns: The table name.
     */
   static var tableName: String { get }
@@ -289,6 +293,14 @@ extension Persistable {
     table name.
     */
   public static var query: QueryType { return GenericQuery(recordType: self, tableName: self.tableName) }
+  
+  /**
+    This method gets the name of the table where we store records for this
+    record type.
+
+    The default implementation uses the plural of the model name, in snake case.
+    */
+  public static var tableName: String { return self.modelName().pluralized }
 }
 
 extension Persistable {

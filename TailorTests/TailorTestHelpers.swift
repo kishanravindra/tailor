@@ -62,7 +62,6 @@ struct Hat : Persistable, Equatable {
     self.id = id
   }
   
-  static var tableName: String { return "hats" }
   func valuesToPersist() -> [String : DatabaseValueConvertible?] {
     return [
       "brim_size": brimSize,
@@ -95,8 +94,6 @@ struct Shelf : Persistable, Equatable {
     self.id = id
   }
   
-  static var tableName: String { return "shelfs" }
-  
   func valuesToPersist() -> [String: DatabaseValueConvertible?] {
     return [
       "name": name,
@@ -124,7 +121,6 @@ struct Store : Persistable {
     self.id = id
   }
   
-  static var tableName: String { return "stores" }
   static let query = Query<Store>()
   
   func valuesToPersist() -> [String : DatabaseValueConvertible?] {
@@ -194,4 +190,16 @@ struct TestUser: UserType, Equatable {
   static let tableName = "users"
   static let query = Query<TestUser>()
 }
+
+
+struct TopHat: Persistable {
+  let id: UInt
+  init(databaseRow: DatabaseRow) throws {
+    self.id = try databaseRow.read("id")
+  }
+  func valuesToPersist() -> [String : DatabaseValueConvertible?] {
+    return [:]
+  }
+}
+
   
