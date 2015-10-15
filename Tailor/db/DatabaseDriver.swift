@@ -23,7 +23,7 @@ public protocol DatabaseDriver: class {
   
     - parameter block:   The block to execute.
     */
-   func transaction(block: ()->())
+   func transaction<T>(@noescape block: () throws ->T) rethrows -> T
   
   /**
     This method getes the tables in the database.
@@ -66,10 +66,11 @@ public extension DatabaseDriver {
     
     - parameter block:   The block to execute.
     */
-  public func transaction(block: ()->()) {
+  public func transaction<T>(@noescape block: Void throws -> T) rethrows -> T {
     executeQuery("START TRANSACTION;")
-    block()
+    let value = try block()
     executeQuery("COMMIT;")
+    return value
   }
   
   /**

@@ -85,8 +85,6 @@
 		5284BD351B779AFC00C2D601 /* UserTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5284BD341B779AFC00C2D601 /* UserTypeTests.swift */; };
 		528D183F1A8FDD4A00A6E116 /* TailorTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D183E1A8FDD4A00A6E116 /* TailorTestHelpers.swift */; };
 		528D94901B51B99A004E3E7A /* TestConfig2.plist in Resources */ = {isa = PBXBuildFile; fileRef = 528D948F1B51B99A004E3E7A /* TestConfig2.plist */; };
-		52915C651BC2E4DB003B65C9 /* TemplateInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 52915C631BC2E4DB003B65C9 /* TemplateInfo.plist */; settings = {ASSET_TAGS = (); }; };
-		52915C6A1BC2E55D003B65C9 /* TemplateInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 52915C681BC2E55D003B65C9 /* TemplateInfo.plist */; settings = {ASSET_TAGS = (); }; };
 		529230061A3CF4E4006DD6EB /* ApplicationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529230051A3CF4E4006DD6EB /* ApplicationTests.swift */; };
 		52A05A291B7F93D100DB1248 /* TestStylesheet.css in Resources */ = {isa = PBXBuildFile; fileRef = 52A05A281B7F93D100DB1248 /* TestStylesheet.css */; };
 		52A05A2F1B7FAA2800DB1248 /* Cookie.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A05A2A1B7FAA2800DB1248 /* Cookie.swift */; };
@@ -1194,8 +1192,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				52915C6A1BC2E55D003B65C9 /* TemplateInfo.plist in Resources */,
-				52915C651BC2E4DB003B65C9 /* TemplateInfo.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

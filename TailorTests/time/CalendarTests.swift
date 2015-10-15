@@ -14,10 +14,13 @@ class CalendarTests: XCTestCase, TailorTestable {
     foundationCalendar.timeZone = NSTimeZone(name: zoneName)!
     let timeZone = TimeZone(name: zoneName)
     
-    for timestamp in timestamps {
-      let foundationDate = NSDate(timeIntervalSince1970: Double(timestamp))
+    for number in timestamps {
+      let foundationDate = NSDate(timeIntervalSince1970: Double(number))
       let foundationDateComponents = foundationCalendar.components([.Year, .Month, .Day, .Hour, .Minute, .Second, .Weekday], fromDate: foundationDate)
-      let timestamp = Timestamp(epochSeconds: timestamp, timeZone: timeZone, calendar: calendar)
+      if calendar is HebrewCalendar && calendar.inYear(foundationDateComponents.year).months == 12 && foundationDateComponents.month > 6 {
+        foundationDateComponents.month -= 1
+      }
+      let timestamp = Timestamp(epochSeconds: number, timeZone: timeZone, calendar: calendar)
       if timestamp.year != foundationDateComponents.year ||
         timestamp.month != foundationDateComponents.month ||
         timestamp.day != foundationDateComponents.day ||
@@ -25,9 +28,11 @@ class CalendarTests: XCTestCase, TailorTestable {
         timestamp.minute != foundationDateComponents.minute ||
         timestamp.second != foundationDateComponents.second ||
         timestamp.weekDay != foundationDateComponents.weekday {
-          let foundationDescription = NSString(format: "%04i-%02i-%02i %02i:%02i:%02i (%02i)", foundationDateComponents.year, foundationDateComponents.month, foundationDateComponents.day, foundationDateComponents.hour, foundationDateComponents.hour, foundationDateComponents.minute, foundationDateComponents.weekday)
-          var description = "Incorrect date for timestamp \(timestamp): "
-          description += "Expected \(foundationDescription), but got \(timestamp.format(TimeFormat.Database)) \(timestamp.weekDay)"
+          let foundationDescription = NSString(format: "%04i-%02i-%02i %02i:%02i:%02i (%02i)", foundationDateComponents.year, foundationDateComponents.month, foundationDateComponents.day, foundationDateComponents.hour, foundationDateComponents.minute, foundationDateComponents.second, foundationDateComponents.weekday)
+          var description = "Incorrect date for timestamp \(number)"
+          let gregorianTimestamp = timestamp.inCalendar(GregorianCalendar())
+          description += " \(gregorianTimestamp.format(TimeFormat.Database)): "
+          description += "Expected \(foundationDescription), but got \(timestamp.format(TimeFormat.Database)) (\(timestamp.weekDay))"
           self.recordFailureWithDescription(description, inFile: file, atLine: line, expected: true)
       }
     }
@@ -47,12 +52,15 @@ class CalendarTests: XCTestCase, TailorTestable {
       foundationDateComponents.hour = date.3
       foundationDateComponents.minute = date.4
       foundationDateComponents.second = date.5
+      if calendar is HebrewCalendar && calendar.inYear(date.0).months == 12 && date.1 > 5 {
+        foundationDateComponents.month += 1
+      }
       
       let foundationDate = foundationCalendar.dateFromComponents(foundationDateComponents)!
       let timestamp = Timestamp(year: date.0, month: date.1, day: date.2, hour: date.3, minute: date.4, second: date.5, nanosecond: 0.0, timeZone: timeZone, calendar: calendar)
       let gap = timestamp.epochSeconds - foundationDate.timeIntervalSince1970
       if gap > 0.01 || gap < -0.01 {
-        let foundationDescription = NSString(format: "%04i-%02i-%02i %02i:%02i:%02i", foundationDateComponents.year, foundationDateComponents.month, foundationDateComponents.day, foundationDateComponents.hour, foundationDateComponents.hour, foundationDateComponents.minute)
+        let foundationDescription = NSString(format: "%04i-%02i-%02i %02i:%02i:%02i", foundationDateComponents.year, foundationDateComponents.month, foundationDateComponents.day, foundationDateComponents.hour, foundationDateComponents.minute, foundationDateComponents.second)
         var description = "Incorrect timestamp for \(foundationDescription): "
         description += "Expected \(foundationDate.timeIntervalSince1970), "
         description += "but got \(timestamp.epochSeconds)"
@@ -227,6 +235,17 @@ class CalendarTests: XCTestCase, TailorTestable {
   func testIslamicCalendarGetsCorrectTimestamps() {
     let dates = [(1427, 11, 18, 4, 37, 6), (1426, 6, 10, 0, 2, 7), (1415, 1, 21, 16, 39, 15), (1377, 5, 11, 16, 31, 20), (1418, 2, 25, 7, 29, 12)]
     self.checkLocalDates(dates, foundationCalendar: NSCalendar(calendarIdentifier: NSCalendarIdentifierIslamicTabular)!, calendar: IslamicCalendar(), zoneName: "UTC")
+  }
+  
+  func testHebrewCalendarGetsCorrectLocalTimes() {
+    let timestamps = [16807.0, -1622650073.0, -1144108930.0, -101027544.0, 1458777923.0, 823564440.0, -1784484492.0, 114807987.0, 1441282327.0, -823378840.0]
+    
+    self.checkTimestamps(timestamps, foundationCalendar: NSCalendar(calendarIdentifier: NSCalendarIdentifierHebrew)!, calendar: HebrewCalendar(), zoneName: "UTC")
+  }
+  
+  func testHebrewCalendarGetsCorrectTimestamps() {
+    let dates = [(5707, 7, 18, 4, 37, 6), (5749, 13, 10, 0, 2, 7), (5773, 1, 21, 16, 39, 15), (5758, 5, 11, 16, 31, 20), (5730, 2, 25, 7, 29, 12)]
+    self.checkLocalDates(dates, foundationCalendar: NSCalendar(calendarIdentifier: NSCalendarIdentifierHebrew)!, calendar: HebrewCalendar(), zoneName: "UTC")
   }
   
   //MARK: - Free Functions

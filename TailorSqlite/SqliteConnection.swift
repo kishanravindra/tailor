@@ -40,7 +40,9 @@ public final class SqliteConnection: DatabaseDriver {
     - parameter parameters:   The parameters to bind to the inputs to the query.
     */
   public func executeQuery(query: String, parameters bindParameters: [DatabaseValue]) -> [DatabaseRow] {
-    NSLog("Executing query %@", query)
+    if Application.configuration.logQueries {
+      NSLog("Executing query %@", query)
+    }
     guard let statement = SqliteStatement(connection: connection, query: query) else { return [DatabaseRow(error: "Error preparing statement")] }
     statement.bind(bindParameters)
     let results = statement.execute()

@@ -312,7 +312,6 @@ public struct Timestamp: Equatable, Comparable, CustomStringConvertible {
     - returns:                    The local time information.
     */
   internal static func localTime(epochSeconds: EpochInterval, timeZone: TimeZone, calendar: Calendar) -> (year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int, nanosecond: Double, weekDay: Int) {
-    
     let (epochYear, epochOffset, epochWeekDay) = calendar.unixEpochTime
     let offsetTimestamp = epochSeconds + epochOffset + Double(timeZone.policy(timestamp: epochSeconds).offset)
     var secondsRemaining = Int(offsetTimestamp)
@@ -336,7 +335,7 @@ public struct Timestamp: Equatable, Comparable, CustomStringConvertible {
       let secondsPerDay = secondsPerHour * currentCalendar.hoursPerDay
       let secondsInYear = secondsPerDay * currentCalendar.days
       
-      if secondsInYear < secondsRemaining {
+      if secondsInYear <= secondsRemaining {
         secondsRemaining -= secondsInYear
         weekDay += currentCalendar.days
         year += 1
@@ -347,7 +346,7 @@ public struct Timestamp: Equatable, Comparable, CustomStringConvertible {
         let daysInMonth = currentCalendar.daysInMonth(month)
         let secondsInMonth = secondsPerDay * daysInMonth
         
-        if secondsInMonth < secondsRemaining {
+        if secondsInMonth <= secondsRemaining {
           secondsRemaining -= secondsInMonth
           weekDay += daysInMonth
           continue
@@ -371,7 +370,10 @@ public struct Timestamp: Equatable, Comparable, CustomStringConvertible {
         return (year: year, month: month, day: day, hour: hour, minute: minute, second: second, nanosecond: nanosecond, weekDay: weekDay)
       }
     }
-    
+    weekDay = weekDay % calendar.daysInWeek
+    if weekDay < 1 {
+      weekDay += calendar.daysInWeek
+    }
     return (year: year, month: 1, day: 1, hour: 0, minute: 0, second: 0, nanosecond: nanosecond, weekDay: weekDay)
   }
   

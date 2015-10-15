@@ -17,6 +17,9 @@ public final class Application {
     /** A function for creating the localization for a given locale. */
     public var localization: (String->LocalizationSource) = { PropertyListLocalization(locale: $0) }
     
+    /** Whether we should log all the queries for debugging purposes. */
+    public var logQueries: Bool = true
+    
     /**
       A function for fetching the localization for a given request.
     

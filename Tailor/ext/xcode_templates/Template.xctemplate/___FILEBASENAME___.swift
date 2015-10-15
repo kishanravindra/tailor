@@ -5,12 +5,11 @@ struct ___FILEBASENAME___ : TemplateType {
   var state: TemplateState
     
   /**
-  This method initializes the template.
-  
-  - parameter controller:    The controller that is rendering the page.
-  */
+    This method initializes the template.
+    
+    - parameter controller:    The controller that is rendering the page.
+    */
   init(controller: ControllerType) {
-    self.hats = hats
     self.state = TemplateState(controller)
   }
     

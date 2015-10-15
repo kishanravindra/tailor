@@ -1,6 +1,7 @@
 # General
 
 * Memcache support
+* Add default English names for more calendars.
 
 # Modeling
 
