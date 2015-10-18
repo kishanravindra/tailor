@@ -2,6 +2,7 @@
 
 * Memcache support
 * Add default English names for more calendars.
+* Add JsonEncodable support for Booleans.
 
 # Modeling
 

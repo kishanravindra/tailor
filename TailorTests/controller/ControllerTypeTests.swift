@@ -446,6 +446,107 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
+  func testRenderStreamWritesStreamDataToConnection() {
+    let expectation1 = expectationWithDescription("callback called 1")
+    let expectation2 = expectationWithDescription("callback called 2")
+    let expectation3 = expectationWithDescription("callback called 3")
+    var responseCount = 0
+    self.callback = {
+      response in
+      switch(responseCount) {
+      case 0:
+        expectation1.fulfill()
+        self.assert(response.headers["Test"], equals: "value")
+        self.assert(response.body.length, equals: 0)
+      case 1:
+        expectation2.fulfill()
+        self.assert(response.bodyString, equals: "Hello")
+      case 2:
+        expectation3.fulfill()
+        self.assert(response.bodyString, equals: "Goodbye")
+      default:
+        self.assert(false, message: "Received too many responses")
+      }
+      responseCount += 1
+    }
+    var response = Response()
+    response.headers["Test"] = "value"
+    self.controller.renderStream(response) {
+      callback in
+      callback(NSData(bytes: "Hello".utf8))
+      callback(NSData(bytes: "Goodbye".utf8))
+    }
+    waitForExpectationsWithTimeout(0.01, handler: nil)
+  }
+  
+  func testRenderStreamFeedsContinuationDataToCallback() {
+    var responseCount = 0
+    self.callback = {
+      response in
+      response.continuationCallback?(responseCount < 2)
+      responseCount += 1
+    }
+    var response = Response()
+    response.headers["Test"] = "value"
+    let expectation1 = expectationWithDescription("callback called 1")
+    let expectation2 = expectationWithDescription("callback called 2")
+    let expectation3 = expectationWithDescription("callback called 3")
+    let continuation = {
+      (shouldContinue: Bool) in
+      switch(responseCount) {
+      case 0: expectation1.fulfill()
+      case 1: expectation2.fulfill()
+      case 2: expectation3.fulfill()
+      default: self.assert(false, message: "Received unexpected callback")
+      }
+      self.assert(shouldContinue, equals: responseCount < 2)
+    }
+    self.controller.renderStream(response, continuationCallback: continuation) {
+      callback in
+      callback(NSData(bytes: "Hello".utf8))
+      callback(NSData(bytes: "Goodbye".utf8))
+    }
+    waitForExpectationsWithTimeout(0.01, handler: nil)
+  }
+  
+  func testRenderStreamWithPolledDataSendsDataToConnection() {
+    let expectation1 = expectationWithDescription("callback called 1")
+    let expectation2 = expectationWithDescription("callback called 2")
+    let expectation3 = expectationWithDescription("callback called 3")
+    var responseCount = 0
+    self.callback = {
+      response in
+      responseCount += 1
+      switch(responseCount) {
+      case 1:
+        expectation1.fulfill()
+        self.assert(response.headers["Test"], equals: "value")
+        self.assert(response.body.length, equals: 0)
+        response.continuationCallback?(true)
+      case 2:
+        expectation2.fulfill()
+        self.assert(response.bodyString, equals: "1")
+        response.continuationCallback?(true)
+      case 3:
+        expectation3.fulfill()
+        self.assert(response.bodyString, equals: "2")
+        response.continuationCallback?(false)
+      default:
+        self.assert(false, message: "Received too many responses")
+      }
+    }
+    var response = Response()
+    response.headers["Test"] = "value"
+    var index = 0
+    self.controller.renderPolledStream(response) {
+      Void->NSData? in
+      index += 1
+      return NSData(bytes: String(index).utf8)
+    }
+    waitForExpectationsWithTimeout(0.01, handler: nil)
+    
+  }
+  
   func testDefaultLayoutIsEmptyLayout() {
     struct TestTemplate: TemplateType {
       var state: TemplateState

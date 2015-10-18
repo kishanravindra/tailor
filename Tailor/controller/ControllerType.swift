@@ -394,12 +394,89 @@ extension ControllerType {
     return path
   }
   
+  /**
+    This method renders a stream to the client.
+
+    The stream will start with a header response with no data. Once that is
+    rendered, the callback will be invoked to provide the response body.
+  
+    In this variant, the stream is driven by the producer. It feeds data to the
+    connection on its own schedule, and if it wants to detect connection drops,
+    it should use the continuation callback and connect that to another flag
+    that will halt processing.
+
+    - parameter headerResponse:     A response containing only the header data
+                                    for the stream.
+    - parameter continuationCallback:     A callback that can receive
+                                          notifications about whether we should
+                                          continue processing, so that it can
+                                          halt the stream if the connection
+                                          drops. This will receive a false value
+                                          if the connection drops.
+    - parameter callback:           A callback that provides the body of the
+                                    response. This callback will be given
+                                    another callback, and it should repeatedly
+                                    invoke that callback with chunks of data
+                                    for the response. The data will be written
+                                    to the connection as soon as it is provided.
+    */
+
+  public func renderStream(var headerResponse: Response, continuationCallback: (Bool->Void)? = nil, callback: ((NSData)->Void)->Void) {
+    headerResponse.hasDefinedLength = false
+    headerResponse.continuationCallback = continuationCallback
+    self.callback(headerResponse)
+    callback {
+      data in
+      var chunk = Response()
+      chunk.headers = headerResponse.headers
+      chunk.hasDefinedLength = false
+      chunk.bodyOnly = true
+      chunk.appendData(data)
+      chunk.continuationCallback = continuationCallback
+      self.callback(chunk)
+    }
+  }
+  
+  /**
+    This method renders a stream to the client.
+    
+    The stream will start with a header response with no data. Once that is
+    rendered, the callback will be invoked to provide the response body.
+  
+    In this variant, the stream is produced as requested by the connection.
+    New data is requested as soon as the connection sends out the last data.
+    If the connection is dropped, then this will stop requesting data from its
+    callback.
+    
+    - parameter headerResponse:     A response containing only the header data
+                                    for the stream.
+    - parameter callback:           A callback that provides the body of the
+                                    response. This should return the latest
+                                    data, or nil if the data provider is
+                                    exhausted.
+    */
+  
+  public func renderPolledStream(headerResponse: Response, callback: (Void->NSData?)) {
+    var shouldContinue = true
+    let continuationCallback = {
+      (result: Bool) in
+      shouldContinue = result
+    }
+    self.renderStream(headerResponse, continuationCallback: continuationCallback) {
+      dataCallback in
+      while(shouldContinue) {
+        guard let data = callback() else { return }
+        dataCallback(data)
+      }
+    }
+  }
+  
   //MARK: - Localization
   
   /**
     This method gets the prefix that is automatically prepended to keys sent for
     localization in this controller.
-    
+  
     This will only be added to keys that start with a dot.
   */
   public var localizationPrefix: String {
@@ -408,7 +485,7 @@ extension ControllerType {
   
   /**
     This method localizes text.
-    
+  
     - parameter key:      The key for the localized text
     - parameter locale:   The locale that the localized text should be in. If
                           this is not provided, it will use the locale from the
