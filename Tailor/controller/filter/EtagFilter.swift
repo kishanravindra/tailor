@@ -39,7 +39,7 @@ public struct EtagFilter: RequestFilterType, Equatable {
     - parameter response:   The response so far.
     - parameter callback:   The callback to call with the modified response.
     */
-  public func postProcess(request: Request, var response: Response, callback: (Response)->Void) {
+  public func postProcess(request: Request, var response: Response, callback: Connection.ResponseCallback) {
     if response.responseCode == .Ok {
       let tag = response.body.md5Hash
       response.headers["ETag"] = tag

@@ -29,5 +29,5 @@ public protocol RequestFilterType {
     - parameter response:   The response so far.
     - parameter callback:   The callback to call with the modified response.
     */
-  func postProcess(request: Request, response: Response, callback: (Response)->Void)
+  func postProcess(request: Request, response: Response, callback: Connection.ResponseCallback)
 }

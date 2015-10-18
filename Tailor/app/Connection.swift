@@ -6,7 +6,7 @@ import Foundation
 public struct Connection {
   
   /** A callback that can be given a response. */
-  public typealias ResponseCallback = (Response)->()
+  public typealias ResponseCallback = (Response)->Void
   
   /** A closure that can process a request. */
   public typealias RequestHandler = (Request, ResponseCallback)->()
@@ -133,8 +133,32 @@ public struct Connection {
     
     self.handler(request) {
       response in
+      
       let responseData = response.data
-      Connection.write(connectionDescriptor, data: responseData)
+      
+      if response.chunked && response.bodyOnly {
+        let length = NSString(format: "%x", responseData.length)
+        let lengthData = NSData(bytes: "\(length)\r\n".utf8)
+        Connection.write(connectionDescriptor, data: lengthData)
+      }
+      
+      let bytesWritten = Connection.write(connectionDescriptor, data: responseData)
+      
+      if(bytesWritten == -1) {
+        response.continuationCallback?(false)
+        return
+      }
+      
+      if response.chunked && response.bodyOnly {
+        Connection.write(connectionDescriptor, data: NSData(bytes: "\r\n".utf8))
+      }
+      
+      response.continuationCallback?(true)
+      
+      if !response.hasDefinedLength && responseData.length > 0 {
+        return
+      }
+      
       if let startTime = startTime {
         let interval = Timestamp.now().epochSeconds - startTime.epochSeconds
         NSLog("Finished processing %@ in %lf seconds", request.path, interval)
@@ -245,6 +269,7 @@ public struct Connection {
       return false
     }
     
+    signal(SIGPIPE, SIG_IGN)
     _ = Connection(fileDescriptor: socketDescriptor, handler: handler)
     
     NSLog("Listening on port %d", port)
@@ -383,13 +408,16 @@ public struct Connection {
 
     - parameter connection:   The connection to write to.
     - parameter data:         The data to write to the connection.
+    - returns:                The number of bytes we wrote.
     */
-  internal static func write(connection: Int32, data: NSData) {
+  internal static func write(connection: Int32, data: NSData) -> Int {
     if stubbing {
       outputData.appendData(data)
+      return data.length
     }
     else {
-      Foundation.write(connection, data.bytes, data.length)
+      let result = Foundation.write(connection, data.bytes, data.length)
+      return result
     }
   }
 

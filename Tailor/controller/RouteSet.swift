@@ -447,7 +447,7 @@ public class RouteSet {
                                     controller and are now doing the post
                                     processing on the filters.
     */
-  private func respondWithController<SpecificType: ControllerType>(action: (SpecificType)->()->(), actionName: String, request: Request, response: Response, filters: [RequestFilterType], filterIndex: Int, inPostProcessing: Bool, callback: (Response)->Void) {
+  private func respondWithController<SpecificType: ControllerType>(action: (SpecificType)->()->(), actionName: String, request: Request, response: Response, filters: [RequestFilterType], filterIndex: Int, inPostProcessing: Bool, callback: Connection.ResponseCallback) {
     if inPostProcessing {
       if filterIndex >= filters.startIndex {
         filters[filterIndex].postProcess(request, response: response) {

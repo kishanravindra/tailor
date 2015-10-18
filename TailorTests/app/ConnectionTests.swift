@@ -304,6 +304,82 @@ class ConnectionTests: XCTestCase, TailorTestable {
     waitForExpectationsWithTimeout(0, handler: nil)
     Connection.stopStubbing()
   }
+  
+  func testReadFromSocketWithChunkedResponseWritesMultipleChunks() {
+    requestContents = ["GET / HTTP/1.1\r\nHeader: Value\r\nConnection: close\r\nContent-Length: 12\r\n\r\nRequest Body"]
+    Connection.startStubbing(requestData)
+    let expectation1 = expectationWithDescription("received request")
+    let expectation2 = expectationWithDescription("received continuation 1")
+    let expectation3 = expectationWithDescription("received continuation 2")
+    let expectation4 = expectationWithDescription("received continuation 3")
+    
+    var connection = Connection(fileDescriptor: -1) {
+      request, callback in
+      expectation1.fulfill()
+      var response = Response()
+      response.headers["Test"] = "value"
+      response.headers["Transfer-Encoding"] = "chunked"
+      response.hasDefinedLength = false
+      response.continuationCallback = {
+        shouldContinue in
+        self.assert(shouldContinue)
+        self.assert(Connection.closedConnections.isEmpty)
+        expectation2.fulfill()
+        var response2 = Response()
+        response2.headers["Transfer-Encoding"] = "chunked"
+        response2.appendString("ABC123")
+        response2.bodyOnly = true
+        response2.hasDefinedLength = false
+        response2.continuationCallback = {
+          shouldContinue in
+          self.assert(shouldContinue)
+          self.assert(Connection.closedConnections.isEmpty)
+          expectation3.fulfill()
+          var response3 = Response()
+          response3.headers["Transfer-Encoding"] = "chunked"
+          response3.appendString("456")
+          response3.bodyOnly = true
+          response3.hasDefinedLength = false
+          response3.continuationCallback = {
+            shouldContinue in
+            expectation4.fulfill()
+            self.assert(shouldContinue)
+            self.assert(Connection.closedConnections.isEmpty)
+            var response4 = Response()
+            response4.headers["Transfer-Encoding"] = "chunked"
+            response4.bodyOnly = true
+            response4.hasDefinedLength = false
+            callback(response4)
+          }
+          callback(response3)
+        }
+        callback(response2)
+      }
+      callback(response)
+      self.assert(Connection.closedConnections, equals: [123])
+      let responseLines = NSString(data: Connection.outputData, encoding: NSUTF8StringEncoding)!.componentsSeparatedByString("\r\n")
+      let time = Timestamp.now().inTimeZone("GMT").format(TimeFormat.Cookie)
+      self.assert(responseLines, equals: [
+        "HTTP/1.1 200 OK",
+        "Transfer-Encoding: chunked",
+        "Content-Type: text/html; charset=UTF-8",
+        "Test: value",
+        "Date: \(time)",
+        "",
+        "6",
+        "ABC123",
+        "3",
+        "456",
+        "0",
+        "",
+        ""
+      ])
+    }
+    
+    connection.readFromSocket(123)
+    waitForExpectationsWithTimeout(0, handler: nil)
+    Connection.stopStubbing()
+  }
     
   //MARK: - Testing with Real IO
   
@@ -331,6 +407,47 @@ class ConnectionTests: XCTestCase, TailorTestable {
     NSData(bytes: fileContents.utf8).writeToFile(path, atomically: true)
     guard let connectionHandle = NSFileHandle(forUpdatingAtPath: path) else { NSLog("Handle failed"); return }
     connection.readFromSocket(connectionHandle.fileDescriptor)
+    waitForExpectationsWithTimeout(1, handler: nil)
+  }
+  
+  func testCanDetectClosedPipeInContinuationCallback() {
+    let fileContents = "GET / HTTP/1.1\r\nHeader: Value\r\nConnection: close\r\nContent-Length: 12\r\n\r\nRequest Body"
+    let path = Application.sharedApplication().rootPath() + "/connection.txt"
+    let expectation = expectationWithDescription("callback called")
+    let expectation2 = expectationWithDescription("continuation called 1")
+    let expectation3 = expectationWithDescription("continuation called 2")
+    var responded = false
+    var connectionHandle: NSFileHandle? = nil
+    var connection = Connection(fileDescriptor: -1) {
+      request, callback in
+      if responded { return }
+      responded = true
+      expectation.fulfill()
+      self.assert(request.data, equals: NSData(bytes: fileContents.utf8))
+      
+      var response = Response()
+      response.appendString("My Response")
+      response.hasDefinedLength = false
+      response.continuationCallback = {
+        shouldContinue in
+        self.assert(shouldContinue)
+        expectation2.fulfill()
+        var response2 = Response()
+        response2.appendString("Part Two")
+        response2.hasDefinedLength = false
+        response2.continuationCallback = {
+          shouldContinue in
+          expectation3.fulfill()
+          self.assert(!shouldContinue)
+        }
+        connectionHandle?.closeFile()
+        callback(response2)
+      }
+      callback(response)
+    }
+    NSData(bytes: fileContents.utf8).writeToFile(path, atomically: true)
+    connectionHandle = NSFileHandle(forUpdatingAtPath: path)
+    connection.readFromSocket(connectionHandle?.fileDescriptor ?? -1)
     waitForExpectationsWithTimeout(1, handler: nil)
   }
 }

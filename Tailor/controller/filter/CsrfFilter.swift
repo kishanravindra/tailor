@@ -59,7 +59,7 @@ public struct CsrfFilter: RequestFilterType, Equatable {
     - parameter response:   The response so far.
     - parameter callback:   The callback to call with the response.
     */
-  public func postProcess(request: Request, response: Response, callback: (Response) -> Void) {
+  public func postProcess(request: Request, response: Response, callback: Connection.ResponseCallback) {
     callback(response)
   }
 }

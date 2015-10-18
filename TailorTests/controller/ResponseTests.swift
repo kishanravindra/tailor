@@ -157,6 +157,21 @@ class ResponseTests: XCTestCase, TailorTestable {
     assert(responseLines.contains("Date: \(date)"), message: "has the current time as the date header")
   }
   
+  func testResponseDataForResponseWithUndefinedLengthHasNoLengthHeader() {
+    setUpFullResponse()
+    response.hasDefinedLength = false
+    setUpFullResponse()
+    
+    assert(!responseLines.contains("Content-Length: 24"), message: "has no content length header")
+    assert(responseLines.contains("Content-Type: text/html; charset=UTF-8"))
+  }
+  
+  func tesetResponseDataForResponseWithBodyOnlyContainsOnlyTheBody() {
+    setUpFullResponse()
+    response.bodyOnly = true
+    assert(responseLines, equals: ["You are being redirected"])
+  }
+  
   func testResponseDataAllowsSpecialHeadersToOverrideDefaults() {
     setUpFullResponse()
     response.headers["Content-Length"] = "A"

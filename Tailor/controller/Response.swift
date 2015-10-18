@@ -302,6 +302,55 @@ public struct Response: Equatable {
   public var renderedTemplates: [TemplateType] = []
   
   /**
+    Whether this response has a defined length that will be sent all at once.
+
+    You can set this to false when sending chunked responses, or other responses
+    that can be streamed out in pieces.
+
+    When this is false, the response will not set an automatic content-length
+    header. It will also prevent the connection from being automatically closed
+    or prompted for input until we have sent a response with an empty body.
+    */
+  public var hasDefinedLength = true
+  
+  /**
+    This method specifies that this response should only contain a body, not any
+    headers.
+  
+    This can be used when sending out the body of a chunked response or any
+    other kind of streamed response.
+    */
+  public var bodyOnly = false
+  
+  /**
+    This method provides a callback that should be invoked once the response is
+    sent.
+
+    The callback will receive a flag indicating whether it should continue
+    producing more parts of the response. This will be false when the connection
+    has been closed on the other end, so you can use this to detect whether you
+    should stop producing a streamed response.
+    */
+  public var continuationCallback: ((Bool)->Void)? = nil
+  
+  /**
+    This flag determines whether a response is chunked.
+
+    This determines it based on the Transfer-Encoding header.
+  
+    The first part of a chunked response should contain only the headers.
+    After that, you should call the response callback again with each part of
+    the body. The sections containing the body should have the `bodyOnly` flag
+    set to true, and the `hasDefinedLength` flag set to true.
+  
+    The system will automatically add a prefix to the body chunks with the
+    length of the chunk.
+    */
+  public var chunked: Bool {
+    return self.headers["Transfer-Encoding"]?.hasPrefix("chunked") ?? false
+  }
+  
+  /**
     This method initializes an empty response.
     */
   public init() {
@@ -340,6 +389,7 @@ public struct Response: Equatable {
   
   /** The full HTTP response data. */
   public var data : NSData { get {
+    if bodyOnly { return self.body }
     let data = NSMutableData()
     
     func add(string: NSString) {
@@ -350,7 +400,9 @@ public struct Response: Equatable {
     
     var headers = self.headers
     
-    headers["Content-Length"] = headers["Content-Length"] ?? String(bodyDataForReading.length)
+    if hasDefinedLength {
+      headers["Content-Length"] = headers["Content-Length"] ?? String(bodyDataForReading.length)
+    }
     headers["Content-Type"] = headers["Content-Type"] ?? "text/html; charset=UTF-8"
     headers["Date"] = headers["Date"] ?? Timestamp.now().inTimeZone("GMT").format(TimeFormat.Rfc822)
     
