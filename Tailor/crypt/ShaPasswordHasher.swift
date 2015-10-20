@@ -88,9 +88,12 @@ public struct ShaPasswordHasher: PasswordHasherType {
     - returns:                        The salt from that hash.
     */
   public static func extractSalt(encryptedPassword: String) -> NSData? {
-    let saltLength = Int(encryptedPassword.substringToIndex(encryptedPassword.startIndex.advancedBy(2))) ?? 0
+    guard let saltLength = Int(encryptedPassword.substringToIndex(encryptedPassword.startIndex.advancedBy(2))) else {
+      return nil
+    }
     let encodedSalt = encryptedPassword.substringWithRange(Range(start: encryptedPassword.startIndex.advancedBy(2), end: encryptedPassword.startIndex.advancedBy(2 + saltLength)))
     let salt = NSData(base64EncodedString: encodedSalt, options: [])
+    
     return salt
   }
 }

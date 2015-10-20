@@ -52,7 +52,7 @@ class ShaPasswordHasherTests: XCTestCase, TailorTestable {
   
   func testExtractSaltWithValidStringGetsSalt() {
     var salt = [UInt8]()
-    for byte in 0..<128 { salt.append(UInt8(byte)) }
+    for byte in 0..<64 { salt.append(UInt8(byte)) }
     let saltData = NSData(bytes: salt)
     let encryptor = ShaPasswordHasher(salt: saltData)
     let encryptedPassword = encryptor.encrypt("12341234")
@@ -61,5 +61,15 @@ class ShaPasswordHasherTests: XCTestCase, TailorTestable {
   
   func testExtractSaltWithMalformedHashReturnsNil() {
     assert(isNil: ShaPasswordHasher.extractSalt("test"))
+  }
+  
+  func testCanRecognizeCorrectPassword() {
+    let encrypted = ShaPasswordHasher().encrypt("12341234")
+    assert(ShaPasswordHasher.isMatch("12341234", encryptedPassword: encrypted))
+  }
+  
+  func testCanRejectIncorrectPassword() {
+    let encrypted = ShaPasswordHasher().encrypt("12341234")
+    assert(!ShaPasswordHasher.isMatch("12341235", encryptedPassword: encrypted))
   }
 }
