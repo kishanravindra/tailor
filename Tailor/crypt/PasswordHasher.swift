@@ -1,7 +1,7 @@
 import Foundation
 
 /**
-  This class provides a Swift wrapper for hashing a string.
+  This class provides a Swift wrapper for hashing a string with SHA-512.
   */
 public struct PasswordHasher {
   /**

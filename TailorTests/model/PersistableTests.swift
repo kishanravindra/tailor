@@ -58,7 +58,7 @@ class PersistableTests: XCTestCase, TailorTestable {
     assert(joinClause.parameters.count, equals: 0, message: "has no parameters in the join clause")
   }
   
-  func testToManyThroughFetchesOneRecordsByForeignKey() {
+  func testToManyThroughFetchesOneRecordByForeignKey() {
     let hat = Hat(shelfId: 1).save()!
     let shelfQuery = Shelf.query.filter(["id": hat.shelfId])
     let query : Query<Store> = hat.toMany(through: shelfQuery, joinToMany: false)
@@ -71,6 +71,22 @@ class PersistableTests: XCTestCase, TailorTestable {
     assert(joinClause.query, equals: "INNER JOIN shelfs ON shelfs.store_id = stores.id", message: "joins between shelves and stores in the join clause")
     assert(joinClause.parameters.count, equals: 0, message: "has no parameters in the join clause")
   }
+  
+  func testToManyThroughCanRespectExistingJoinClause() {
+    let hat = Hat(shelfId: 1).save()!
+    var shelfQuery = Shelf.query.filter(["id": hat.shelfId])
+    shelfQuery = shelfQuery.join("INNER JOIN foo ON foo.bar = shelfs.id AND foo.baz = ?", [1])
+    let query : Query<Store> = hat.toMany(through: shelfQuery, joinToMany: false)
+    
+    let whereClause = query.whereClause
+    assert(whereClause.query, equals: "shelfs.id=?")
+    assert(whereClause.parameters, equals: [hat.shelfId!.databaseValue], message: "has the id as the parameter")
+    
+    let joinClause = query.joinClause
+    assert(joinClause.query, equals: "INNER JOIN shelfs ON shelfs.store_id = stores.id INNER JOIN foo ON foo.bar = shelfs.id AND foo.baz = ?", message: "adds the new join clause to the existing one")
+    assert(joinClause.parameters.first, equals: DatabaseValue.Integer(1), message: "has the existing parameters from the join clause")
+  }
+
   
   //MARK: - Persisting
   

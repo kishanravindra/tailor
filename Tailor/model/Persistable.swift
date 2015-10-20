@@ -178,6 +178,10 @@ extension Persistable {
       let foreignKey = inputForeignKey ?? OtherRecordType.foreignKeyName()
       query = query.join(IntermediaryRecordType.self, fromColumn: foreignKey, toColumn: "id")
     }
+    let existingJoinClause = through.joinClause
+    if !existingJoinClause.query.isEmpty {
+      query = query.join(existingJoinClause.query, existingJoinClause.parameters.map { $0 as DatabaseValueConvertible })
+    }
     return query.filter(through.whereClause.query, through.whereClause.parameters.map { $0 as DatabaseValueConvertible })
   }
   

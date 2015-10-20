@@ -10,14 +10,28 @@ public protocol UserType: Persistable {
   /** The user's email address. */
   var emailAddress: String { get }
   
-  /** The user's password, encrypted with bcrypt. */
+  /** The user's password, encrypted with an AES encryptor by default. */
   var encryptedPassword: String { get set }
+  
+  /**
+    This method determines if a password is correct for this user.
+  
+    The default implementation takes a SHA-512 hash of the suggested password,
+    based on the encryption settings in the current encrypted password, and see
+    if the hashes match.
+    
+    - parameter password:     The password to check.
+    - returns:                Whether the password is correct.
+    */
+  func hasPassword(password: String) -> Bool
 }
 
 extension UserType {
   /**
     This field allows setting the encrypted password by providing the
     unencrypted value of the new password.
+  
+    This will encrypt the value with a SHA-512 hash.
   
     After setting a password, the getter will return the encrypted password.
     */
