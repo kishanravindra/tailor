@@ -142,10 +142,12 @@
 		52C5B4831B47055000F4A5C5 /* TaskType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C5B47B1B47055000F4A5C5 /* TaskType.swift */; };
 		52C5B4841B47055000F4A5C5 /* TestTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C5B47C1B47055000F4A5C5 /* TestTask.swift */; };
 		52C6251A19EE110B0024453F /* AesEncryptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C6251919EE110B0024453F /* AesEncryptor.swift */; };
-		52C6252019EE12810024453F /* PasswordHasher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C6251F19EE12810024453F /* PasswordHasher.swift */; };
+		52C6252019EE12810024453F /* PasswordHasherType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C6251F19EE12810024453F /* PasswordHasherType.swift */; };
 		52C72EFB1BA370DA0008E2B2 /* TailorTestable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C72EFA1BA370DA0008E2B2 /* TailorTestable.swift */; settings = {ASSET_TAGS = (); }; };
 		52C7E3A51BA3772500345D20 /* ControllerTestable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C7E3A41BA3772500345D20 /* ControllerTestable.swift */; settings = {ASSET_TAGS = (); }; };
 		52C7E3A71BA3778C00345D20 /* TemplateTestable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C7E3A61BA3778C00345D20 /* TemplateTestable.swift */; settings = {ASSET_TAGS = (); }; };
+		52D428021BD688E000DC7B7B /* ShaPasswordHasher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D428011BD688E000DC7B7B /* ShaPasswordHasher.swift */; settings = {ASSET_TAGS = (); }; };
+		52D428041BD68CBA00DC7B7B /* PasswordHasherTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D428031BD68CBA00DC7B7B /* PasswordHasherTypeTests.swift */; settings = {ASSET_TAGS = (); }; };
 		52DD44E81B57362800312923 /* Email.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DD44E71B57362800312923 /* Email.swift */; };
 		52DD44EB1B5736AE00312923 /* EmailTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DD44EA1B5736AE00312923 /* EmailTests.swift */; };
 		52DD44ED1B5C380500312923 /* EmailAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DD44EC1B5C380500312923 /* EmailAgent.swift */; };
@@ -161,7 +163,7 @@
 		52DDCF011A538C5800D3A47E /* QueryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DDCF001A538C5800D3A47E /* QueryTests.swift */; };
 		52E784B51A59C12D0065C10D /* SessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784B41A59C12D0065C10D /* SessionTests.swift */; };
 		52E784B81A59F2030065C10D /* AesEncryptorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784B71A59F2030065C10D /* AesEncryptorTests.swift */; };
-		52E784BA1A5A04590065C10D /* PasswordHasherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784B91A5A04590065C10D /* PasswordHasherTests.swift */; };
+		52E784BA1A5A04590065C10D /* ShaPasswordHasherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784B91A5A04590065C10D /* ShaPasswordHasherTests.swift */; };
 		52E784C11A5B64030065C10D /* NSDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784C01A5B64030065C10D /* NSDataTests.swift */; };
 		52E784C31A5B6BFA0065C10D /* NSStringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784C21A5B6BFA0065C10D /* NSStringTests.swift */; };
 		52E784C51A5B6E2D0065C10D /* StringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784C41A5B6E2D0065C10D /* StringTests.swift */; };
@@ -381,10 +383,12 @@
 		52C5B47B1B47055000F4A5C5 /* TaskType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskType.swift; sourceTree = "<group>"; };
 		52C5B47C1B47055000F4A5C5 /* TestTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestTask.swift; sourceTree = "<group>"; };
 		52C6251919EE110B0024453F /* AesEncryptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AesEncryptor.swift; sourceTree = "<group>"; };
-		52C6251F19EE12810024453F /* PasswordHasher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordHasher.swift; sourceTree = "<group>"; };
+		52C6251F19EE12810024453F /* PasswordHasherType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordHasherType.swift; sourceTree = "<group>"; };
 		52C72EFA1BA370DA0008E2B2 /* TailorTestable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TailorTestable.swift; sourceTree = "<group>"; };
 		52C7E3A41BA3772500345D20 /* ControllerTestable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControllerTestable.swift; sourceTree = "<group>"; };
 		52C7E3A61BA3778C00345D20 /* TemplateTestable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateTestable.swift; sourceTree = "<group>"; };
+		52D428011BD688E000DC7B7B /* ShaPasswordHasher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShaPasswordHasher.swift; sourceTree = "<group>"; };
+		52D428031BD68CBA00DC7B7B /* PasswordHasherTypeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordHasherTypeTests.swift; sourceTree = "<group>"; };
 		52DD44E71B57362800312923 /* Email.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Email.swift; sourceTree = "<group>"; };
 		52DD44EA1B5736AE00312923 /* EmailTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailTests.swift; sourceTree = "<group>"; };
 		52DD44EC1B5C380500312923 /* EmailAgent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailAgent.swift; sourceTree = "<group>"; };
@@ -400,7 +404,7 @@
 		52E758951AF68AE000EA7EEE /* localization.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = localization.plist; sourceTree = "<group>"; };
 		52E784B41A59C12D0065C10D /* SessionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionTests.swift; sourceTree = "<group>"; };
 		52E784B71A59F2030065C10D /* AesEncryptorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AesEncryptorTests.swift; sourceTree = "<group>"; };
-		52E784B91A5A04590065C10D /* PasswordHasherTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordHasherTests.swift; sourceTree = "<group>"; };
+		52E784B91A5A04590065C10D /* ShaPasswordHasherTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShaPasswordHasherTests.swift; sourceTree = "<group>"; };
 		52E784C01A5B64030065C10D /* NSDataTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSDataTests.swift; sourceTree = "<group>"; };
 		52E784C21A5B6BFA0065C10D /* NSStringTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSStringTests.swift; sourceTree = "<group>"; };
 		52E784C41A5B6E2D0065C10D /* StringTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringTests.swift; sourceTree = "<group>"; };
@@ -898,7 +902,8 @@
 			isa = PBXGroup;
 			children = (
 				52C6251919EE110B0024453F /* AesEncryptor.swift */,
-				52C6251F19EE12810024453F /* PasswordHasher.swift */,
+				52C6251F19EE12810024453F /* PasswordHasherType.swift */,
+				52D428011BD688E000DC7B7B /* ShaPasswordHasher.swift */,
 			);
 			path = crypt;
 			sourceTree = "<group>";
@@ -933,7 +938,8 @@
 			isa = PBXGroup;
 			children = (
 				52E784B71A59F2030065C10D /* AesEncryptorTests.swift */,
-				52E784B91A5A04590065C10D /* PasswordHasherTests.swift */,
+				52D428031BD68CBA00DC7B7B /* PasswordHasherTypeTests.swift */,
+				52E784B91A5A04590065C10D /* ShaPasswordHasherTests.swift */,
 			);
 			path = crypt;
 			sourceTree = "<group>";
@@ -1301,7 +1307,7 @@
 				525F845A1B3A44A50025CA38 /* DatabaseDriver.swift in Sources */,
 				522643211B06C7F40081D04E /* Calendar.swift in Sources */,
 				52C5B47F1B47055000F4A5C5 /* AlterationsTask.swift in Sources */,
-				52C6252019EE12810024453F /* PasswordHasher.swift in Sources */,
+				52C6252019EE12810024453F /* PasswordHasherType.swift in Sources */,
 				52BD142F19E9DA1D006D72B0 /* ControllerType.swift in Sources */,
 				52C10D011B08F4A1005D85D4 /* Date.swift in Sources */,
 				52F18B021B68FEBD00F5863E /* CsvParser.swift in Sources */,
@@ -1331,6 +1337,7 @@
 				522643231B06C7F40081D04E /* TimeInterval.swift in Sources */,
 				52A95E371AE318C6001AED1F /* Persistable.swift in Sources */,
 				523D655D1A98CC1B000C686B /* PropertyListLocalization.swift in Sources */,
+				52D428021BD688E000DC7B7B /* ShaPasswordHasher.swift in Sources */,
 				52B710141B6810D80003A6DF /* SeedTaskType.swift in Sources */,
 				525F845E1B3B62620025CA38 /* LocalizationSource.swift in Sources */,
 				522643261B06C7F40081D04E /* TimeZone.swift in Sources */,
@@ -1372,6 +1379,7 @@
 				5227E1831B521071001D4BF6 /* LayoutTypeTests.swift in Sources */,
 				527401471BB33951003C7821 /* DatabaseRowTests.swift in Sources */,
 				524828371B7FEA83006257F2 /* CookieJarTests.swift in Sources */,
+				52D428041BD68CBA00DC7B7B /* PasswordHasherTypeTests.swift in Sources */,
 				523D65681A99521E000C686B /* DatabaseLocalizationTests.swift in Sources */,
 				525F84601B3B65F40025CA38 /* LocalizationSourceTests.swift in Sources */,
 				524828381B7FEA83006257F2 /* CookieTests.swift in Sources */,
@@ -1385,7 +1393,7 @@
 				5232ACC61B6198730043F9A2 /* ExternalProcessTests.swift in Sources */,
 				526ACD821B07A9FD00CE0CC0 /* TimeIntervalTests.swift in Sources */,
 				523F29351A583EEB00C1BBC0 /* SanitizerTests.swift in Sources */,
-				52E784BA1A5A04590065C10D /* PasswordHasherTests.swift in Sources */,
+				52E784BA1A5A04590065C10D /* ShaPasswordHasherTests.swift in Sources */,
 				526E8DE51B379C320040CA35 /* ControllerTypeTests.swift in Sources */,
 				52E784C31A5B6BFA0065C10D /* NSStringTests.swift in Sources */,
 				52DDCF011A538C5800D3A47E /* QueryTests.swift in Sources */,

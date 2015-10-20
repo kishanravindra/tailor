@@ -74,7 +74,7 @@ class UserTypeTests: XCTestCase, TailorTestable {
   
   func testSettingPasswordEncryptsPassword() {
     user.password = "TestUser!"
-    assert(PasswordHasher.isMatch("TestUser!", encryptedHash: user.encryptedPassword), message: "stores an encrypted version of the password")
+    assert(ShaPasswordHasher.isMatch("TestUser!", encryptedPassword: user.encryptedPassword), message: "stores an encrypted version of the password")
     assert(user.password, equals: user.encryptedPassword)
   }
   

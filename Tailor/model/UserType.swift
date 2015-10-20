@@ -3,8 +3,10 @@ import Foundation
 /**
   This protocol describes a user account.
 
-  A user account must store an email address and a salted password in a table
-  in columns called `email_address` and `encrypted_password`.
+  A user account must store an email address and a salted password in a table.
+  The name of the column holding email addresses is specified by the
+  `emailAddressColumn` field. The name of the column holding passwords must be
+  `encrypted_password`.
   */
 public protocol UserType: Persistable {
   /** The user's email address. */
@@ -16,7 +18,7 @@ public protocol UserType: Persistable {
   /**
     This method determines if a password is correct for this user.
   
-    The default implementation takes a SHA-512 hash of the suggested password,
+    The default implementation takes a hash of the suggested password,
     based on the encryption settings in the current encrypted password, and see
     if the hashes match.
     
@@ -24,14 +26,32 @@ public protocol UserType: Persistable {
     - returns:                Whether the password is correct.
     */
   func hasPassword(password: String) -> Bool
+  
+  /**
+    The type of hasher that we should use to encrypt this user's passwords.
+
+    The default is to use a `ShaPasswordHasher`.
+    */
+  var passwordHasherType: PasswordHasherType.Type { get }
+  
+  /**
+    The name of the column that we use to store email addresses.
+
+    The default is to use `email_address`, but you can override this if it is
+    more to your tastes to call this column `email` or something else.
+    */
+  static var emailAddressColumn: String { get }
 }
 
 extension UserType {
+  public var passwordHasherType: PasswordHasherType.Type { return ShaPasswordHasher.self }
+  public static var emailAddressColumn: String { return "email_address" }
+  
   /**
     This field allows setting the encrypted password by providing the
     unencrypted value of the new password.
   
-    This will encrypt the value with a SHA-512 hash.
+    This will encrypt the value with the specified password hasher.
   
     After setting a password, the getter will return the encrypted password.
     */
@@ -40,17 +60,19 @@ extension UserType {
       return encryptedPassword
     }
     set {
-      encryptedPassword = PasswordHasher().encrypt(newValue)
+      encryptedPassword = self.passwordHasherType.init().encrypt(newValue)
     }
   }
   /**
     This method determines if a password is correct for this user.
+  
+    This will hash the proposed password with our password
     
     - parameter password:     The password to check.
     - returns:                Whether the password is correct.
     */
   public func hasPassword(password: String) -> Bool {
-    return PasswordHasher.isMatch(password, encryptedHash: self.encryptedPassword)
+    return self.passwordHasherType.isMatch(password, encryptedPassword: self.encryptedPassword)
   }
   
   /**
@@ -63,7 +85,7 @@ extension UserType {
     - returns: The user
     */
   public static func authenticate(emailAddress: String, password: String) throws -> UserType {
-    let users = query.filter(["email_address": emailAddress]).allRecords().flatMap { $0 as? UserType }
+    let users = query.filter([emailAddressColumn: emailAddress]).allRecords().flatMap { $0 as? UserType }
   
     if users.isEmpty {
       throw UserLoginError.WrongEmailAddress
