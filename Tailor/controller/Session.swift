@@ -96,6 +96,26 @@ public struct Session {
     return self.data.isEmpty
   }
   
+  /**
+    This method gets the user that is logged in to this session.
+
+    This uses the `userId` key on the session. If there is no userId, or if it
+    does not match any user, or there is no value set for
+    `Application.configuration.userType`, this will return nil.
+  
+    This method will fetch the user on every call, so if you want to avoid that
+    performance penalty, you should use the user on `ControllerState` instead.
+  
+    - returns:    The user who is logged in to the session.
+    */
+  public var user: UserType? {
+    if let userId = Int(self["userId"] ?? "") {
+      let users = Application.configuration.userType?.query.filter(["id": userId]).allRecords()
+      return users?.first as? UserType
+    }
+    return nil
+  }
+  
   //MARK: - Serialization
   
   /**

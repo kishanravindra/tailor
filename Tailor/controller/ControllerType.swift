@@ -151,11 +151,7 @@ public struct ControllerState {
     self.callback = callback
     self.localization = Application.configuration.localizationForRequest(request)
     self.actionName = actionName
-    
-    if let userId = Int(self.request.session["userId"] ?? "") {
-      let users = Application.configuration.userType?.query.filter(["id": userId]).allRecords()
-      self.currentUser =  users?.first as? UserType
-    }
+    self.currentUser = request.session.user
   }
 
   /**

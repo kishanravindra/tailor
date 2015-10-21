@@ -146,6 +146,38 @@ class SessionTests: XCTestCase, TailorTestable {
     assert(session.isEmpty())
   }
   
+  //MARK: - Session Info
+  
+  
+  
+  func testUserIsFetchedFromIdInSession() {
+    var user = TestUser()
+    user.emailAddress = "test@test.com"
+    user.password = "test"
+    user = user.save()!
+    let session = Request(sessionData: ["userId": String(user.id)]).session
+    assert(session.user?.id, equals: user.id, message: "sets user to the one with the id given")
+  }
+  
+  func testUserIsNilWithBadId() {
+    var user = TestUser()
+    user.emailAddress = "test@test.com"
+    user.password = "test"
+    user = user.save()!
+    let session = Request(sessionData: ["userId": String(user.id + 1)]).session
+    assert(isNil: session.user, message: "sets user to nil")
+  }
+  
+  func testUserToNilWithNoId() {
+    var user = TestUser()
+    user.emailAddress = "test@test.com"
+    user.password = "test"
+    user.save()
+    let session = Request().session
+    assert(isNil: session.user, message: "sets user to nil")
+  }
+  
+  
   //MARK: - Serialization
   
   func testCookieStringWithNoChangesIsIdempotent() {
