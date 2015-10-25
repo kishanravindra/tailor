@@ -82,4 +82,17 @@ class StringTests: XCTestCase, TailorTestable {
     let string = ""
     assert(string.lastComponent(separator: "123"), equals: "")
   }
+  
+  func testRangeOfSelfGetsRangeOfString() {
+    let string = "abcdef"
+    let range = string.rangeOfSelf
+    assert(range.location, equals: 0)
+    assert(range.length, equals: 6)
+  }
+  
+  func testStringByReplacingCharactersInSetReplacesCharacters() {
+    let string1 = "abc 123\ndef"
+    let string2 = string1.stringByEscapingCharacters(.alphanumericCharacterSet(), with: "_")
+    assert(string2, equals: "abc_123_def")
+  }
 }

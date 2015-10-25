@@ -66,4 +66,174 @@ extension TemplateTestable {
       NSLog("Error creating test controller: %@", String(error))
     }
   }
+  
+  /**
+    This method asserts that an XML document contains an element.
+
+    - parameter xml:            The XML text.
+    - parameter elementName:    The name of the element we are checking for.
+    - parameter attributes:     Extra attributes that the element needs to have.
+    - parameter message:        The message to show if the test fails.
+    - parameter file:           The file that the assertion came from. You
+                                should generally omit this.
+    - parameter line:           The line that the assertion came from. You
+                                should generally omit this.
+    - parameter contents:       A block to run additional checks on the element.
+    */
+  public func assert(xml: String, containsElement elementName: String, attributes: [String:String] = [:], message: String = "", file: String = __FILE__, line: UInt = __LINE__, @noescape contents: (NSXMLElement)->Void = {_ in}) {
+    assert(xml, containsElement: true, elementName: elementName, attributes: attributes, message: message, file: file, line: line, contents: contents)
+  }
+  
+  
+  /**
+    This method asserts that an XML document does not contain an element.
+    
+    - parameter xml:            The XML text.
+    - parameter elementName:    The name of the element we are checking for.
+    - parameter attributes:     Extra attributes that the element needs to have.
+    - parameter message:        The message to show if the test fails.
+    - parameter file:           The file that the assertion came from. You
+                                should generally omit this.
+    - parameter line:           The line that the assertion came from. You
+                                should generally omit this.
+    */
+  public func assert(xml: String, doesNotContainElement elementName: String, attributes: [String:String] = [:], message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+    assert(xml, containsElement: false, elementName: elementName, attributes: attributes, message: message, file: file, line: line) { _ in }
+  }
+  
+  
+  
+  /**
+    This method asserts that an XML document contains an element.
+    
+    - parameter xml:            The XML document.
+    - parameter elementName:    The name of the element we are checking for.
+    - parameter attributes:     Extra attributes that the element needs to have.
+    - parameter message:        The message to show if the test fails.
+    - parameter file:           The file that the assertion came from. You
+                                should generally omit this.
+    - parameter line:           The line that the assertion came from. You
+                                should generally omit this.
+    - parameter contents:       A block to run additional checks on the element.
+    */
+  public func assert(xml: NSXMLElement, containsElement elementName: String, attributes: [String:String] = [:], message: String = "", file: String = __FILE__, line: UInt = __LINE__, @noescape contents: (NSXMLElement)->Void = {_ in}) {
+    assert(xml, containsElement: true, elementName: elementName, attributes: attributes, message: message, file: file, line: line, contents: contents)
+  }
+  
+  /**
+    This method asserts that an XML document does not contain an element.
+    
+    - parameter xml:            The XML document.
+    - parameter elementName:    The name of the element we are checking for.
+    - parameter attributes:     Extra attributes that the element needs to have.
+    - parameter message:        The message to show if the test fails.
+    - parameter file:           The file that the assertion came from. You
+                                should generally omit this.
+    - parameter line:           The line that the assertion came from. You
+                                should generally omit this.
+  */
+  public func assert(xml: NSXMLElement, doesNotContainElement elementName: String, attributes: [String:String] = [:], message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+    assert(xml, containsElement: false, elementName: elementName, attributes: attributes, message: message, file: file, line: line) { _ in }
+  }
+  
+  /**
+    This method asserts that an XML document either does or does not contain an
+    element.
+    
+    - parameter xml:              The XML text.
+    - parameter containsElement:  Whether the document should contains the
+                                  element.
+    - parameter elementName:      The name of the element we are checking for.
+    - parameter attributes:       Extra attributes that the element needs to have.
+    - parameter message:          The message to show if the test fails.
+    - parameter file:             The file that the assertion came from. You
+                                  should generally omit this.
+    - parameter line:             The line that the assertion came from. You
+                                  should generally omit this.
+    - parameter contents:         A block to run additional checks on the element.
+    */
+  private func assert(xml: String, containsElement: Bool, elementName: String, attributes: [String:String], message: String, file: String, line: UInt, @noescape contents: (NSXMLElement)->Void) {
+    do {
+      let body = try NSXMLDocument(XMLString: "<html><body>\(xml)</body></html>", options: 0)
+      if let element = body.rootElement() {
+        assert(element, containsElement: containsElement, elementName: elementName, attributes: attributes, message: message, file: file, line: line, contents: contents)
+      }
+      else {
+        var fullMessage = "Document \(xml) had no root element"
+        if !message.isEmpty { fullMessage = "\(message) - " + fullMessage }
+        self.recordFailureWithDescription(fullMessage, inFile: file, atLine: line, expected: true)
+      }
+    }
+    catch {
+      var fullMessage = "Document \(xml) was not a valid XML document"
+      if !message.isEmpty { fullMessage = "\(message) - " + fullMessage }
+      self.recordFailureWithDescription(fullMessage, inFile: file, atLine: line, expected: true)
+    }
+  }
+  
+  /**
+    This method asserts that an XML document either does or does not contain an
+    element.
+    
+    - parameter xml:              The XML document.
+    - parameter containsElement:  Whether the document should contains the
+                                  element.
+    - parameter elementName:      The name of the element we are checking for.
+    - parameter attributes:       Extra attributes that the element needs to have.
+    - parameter message:          The message to show if the test fails.
+    - parameter file:             The file that the assertion came from. You
+                                  should generally omit this.
+    - parameter line:             The line that the assertion came from. You
+                                  should generally omit this.
+    - parameter contents:         A block to run additional checks on the element.
+    */
+  private func assert(xml: NSXMLElement, containsElement: Bool, elementName: String, attributes: [String:String], message: String, file: String, line: UInt, @noescape contents: (NSXMLElement)->Void) {
+    if let child = xml.findElement(elementName, attributes: attributes) {
+      if containsElement {
+        contents(child)
+      }
+      else {
+        var fullMessage = "\(xml) contained element \(child) matching \(elementName)(\(attributes))"
+        if !message.isEmpty { fullMessage = "\(message) - \(fullMessage)" }
+        recordFailureWithDescription(fullMessage, inFile: file, atLine: line, expected: true)
+      }
+    }
+    else if containsElement {
+      var fullMessage = "\(xml) did not contain an element matching \(elementName)(\(attributes))"
+      if !message.isEmpty { fullMessage = "\(message) - \(fullMessage)" }
+      recordFailureWithDescription(fullMessage, inFile: file, atLine: line, expected: true)
+    }
+  }
 }
+
+extension NSXMLElement {
+  /**
+    This method fetches an element from this XML tree.
+
+    - parameter elementName:    The name of the element.
+    - parameter attributes:     The attributes that the element should have.
+    - returns:                  The matching element.
+    */
+  public func findElement(elementName: String, attributes: [String:String]) -> NSXMLElement? {
+    if self.name == elementName {
+      var isMatch = true
+      for (key,value) in attributes {
+        if self.attributeForName(key)?.stringValue != value {
+          isMatch = false
+          break
+        }
+      }
+      if isMatch {
+        return self
+      }
+    }
+    for child in self.children ?? [] {
+      if let childElement = child as? NSXMLElement,
+        let element = childElement.findElement(elementName, attributes: attributes) {
+          return element
+      }
+    }
+    return nil
+  }
+}
+

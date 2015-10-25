@@ -78,4 +78,34 @@ public extension String {
       return self
     }
   }
+  
+  /**
+    This method gets the full range of the characters in the string.
+    */
+  public var rangeOfSelf: NSRange {
+    return NSMakeRange(0, self.characters.count)
+  }
+  
+  /**
+    This method replaces all the characters that are not in an allowed set with
+    a replacement string.
+    
+    - parameter set:          The allowed characters in the result
+    - parameter replacement:  The string that should replace the forbidden
+                              characters.
+    */
+  public func stringByEscapingCharacters(set: NSCharacterSet, with replacement: String) -> String {
+    var newCharacters = String.UnicodeScalarView()
+    newCharacters.reserveCapacity(unicodeScalars.count)
+    for character in unicodeScalars {
+      let value = character.value
+      if value < UInt32(UINT16_MAX) && set.characterIsMember(UInt16(value)) {
+        newCharacters.append(character)
+      }
+      else {
+        newCharacters.appendContentsOf(replacement.unicodeScalars)
+      }
+    }
+    return String(newCharacters)
+  }
 }

@@ -348,6 +348,11 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     XCTAssertNil(path, "gives a nil path")
   }
   
+  func testPathForOnControllerTypeGetsPathForThatController() {
+    let path = TestController.self.pathFor("index", parameters: ["id": "5"])
+    assert(path, equals: "/route1?id=5")
+  }
+  
   func testRedirectToWithControllerTypeGeneratesRedirectResponse() {
     let expectation = expectationWithDescription("callback called")
     self.callback = {

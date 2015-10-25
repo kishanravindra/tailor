@@ -238,6 +238,7 @@ extension TailorTestable {
       self.recordFailureWithDescription("value was nil\(message)", inFile: file, atLine: line, expected: true)
     }
   }
+  
   /**
     This method asserts that a value is close to another value.
     
@@ -262,6 +263,34 @@ extension TailorTestable {
       if value! < correctValue - range || value! > correctValue + range {
         self.recordFailureWithDescription("\(value!) is not within \(range) of \(correctValue)\(message)", inFile: file, atLine: line, expected: true)
       }
+    }
+  }
+  
+  /**
+    This method asserts that a value matches a regular expression.
+
+    - parameter string:         The value to check.
+    - parameter matches:        The pattern that the value has to match.
+    - parameter message:        The message to show if the assertion fails.
+    - parameter file:           The name of the file where the assertion is
+                                coming from. You should generally omit this,
+                                since it will be provided automatically.
+    - parameter line:           The line of the file where the assertion is
+                                coming from. You should generally omit this,
+                                since it will be provided automatically.
+  */
+
+  public func assert(string: String, matches pattern: String, var message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+    if !message.isEmpty {
+      message = " - " + message
+    }
+    guard let regex = try? NSRegularExpression(pattern: pattern, options: []) else {
+      self.recordFailureWithDescription("\(pattern) was not a valid pattern\(message)", inFile: file, atLine: line, expected: true)
+      return
+    }
+    let matchCount = regex.numberOfMatchesInString(string, options: [], range: string.rangeOfSelf)
+    if matchCount == 0 {
+      self.recordFailureWithDescription("\(string) did not match \(pattern)\(message)", inFile: file, atLine: line, expected: true)
     }
   }
   

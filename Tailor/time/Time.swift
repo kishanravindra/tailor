@@ -83,3 +83,22 @@ public func <(lhs: Time, rhs: Time) -> Bool {
     (lhs.hour == rhs.hour && lhs.minute == rhs.minute && lhs.second < rhs.second) ||
     (lhs.hour == rhs.hour && lhs.minute == rhs.minute && lhs.second == rhs.second && lhs.nanosecond < rhs.nanosecond)
 }
+
+extension Int {
+  /**
+    This method gets a time at this hour.
+
+    - parameter minute:     The minutes past the start of the hour.
+    - returns:              The time.
+    */
+  public func oClock(minute: Int = 0) -> Time {
+    return Time(hour: self, minute: minute, second: 0, nanosecond: 0)
+  }
+  
+  /**
+    This method gets the time that's thirty minutes past this hour.
+    */
+  public var thirty: Time {
+    return self.oClock(30)
+  }
+}

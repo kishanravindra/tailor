@@ -37,6 +37,8 @@
 		523301A11B46FC4D00C9E5EE /* CreateTestDatabaseAlteration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523301A01B46FC4D00C9E5EE /* CreateTestDatabaseAlteration.swift */; };
 		523C80101BDD48DA004D501D /* PaginatedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523C800F1BDD48DA004D501D /* PaginatedList.swift */; settings = {ASSET_TAGS = (); }; };
 		523C80121BDD4910004D501D /* PaginatedListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523C80111BDD4910004D501D /* PaginatedListTests.swift */; settings = {ASSET_TAGS = (); }; };
+		523C80141BDD51E2004D501D /* CollectionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523C80131BDD51E2004D501D /* CollectionType.swift */; settings = {ASSET_TAGS = (); }; };
+		523C80161BDD5238004D501D /* CollectionTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523C80151BDD5238004D501D /* CollectionTypeTests.swift */; settings = {ASSET_TAGS = (); }; };
 		523D655B1A98CBEB000C686B /* DatabaseLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523D655A1A98CBEB000C686B /* DatabaseLocalization.swift */; };
 		523D655D1A98CC1B000C686B /* PropertyListLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523D655C1A98CC1B000C686B /* PropertyListLocalization.swift */; };
 		523D65681A99521E000C686B /* DatabaseLocalizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523D65671A99521E000C686B /* DatabaseLocalizationTests.swift */; };
@@ -257,6 +259,8 @@
 		523301A01B46FC4D00C9E5EE /* CreateTestDatabaseAlteration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateTestDatabaseAlteration.swift; sourceTree = "<group>"; };
 		523C800F1BDD48DA004D501D /* PaginatedList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaginatedList.swift; sourceTree = "<group>"; };
 		523C80111BDD4910004D501D /* PaginatedListTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaginatedListTests.swift; sourceTree = "<group>"; };
+		523C80131BDD51E2004D501D /* CollectionType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionType.swift; sourceTree = "<group>"; };
+		523C80151BDD5238004D501D /* CollectionTypeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionTypeTests.swift; sourceTree = "<group>"; };
 		523D655A1A98CBEB000C686B /* DatabaseLocalization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseLocalization.swift; sourceTree = "<group>"; };
 		523D655C1A98CC1B000C686B /* PropertyListLocalization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PropertyListLocalization.swift; sourceTree = "<group>"; };
 		523D65671A99521E000C686B /* DatabaseLocalizationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseLocalizationTests.swift; sourceTree = "<group>"; };
@@ -872,6 +876,7 @@
 				52B2B69919F1DCF10086261B /* Dictionary.swift */,
 				5232ACC31B618FBF0043F9A2 /* ExternalProcess.swift */,
 				52A8AFD21BA736BC007A2762 /* NSCharacterSet.swift */,
+				523C80131BDD51E2004D501D /* CollectionType.swift */,
 				52B2B6DD19F365130086261B /* xcode_templates */,
 			);
 			path = ext;
@@ -953,11 +958,12 @@
 		52E784BB1A5B593B0065C10D /* ext */ = {
 			isa = PBXGroup;
 			children = (
+				523C80151BDD5238004D501D /* CollectionTypeTests.swift */,
+				52E784C61A5B72990065C10D /* DictionaryTests.swift */,
+				5232ACC51B6198730043F9A2 /* ExternalProcessTests.swift */,
 				52E784C01A5B64030065C10D /* NSDataTests.swift */,
 				52E784C21A5B6BFA0065C10D /* NSStringTests.swift */,
 				52E784C41A5B6E2D0065C10D /* StringTests.swift */,
-				52E784C61A5B72990065C10D /* DictionaryTests.swift */,
-				5232ACC51B6198730043F9A2 /* ExternalProcessTests.swift */,
 			);
 			path = ext;
 			sourceTree = "<group>";
@@ -1286,6 +1292,7 @@
 				52B2B69A19F1DCF10086261B /* Dictionary.swift in Sources */,
 				52C10D051B0927F3005D85D4 /* Time.swift in Sources */,
 				5214B5D21AA38B0800624E9D /* ValidationError.swift in Sources */,
+				523C80141BDD51E2004D501D /* CollectionType.swift in Sources */,
 				524CD7DB1B5EDF60002007C8 /* SmtpEmailAgent.swift in Sources */,
 				525C80851A1C1B4900E7035F /* Query.swift in Sources */,
 				52B2B6EE19F3F75C0086261B /* Sanitizer.swift in Sources */,
@@ -1408,6 +1415,7 @@
 				52135CA51B07FE0D00595794 /* TimeZoneTests.swift in Sources */,
 				52C10D031B08F4C9005D85D4 /* DateTests.swift in Sources */,
 				52DD44F71B5C4C8800312923 /* EmailAgentTests.swift in Sources */,
+				523C80161BDD5238004D501D /* CollectionTypeTests.swift in Sources */,
 				52DD44EB1B5736AE00312923 /* EmailTests.swift in Sources */,
 				52A95E331AE0A3E6001AED1F /* DatabaseValueTests.swift in Sources */,
 				529230061A3CF4E4006DD6EB /* ApplicationTests.swift in Sources */,

@@ -176,6 +176,11 @@ class TemplateTypeTests: XCTestCase, TailorTestable {
     assert(template.contents, equals: "<p class=\"greeting\" data-hover=\"Hi\">Hello</p>")
   }
   
+  func testDivPutsDivTagInBuffer() {
+    template.div("alert", attributes: ["class": "greeting", "data-hover": "Hi"]) { template.text("Hello") }
+    assert(template.contents, equals: "<div class=\"alert greeting\" data-hover=\"Hi\">Hello</div>")
+  }
+  
   func testLinkPutsLinkTagInBuffer() {
     struct InnerTestController: ControllerType {
       var state: ControllerState

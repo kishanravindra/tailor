@@ -99,8 +99,24 @@ class TimeTests: XCTestCase, TailorTestable {
     assert(timestamp.nanosecond, equals: time.nanosecond)
   }
   
-  func testTimeGetsDescription() {
+  func testDescriptionGetsDescription() {
     let time1 = Time(hour: 17, minute: 22, second: 15, nanosecond: 1.5, timeZone: TimeZone(name: "US/Eastern"))
     assert(time1.description, equals: "17:22:15 US/Eastern")
+  }
+  
+  func testOClockGetsTimePastHour() {
+    let time = 8.oClock(17)
+    assert(time.hour, equals: 8)
+    assert(time.minute, equals: 17)
+    assert(time.second, equals: 0)
+    assert(time.nanosecond, equals: 0)
+  }
+  
+  func testThirtyGetsTimePastHour() {
+    let time = 14.thirty
+    assert(time.hour, equals: 14)
+    assert(time.minute, equals: 30)
+    assert(time.second, equals: 0)
+    assert(time.nanosecond, equals: 0)
   }
 }

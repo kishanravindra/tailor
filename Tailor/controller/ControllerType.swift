@@ -391,6 +391,22 @@ extension ControllerType {
   }
   
   /**
+    This method gets the path for a route in this controller.
+    
+    - parameter actionName:       The name of the action for the path.
+    - parameter parameters:       Additional parameters for the path.
+    - parameter domain:           The domain to use for the URL. If this is
+                                  omitted, the result will just be the path part
+                                  of the URL.
+    - parameter https:            Whether the URL should be https or http. If
+                                  the domain is omitted, this is ignored.
+    - returns:                    The path
+    */
+  public static func pathFor(actionName: String, parameters: [String:String] = [:], domain: String? = nil, https: Bool = true) -> String? {
+    return RouteSet.shared().pathFor(self, actionName: actionName, parameters: parameters, domain: domain, https: https)
+  }
+  
+  /**
     This method renders a stream to the client.
 
     The stream will start with a header response with no data. Once that is

@@ -173,6 +173,25 @@ extension TemplateType {
     self.tag(name, attributes) { self.text(text) }
   }
   
+  
+  /**
+    This method provides a shorthand for defining a div with a particular style
+    class.
+    
+    - parameter styleClass:   The class for the div.
+    - parameter attributes:   The attributes for the div. If this contains a
+                              *class* parameter, it will be appended to the main
+                              class.
+    - parameter contents:     A block for adding contents within the div.
+    */
+  public mutating func div(var styleClass: String, var attributes: [String:String] = [:], @noescape with contents: Void->Void) {
+    if let otherClass = attributes["class"] {
+      styleClass += " \(otherClass)"
+    }
+    attributes["class"] = styleClass
+    self.tag("div", attributes, with: contents)
+  }
+  
   /**
     This method adds a tag for linking to a path.
   
