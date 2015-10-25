@@ -31,3 +31,35 @@ public protocol RequestFilterType {
     */
   func postProcess(request: Request, response: Response, callback: Connection.ResponseCallback)
 }
+
+extension RequestFilterType {
+  /**
+    This method runs our preprocessing using a block that can throw a
+    `ControllerError`. If it does, this will issue the callback with the thrown
+    response, telling it to halt. If no error is thrown, this allows processing
+    to continue.
+   
+    This can be particularly helpful when you have a static method on your filter
+    for fetching data from a request, and you just want your pre-processing to
+    halt when the data cannot be fetched.
+   
+    - parameter request:    The request we are processing.
+    - parameter response:   The baseline response from previous filters.
+    - parameter callback:   The callback to invoke with the results of our
+                            filter.
+    - parameter processingBlock:    The block that runs our pre-processing
+                                    logic.
+   */
+  public func preProcessWithBlock(request: Request, response: Response, callback: (Request, Response, stop: Bool) -> Void, @noescape processingBlock: () throws -> Void) {
+    
+    do {
+      try processingBlock()
+    }
+    catch let ControllerError.UnprocessableRequest(response) {
+      callback(request, response, stop: true)
+      return
+    }
+    catch {}
+    callback(request, response, stop: false)
+  }
+}

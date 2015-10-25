@@ -222,6 +222,27 @@ public enum JsonPrimitive: Equatable, CustomStringConvertible {
     return try JsonParsingError.withFieldPrefix(key) { return try T(json: value) }
   }
   
+  //MARK: - Parsing from Other Formats
+  
+  /**
+    This method loads JSON data from a plist file.
+  
+    This allows us to extract data from a plist file using the convenience
+    methods for fetching data from JSON.
+    
+    - parameter path:   The path to the plist file.
+    - throws:           A `JsonConversionError`.
+    */
+  public init(plist path: Swift.String) throws {
+    guard let data = NSData(contentsOfFile: path) else {
+      NSLog("Error reading plist at path %@", path)
+      NSLog("Could not open file")
+      throw JsonConversionError.NotValidJsonObject
+    }
+    let contents = try NSPropertyListSerialization.propertyListWithData(data, options: [], format: nil)
+    try self.init(jsonObject: contents)
+  }
+  
   //MARK: - Description
   
   /**

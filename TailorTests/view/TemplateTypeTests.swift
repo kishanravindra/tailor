@@ -36,6 +36,7 @@ class TemplateTypeTests: XCTestCase, TailorTestable {
     self.controller.state.localization = PropertyListLocalization(locale: "en")
     Application.configuration.staticContent["en.template.test"] = "Localized Text"
     Application.configuration.staticContent["en.template.test_raw"] = "<b>Hello</b>"
+    Application.configuration.staticContent["en.template.test_interpolate"] = "Hello \\(value)"
     Application.configuration.staticContent["en.record.shelf.attributes.store"] = "hat store"
     template = EmptyTemplate(state: TemplateState(controller))
   }
@@ -91,6 +92,11 @@ class TemplateTypeTests: XCTestCase, TailorTestable {
     assert(result, equals: "Localized Text", message: "gets the text from the controller's localization")
   }
   
+  func testLocalizeMethodAddsInterpolationsToText() {
+    let result = template.localize("template.test_interpolate", interpolations: ["value": "mom"])
+    assert(result, equals: "Hello mom")
+  }
+  
   func testLocalizeMethodPrependsPrefixForKeyWithDot() {
     Application.configuration.staticContent["en.tailor_tests.template_type_tests.empty_template.prefix_test"] = "Localized Text with Prefix"
     let result = template.localize(".prefix_test")
@@ -110,6 +116,11 @@ class TemplateTypeTests: XCTestCase, TailorTestable {
   func testTextMethodLocalizesText() {
     template.text("template.test")
    assert(template.contents, equals: "Localized Text", message: "adds localized text to buffer")
+  }
+  
+  func testTextMethodAddsInterpolationsToText() {
+    template.text("template.test_interpolate", interpolations: ["value": "thing", "value2": "thing 2"])
+    assert(template.contents, equals: "Hello thing", message: "adds localized text to buffer")
   }
   
   func testTextMethodDoesNotLocalizeTextWhenFlagIsSetToFalse() {

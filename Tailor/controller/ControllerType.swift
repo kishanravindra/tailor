@@ -504,16 +504,16 @@ extension ControllerType {
                           default localization on this controller.
     - returns:            The localized text
   */
-  public func localize(key: String, locale: String? = nil) -> String? {
+  public func localize(key: String, locale: String? = nil, interpolations: [String:String] = [:]) -> String? {
     var fullKey = key
     if fullKey.hasPrefix(".") {
       fullKey = self.localizationPrefix + fullKey
     }
     if let locale = locale {
-      return Application.configuration.localization(locale).fetch(fullKey)
+      return Application.configuration.localization(locale).fetch(fullKey, interpolations: interpolations)
     }
     else {
-      return self.localization.fetch(fullKey)
+      return self.localization.fetch(fullKey, interpolations: interpolations)
     }
   }
   
@@ -767,4 +767,19 @@ public enum ControllerError: ErrorType {
     the request.
     */
   case UnprocessableRequest(Response)
+  
+  /**
+   This method builds an exception for returning a 404 error.
+   
+   - parameter state:     The initial state of the controller. This is used to
+                          generate the initial response.
+   - parameter message:   A message to include in the body of the response.
+   - returns:             An error that the caller can throw.
+   */
+  public static func resourceNotFoundError(state: ControllerState, message: String = "") -> ControllerError {
+    var response = state.response
+    response.responseCode = .NotFound
+    response.appendString(message)
+    return ControllerError.UnprocessableRequest(response)
+  }
 }

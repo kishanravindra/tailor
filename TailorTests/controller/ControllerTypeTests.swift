@@ -827,6 +827,12 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     assert(string, equals: "Hello", message: "returns the string from the localization")
   }
   
+  func testLocalizeWithInterpolationsAddsInterpolationsToText() {
+    Application.configuration.staticContent["en.controller.test.message_interpolate"] = "Hello \\(value)"
+    let string = controller.localize("controller.test.message_interpolate", interpolations: ["value": "hi"])
+    assert(string, equals: "Hello hi", message: "returns the string from the localization, with the values interpolated")
+  }
+  
   func testLocalizeWithDotPrependsPrefix() {
     let key = ".test.message"
     let fullKey = controller.localizationPrefix + key
@@ -839,6 +845,18 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     Application.configuration.staticContent["es.controller.test.message"] = "Hola"
     let string = controller.localize("controller.test.message", locale: "es")
     assert(string, equals: "Hola", message: "returns the string from the localization")
+  }
+  
+  //MARK: - Errors
+  
+  func testResourceNotFoundErrorGeneratesError() {
+    let state = ControllerState()
+    let error = ControllerError.resourceNotFoundError(state, message: "Thing not found")
+    switch(error) {
+    case let ControllerError.UnprocessableRequest(response):
+      assert(response.responseCode, equals: .NotFound)
+      assert(response.bodyString, equals: "Thing not found")
+    }
   }
   
   //MARK: - Test Helpers

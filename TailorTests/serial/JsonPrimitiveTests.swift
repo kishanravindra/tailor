@@ -334,6 +334,48 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
     }
   }
   
+  func testInitWithPlistWithValidPathGetsData() {
+    do {
+      let path = Application.sharedApplication().rootPath() + "/goodPlist.plist"
+      let data = try JsonPrimitive(plist: path)
+      assert(data, equals: JsonPrimitive.Dictionary([
+        "en": JsonPrimitive.Dictionary([
+          "key1": JsonPrimitive.String("value1"),
+          "key2": JsonPrimitive.Dictionary([
+            "key3": JsonPrimitive.String("value3")
+          ])
+        ])
+      ]))
+    }
+    catch {
+      assert(false, message: "should not throw exception")
+    }
+  }
+  
+  func testInitWithPlistWithInvalidPathThrowsException() {
+    do {
+      let path = Application.sharedApplication().rootPath() + "/missingPath.plist"
+      _ = try JsonPrimitive(plist: path)
+      assert(false, message: "should throw an exception")
+    }
+    catch JsonConversionError.NotValidJsonObject {
+      
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
+  func testInitWithPlistWithInvalidPlistThrowsException() {
+    do {
+      let path = Application.sharedApplication().rootPath() + "/invalidPlist.plist"
+      _ = try JsonPrimitive(plist: path)
+      assert(false, message: "should throw an exception")
+    }
+    catch {
+    }
+  }
+  
   func testReadStringWithStringGetsString() {
     let primitive = JsonPrimitive.String("Hello")
     do {

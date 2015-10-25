@@ -72,15 +72,17 @@ extension TemplateType {
     If the key begins with a dot, this will prepend the template's localization
     prefix.
     
-    - parameter key:    The key to localize.
-    - returns:          The localized text.
+    - parameter key:              The key to localize.
+    - parameter interpolations:   The values to interpolate into the
+                                  placeholders in the localized text.
+    - returns:                    The localized text.
     */
-  public func localize(key: String) -> String? {
+  public func localize(key: String, interpolations: [String:String] = [:]) -> String? {
     var fullKey = key
     if fullKey.hasPrefix(".") {
       fullKey = self.localizationPrefix + fullKey
     }
-    return self.controller.localize(fullKey)
+    return self.controller.localize(fullKey, interpolations: interpolations)
   }
   
   /**
@@ -88,11 +90,13 @@ extension TemplateType {
     
     It will HTML-sanitize the text automatically.
     
-    - parameter text:      The text to add.
-    - parameter localize:  Whether we should attempt to localize the text.
+    - parameter text:             The text to add.
+    - parameter localize:         Whether we should attempt to localize the text.
+    - parameter interpolations:   The values to interpolate into the
+                                  placeholders in the localized text.
     */
-  public mutating func text(text: String, localize: Bool = true) {
-    let localizedText = localize ? self.localize(text) ?? text : text
+  public mutating func text(text: String, interpolations: [String:String] = [:], localize: Bool = true) {
+    let localizedText = localize ? self.localize(text, interpolations: interpolations) ?? text : text
     let sanitizedText = Sanitizer.htmlSanitizer.sanitize(SanitizedText(stringLiteral: localizedText))
     self.addSanitizedText(sanitizedText)
   }
