@@ -424,6 +424,54 @@ public class RouteSet {
   }
   
   /**
+    This method adds routes for restful actions.
+    
+    - parameter name:     The prefix for the routes.
+    - parameter index:    The implementation of the index action.
+    - parameter show:     The implementation of the show action.
+    - parameter new:      The implementation of the new action.
+    - parameter create:   The implementation of the create action.
+    - parameter edit:     The implementation of the edit action.
+    - parameter update:   The implementation of the update action.
+    - parameter destroy:  The implementatino of the destroy action.
+    */
+  public func addRestfulRoutes<T: ControllerType>(
+    name: String,
+    index: Optional<(T)->(Void->Void)> = nil,
+    show: Optional<(T)->(Void->Void)> = nil,
+    new: Optional<(T)->(Void->Void)> = nil,
+    create: Optional<(T)->(Void->Void)> = nil,
+    edit: Optional<(T)->(Void->Void)> = nil,
+    update: Optional<(T)->(Void->Void)> = nil,
+    destroy: Optional<(T)->(Void->Void)> = nil) {
+      withScope(path: name) {
+        if let indexAction = index {
+          route(.Get(""), to: indexAction, name: "index")
+        }
+        if let newAction = new {
+          route(.Get("new"), to: newAction, name: "new")
+        }
+        if let createAction = create {
+          route(.Post(""), to: createAction, name: "create")
+        }
+        withScope(path: ":id") {
+          if let showAction = show {
+            route(.Get(""), to: showAction, name: "show")
+          }
+          if let editAction = edit {
+            route(.Get("edit"), to: editAction, name: "edit")
+          }
+          if let updateAction = update {
+            route(.Post(""), to: updateAction, name: "update")
+          }
+          if let destroyAction = destroy {
+            route(.Post("destroy"), to: destroyAction, name: "destroy")
+          }
+        }
+      }
+  }
+  
+  /**
     This method prints information about all of the routes.
     */
   public func printRoutes() {

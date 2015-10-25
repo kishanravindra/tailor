@@ -633,6 +633,23 @@ class RouteSetTests: XCTestCase, TailorTestable {
     }
   }
   
+  func testAddRestfulRoutesAddsRoutesForRestfulActions() {
+    routeSet.addRestfulRoutes("tests", index: TestController.indexAction, show: TestController.showAction)
+    let expectation1 = expectationWithDescription("called index action")
+    let expectation2 = expectationWithDescription("called show action")
+    routeSet.handleRequest(Request(path: "/tests")) {
+      response in
+      expectation1.fulfill()
+      self.assert(response.bodyString, equals: "Test Controller: index")
+    }
+    routeSet.handleRequest(Request(path: "/tests/4")) {
+      response in
+      expectation2.fulfill()
+      self.assert(response.bodyString, equals: "Test Controller: show 4")
+    }
+    waitForExpectationsWithTimeout(0, handler: nil)
+  }
+  
   //MARK: - Handling Requests
   
   func testHandleRequestCallsHandlerForMatchingRequests() {
