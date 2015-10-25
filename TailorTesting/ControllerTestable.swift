@@ -52,6 +52,7 @@ extension ControllerTestable {
     route defined for it for this method to work.
     - parameter actionName:   The name of the action we are calling.
     - parameter headers:      Additional headers to include in the request.
+    - parameter sessionData:  The data to put in the request's session.
     - parameter file:         The name of the file that is making the call. This
                               will be supplied automatically.
     - parameter line:         The line of the file that is making the call. This
@@ -59,9 +60,8 @@ extension ControllerTestable {
     - parameter callback:     A callback that will perform checks on the
                               response.
     */
-  public func callAction(actionName: String, headers: [String:String] = [:], file: String = __FILE__, line: UInt = __LINE__, callback: Response -> Void) {
+  public func callAction(actionName: String, headers: [String:String] = [:], var sessionData: [String:String] = [:], file: String = __FILE__, line: UInt = __LINE__, callback: Response -> Void) {
     var actionParams = params[actionName] ?? [:]
-    var sessionData = [String:String]()
     let csrfKey = AesEncryptor.generateKey()
     sessionData["csrfKey"] = csrfKey
     actionParams["_csrfKey"] = csrfKey
