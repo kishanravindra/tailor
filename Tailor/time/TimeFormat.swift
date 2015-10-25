@@ -332,15 +332,15 @@ public enum TimeFormatComponent: TimeFormatter {
       let fallbacks: [String]
       if abbreviate {
         key = "dates.\(timestamp.calendar.identifier).month_names.abbreviated.\(timestamp.month)"
-        fallbacks = TimeFormat.AbbreviatedMonthNames
+        fallbacks = timestamp.calendar.abbreviatedMonthNames
       }
       else {
         key = "dates.\(timestamp.calendar.identifier).month_names.full.\(timestamp.month)"
-        fallbacks = TimeFormat.MonthNames
+        fallbacks = timestamp.calendar.monthNames
       }
       if let value = localization.fetch(key) { return value }
-      if timestamp.month < fallbacks.count {
-        return fallbacks[timestamp.month]
+      if timestamp.month < fallbacks.count + 1 && timestamp.month > 0 {
+        return fallbacks[timestamp.month - 1]
       }
       else {
         return "\(timestamp.month)"
@@ -379,15 +379,15 @@ public enum TimeFormatComponent: TimeFormatter {
       let fallbacks: [String]
       if abbreviate {
         key = "dates.\(timestamp.calendar.identifier).week_day_names.abbreviated.\(timestamp.weekDay)"
-        fallbacks = TimeFormat.AbbreviatedWeekDayNames
+        fallbacks = timestamp.calendar.abbreviatedDayNames
       }
       else {
         key = "dates.\(timestamp.calendar.identifier).week_day_names.full.\(timestamp.weekDay)"
-        fallbacks = TimeFormat.WeekDayNames
+        fallbacks = timestamp.calendar.dayNames
       }
       if let value = localization.fetch(key) { return value }
-      if timestamp.weekDay < fallbacks.count {
-        return fallbacks[timestamp.weekDay]
+      if timestamp.weekDay < fallbacks.count + 1 && timestamp.weekDay > 0 {
+        return fallbacks[timestamp.weekDay - 1]
       }
       else {
         return "\(timestamp.weekDay)"
@@ -468,8 +468,8 @@ public enum TimeFormatComponent: TimeFormatter {
       if let translation = localization.fetch("dates.\(calendar.identifier).\(key).\(value)") {
         textValue = translation
       }
-      else if value < fallbacks.count {
-        textValue = fallbacks[value]
+      else if value > 0 && value < fallbacks.count + 1 {
+        textValue = fallbacks[value - 1]
       }
       else {
         textValue = "\(value)"
@@ -523,7 +523,7 @@ public enum TimeFormatComponent: TimeFormatter {
       return result
     case let .MonthName(abbreviated):
       let key = abbreviated ? "month_names.abbreviated" : "month_names.full"
-      let fallbacks = abbreviated ? TimeFormat.AbbreviatedMonthNames : TimeFormat.MonthNames
+      let fallbacks = abbreviated ? calendar.abbreviatedMonthNames : calendar.monthNames
       let (month,result) = parseText(from: string, key: key, calendar: calendar, range: 1...calendar.months, fallbacks: fallbacks)
       if result != nil {
         container.month = month
@@ -560,7 +560,7 @@ public enum TimeFormatComponent: TimeFormatter {
       return result
     case let .WeekDayName(abbreviate):
       let key = abbreviate ? "week_day_names.abbreviated" : "week_day_names.full"
-      let fallbacks = abbreviate ? TimeFormat.AbbreviatedWeekDayNames : TimeFormat.WeekDayNames
+      let fallbacks = abbreviate ? calendar.abbreviatedDayNames : calendar.dayNames
       let (_, result) = parseText(from: string, key: key, calendar: calendar, range: 1...calendar.daysInWeek, fallbacks: fallbacks)
       return result
     case .EpochSeconds:
@@ -711,15 +711,39 @@ public extension TimeFormat {
     */
   public static let Rfc2822 = TimeFormat(.DayWith(padding: nil), " ", .MonthName(abbreviate: true), " ", .Year, " ", .Hour, ":", .Minute, ":", .Seconds, " ", .TimeZoneOffset)
   
-  /** The English names for months. */
+  /**
+    The English names for months.
+   
+    This has been deprecated in favor of the month names on the Calendar
+    protocol.
+    */
+  @available(*, deprecated, message="Use the month names from the calendar instead")
   public static let MonthNames = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
   
-  /** The abbreviated English names for months. */
+  /**
+   The abbreviated English names for months.
+   
+   This has been deprecated in favor of the month names on the Calendar
+   protocol.
+   */
+  @available(*, deprecated, message="Use the month names from the calendar instead")
   public static let AbbreviatedMonthNames = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
   
-  /** The English names for days of the week. */
+  /**
+   The English names for days of the week.
+   
+   This has been deprecated in favor of the day names on the Calendar
+   protocol.
+   */
+  @available(*, deprecated, message="Use the day names from the calendar instead")
   public static let WeekDayNames = ["", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
   
-  /** The abbreviated English names for days of the week. */
+  /**
+   The abbreviated English names for days of the week.
+   
+   This has been deprecated in favor of the day names on the Calendar
+   protocol.
+   */
+  @available(*, deprecated, message="Use the day names from the calendar instead")
   public static let AbbreviatedWeekDayNames = ["", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 }

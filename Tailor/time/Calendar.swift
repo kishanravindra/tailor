@@ -65,6 +65,18 @@ public protocol Calendar {
   
   /** The number of seconds in a minute in this calendar. */
   var secondsPerMinute: Int { get }
+  
+  /** This method gets the names for the months in this calendar. */
+  var monthNames: [String] { get }
+  
+  /** This method gets the short names for the months in this calendar. */
+  var abbreviatedMonthNames: [String] { get }
+  
+  /** This method gets the names of the days of the weeks in this calendar. */
+  var dayNames: [String] { get }
+  
+  /** This method gets the short names of the days of the weeks in this calendar. */
+  var abbreviatedDayNames: [String] { get }
 }
 
 /**
@@ -169,6 +181,19 @@ public struct GregorianCalendar: Calendar {
   
   /** This calendar has 60 seconds in a minute. */
   public let secondsPerMinute = 60
+  
+  
+  /** This method gets the names for the months in this calendar. */
+  public let monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  
+  /** This method gets the short names for the months in this calendar. */
+  public let abbreviatedMonthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  
+  /** This method gets the names of the days of the weeks in this calendar. */
+  public let dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+  
+  /** This method gets the short names of the days of the weeks in this calendar. */
+  public let abbreviatedDayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 }
 
 /**
@@ -275,6 +300,19 @@ public struct IslamicCalendar: Calendar {
   
   /** This calendar has 60 seconds in a minute. */
   public let secondsPerMinute = 60
+  
+  
+  /** This method gets the names for the months in this calendar. */
+  public let monthNames = ["Muḥarram", "Ṣafar", "Rabī‘ I", "Rabī‘ II", "Jumādá I", "Jumādá II", "Rajab", "Sha‘bān", "Ramaḍān", "Shawwāl", "Dhū al-Qa‘dah", "Dhū al-Ḥijjah"]
+  
+  /** This method gets the names for the short months in this calendar. */
+  public let abbreviatedMonthNames = ["Muh", "Saf", "Rab I", "Rab II", "Jum I", "Jum II", "Raj", "Sha", "Ram", "Shaw", "Dhuʻl-Q", "Dhuʻl-H"]
+  
+  /** This method gets the names of the days of the weeks in this calendar. */
+  public let dayNames = [String]()
+  
+  /** This method gets the short names of the days of the weeks in this calendar. */
+  public let abbreviatedDayNames = [String]()
 }
 
 /**
@@ -479,6 +517,33 @@ public struct HebrewCalendar: Calendar {
   
   /** This calendar has 60 seconds in a minute. */
   public let secondsPerMinute = 60
+  
+  /**
+    This method gets the names of the months on our calendar.
+    */
+  public var monthNames: [String] {
+    if leapYear {
+      return ["Tishrei", "Cheshvan", "Kislev", "Tebeth", "Shevat", "Adar I", "Adar II", "Nissan", "Iyar", "Siwan", "Tamuz", "Ab", "Elul"]
+    }
+    else {
+      return ["Tishrei", "Cheshvan", "Kislev", "Tebeth", "Shevat", "Adar", "Nissan", "Iyar", "Siwan", "Tamuz", "Ab", "Elul"]
+    }
+  }
+  
+  /**
+   This method gets the short names of the months on our calendar.
+   
+   We use the same names as the long month names.
+   */
+  public var abbreviatedMonthNames: [String] {
+    return monthNames
+  }
+  
+  /** This method gets the names of the days of the weeks in this calendar. */
+  public let dayNames = [String]()
+  
+  /** This method gets the short names of the days of the weeks in this calendar. */
+  public let abbreviatedDayNames = [String]()
 }
 
 

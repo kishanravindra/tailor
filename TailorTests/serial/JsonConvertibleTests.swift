@@ -78,6 +78,47 @@ class JsonConvertibleTests: XCTestCase, TailorTestable {
     assert(int.toJson(), equals: .Number(19))
   }
   
+  func testBooleanCanInitializeFromJsonPrimitive() {
+    let primitive1 = JsonPrimitive.Number(5)
+    let primitive2 = JsonPrimitive.Number(1)
+    let primitive3 = JsonPrimitive.Number(0)
+    do {
+      let flag1 = try Bool(json: primitive1)
+      let flag2 = try Bool(json: primitive2)
+      let flag3 = try Bool(json: primitive3)
+      assert(flag1)
+      assert(flag2)
+      assert(!flag3)
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
+  func testBooleanInitializedWithJsonArrayThrowsException() {
+    let primitive = JsonPrimitive.Array([
+      .String("A"),
+      .String("B")
+      ])
+    do {
+      _ = try Int(json: primitive)
+      assert(false, message: "should throw an exception")
+    }
+    catch JsonParsingError.WrongFieldType(field: let field, type: let type, caseType: let caseType) {
+      assert(field, equals: "root")
+      assert(type == Int.self)
+      assert(caseType == [JsonPrimitive].self)
+    }
+    catch {
+      assert(false, message: "threw unexpected exception")
+    }
+  }
+  
+  func testBooleanConvertsToJsonAsJsonPrimitive() {
+    assert(true.toJson(), equals: .Number(1))
+    assert(false.toJson(), equals: .Number(0))
+  }
+  
   func testPrimitiveConvertsToJsonAsItself() {
     let primitive = JsonPrimitive.Number(19)
     assert(primitive.toJson(), equals: primitive)

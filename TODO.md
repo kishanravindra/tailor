@@ -1,8 +1,6 @@
 # General
 
 * Memcache support
-* Add default English names for more calendars.
-* Add JsonEncodable support for Booleans.
 
 # Modeling
 
@@ -14,7 +12,6 @@
 # Workarounds to Revisit
 
 * Initializing calendars in different years
-* Specifying explicit names on controller structs
 * Hacks in TailorMysql where we moved code out of initializers to work around
   compiler crashes
 * Building dictionaries by iterating rather than mapping in JsonPrimitive

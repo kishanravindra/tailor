@@ -39,6 +39,11 @@ class TimeFormatTests: XCTestCase, TailorTestable {
     
     var daysInWeek: Int { return 8 }
     let unixEpochTime = (1970, 0.0, 1)
+    
+    let monthNames = ["January", "February", "March"]
+    let abbreviatedMonthNames = [String]()
+    let dayNames = [String]()
+    let abbreviatedDayNames = [String]()
   }
   //MARK: - Time Format Components
   
@@ -110,6 +115,32 @@ class TimeFormatTests: XCTestCase, TailorTestable {
     let formatter = TimeFormatComponent.MonthName(abbreviate: true)
     let formatted = formatter.formatTime(timestamp)
     assert(formatted, equals: "Jun")
+  }
+  
+  func testFormatComponentsWithMonthNameWithUntranslatedIslamicMonthGetsDefaultMonthName() {
+    Application.configuration.staticContent = [:]
+    timestampSeconds += 86400 * 30
+    let timestamp = self.timestamp.inCalendar(IslamicCalendar())
+    let formatter = TimeFormatComponent.MonthName(abbreviate: false)
+    let formatted = formatter.formatTime(timestamp)
+    assert(formatted, equals: "Sha‘bān")
+  }
+  
+  func testFormatComponentsWithMonthNameWithUntranslateHebrewMonthGetsDefaultMonthName() {
+    Application.configuration.staticContent = [:]
+    let timestamp = self.timestamp.inCalendar(HebrewCalendar())
+    let formatter = TimeFormatComponent.MonthName(abbreviate: false)
+    let formatted = formatter.formatTime(timestamp)
+    assert(formatted, equals: "Iyar")
+  }
+  
+  func testFormatComponentsWithMonthNameWithUntranslateHebrewLeapMonthGetsDefaultMonthName() {
+    Application.configuration.staticContent = [:]
+    timestampSeconds += 86400 * 30 * 10
+    let timestamp = self.timestamp.inCalendar(HebrewCalendar())
+    let formatter = TimeFormatComponent.MonthName(abbreviate: false)
+    let formatted = formatter.formatTime(timestamp)
+    assert(formatted, equals: "Adar II")
   }
   
   func testFormatComponentsWithMonthNameBeyondBoundsGetsMonthNumber() {
