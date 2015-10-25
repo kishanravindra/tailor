@@ -65,7 +65,7 @@ class AuthenticationFilterTests: XCTestCase, TailorTestable {
   }
   
   func testPreProcessWithInvalidUserIdRedirectsToSignInUrl() {
-    let request = Request(sessionData: ["userId": "2"])
+    let request = Request(sessionData: ["userId": "2"], path: "/test/path")
     let response = Response()
     let expectation = expectationWithDescription("callback called")
     filter.preProcess(request, response: response) {
@@ -74,6 +74,7 @@ class AuthenticationFilterTests: XCTestCase, TailorTestable {
       self.assert(response.responseCode, equals: .SeeOther)
       self.assert(response.headers["Location"], equals: "/sessions/new")
       self.assert(response.bodyString, equals: "<html><body>You are being <a href=\"/sessions/new\">redirected</a>.")
+      self.assert(response.session["_redirectPath"], equals: "/test/path", message: "puts the original path in the session")
       self.assert(stop)
     }
     waitForExpectationsWithTimeout(0, handler: nil)

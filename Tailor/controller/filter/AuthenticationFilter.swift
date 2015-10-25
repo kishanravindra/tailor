@@ -1,6 +1,11 @@
 /**
   This type provides a filter for authenticating a user before handling a
   request.
+   
+  This will look for a user using the userId in the request's session. If the
+  session has no userId, or it is not a valid user ID, this will redirect to
+  the sign-in URL and halt further processing. It will also put the original
+  request path in the session under the key `_redirectPath`.
   */
 public struct AuthenticationFilter: RequestFilterType, Equatable {
   /**
@@ -24,7 +29,10 @@ public struct AuthenticationFilter: RequestFilterType, Equatable {
     - parameter response:   The initial response from the other filters.
     - returns:              The redirect response.
     */
-  private func redirectResponse(var response: Response) -> Response {
+  private func redirectResponse(request: Request, var _ response: Response) -> Response {
+    var session = request.session
+    session["_redirectPath"] = request.path
+    session.storeInCookies(&response.cookies)
     response.responseCode = .SeeOther
     response.headers["Location"] = signInUrl
     response.appendString("<html><body>You are being <a href=\"\(signInUrl)\">redirected</a>.")
@@ -46,7 +54,7 @@ public struct AuthenticationFilter: RequestFilterType, Equatable {
     let query = T.query.filter(["id": userId]).limit(1)
     let record = query.allRecords().first
     guard let user = record as? T else {
-      throw ControllerError.UnprocessableRequest(redirectResponse(response))
+      throw ControllerError.UnprocessableRequest(redirectResponse(request, response))
     }
     return user
   }
@@ -66,7 +74,7 @@ public struct AuthenticationFilter: RequestFilterType, Equatable {
     let session = request.session
     let query = Application.configuration.userType?.query.filter(["id": session["userId"] ?? ""])
     if query?.isEmpty() ?? true {
-      callback(request, redirectResponse(response), stop: true)
+      callback(request, redirectResponse(request, response), stop: true)
     }
     else {
       callback(request, response, stop: false)
