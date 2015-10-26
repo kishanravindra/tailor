@@ -62,7 +62,7 @@ struct Hat : Persistable, Equatable {
     self.id = id
   }
   
-  func valuesToPersist() -> [String : DatabaseValueConvertible?] {
+  func valuesToPersist() -> [String : SerializationEncodable?] {
     return [
       "brim_size": brimSize,
       "color": color,
@@ -72,13 +72,13 @@ struct Hat : Persistable, Equatable {
     ]
   }
   
-  init(databaseRow: DatabaseRow) throws {
-    self.brimSize = try databaseRow.read("brim_size")
-    self.color = try databaseRow.read("color")
-    self.shelfId = try databaseRow.read("shelf_id")
-    self.id = try databaseRow.read("id")
-    self.createdAt = try databaseRow.read("created_at")
-    self.updatedAt = try databaseRow.read("updated_at")
+  init(values: SerializableValue) throws {
+    self.brimSize = try values.read("brim_size")
+    self.color = try values.read("color")
+    self.shelfId = try values.read("shelf_id")
+    self.id = try values.read("id")
+    self.createdAt = try values.read("created_at")
+    self.updatedAt = try values.read("updated_at")
   }
 }
 
@@ -94,19 +94,20 @@ struct Shelf : Persistable, Equatable {
     self.id = id
   }
   
-  func valuesToPersist() -> [String: DatabaseValueConvertible?] {
+  func valuesToPersist() -> [String: SerializationEncodable?] {
     return [
       "name": name,
       "store_id": storeId
     ]
   }
   
-  init(databaseRow: DatabaseRow) throws {
-    self.name = try databaseRow.read("name")
-    self.id = try databaseRow.read("id")
-    self.storeId = try databaseRow.read("store_id") ?? 0
+  init(values: SerializableValue) throws {
+    self.name = try values.read("name")
+    self.id = try values.read("id")
+    self.storeId = try values.read("store_id") ?? 0
     
-    if databaseRow.data["throwError"] != nil {
+    let error = try? values.read("throwError") as String
+    if error != nil {
       throw DatabaseError.GeneralError(message: "I was told to throw an error")
     }
   }
@@ -123,15 +124,15 @@ struct Store : Persistable {
   
   static let query = Query<Store>()
   
-  func valuesToPersist() -> [String : DatabaseValueConvertible?] {
+  func valuesToPersist() -> [String : SerializationEncodable?] {
     return [
       "name": name
     ]
   }
   
-  init(databaseRow: DatabaseRow) throws {
-    self.name = try databaseRow.read("name")
-    self.id = try databaseRow.read("id")
+  init(values: SerializableValue) throws {
+    self.name = try values.read("name")
+    self.id = try values.read("id")
   }
 }
 
@@ -177,13 +178,13 @@ struct TestUser: UserType, Equatable {
     encryptedPassword = "Foo"
   }
   
-  init(databaseRow: DatabaseRow) throws {
-    self.id = try databaseRow.read("id")
-    self.emailAddress = try databaseRow.read("email_address")
-    self.encryptedPassword = try databaseRow.read("encrypted_password")
+  init(values: SerializableValue) throws {
+    self.id = try values.read("id")
+    self.emailAddress = try values.read("email_address")
+    self.encryptedPassword = try values.read("encrypted_password")
   }
   
-  func valuesToPersist() -> [String : DatabaseValueConvertible?] {
+  func valuesToPersist() -> [String : SerializationEncodable?] {
     return ["email_address": emailAddress, "encrypted_password": encryptedPassword]
   }
   
@@ -194,10 +195,10 @@ struct TestUser: UserType, Equatable {
 
 struct TopHat: Persistable {
   let id: UInt
-  init(databaseRow: DatabaseRow) throws {
-    self.id = try databaseRow.read("id")
+  init(values: SerializableValue) throws {
+    self.id = try values.read("id")
   }
-  func valuesToPersist() -> [String : DatabaseValueConvertible?] {
+  func valuesToPersist() -> [String : SerializationEncodable?] {
     return [:]
   }
 }

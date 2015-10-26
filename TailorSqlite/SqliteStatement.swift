@@ -143,6 +143,8 @@ public final class SqliteStatement {
       case let .Boolean(boolean):
         sqlite3_bind_int(statement, column, Int32(boolean ? 1 : 0))
         continue
+      case .Array: continue
+      case .Dictionary: continue
       }
     }
   }

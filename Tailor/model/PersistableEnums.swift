@@ -4,7 +4,7 @@
   You shouldn't implement this protocol directly. Instead, you should implement
   `StringPersistableEnum` or `TablePersistableEnum`.
   */
-public protocol PersistableEnum: DatabaseValueConvertible {
+public protocol PersistableEnum: SerializationEncodable {
   /**
     This method gets the name of a case of an enum.
   
@@ -22,7 +22,7 @@ public protocol PersistableEnum: DatabaseValueConvertible {
     - parameter databaseValue:    The value from the database.
     - returns                     The enum case
     */
-  static func fromDatabaseValue(databaseValue: DatabaseValue?) -> Self?
+  static func fromSerializableValue(value: SerializableValue?) -> Self?
 }
 
 /**
@@ -80,6 +80,16 @@ public extension PersistableEnum {
     }
     return nil
   }
+  
+  @available(*, deprecated)
+  static func fromDatabaseValue(databaseValue: DatabaseValue?) -> Self? {
+    return self.fromSerializableValue(databaseValue)
+  }
+  
+  @available(*, deprecated)
+  var databaseValue: DatabaseValue {
+    return self.serialize()
+  }
 }
 
 public extension StringPersistableEnum {
@@ -92,8 +102,8 @@ public extension StringPersistableEnum {
     - parameter databaseValue:    The case name.
     - returns:                    The matching case.
     */
-  static func fromDatabaseValue(databaseValue: DatabaseValue?) -> Self? {
-    if let caseName = databaseValue?.stringValue {
+  static func fromSerializableValue(value: SerializableValue?) -> Self? {
+    if let caseName = value?.stringValue {
       return self.fromCaseName(caseName)
     }
     else {
@@ -106,8 +116,8 @@ public extension StringPersistableEnum {
 
     This will just be the case name.
     */
-  var databaseValue: DatabaseValue {
-    return self.caseName.databaseValue
+  func serialize() -> SerializableValue {
+    return self.caseName.serialize()
   }
 }
 
@@ -161,8 +171,8 @@ public extension TablePersistableEnum {
     - parameter databaseValue:    The case id.
     - returns:                    The matching case.
     */
-  static func fromDatabaseValue(databaseValue: DatabaseValue?) -> Self? {
-    guard let id = databaseValue?.intValue else { return nil }
+  static func fromSerializableValue(value: SerializableValue?) -> Self? {
+    guard let id = value?.intValue else { return nil }
     return self.fromId(id)
   }
   
@@ -193,8 +203,8 @@ public extension TablePersistableEnum {
 
     This just be the id.
     */
-  var databaseValue: DatabaseValue {
-    return self.id.databaseValue
+  func serialize() -> SerializableValue {
+    return self.id.serialize()
   }
   
   /**
@@ -202,14 +212,14 @@ public extension TablePersistableEnum {
   
     - parameter databaseRow:    The row in the database.
     */
-  init(databaseRow: DatabaseRow) throws {
-    self = try databaseRow.readEnum(name: "name")
+  init(values: SerializableValue) throws {
+    self = try values.readEnum(name: "name")
   }
   
   /**
     This method gets the values that we save in the database for an enum record.
     */
-  func valuesToPersist() -> [String:DatabaseValueConvertible?] {
+  func valuesToPersist() -> [String:SerializationEncodable?] {
     return ["name": caseName]
   }
 }

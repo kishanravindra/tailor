@@ -2,16 +2,17 @@
   This protocol describes methods that a model class must provide in order to
   be persisted to a database.
   */
-public protocol Persistable: ModelType, JsonEncodable {
+public protocol Persistable: ModelType, SerializationEncodable {
   /**
     This method initializes a record with a row from the database.
     
     If the row does not contain enough data to initialize the record, this must
     throw an exception.
     
-    - parameter databaseRow:    The row from the database.
+    - parameter values:     A serialized dictionary containing the values from
+                            the database.
     */
-  init(databaseRow: DatabaseRow) throws
+  init(values: SerializableValue) throws
   
   /** The unique identifier for the record. */
   var id: UInt { get }
@@ -35,7 +36,7 @@ public protocol Persistable: ModelType, JsonEncodable {
     
     - returns:   The values to save.
     */
-  func valuesToPersist() -> [String:DatabaseValueConvertible?]
+  func valuesToPersist() -> [String:SerializationEncodable?]
   
   /**
     This method provides an empty query for fetching records for this record
@@ -65,12 +66,12 @@ extension Persistable {
     It wraps around the initializer to catch exceptions and log them, returning
     nil in the case of failure.
     
-    - parameter row:    The row to use to build the object.
-    - returns:          The new record.
+    - parameter values:   The row to use to build the object.
+    - returns:            The new record.
     */
-  internal static func build(row: DatabaseRow) -> Self? {
+  internal static func build(values: SerializableValue) -> Self? {
     do {
-      return try self.init(databaseRow: row)
+      return try self.init(values: values)
     }
     catch let DatabaseError.GeneralError(message) {
       NSLog("Error building record in %@: %@", self.tableName, message)
@@ -126,7 +127,7 @@ extension Persistable {
     */
   public func destroy() {
     let query = "DELETE FROM \(self.dynamicType.tableName) WHERE id = ?"
-    Application.sharedDatabaseConnection().executeQuery(query, parameters: [id.databaseValue])
+    Application.sharedDatabaseConnection().executeQuery(query, parameters: [id.serialize()])
   }
 
   /**
@@ -180,9 +181,9 @@ extension Persistable {
     }
     let existingJoinClause = through.joinClause
     if !existingJoinClause.query.isEmpty {
-      query = query.join(existingJoinClause.query, existingJoinClause.parameters.map { $0 as DatabaseValueConvertible })
+      query = query.join(existingJoinClause.query, existingJoinClause.parameters.map { $0 as SerializationConvertible })
     }
-    return query.filter(through.whereClause.query, through.whereClause.parameters.map { $0 as DatabaseValueConvertible })
+    return query.filter(through.whereClause.query, through.whereClause.parameters.map { $0 as SerializationConvertible })
   }
   
   /**
@@ -190,18 +191,18 @@ extension Persistable {
     
     - returns:   A new record with the new fields.
     */
-  private func insertRecord(values: [String:DatabaseValueConvertible?]) -> Self? {
+  private func insertRecord(values: [String:SerializationEncodable?]) -> Self? {
     var query = "INSERT INTO \(self.dynamicType.tableName) ("
-    var parameters = [DatabaseValue]()
+    var parameters = [SerializableValue]()
     
     var firstParameter = true
     var parameterString = ""
-    var mappedValues = [String:DatabaseValue]()
+    var mappedValues = [String:SerializableValue]()
     
     for key in values.keys.sort() {
       guard let value = values[key] else { continue }
       
-      let databaseValue = value?.databaseValue ?? DatabaseValue.Null
+      let databaseValue = value?.serialize() ?? SerializableValue.Null
       mappedValues[key] = databaseValue
       
       if value == nil {
@@ -237,19 +238,19 @@ extension Persistable {
     }
     else {
       mappedValues["id"] = result?.data["id"]
-      return self.dynamicType.build(DatabaseRow(data: mappedValues))
+      return self.dynamicType.build(.Dictionary(mappedValues))
     }
   }
   
-  private func updateRecord(values: [String:DatabaseValueConvertible?]) -> Self? {
+  private func updateRecord(values: [String:SerializationEncodable?]) -> Self? {
     var query = "UPDATE \(self.dynamicType.tableName)"
-    var parameters = [DatabaseValue]()
-    var mappedValues = [String:DatabaseValue]()
+    var parameters = [SerializableValue]()
+    var mappedValues = [String:SerializableValue]()
     
     var firstParameter = true
     for key in values.keys.sort() {
       guard let value = values[key] else { continue }
-      let databaseValue = value?.databaseValue ?? DatabaseValue.Null
+      let databaseValue = value?.serialize() ?? SerializableValue.Null
       mappedValues[key] = databaseValue
       if firstParameter {
         query += " SET "
@@ -268,8 +269,8 @@ extension Persistable {
       }
     }
     query += " WHERE id = ?"
-    parameters.append(id.databaseValue)
-    mappedValues["id"] = id.databaseValue
+    parameters.append(id.serialize())
+    mappedValues["id"] = id.serialize()
     let result = Application.sharedDatabaseConnection().executeQuery(query, parameters: parameters)
     
     if result.count > 0 {
@@ -278,7 +279,7 @@ extension Persistable {
         return nil
       }
     }
-    return self.dynamicType.build(DatabaseRow(data: mappedValues))
+    return self.dynamicType.build(.Dictionary(mappedValues))
   }
   
   /**
@@ -309,6 +310,22 @@ extension Persistable {
 
 extension Persistable {
   /**
+   This method converts the record to a serializable representation.
+   
+   The default implementation takes the database mapping from `valuesToPersist`
+   to a serializable dictionary.
+   
+   - returns:    The JSON value.
+   */
+  public func serialize() -> SerializableValue {
+    let values = self.valuesToPersist().map { $0?.serialize() ?? .Null }
+    return .Dictionary(merge(values, ["id": self.id.serialize() ?? .Null]))
+  }
+}
+
+@available(*, deprecated)
+extension Persistable {
+  /**
     This method converts the record to a JSON representation.
 
     The default implementation takes the database mapping from `valuesToPersist`
@@ -317,33 +334,7 @@ extension Persistable {
     - returns:    The JSON value.
     */
   public func toJson() -> JsonPrimitive {
-    let values = self.valuesToPersist().map { $0?.databaseValue.toJson() ?? .Null }
-    return .Dictionary(merge(values, ["id": self.id.toJson() ?? .Null]))
-  }
-}
-
-/**
-  This protocol describes a record type that uses the old initializer from
-  version 1 of the framework.
-
-  This must only be used temporarily during the process of upgrading to version
-  2. It will be removed in the next version.
-
-  Once your code is building, you must replace this initializer with one that
-  takes a `DatabaseRow` and throws an exception on failure.
-  */
-public protocol PersistableWithOldInitializer {
-  /**
-    This method creates a record from a row in the database.
-
-    - parameter databaseRow:    The row in the database we are using to create
-                                the record.
-    */
-  init?(databaseRow: [String:DatabaseValue])
-}
-
-extension PersistableWithOldInitializer {
-  public init(databaseRow: DatabaseRow) throws {
-    self.init(databaseRow: databaseRow.data)!
+    let values = self.valuesToPersist().map { $0?.serialize() ?? .Null }
+    return .Dictionary(merge(values, ["id": self.id.serialize() ?? .Null]))
   }
 }

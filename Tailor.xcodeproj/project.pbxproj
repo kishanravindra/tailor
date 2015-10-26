@@ -105,6 +105,9 @@
 		52A95E371AE318C6001AED1F /* Persistable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A95E361AE318C6001AED1F /* Persistable.swift */; };
 		52A95E391AE321C9001AED1F /* PersistableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A95E381AE321C9001AED1F /* PersistableTests.swift */; };
 		52AE7CB61BDD69A100442634 /* RequestFilterTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52AE7CB51BDD69A100442634 /* RequestFilterTypeTests.swift */; };
+		52AE7CB81BDD75CC00442634 /* SerializableValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52AE7CB71BDD75CC00442634 /* SerializableValue.swift */; };
+		52AE7CBA1BDD766600442634 /* SerializationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52AE7CB91BDD766600442634 /* SerializationError.swift */; };
+		52AE7CBC1BDD780200442634 /* SerializationConversions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52AE7CBB1BDD780200442634 /* SerializationConversions.swift */; };
 		52B2B69A19F1DCF10086261B /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B69919F1DCF10086261B /* Dictionary.swift */; };
 		52B2B6EE19F3F75C0086261B /* Sanitizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6ED19F3F75C0086261B /* Sanitizer.swift */; };
 		52B2B6F219F3F7FC0086261B /* SanitizedText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B2B6F119F3F7FC0086261B /* SanitizedText.swift */; };
@@ -342,6 +345,9 @@
 		52A95E361AE318C6001AED1F /* Persistable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Persistable.swift; sourceTree = "<group>"; };
 		52A95E381AE321C9001AED1F /* PersistableTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistableTests.swift; sourceTree = "<group>"; };
 		52AE7CB51BDD69A100442634 /* RequestFilterTypeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestFilterTypeTests.swift; sourceTree = "<group>"; };
+		52AE7CB71BDD75CC00442634 /* SerializableValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SerializableValue.swift; sourceTree = "<group>"; };
+		52AE7CB91BDD766600442634 /* SerializationError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SerializationError.swift; sourceTree = "<group>"; };
+		52AE7CBB1BDD780200442634 /* SerializationConversions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SerializationConversions.swift; sourceTree = "<group>"; };
 		52B2B69919F1DCF10086261B /* Dictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
 		52B2B6E019F3656F0086261B /* TemplateInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = TemplateInfo.plist; sourceTree = "<group>"; };
 		52B2B6E219F3EE8B0086261B /* ___FILEBASENAME___.swift */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; path = "___FILEBASENAME___.swift"; sourceTree = "<group>"; };
@@ -623,6 +629,9 @@
 				5262D14C1B4B5A5500101154 /* JsonErrors.swift */,
 				5262D14E1B4C8DF400101154 /* JsonConvertible.swift */,
 				52F18B011B68FEBD00F5863E /* CsvParser.swift */,
+				52AE7CB71BDD75CC00442634 /* SerializableValue.swift */,
+				52AE7CB91BDD766600442634 /* SerializationError.swift */,
+				52AE7CBB1BDD780200442634 /* SerializationConversions.swift */,
 			);
 			path = serial;
 			sourceTree = "<group>";
@@ -1295,11 +1304,13 @@
 				52B2B69A19F1DCF10086261B /* Dictionary.swift in Sources */,
 				52C10D051B0927F3005D85D4 /* Time.swift in Sources */,
 				5214B5D21AA38B0800624E9D /* ValidationError.swift in Sources */,
+				52AE7CB81BDD75CC00442634 /* SerializableValue.swift in Sources */,
 				523C80141BDD51E2004D501D /* CollectionType.swift in Sources */,
 				524CD7DB1B5EDF60002007C8 /* SmtpEmailAgent.swift in Sources */,
 				525C80851A1C1B4900E7035F /* Query.swift in Sources */,
 				52B2B6EE19F3F75C0086261B /* Sanitizer.swift in Sources */,
 				52A95E311AE0A3B9001AED1F /* DatabaseValue.swift in Sources */,
+				52AE7CBC1BDD780200442634 /* SerializationConversions.swift in Sources */,
 				52DD44EF1B5C3A1500312923 /* FileEmailAgent.swift in Sources */,
 				524828401B7FF3C9006257F2 /* AuthenticationFilter.swift in Sources */,
 				52A05A301B7FAA2800DB1248 /* CookieJar.swift in Sources */,
@@ -1340,6 +1351,7 @@
 				523C80101BDD48DA004D501D /* PaginatedList.swift in Sources */,
 				52BD143919E9DA1D006D72B0 /* NSString.swift in Sources */,
 				525F84621B3B85F50025CA38 /* TemplateType.swift in Sources */,
+				52AE7CBA1BDD766600442634 /* SerializationError.swift in Sources */,
 				522643271B06C7F40081D04E /* TimeZoneReader.swift in Sources */,
 				52DD44E81B57362800312923 /* Email.swift in Sources */,
 				52BD143C19E9DA1D006D72B0 /* Model.swift in Sources */,

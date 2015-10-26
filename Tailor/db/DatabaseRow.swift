@@ -3,7 +3,7 @@
   */
 public struct DatabaseRow {
   /** The data returned for the row. */
-  public let data: [String:DatabaseValue]
+  public let data: [String:SerializableValue]
   
   /** The error message that the database gave for this query. */
   public private(set) var error: String?
@@ -13,7 +13,7 @@ public struct DatabaseRow {
   
   - parameter data:   The data for the row.
   */
-  public init(data: [String:DatabaseValue]) {
+  public init(data: [String:SerializableValue]) {
     self.data = data
   }
   
@@ -23,10 +23,10 @@ public struct DatabaseRow {
   
   - parameter rawData:   The unwrapped data.
   */
-  public init(rawData: [String:DatabaseValueConvertible]) {
-    var wrappedData = [String:DatabaseValue]()
+  public init(rawData: [String:SerializationConvertible]) {
+    var wrappedData = [String:SerializableValue]()
     for (key,value) in rawData {
-      wrappedData[key] = value.databaseValue
+      wrappedData[key] = value.serialize()
     }
     self.init(data: wrappedData)
   }
@@ -56,6 +56,7 @@ public struct DatabaseRow {
     - returns:          The cast value.
     - throws:           An exception from `DatabaseError`.
     */
+  @available(*, deprecated)
   public func read<OutputType: DatabaseValueConvertible>(key: String) throws -> OutputType {
     guard let value = self.data[key] else {
       throw DatabaseError.MissingField(name: key)
@@ -107,6 +108,7 @@ public struct DatabaseRow {
     - returns:          The cast value.
     - throws:           An exception from `DatabaseError`.
     */
+  @available(*, deprecated)
   public func read<OutputType: DatabaseValueConvertible>(key: String) throws -> OutputType? {
     guard let value = self.data[key] else { return nil }
     if value == .Null { return nil }
@@ -125,6 +127,7 @@ public struct DatabaseRow {
     - throws:                 A DatabaseError explaining why we couldn't fetch
     the record.
     */
+  @available(*, deprecated)
   public func read<RecordType: Persistable>(fieldName: String) throws -> RecordType? {
     guard let id = try read(fieldName) as Int? else { return nil }
     return Query<RecordType>().find(id)
@@ -139,6 +142,7 @@ public struct DatabaseRow {
     - throws:                 A DatabaseError explaining why we couldn't fetch
     the record.
     */
+  @available(*, deprecated)
   public func read<RecordType: Persistable>(fieldName: String) throws -> RecordType {
     guard let record = try self.read(fieldName) as RecordType? else {
       throw DatabaseError.MissingField(name: fieldName)
@@ -154,6 +158,7 @@ public struct DatabaseRow {
     - throws:                 A DatabaseError explaining why we couldn't fetch
                               the value.
     */
+  @available(*, deprecated)
   public func readEnum<EnumType: TablePersistableEnum>(id fieldName: String) throws -> EnumType? {
     guard let id = try read(fieldName) as Int? else { return nil }
     return EnumType.fromId(id)
@@ -167,6 +172,7 @@ public struct DatabaseRow {
     - throws:                 A DatabaseError explaining why we couldn't fetch
                               the value.
     */
+  @available(*, deprecated)
   public func readEnum<EnumType: TablePersistableEnum>(id fieldName: String) throws -> EnumType {
     guard let record = try self.readEnum(id: fieldName) as EnumType? else {
       throw DatabaseError.MissingField(name: fieldName)
@@ -182,6 +188,7 @@ public struct DatabaseRow {
     - throws:                 A DatabaseError explaining why we couldn't fetch
                               the value.
     */
+  @available(*, deprecated)
   public func readEnum<EnumType: PersistableEnum>(name fieldName: String) throws -> EnumType? {
     guard let name = try read(fieldName) as String? else { return nil }
     return EnumType.fromCaseName(name)
@@ -196,10 +203,26 @@ public struct DatabaseRow {
     - throws:                 A DatabaseError explaining why we couldn't fetch
                               the value.
     */
+  @available(*, deprecated)
   public func readEnum<EnumType: PersistableEnum>(name fieldName: String) throws -> EnumType {
     guard let record = try self.readEnum(name: fieldName) as EnumType? else {
       throw DatabaseError.MissingField(name: fieldName)
     }
     return record
+  }
+}
+
+extension DatabaseRow: SerializationConvertible {
+  public init(value: SerializableValue) throws {
+    switch(value) {
+    case let .Dictionary(values):
+      self.init(data: values)
+    default:
+      throw SerializationParsingError.WrongFieldType(field: "root", type: Dictionary<String,SerializableValue>.self, caseType: value.wrappedType)
+    }
+  }
+  
+  public func serialize() -> SerializableValue {
+    return .Dictionary(self.data)
   }
 }

@@ -12,8 +12,8 @@ struct ___FILEBASENAME___ : Persistable, Equatable {
 
     - parameter databaseRow:  The row in the database.
     */
-  init(databaseRow: DatabaseRow) throws {
-    self.id = try databaseRow.read("id")
+  init(values: SerializableValue) throws {
+    self.id = try values.read("id")
   }
   
   /**
@@ -21,7 +21,7 @@ struct ___FILEBASENAME___ : Persistable, Equatable {
 
     You must add the mapping for your fields here.
     */
-  func valuesToPersist() -> [String : DatabaseValueConvertible?] {
+  func valuesToPersist() -> [String : SerializationEncodable?] {
     return [:]
   }
   

@@ -216,10 +216,10 @@ class PersistableTests: XCTestCase, TailorTestable {
     struct TestHat: Persistable {
       let id: UInt
       init() { self.id = 0 }
-      init(databaseRow: DatabaseRow) throws {
-        self.id = try databaseRow.read("id")
+      init(values: SerializableValue) throws {
+        self.id = try values.read("id")
       }
-      func valuesToPersist() -> [String : DatabaseValueConvertible?] {
+      func valuesToPersist() -> [String : SerializationEncodable?] {
         return [:]
       }
       static let tableName = "hats"
@@ -313,22 +313,22 @@ class PersistableTests: XCTestCase, TailorTestable {
   }
   
   func testBuildWithNoErrorBuildsRecord() {
-    let hat = Hat.build(DatabaseRow(data: ["brim_size": 10.databaseValue, "color": "red".databaseValue, "id": 1.databaseValue]))
+    let hat = Hat.build(SerializableValue.Dictionary(["brim_size": 10.databaseValue, "color": "red".databaseValue, "id": 1.databaseValue]))
     assert(isNotNil: hat)
   }
   
   func testBuildWithGeneralErrorIsNil() {
-    let shelf = Shelf.build(DatabaseRow(data: ["name": "hi".databaseValue, "throwError": true.databaseValue, "id": 1.databaseValue]))
+    let shelf = Shelf.build(SerializableValue.Dictionary(["name": "hi".databaseValue, "throwError": true.databaseValue, "id": 1.databaseValue]))
     assert(isNil: shelf)
   }
   
   func testBuildWithMissingFieldReturnsNil() {
-    let hat = Hat.build(DatabaseRow(data: ["brim_size": 10.databaseValue, "id": 1.databaseValue]))
+    let hat = Hat.build(SerializableValue.Dictionary(["brim_size": 10.databaseValue, "id": 1.databaseValue]))
     assert(isNil: hat)
   }
   
   func testBuildWithWrongFieldTypeReturnsNil() {
-    let hat = Hat.build(DatabaseRow(data: ["brim_size": 10.databaseValue, "color": 5.databaseValue, "id": 1.databaseValue]))
+    let hat = Hat.build(SerializableValue.Dictionary(["brim_size": 10.databaseValue, "color": 5.databaseValue, "id": 1.databaseValue]))
     assert(isNil: hat)
   }
   
@@ -340,10 +340,10 @@ class PersistableTests: XCTestCase, TailorTestable {
     let hat = Hat(brimSize: 10, color: "red", shelfId: nil, owner: "John", id: 5)
     let json = hat.toJson()
     assert(json, equals: .Dictionary([
-      "brim_size": JsonPrimitive.Number(10),
+      "brim_size": JsonPrimitive.Integer(10),
       "color": JsonPrimitive.String("red"),
       "shelf_id": JsonPrimitive.Null,
-      "id": JsonPrimitive.Number(5),
+      "id": JsonPrimitive.Integer(5),
       "created_at": JsonPrimitive.Null,
       "updated_at": JsonPrimitive.Null
     ]))
@@ -363,17 +363,17 @@ class PersistableTests: XCTestCase, TailorTestable {
       
       static var tableName: String { return "shelfs" }
       
-      func valuesToPersist() -> [String: DatabaseValueConvertible?] {
+      func valuesToPersist() -> [String: SerializationEncodable?] {
         return [
           "name": name,
           "store_id": storeId
         ]
       }
       
-      required init(databaseRow: DatabaseRow) {
-        self.name = try! databaseRow.read("name")
-        self.id = try! databaseRow.read("id")
-        self.storeId = try! databaseRow.read("store_id") ?? 0
+      required init(values: SerializableValue) {
+        self.name = try! values.read("name")
+        self.id = try! values.read("id")
+        self.storeId = try! values.read("store_id") ?? 0
       }
     }
     let shelf = TestShelf(name: "Top Shelf").save()!

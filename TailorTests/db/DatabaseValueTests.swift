@@ -457,7 +457,7 @@ class DatabaseValueTests: XCTestCase, TailorTestable {
   
   func testBooleanSeralizesToIntegerJsonValue() {
     let value = DatabaseValue.Boolean(true)
-    assert(value.toJson(), equals: JsonPrimitive.Number(1))
+    assert(value.toJson(), equals: JsonPrimitive.Integer(1))
   }
   
   func testDataSerializesToStringJsonValueWithDataRepresentation() {
@@ -467,12 +467,12 @@ class DatabaseValueTests: XCTestCase, TailorTestable {
   
   func testIntegerSerializesToIntegerJsonValue() {
     let value = DatabaseValue.Integer(93)
-    assert(value.toJson(), equals: JsonPrimitive.Number(93))
+    assert(value.toJson(), equals: JsonPrimitive.Integer(93))
   }
   
   func testDoubleSerializesToDoubleJsonValue() {
     let value = DatabaseValue.Double(39.12)
-    assert(value.toJson(), equals: JsonPrimitive.Number(39.12))
+    assert(value.toJson(), equals: JsonPrimitive.Double(39.12))
   }
   
   func testTimestampSerializesToStringJsonValueWithDatabaseFormat() {
@@ -516,7 +516,7 @@ class DatabaseValueTests: XCTestCase, TailorTestable {
   
   func testInitializationWithJsonIntegerCreatesIntegerValue() {
     do {
-      let value = try DatabaseValue(json: .Number(19))
+      let value = try DatabaseValue(json: .Integer(19))
       assert(value, equals: .Integer(19))
     }
     catch {
@@ -526,7 +526,7 @@ class DatabaseValueTests: XCTestCase, TailorTestable {
   
   func testInitializationWithJsonDoubleCreatesIntegerValue() {
     do {
-      let value = try DatabaseValue(json: .Number(84.9))
+      let value = try DatabaseValue(json: .Double(84.9))
       assert(value, equals: .Double(84.9))
     }
     catch {

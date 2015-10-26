@@ -8,7 +8,6 @@
 * Ditching prepared statements
 * Clean up implementation of fetching cached results from a query.
 * Specifying real data types for bind parameters.
-* Consider unifying our system for parsing JSON and Database data.
 
 # Workarounds to Revisit
 

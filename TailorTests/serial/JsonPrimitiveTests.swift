@@ -2,6 +2,7 @@ import Tailor
 import TailorTesting
 import XCTest
 
+@available(*, deprecated)
 class JsonPrimitiveTests: XCTestCase, TailorTestable {
   override func setUp() {
     super.setUp()
@@ -18,10 +19,10 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
       ]),
     "key3": JsonPrimitive.Dictionary([
       "bKey1": JsonPrimitive.String("value4"),
-      "bKey2": JsonPrimitive.Number(891)
+      "bKey2": JsonPrimitive.Integer(891)
       ]),
     "nullKey": JsonPrimitive.Null,
-    "numberKey": JsonPrimitive.Number(12)
+    "numberKey": JsonPrimitive.Integer(12)
   ]
   func testFoundationJsonObjectForStringIsString() {
     let primitive = JsonPrimitive.String("Hello")
@@ -121,7 +122,7 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
   }
   
   func testFoundationJsonObjectForNumberIsNsNumber() {
-    let primitive = JsonPrimitive.Number(11.5)
+    let primitive = JsonPrimitive.Double(11.5)
     let object = primitive.toFoundationJsonObject
     assert(object as? NSNumber, equals: NSNumber(double: 11.5))
   }
@@ -208,8 +209,8 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
     
     let primitive = JsonPrimitive.Dictionary([
       "aKey1": JsonPrimitive.String("value1"),
-      "aKey2": JsonPrimitive.Number(42),
-      "aKey3": JsonPrimitive.Number(3.14)
+      "aKey2": JsonPrimitive.Integer(42),
+      "aKey3": JsonPrimitive.Double(3.14)
       ])
     
     let expectedData = NSData(bytes: "{\"aKey3\":3.14,\"aKey1\":\"value1\",\"aKey2\":42}".utf8)
@@ -282,7 +283,7 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
     let object = 823
     do {
       let primitive = try JsonPrimitive(jsonObject: object)
-      assert(primitive, equals: JsonPrimitive.Number(823))
+      assert(primitive, equals: JsonPrimitive.Integer(823))
     }
     catch {
       assert(false, message: "should not throw exception")
@@ -293,7 +294,7 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
     let object = 61.4
     do {
       let primitive = try JsonPrimitive(jsonObject: object)
-      assert(primitive, equals: JsonPrimitive.Number(61.4))
+      assert(primitive, equals: JsonPrimitive.Double(61.4))
     }
     catch {
       assert(false, message: "should not throw exception")
@@ -479,7 +480,7 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
   }
   
   func testReadNullWithNumberThrowsException() {
-    let primitive = JsonPrimitive.Number(9841)
+    let primitive = JsonPrimitive.Integer(9841)
     do {
       _ = try primitive.read() as NSNull
       assert(false, message: "show throw some kind of exception")
@@ -496,7 +497,7 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
   }
   
   func testReadIntWithIntGetsInt() {
-    let primitive = JsonPrimitive.Number(95)
+    let primitive = JsonPrimitive.Integer(95)
     do {
       let number = try primitive.read() as Int
       assert(number, equals: 95)
@@ -507,7 +508,7 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
   }
   
   func testReadIntWithDoubleGetsDouble() {
-    let primitive = JsonPrimitive.Number(95)
+    let primitive = JsonPrimitive.Integer(95)
     do {
       let number = try primitive.read() as Double
       assert(number, equals: 95.0)
@@ -518,7 +519,7 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
   }
   
   func testReadDoubleWithDoubleGetsDouble() {
-    let primitive = JsonPrimitive.Number(123.3)
+    let primitive = JsonPrimitive.Double(123.3)
     do {
       let number = try primitive.read() as Double
       assert(number, equals: 123.3)
@@ -529,7 +530,7 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
   }
   
   func testReadDoubleWithIntGetsInt() {
-    let primitive = JsonPrimitive.Number(81.45)
+    let primitive = JsonPrimitive.Double(81.45)
     do {
       let number = try primitive.read() as Int
       assert(number, equals: 81)
@@ -728,7 +729,7 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
       func toJson() -> JsonPrimitive {
         return JsonPrimitive.Dictionary([
           "bKey1": JsonPrimitive.String(value1),
-          "bKey2": JsonPrimitive.Number(value2)
+          "bKey2": JsonPrimitive.Integer(value2)
         ])
       }
     }
@@ -849,19 +850,19 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
     assert(value1, doesNotEqual: value2)
   }
   func testNumberWithSameContentsAreEqual() {
-    let value1 = JsonPrimitive.Number(93)
-    let value2 = JsonPrimitive.Number(93)
+    let value1 = JsonPrimitive.Integer(93)
+    let value2 = JsonPrimitive.Integer(93)
     assert(value1, equals: value2)
   }
   
   func testNumbersWithDifferentContentsAreNotEqual() {
-    let value1 = JsonPrimitive.Number(93)
-    let value2 = JsonPrimitive.Number(92)
+    let value1 = JsonPrimitive.Integer(93)
+    let value2 = JsonPrimitive.Integer(92)
     assert(value1, doesNotEqual: value2)
   }
   
   func testNumberDoesNotEqualDictionary() {
-    let value1 = JsonPrimitive.Number(93)
+    let value1 = JsonPrimitive.Integer(93)
     let value2 = JsonPrimitive.Dictionary(["key1": JsonPrimitive.String("value1"), "key2": JsonPrimitive.String("value2")])
     assert(value1, doesNotEqual: value2)
   }
@@ -870,26 +871,26 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
   
   func testDescriptionForStringIsString() {
     let value = JsonPrimitive.String("Hello")
-    assert(value.description, equals: "Hello")
+    assert(value.valueDescription, equals: "Hello")
   }
   
   func testDescriptionForNumberIsNumber() {
-    let value = JsonPrimitive.Number(89)
-    assert(value.description, equals: "89")
+    let value = JsonPrimitive.Integer(89)
+    assert(value.valueDescription, equals: "89")
   }
   
   func testDescriptionForArrayIsArrayDescription() {
     let value = JsonPrimitive.Array([JsonPrimitive.String("A"), JsonPrimitive.String("B")])
-    assert(value.description, equals: "[A, B]")
+    assert(value.valueDescription, equals: "[A, B]")
   }
   
   func testDescriptionForDictionaryIsDictionaryDescription() {
-    let value = JsonPrimitive.Dictionary(["key1": JsonPrimitive.Number(891), "key2": JsonPrimitive.String("C")])
-    assert(value.description, equals: "[\"key1\": 891, \"key2\": C]")
+    let value = JsonPrimitive.Dictionary(["key1": JsonPrimitive.Integer(891), "key2": JsonPrimitive.String("C")])
+    assert(value.valueDescription, equals: "[\"key1\": 891, \"key2\": C]")
   }
   
   func testDescriptionForNullIsNull() {
     let value = JsonPrimitive.Null
-    assert(value.description, equals: "null")
+    assert(value.valueDescription, equals: "null")
   }
 }

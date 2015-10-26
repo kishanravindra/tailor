@@ -86,7 +86,7 @@ public extension AlterationScript {
     */
   public static func query(components: String?...) {
     var query = ""
-    var parameters = [DatabaseValueConvertible]()
+    var parameters = [SerializationEncodable]()
     var foundNil = false
     
     for component in components {
@@ -106,7 +106,7 @@ public extension AlterationScript {
     if !results.isEmpty {
       if let error = results[0].error {
         NSLog("Error running query")
-        NSLog("%@ %@", query, parameters.map { String($0.databaseValue) })
+        NSLog("%@ %@", query, parameters.map { String($0.serialize().valueDescription) })
         NSLog("Error: %@", error)
         exit(1)
       }

@@ -149,7 +149,7 @@ extension SeedTaskType {
         let values = record.data
         let row = keys.map { (key: String) -> String in
           guard let value = values[key] else { return "" }
-          if value == DatabaseValue.Null {
+          if value == SerializableValue.Null {
             return ""
           }
           return value.valueDescription
@@ -196,7 +196,7 @@ extension SeedTaskType {
     let placeholders = rows[0].map { _ in return "?" }.joinWithSeparator(",")
     let query = "INSERT INTO `\(table)` (`\(keys)`) VALUES (\(placeholders))"
     for index in 1..<rows.count {
-      let row = rows[index].map { $0.databaseValue }
+      let row = rows[index].map { $0.serialize() }
       connection.executeQuery(query, parameters: row)
     }
   }

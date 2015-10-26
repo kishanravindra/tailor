@@ -14,15 +14,15 @@ class UserTypeTests: XCTestCase, TailorTestable {
       id = 0
     }
     
-    init(databaseRow: DatabaseRow) throws {
-      self.id = try databaseRow.read("id")
-      self.emailAddress = try databaseRow.read("email_address")
-      self.encryptedPassword = try databaseRow.read("encrypted_password")
-      self.lastSignInIp = (try databaseRow.read("last_sign_in_ip")) ?? ""
-      self.lastSignInTime = (try databaseRow.read("last_sign_in_time")) ?? Timestamp(epochSeconds: 0)
+    init(values: SerializableValue) throws {
+      self.id = try values.read("id")
+      self.emailAddress = try values.read("email_address")
+      self.encryptedPassword = try values.read("encrypted_password")
+      self.lastSignInIp = (try values.read("last_sign_in_ip")) ?? ""
+      self.lastSignInTime = (try values.read("last_sign_in_time")) ?? Timestamp(epochSeconds: 0)
     }
     
-    func valuesToPersist() -> [String : DatabaseValueConvertible?] {
+    func valuesToPersist() -> [String : SerializationEncodable?] {
       return [
         "email_address": emailAddress,
         "encrypted_password": encryptedPassword,
@@ -44,14 +44,14 @@ class UserTypeTests: XCTestCase, TailorTestable {
       id = 0
     }
     
-    init(databaseRow: DatabaseRow) throws {
-      self.id = try databaseRow.read("id")
-      self.emailAddress = try databaseRow.read("email_address")
-      self.encryptedPassword = try databaseRow.read("encrypted_password")
-      self.failedLogins = (try databaseRow.read("failed_logins")) ?? 0
+    init(values: SerializableValue) throws {
+      self.id = try values.read("id")
+      self.emailAddress = try values.read("email_address")
+      self.encryptedPassword = try values.read("encrypted_password")
+      self.failedLogins = (try values.read("failed_logins")) ?? 0
     }
     
-    func valuesToPersist() -> [String : DatabaseValueConvertible?] {
+    func valuesToPersist() -> [String : SerializationEncodable?] {
       return [
         "email_address": emailAddress,
         "encrypted_password": encryptedPassword,
