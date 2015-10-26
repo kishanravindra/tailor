@@ -2,6 +2,7 @@ import TailorTesting
 import Tailor
 import XCTest
 
+@available(*, deprecated)
 class JsonErrorTests: XCTestCase, TailorTestable {
   override func setUp() {
     super.setUp()

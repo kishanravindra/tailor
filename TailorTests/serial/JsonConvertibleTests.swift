@@ -2,6 +2,7 @@ import Tailor
 import TailorTesting
 import XCTest
 
+@available(*, deprecated)
 class JsonConvertibleTests: XCTestCase, TailorTestable {
   override func setUp() {
     super.setUp()
@@ -44,7 +45,7 @@ class JsonConvertibleTests: XCTestCase, TailorTestable {
   }
   
   func testIntegerCanInitializeFromJsonPrimitive() {
-    let primitive = JsonPrimitive.Number(5)
+    let primitive = JsonPrimitive.Integer(5)
     do {
       let int = try Int(json: primitive)
       assert(int, equals: 5)
@@ -75,13 +76,13 @@ class JsonConvertibleTests: XCTestCase, TailorTestable {
   
   func testIntConvertsToJsonAsJsonPrimitive() {
     let int = 19
-    assert(int.toJson(), equals: .Number(19))
+    assert(int.toJson(), equals: .Integer(19))
   }
   
   func testBooleanCanInitializeFromJsonPrimitive() {
-    let primitive1 = JsonPrimitive.Number(5)
-    let primitive2 = JsonPrimitive.Number(1)
-    let primitive3 = JsonPrimitive.Number(0)
+    let primitive1 = JsonPrimitive.Integer(5)
+    let primitive2 = JsonPrimitive.Integer(1)
+    let primitive3 = JsonPrimitive.Integer(0)
     do {
       let flag1 = try Bool(json: primitive1)
       let flag2 = try Bool(json: primitive2)
@@ -115,17 +116,17 @@ class JsonConvertibleTests: XCTestCase, TailorTestable {
   }
   
   func testBooleanConvertsToJsonAsJsonPrimitive() {
-    assert(true.toJson(), equals: .Number(1))
-    assert(false.toJson(), equals: .Number(0))
+    assert(true.toJson(), equals: .Integer(1))
+    assert(false.toJson(), equals: .Integer(0))
   }
   
   func testPrimitiveConvertsToJsonAsItself() {
-    let primitive = JsonPrimitive.Number(19)
+    let primitive = JsonPrimitive.Integer(19)
     assert(primitive.toJson(), equals: primitive)
   }
   
   func testPrimitiveInitializesWithJsonByCopying() {
-    let primitive = JsonPrimitive.Number(19)
+    let primitive = JsonPrimitive.Integer(19)
     let primitive2 = JsonPrimitive(json: primitive)
     assert(primitive, equals: primitive2)
   }

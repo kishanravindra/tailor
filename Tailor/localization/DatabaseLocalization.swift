@@ -57,7 +57,7 @@ public final class DatabaseLocalization: LocalizationSource {
       This method gets the columns that we persist in the database from this 
       model.
       */
-    public func valuesToPersist() -> [String : DatabaseValueConvertible?] {
+    public func valuesToPersist() -> [String : SerializationEncodable?] {
       return [
         "translation_key": self.translationKey,
         "locale": self.locale,
@@ -73,11 +73,11 @@ public final class DatabaseLocalization: LocalizationSource {
 
       - parameter databaseRow:     The fields from the database.
       */
-    public init(databaseRow: DatabaseRow) throws {
-      self.translationKey = try databaseRow.read("translation_key")
-      self.locale = try databaseRow.read("locale")
-      self.translatedText = try databaseRow.read("translated_text")
-      self.id = try databaseRow.read("id")
+    public init(values: SerializableValue) throws {
+      self.translationKey = try values.read("translation_key")
+      self.locale = try values.read("locale")
+      self.translatedText = try values.read("translated_text")
+      self.id = try values.read("id")
     }
     
     /** A query for fetching translations. */

@@ -2,7 +2,7 @@ import Foundation
 
 
 /** A portion of a SQL query that contains a query and the bind parameters. */
-public typealias SqlFragment = (query: String, parameters: [DatabaseValue])
+public typealias SqlFragment = (query: String, parameters: [SerializableValue])
 
 /**
   This protocol describes a query that can be run for fetching records.
@@ -116,7 +116,7 @@ extension QueryType {
     - parameter parameters:     The new bind parameters
     - returns:                  The new query object.
     */
-  public func filter(query: String, _ parameters: [DatabaseValueConvertible] = []) -> Self {
+  public func filter(query: String, _ parameters: [SerializationConvertible] = []) -> Self {
     var clause = whereClause
     
     if query.isEmpty {
@@ -127,7 +127,7 @@ extension QueryType {
       clause.query += " AND "
     }
     clause.query += query
-    clause.parameters.appendContentsOf(parameters.map { $0.databaseValue })
+    clause.parameters.appendContentsOf(parameters.map { $0.serialize() })
     return self.dynamicType.init(
       copyFrom: self,
       whereClause: clause
@@ -143,9 +143,9 @@ extension QueryType {
                                 types on the record type.
     - returns:                  The new query object.
     */
-  public func filter(conditions: [String: DatabaseValueConvertible?]) -> Self {
+  public func filter(conditions: [String: SerializationConvertible?]) -> Self {
     var query = ""
-    var parameters : [DatabaseValue] = []
+    var parameters : [SerializableValue] = []
     if !conditions.isEmpty {
       for (columnName,value) in conditions {
         if !query.isEmpty {
@@ -154,14 +154,14 @@ extension QueryType {
         
         if let value = value {
           query += "\(tableName).\(columnName)=?"
-          parameters.append(value.databaseValue)
+          parameters.append(value.serialize())
         }
         else {
           query += "\(tableName).\(columnName) IS NULL"
         }
       }
     }
-    return self.dynamicType.init(copyFrom: self.filter(query, parameters.map { $0 as DatabaseValueConvertible }))
+    return self.dynamicType.init(copyFrom: self.filter(query, parameters.map { $0 as SerializationConvertible }))
   }
   
   
@@ -242,14 +242,14 @@ extension QueryType {
                               statement.
   - returns:                  The new query.
   */
-  public func join(query: String, _ parameters: [DatabaseValueConvertible] = []) -> Self {
+  public func join(query: String, _ parameters: [SerializationConvertible] = []) -> Self {
     var clause = self.joinClause
     
     if !clause.query.isEmpty {
       clause.query += " "
     }
     clause.query += query
-    clause.parameters.appendContentsOf(parameters.map { $0.databaseValue })
+    clause.parameters.appendContentsOf(parameters.map { $0.serialize() })
     let selectClause = self.selectClause == "*" ? "\(self.tableName).*" : self.selectClause
     return self.dynamicType.init(
       copyFrom: self,
@@ -329,7 +329,7 @@ extension QueryType {
     */
   public func toSql() -> SqlFragment {
     var query = "SELECT \(selectClause) FROM \(tableName)"
-    var parameters : [DatabaseValue] = []
+    var parameters : [SerializableValue] = []
     let clauses = [
       ("", joinClause),
       ("WHERE ", whereClause),
@@ -382,7 +382,7 @@ extension QueryType {
     let results = Application.sharedDatabaseConnection().executeQuery(query, parameters: parameters)
     return results.flatMap {
       if $0.error == nil {
-        return recordType.build($0)
+        return recordType.build($0.serialize())
       }
       return nil
     }
@@ -481,7 +481,7 @@ public struct Query<RecordType: Persistable>: QueryType, Equatable {
   //MARK: - Structure
   
   /** A portion of a SQL query that contains a query and the bind parameters. */
-  public typealias SqlFragment = (query: String, parameters: [DatabaseValue])
+  public typealias SqlFragment = (query: String, parameters: [SerializableValue])
   
   /** The fields that the query will select. */
   public let selectClause: String

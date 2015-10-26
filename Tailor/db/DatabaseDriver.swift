@@ -13,7 +13,7 @@ public protocol DatabaseDriver: class {
                                   the database side.
     - returns:                    The interpreted result set.
     */
-  func executeQuery(query: String, parameters bindParameters: [DatabaseValue]) -> [DatabaseRow]
+  func executeQuery(query: String, parameters bindParameters: [SerializableValue]) -> [DatabaseRow]
   
   /**
     This method executes a block within a transaction.
@@ -44,7 +44,7 @@ public extension DatabaseDriver {
                                   the database side.
     - returns:                    The interpreted result set.
     */
-  public func executeQuery(query: String, _ bindParameters: DatabaseValueConvertible...) -> [DatabaseRow] {
+  public func executeQuery(query: String, _ bindParameters: SerializationEncodable...) -> [DatabaseRow] {
     return self.executeQuery(query, parameterValues: bindParameters)
   }
   
@@ -56,8 +56,8 @@ public extension DatabaseDriver {
     the database side.
     - returns:                    The interpreted result set.
     */
-  public func executeQuery(query: String, parameterValues bindParameters: [DatabaseValueConvertible]) -> [DatabaseRow] {
-    let wrappedParameters = bindParameters.map { $0.databaseValue }
+  public func executeQuery(query: String, parameterValues bindParameters: [SerializationEncodable]) -> [DatabaseRow] {
+    let wrappedParameters = bindParameters.map { $0.serialize() }
     return executeQuery(query, parameters: wrappedParameters)
   }
   

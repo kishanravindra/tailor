@@ -131,7 +131,7 @@ public struct Session {
       mergedData["_flash_\(key)"] = value
     }
     
-    let jsonData = mergedData.toJsonData()
+    let jsonData = (try? mergedData.serialize().jsonData()) ?? NSData()
     let encryptedData = encryptor?.encrypt(jsonData) ?? NSData()
     let encryptedDataString = encryptedData.base64EncodedStringWithOptions([])
     return encryptedDataString

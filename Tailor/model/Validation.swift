@@ -146,7 +146,7 @@ public struct Validation: Equatable {
     - parameter record:     The record that we are checking uniqueness on.
     - returns:              The new validation with the error added.
     */
-  public func validate<RecordType: Persistable>(uniquenessOf fields: [String: DatabaseValueConvertible?], on record: RecordType) -> Validation {
+  public func validate<RecordType: Persistable>(uniquenessOf fields: [String: SerializationConvertible?], on record: RecordType) -> Validation {
     
     if fields.isEmpty {
       return self
@@ -155,7 +155,7 @@ public struct Validation: Equatable {
     var query = "SELECT * FROM \(RecordType.tableName) WHERE "
     
     var parameterString = ""
-    var parameters = [DatabaseValue]()
+    var parameters = [SerializableValue]()
     
     for (key,value) in fields {
       if !parameterString.isEmpty {
@@ -165,7 +165,7 @@ public struct Validation: Equatable {
       
       if let value = value {
         parameterString += "\(sanitizedKey)=?"
-        parameters.append(value.databaseValue)
+        parameters.append(value.serialize())
       }
       else {
         parameterString += "\(sanitizedKey) IS NULL"
@@ -174,7 +174,7 @@ public struct Validation: Equatable {
     
     if record.id > 0 {
       parameterString += " AND id != ?"
-      parameters.append(record.id.databaseValue)
+      parameters.append(record.id.serialize())
     }
     
     query += parameterString

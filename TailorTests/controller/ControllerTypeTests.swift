@@ -411,7 +411,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
   func testRespondWithJsonGeneratesJsonResponse() {
     do {
       let hat = Hat(brimSize: 10, color: "red", shelfId: nil, owner: nil, id: 0)
-      let data = try hat.toJson().jsonData()
+      let data = try hat.serialize().jsonData()
       let expectation = expectationWithDescription("callback called")
       self.callback = {
         response in

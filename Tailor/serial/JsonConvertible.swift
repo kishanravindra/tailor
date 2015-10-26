@@ -1,7 +1,8 @@
 /**
   This protocol describes a data structure that can be encoded as JSON.
   */
-public protocol JsonEncodable {
+@available(*, deprecated)
+public protocol JsonEncodable: SerializationEncodable {
   /**
     This method gets a JSON primitive representing this value.
     */
@@ -11,7 +12,8 @@ public protocol JsonEncodable {
   This protocol describes a data structure that can be converted to and from
   JSON.
   */
-public protocol JsonConvertible: JsonEncodable {
+@available(*, deprecated)
+public protocol JsonConvertible: JsonEncodable, SerializationConvertible {
   /**
     This method creates an instance from a JSON primitive.
 
@@ -20,6 +22,21 @@ public protocol JsonConvertible: JsonEncodable {
   init(json: JsonPrimitive) throws
 }
 
+@available(*, deprecated)
+extension JsonEncodable {
+  public func serialize() -> SerializableValue {
+    return self.toJson()
+  }
+}
+
+@available(*, deprecated)
+extension JsonConvertible {
+  public init(value: SerializableValue) throws {
+    try self.init(json: value)
+  }
+}
+
+@available(*, deprecated)
 extension String: JsonConvertible {
   /**
     This method creates an instance from a JSON primitive.
@@ -38,6 +55,7 @@ extension String: JsonConvertible {
   }
 }
 
+@available(*, deprecated)
 extension Int: JsonConvertible {
   /**
   This method creates an instance from a JSON primitive.
@@ -52,10 +70,11 @@ extension Int: JsonConvertible {
   This method gets a JSON primitive representing this value.
   */
   public func toJson() -> JsonPrimitive {
-    return JsonPrimitive.Number(self)
+    return JsonPrimitive.Integer(self)
   }
 }
 
+@available(*, deprecated)
 extension UInt: JsonConvertible {
   /**
   This method creates an instance from a JSON primitive.
@@ -70,10 +89,11 @@ extension UInt: JsonConvertible {
   This method gets a JSON primitive representing this value.
   */
   public func toJson() -> JsonPrimitive {
-    return JsonPrimitive.Number(self)
+    return JsonPrimitive.Integer(Int(self))
   }
 }
 
+@available(*, deprecated)
 extension Bool: JsonConvertible {
   /**
    This method creates an instance from a JSON primitive.
@@ -88,10 +108,11 @@ extension Bool: JsonConvertible {
    This method gets a JSON primitive representing this value.
    */
   public func toJson() -> JsonPrimitive {
-    return JsonPrimitive.Number(self)
+    return JsonPrimitive.Boolean(self)
   }
 }
 
+@available(*, deprecated)
 extension JsonPrimitive: JsonConvertible {
   /**
   This method creates an instance from another JSON primitive.
@@ -110,6 +131,7 @@ extension JsonPrimitive: JsonConvertible {
   }
 }
 
+@available(*, deprecated)
 extension CollectionType where Generator.Element: JsonEncodable {
   /**
     This method gets a JSON primitive representing this value.
@@ -119,6 +141,7 @@ extension CollectionType where Generator.Element: JsonEncodable {
   }
 }
 
+@available(*, deprecated)
 extension Dictionary where Value: JsonEncodable {
   /**
     This method gets a JSON primitive representing this value.
@@ -143,6 +166,7 @@ extension Dictionary where Value: JsonEncodable {
     }
   }
 }
+
 /**
   This protocol describes a structure that can be converted into a dictionary
   mapping strings to JSON-convertible values.
@@ -150,6 +174,7 @@ extension Dictionary where Value: JsonEncodable {
   This protocol provides a default implementation of toJson based on the
   dictionary.
   */
+@available(*, deprecated)
 public protocol JsonDictionaryConvertible: JsonConvertible {
   /**
     This method gets a dictionary of JSON values that represents this value.
@@ -157,6 +182,7 @@ public protocol JsonDictionaryConvertible: JsonConvertible {
   func toJsonDictionary() -> [String:JsonConvertible]
 }
 
+@available(*, deprecated)
 extension JsonDictionaryConvertible {
   /**
     This method gets a JSON primitive representing this value.

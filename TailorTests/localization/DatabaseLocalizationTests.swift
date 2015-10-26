@@ -14,7 +14,7 @@ class DatabaseLocalizationTests: XCTestCase, TailorTestable {
   }
   
   func testTranslationInitializationWithAllFieldsSetsFields() {
-    let translation = try! DatabaseLocalization.Translation(databaseRow: DatabaseRow(data: ["translation_key": "database.message".databaseValue
+    let translation = try! DatabaseLocalization.Translation(values: SerializableValue.Dictionary(["translation_key": "database.message".databaseValue
       , "locale": "en".databaseValue, "translated_text": "Hello".databaseValue, "id": 1.databaseValue]))
     assert(translation.id, equals: 1)
     assert(translation.translationKey, equals: "database.message")
@@ -24,7 +24,7 @@ class DatabaseLocalizationTests: XCTestCase, TailorTestable {
   
   func testTranslationInitializationWithNoKeyIsNil() {
     do {
-      _ = try DatabaseLocalization.Translation(databaseRow: DatabaseRow(data: [
+      _ = try DatabaseLocalization.Translation(values: SerializableValue.Dictionary([
         "locale": "en".databaseValue,
         "translated_text": "Hello".databaseValue,
         "id": 1.databaseValue
@@ -41,7 +41,7 @@ class DatabaseLocalizationTests: XCTestCase, TailorTestable {
   
   func testTranslationInitializationWithNoLocaleIsNil() {
     do {
-      _ = try DatabaseLocalization.Translation(databaseRow: DatabaseRow(data: [
+      _ = try DatabaseLocalization.Translation(values: SerializableValue.Dictionary([
         "translation_key": "database.message".databaseValue,
         "translated_text": "Hello".databaseValue,
         "id": 1.databaseValue
@@ -58,7 +58,7 @@ class DatabaseLocalizationTests: XCTestCase, TailorTestable {
   
   func testTranslationInitializationWithNoTranslatedTextIsNil() {
     do {
-      _ = try DatabaseLocalization.Translation(databaseRow: DatabaseRow(data: [
+      _ = try DatabaseLocalization.Translation(values: SerializableValue.Dictionary([
         "translation_key": "database.message".databaseValue,
         "locale": "en".databaseValue,
         "id": 1.databaseValue
