@@ -57,7 +57,7 @@ extension TemplateTestable {
     
     var request = Request(parameters: parameters)
     if user != nil {
-      request = Request(sessionData: ["userId": String(user.id ?? 0)])
+      request = Request(sessionData: ["userId": String(user.id ?? 0)], parameters: parameters)
     }
     do {
       controller = try TestedControllerType.init(state: ControllerState(request: request, response: Response(), actionName: actionName, callback: {_ in}))
