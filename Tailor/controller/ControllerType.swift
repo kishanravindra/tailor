@@ -258,13 +258,18 @@ extension ControllerType {
   
     - parameter path:       The path to redirect to.
     - parameter session:    The new session for the response.
+    - parameter flash:      The flash messages to store in the session.
     */
-  public func redirectTo(path: String, session: Session? = nil) {
+  public func redirectTo(path: String, session: Session? = nil, flash: [String:String?] = [:]) {
+    var changedSession = session ?? self.request.session
+    for (key, value) in flash {
+      changedSession.setFlash(key, value)
+    }
     var response = self.state.response
     response.responseCode = .SeeOther
     response.headers["Location"] = path
     response.appendString("<html><body>You are being <a href=\"\(path)\">redirected</a>.</body></html>")
-    self.respondWith(response, session: session)
+    self.respondWith(response, session: changedSession)
   }
   
   /**
@@ -306,9 +311,10 @@ extension ControllerType {
     - parameter actionName:       The name of the action to link to.
     - parameter parameters:       Additional parameters for the path.
     - parameter session:          The session information for the response.
+    - parameter flash:            The flash messages to store in the session.
     */
-  public func redirectTo(actionName actionName: String, parameters: [String:String] = [:], session: Session? = nil) {
-    self.redirectTo(self.dynamicType, actionName: actionName, parameters: parameters, session: session)
+  public func redirectTo(actionName actionName: String, parameters: [String:String] = [:], session: Session? = nil, flash: [String:String?] = [:]) {
+    self.redirectTo(self.dynamicType, actionName: actionName, parameters: parameters, session: session, flash: flash)
   }
 
   /**
@@ -318,11 +324,12 @@ extension ControllerType {
                                   to the current controller.
     - parameter actionName:       The name of the action to link to.
     - parameter parameters:       Additional parameters for the path.
-    - parameter session:    The session information for the response.
+    - parameter session:          The session information for the response.
+    - parameter flash:            The flash messages to store in the session.
   */
-  public func redirectTo(controller: ControllerType.Type, actionName: String, parameters: [String:String] = [:], session: Session? = nil) {
+  public func redirectTo(controller: ControllerType.Type, actionName: String, parameters: [String:String] = [:], session: Session? = nil, flash: [String:String?] = [:]) {
     let path = self.pathFor(controller, actionName: actionName, parameters: parameters) ?? "/"
-    self.redirectTo(path, session: session)
+    self.redirectTo(path, session: session, flash: flash)
   }
   
   /**

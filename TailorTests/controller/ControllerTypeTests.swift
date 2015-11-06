@@ -308,6 +308,22 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
   
+  func testRedirectToWithFlashPutsFlashMessagesInSession() {
+    let expectation = expectationWithDescription("callback called")
+    self.callback = {
+      response in
+      expectation.fulfill()
+      self.assert(response.responseCode, equals: .SeeOther, message: "gives a 302 response")
+      self.assert(response.headers, equals: ["Location": "/test/path"], message: "gives a location header")
+      
+      let session = Request(cookies: response.cookies.cookieDictionary()).session
+      self.assert(session.flash("success"), equals: "hi")
+      self.assert(isNil: session.flash("error"))
+    }
+    self.controller.redirectTo("/test/path", flash: ["success": "hi", "error": nil])
+    waitForExpectationsWithTimeout(0.01, handler: nil)
+  }
+  
   func testPathForCanGetFullyQualifiedRoute() {
     let path = self.controller.pathFor(TestController.self, actionName: "index", parameters: ["id": "5"])
     assert(path, equals: "/route1?id=5", message: "gets the url for the controller and action")
