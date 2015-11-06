@@ -212,8 +212,6 @@ public struct JobSchedulingEntry: Equatable {
 
   Would have an entry that runs task1 every 2 hours at the top of the hour,
   and an entry that runs task2 every hour at 10 minutes past the hour.
-
-  The default impleme
   */
 public protocol JobSchedulingTaskType: TaskType {
   /** The entries in the schedule. */
@@ -268,9 +266,12 @@ extension JobSchedulingTaskType {
     else if arguments["clear"] != nil {
       self.init().clearJobs()
     }
+    else if arguments["print"] != nil {
+      self.init().printJobs()
+    }
     else {
       let commandName = self.commandName
-      NSLog("You must provide a command, either `\(commandName) write` or `\(commandName) clear`")
+      NSLog("You must provide a command, either `\(commandName) write`, `\(commandName) print`, or `\(commandName) clear`")
     }
   }
   
@@ -282,6 +283,15 @@ extension JobSchedulingTaskType {
     */
   public func writeJobs() {
     writeCrontab()
+  }
+  
+  /**
+   This method writes our jobs to the job file.
+   
+   The default implementation for this writes the crontab to the console.
+   */
+  public func printJobs() {
+    printCrontab()
   }
   
   /**
@@ -386,6 +396,10 @@ extension JobSchedulingTaskType {
     updateCrontab(includeNewCrontab: false)
   }
   
+  public func printCrontab() {
+    print(self.crontab)
+  }
+  
   /**
     This method updates our section of the user's crontab file.
 
@@ -429,6 +443,7 @@ extension JobSchedulingTaskType {
       if !exitedReplacementSection && includeNewCrontab {
         fullCrontab += self.crontab + "\n"
       }
+
       NSData(bytes: fullCrontab.utf8).writeToFile(crontabLocation, atomically: true)
       ExternalProcess(launchPath: "/usr/bin/crontab", arguments: [crontabLocation]) {
         writeResult, writeData in
