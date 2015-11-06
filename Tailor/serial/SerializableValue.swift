@@ -62,48 +62,31 @@ public enum SerializableValue: Equatable {
   /**
   This method attempts to extract a string value from this value's contents.
   */
+  @available(*, deprecated)
   public var stringValue: Swift.String? {
-    switch(self) {
-    case let .String(string):
-      return string
-    default:
-      return nil
-    }
+    return try? Swift.String(value: self)
   }
   
   /**
    This method attempts to extract a boolean value from this value's contents.
    */
+  @available(*, deprecated)
   public var boolValue: Bool? {
-    switch(self) {
-    case let .Boolean(bool):
-      return bool
-    case let .Integer(int):
-      return int == 1
-    case .String("true"): return true
-    case .String("false"): return false
-    default:
-      return nil
-    }
+    return try? Bool(value: self)
   }
   
   /**
    This method attempts to extract an integer value from this value's contents.
    */
+  @available(*, deprecated)
   public var intValue: Int? {
-    switch(self) {
-    case let .Integer(int):
-      return int
-    case let .String(string):
-      return Int(string)
-    default:
-      return nil
-    }
+    return try? Int.init(value: self)
   }
   
   /**
    This method attempts to extract a data value from this value's contents.
    */
+  @available(*, deprecated)
   public var dataValue: NSData? {
     switch(self) {
     case let .Data(data):
@@ -116,21 +99,16 @@ public enum SerializableValue: Equatable {
   /**
    This method attempts to extract a double value from this value's contents.
    */
+  @available(*, deprecated)
   public var doubleValue: Swift.Double? {
-    switch(self) {
-    case let .Double(double):
-      return double
-    case let .String(string):
-      return Swift.Double(string)
-    default:
-      return nil
-    }
+    return try? Swift.Double.init(value: self)
   }
   
   /**
    This method attempts to extract a foundation date value from this value's
    contents.
    */
+  @available(*, deprecated)
   public var foundationDateValue: NSDate? {
     return self.timestampValue?.foundationDateValue
   }
@@ -139,47 +117,25 @@ public enum SerializableValue: Equatable {
    This method attempts to extract a timestamp value from this value's
    contents.
    */
+  @available(*, deprecated)
   public var timestampValue: Tailor.Timestamp? {
-    switch(self) {
-    case let .Timestamp(timestamp):
-      return timestamp
-    case let .String(string):
-      return TimeFormat.Database.parseTime(string, timeZone: Application.sharedDatabaseConnection().timeZone, calendar: SystemCalendar())
-    default:
-      return nil
-    }
+    return try? Tailor.Timestamp(value: self)
   }
   
   /**
    This method attempts to extract a date value from this value's contents.
    */
+  @available(*, deprecated)
   public var dateValue: Tailor.Date? {
-    switch(self) {
-    case let .Date(date):
-      return date
-    case let .Timestamp(timestamp):
-      return timestamp.date
-    case let .String(string):
-      return TimeFormat(.Year, "-", .Month, "-", .Day).parseTime(string, timeZone: Application.sharedDatabaseConnection().timeZone, calendar: SystemCalendar())?.date
-    default:
-      return nil
-    }
+    return try? Tailor.Date(value: self)
   }
   
   /**
    This method attempts to extract a time value from this value's contents.
    */
+  @available(*, deprecated)
   public var timeValue: Tailor.Time? {
-    switch(self) {
-    case let .Time(time):
-      return time
-    case let .Timestamp(timestamp):
-      return timestamp.time
-    case let .String(string):
-      return TimeFormat(.Hour, ":", .Minute, ":", .Seconds).parseTime(string, timeZone: Application.sharedDatabaseConnection().timeZone, calendar: SystemCalendar())?.time
-    default:
-      return nil
-    }
+    return try? Tailor.Time(value: self)
   }
   
   /**
@@ -204,9 +160,9 @@ public enum SerializableValue: Equatable {
     case let .Time(time):
       return time.description
     case let .Array(array):
-      return array.description
+      return array.map { $0.valueDescription }.description
     case let .Dictionary(dictionary):
-      return dictionary.description
+      return dictionary.map { return $0.valueDescription }.description
     case .Null:
       return "NULL"
     }
@@ -223,60 +179,39 @@ public enum SerializableValue: Equatable {
    
    - returns:    The unwrapped value.
    */
-  public func read<OutputType>() throws -> OutputType {
-    switch(OutputType.self) {
-    case is Swift.String.Type:
-      if let cast = self.stringValue as? OutputType {
-        return cast
-      }
-    case is Int.Type:
-      if let cast = self.intValue as? OutputType { return cast }
-    case is UInt.Type:
-      if let int = self.intValue, let cast = UInt(int) as? OutputType { return cast }
-    case is Tailor.Timestamp.Type:
-      if let cast = self.timestampValue as? OutputType { return cast }
-    case is Tailor.Date.Type:
-      if let cast = self.dateValue as? OutputType { return cast }
-    case is Tailor.Time.Type:
-      if let cast = self.timeValue as? OutputType { return cast }
-    case is NSData.Type:
-      if let cast = self.dataValue as? OutputType { return cast }
-    case is Swift.Double.Type:
-      if let cast = self.doubleValue as? OutputType { return cast }
-    case is Bool.Type:
-      if let cast = self.boolValue as? OutputType { return cast }
-    default:
-      break
-    }
-    throw SerializationParsingError.WrongFieldType(field: "root", type: OutputType.self, caseType: self.wrappedType)
+  public func read<OutputType: SerializationInitializable>() throws -> OutputType {
+    return try OutputType.init(value: self)
   }
   
-  /**
-   This method reads the value from a key in a JSON dictionary.
-   
-   This will infer the desired return type from the caller context.
-   
-   If this is not a dictionary type, this will throw a
-   `SerializationParsingError.WrongFieldType` error. If the value that the dictionary
-   has for that key does not match the desired type, this will throw a
-   `SerializationParsingError.WrongFieldType` error. If there is no field on the
-   dictionary for the desired key, this will throw a
-   `SerializationParsingError.MissingField` error.
-   
-   - parameter key:    The name of the key to read.
-   - returns:          The unwrapped value.
-   */
-  public func read<OutputType>(key: Swift.String) throws -> OutputType {
-    let value: SerializableValue = try self.read(key)
-    do {
-      return try value.read()
+  private func read<OutputType>(key: Swift.String, valueFetcher: (SerializableValue) throws -> OutputType) throws -> OutputType {
+    func fullField(field: Swift.String) -> Swift.String {
+      let result: Swift.String
+      
+      if field == "root" {
+        result = key
+      }
+      else {
+        result = key + "." + field
+      }
+      return result
     }
-    catch SerializationParsingError.WrongFieldType(field: _, type: let type, caseType: let caseType) {
-      throw SerializationParsingError.WrongFieldType(field: key, type: type, caseType: caseType)
+    let value = try self.read(key) as SerializableValue
+    do {
+      return try valueFetcher(value)
+    }
+    catch let SerializationParsingError.WrongFieldType(field: field, type: type, caseType: caseType) {
+      throw SerializationParsingError.WrongFieldType(field: fullField(field), type: type, caseType: caseType)
+    }
+    catch let SerializationParsingError.MissingField(field: field) {
+      throw SerializationParsingError.MissingField(field: fullField(field))
     }
     catch let e {
       throw e
     }
+  }
+  
+  public func read<OutputType: SerializationInitializable>(key: Swift.String) throws -> OutputType {
+    return try read(key) { try $0.read() }
   }
   
   /**
@@ -291,11 +226,17 @@ public enum SerializableValue: Equatable {
    - returns:          The primitive at that key.
    */
   public func read(key: Swift.String) throws -> SerializableValue {
-    let dictionary = try self.read() as [Swift.String:SerializableValue]
-    guard let value = dictionary[key] else {
-      throw SerializationParsingError.MissingField(field: key)
+    switch(self) {
+    case let .Dictionary(dictionary):
+      if let value = dictionary[key] {
+        return value
+      }
+      else {
+        throw SerializationParsingError.MissingField(field: key)
+      }
+    default:
+      throw SerializationParsingError.WrongFieldType(field: "root", type: Swift.Dictionary<Swift.String,SerializableValue>.self, caseType: self.wrappedType)
     }
-    return value
   }
   
   /**
@@ -508,7 +449,7 @@ extension SerializableValue {
    - returns:          The cast value.
    - throws:           An exception from `DatabaseError`.
    */
-  public func read<OutputType: SerializationConvertible>(key: Swift.String) throws -> OutputType? {
+  public func read<OutputType: SerializationInitializable>(key: Swift.String) throws -> OutputType? {
     switch(self) {
     case let .Dictionary(data):
       guard let value = data[key] else { return nil }
@@ -607,5 +548,35 @@ extension SerializableValue {
       throw DatabaseError.MissingField(name: fieldName)
     }
     return record
+  }
+  
+  public func read<OutputType: SerializationInitializable>() throws -> [OutputType] {
+    switch(self) {
+    case let .Array(array):
+      return try array.map { try $0.read() as OutputType }
+    default:
+      throw SerializationParsingError.WrongFieldType(field: "root", type: Swift.Array<OutputType>.self, caseType: self.wrappedType)
+    }
+  }
+  
+  public func read<OutputType: SerializationInitializable>(key: Swift.String) throws -> [OutputType] {
+    return try read(key) { try $0.read() }
+  }
+  
+  public func read<OutputType: SerializationInitializable>() throws -> [Swift.String:OutputType] {
+    switch(self) {
+    case let .Dictionary(dictionary):
+      var result = Swift.Dictionary<Swift.String,OutputType>()
+      for (key,value) in dictionary {
+        result[key] = try value.read() as OutputType
+      }
+      return result
+    default:
+      throw SerializationParsingError.WrongFieldType(field: "root", type: Swift.Dictionary<Swift.String,OutputType>.self, caseType: self.wrappedType)
+    }
+  }
+  
+  public func read<OutputType: SerializationInitializable>(key: Swift.String) throws -> [Swift.String:OutputType] {
+    return try read(key) { try $0.read() }
   }
 }

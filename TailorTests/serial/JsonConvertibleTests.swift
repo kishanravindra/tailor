@@ -116,8 +116,8 @@ class JsonConvertibleTests: XCTestCase, TailorTestable {
   }
   
   func testBooleanConvertsToJsonAsJsonPrimitive() {
-    assert(true.toJson(), equals: .Integer(1))
-    assert(false.toJson(), equals: .Integer(0))
+    assert(true.toJson(), equals: .Boolean(true))
+    assert(false.toJson(), equals: .Boolean(false))
   }
   
   func testPrimitiveConvertsToJsonAsItself() {

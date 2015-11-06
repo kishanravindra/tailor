@@ -15,10 +15,10 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
   
   func testRowInitializationWithConvertibleValuesWrapsValues() {
     let row = DatabaseRow(rawData: ["name": "John", "height": 200])
-    let name = row.data["name"]?.stringValue
-    assert(name, equals: "John")
-    let height = row.data["height"]?.intValue
-    assert(height, equals: 200)
+    let name = row.data["name"]
+    assert(name, equals: SerializableValue.String("John"))
+    let height = row.data["height"]
+    assert(height, equals: SerializableValue.Integer(200))
   }
   
   func testRowInitializationWithErrorSetsError() {
@@ -29,8 +29,9 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
   
   //MARK: - Database Row
   
+  @available(*, deprecated)
   func testReadWithStringValueCanReadStringValue() {
-    let row = DatabaseRow(data: ["key1": DatabaseValue.String("value1")])
+    let row = DatabaseRow(data: ["key1": SerializableValue.String("value1")])
     do {
       let value = try row.read("key1") as String
       assert(value, equals: "value1")
@@ -40,8 +41,9 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithStringValueThrowsExceptionOnIntegerValue() {
-    let row = DatabaseRow(data: ["key1": DatabaseValue.Integer(5)])
+    let row = DatabaseRow(data: ["key1": SerializableValue.Integer(5)])
     do {
       _ = try row.read("key1") as String
       assert(false, message: "threw unexpected exception")
@@ -56,8 +58,9 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithStringValueThrowsExceptionOnTimestampValue() {
-    let row = DatabaseRow(data: ["key1": DatabaseValue.Timestamp(Timestamp.now())])
+    let row = DatabaseRow(data: ["key1": SerializableValue.Timestamp(Timestamp.now())])
     do {
       _ = try row.read("key1") as String
       assert(false, message: "threw unexpected exception")
@@ -72,8 +75,9 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithStringValueThrowsExceptionForMissingValue() {
-    let row = DatabaseRow(data: ["key2": DatabaseValue.Integer(5)])
+    let row = DatabaseRow(data: ["key2": SerializableValue.Integer(5)])
     do {
       _ = try row.read("key1") as String
       assert(false, message: "threw unexpected exception")
@@ -86,8 +90,9 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithIntegerValueCanReadIntegerValue() {
-    let row = DatabaseRow(data: ["key1": DatabaseValue.Integer(12)])
+    let row = DatabaseRow(data: ["key1": SerializableValue.Integer(12)])
     do {
       let value = try row.read("key1") as Int
       assert(value, equals: 12)
@@ -97,8 +102,9 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithIntegerValueThrowsExceptionForStringValue() {
-    let row = DatabaseRow(data: ["key1": DatabaseValue.String("hello")])
+    let row = DatabaseRow(data: ["key1": SerializableValue.String("hello")])
     do {
       _ = try row.read("key1") as Int
       assert(false, message: "threw unexpected exception")
@@ -113,8 +119,9 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithUnsignedIntegerValueCanReadIntegerValue() {
-    let row = DatabaseRow(data: ["key1": DatabaseValue.Integer(12)])
+    let row = DatabaseRow(data: ["key1": SerializableValue.Integer(12)])
     do {
       let value = try row.read("key1") as UInt
       assert(value, equals: 12)
@@ -124,8 +131,9 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithUnsignedIntegerValueThrowsExceptionForStringValue() {
-    let row = DatabaseRow(data: ["key1": DatabaseValue.String("hello")])
+    let row = DatabaseRow(data: ["key1": SerializableValue.String("hello")])
     do {
       _ = try row.read("key1") as UInt
       assert(false, message: "threw unexpected exception")
@@ -140,8 +148,9 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithTimestampValueCanReadTimestampValue() {
-    let row = DatabaseRow(data: ["key1": DatabaseValue.Timestamp(Timestamp.now())])
+    let row = DatabaseRow(data: ["key1": SerializableValue.Timestamp(Timestamp.now())])
     do {
       let value = try row.read("key1") as Timestamp
       assert(value, equals: Timestamp.now())
@@ -151,8 +160,9 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithTimestampValueCanReadStringWithValidTimestamp() {
-    let row = DatabaseRow(data: ["key1": DatabaseValue.String("2015-12-14 09:30:00")])
+    let row = DatabaseRow(data: ["key1": SerializableValue.String("2015-12-14 09:30:00")])
     do {
       let value = try row.read("key1") as Timestamp
       assert(value, equals: Timestamp(year: 2015, month: 12, day: 14, hour: 9, minute: 30, second: 0, nanosecond: 0))
@@ -162,8 +172,9 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithTimestampValueThrowsExceptionForIntegerValue() {
-    let row = DatabaseRow(data: ["key1": DatabaseValue.Integer(14)])
+    let row = DatabaseRow(data: ["key1": SerializableValue.Integer(14)])
     do {
       _ = try row.read("key1") as Timestamp
       assert(false, message: "threw unexpected exception")
@@ -178,8 +189,9 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithTimestampValueThrowsExceptionForStringValue() {
-    let row = DatabaseRow(data: ["key1": DatabaseValue.String("hello")])
+    let row = DatabaseRow(data: ["key1": SerializableValue.String("hello")])
     do {
       _ = try row.read("key1") as Timestamp
       assert(false, message: "threw unexpected exception")
@@ -194,9 +206,10 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithDateValueCanReadDateValue() {
     let date = Date.today()
-    let row = DatabaseRow(data: ["key1": DatabaseValue.Date(date)])
+    let row = DatabaseRow(data: ["key1": SerializableValue.Date(date)])
     do {
       let value = try row.read("key1") as Date
       assert(value, equals: date)
@@ -206,8 +219,9 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithDateValueThrowsExceptionForIntegerValue() {
-    let row = DatabaseRow(data: ["key1": DatabaseValue.Integer(5)])
+    let row = DatabaseRow(data: ["key1": SerializableValue.Integer(5)])
     do {
       _ = try row.read("key1") as Date
       assert(false, message: "threw unexpected exception")
@@ -222,9 +236,10 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithTimeValueCanReadTimeValue() {
     let time = Timestamp.now().time
-    let row = DatabaseRow(data: ["key1": DatabaseValue.Time(time)])
+    let row = DatabaseRow(data: ["key1": SerializableValue.Time(time)])
     do {
       let value = try row.read("key1") as Time
       assert(value, equals: time)
@@ -234,8 +249,9 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithTimeValueThrowsExceptionForIntegerValue() {
-    let row = DatabaseRow(data: ["key1": DatabaseValue.Integer(5)])
+    let row = DatabaseRow(data: ["key1": SerializableValue.Integer(5)])
     do {
       _ = try row.read("key1") as Time
       assert(false, message: "threw unexpected exception")
@@ -250,8 +266,9 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithBoolValueCanReadBoolValue() {
-    let row = DatabaseRow(data: ["key1": DatabaseValue.Boolean(true), "key2": DatabaseValue.Boolean(false)])
+    let row = DatabaseRow(data: ["key1": SerializableValue.Boolean(true), "key2": SerializableValue.Boolean(false)])
     do {
       let value1 = try row.read("key1") as Bool
       let value2 = try row.read("key2") as Bool
@@ -263,8 +280,9 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithBoolValueCanReadIntegerValue() {
-    let row = DatabaseRow(data: ["key1": DatabaseValue.Integer(1), "key2": DatabaseValue.Integer(0)])
+    let row = DatabaseRow(data: ["key1": SerializableValue.Integer(1), "key2": SerializableValue.Integer(0)])
     do {
       let value1 = try row.read("key1") as Bool
       let value2 = try row.read("key2") as Bool
@@ -276,8 +294,9 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithBooleanValueThrowsExceptionForStringValue() {
-    let row = DatabaseRow(data: ["key1": DatabaseValue.String("yo")])
+    let row = DatabaseRow(data: ["key1": SerializableValue.String("yo")])
     do {
       _ = try row.read("key1") as Bool
       assert(false, message: "threw unexpected exception")
@@ -292,9 +311,10 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithDataValueCanReadDataValue() {
     let data = NSData(bytes: [1,2,3,4])
-    let row = DatabaseRow(data: ["key1": DatabaseValue.Data(data)])
+    let row = DatabaseRow(data: ["key1": SerializableValue.Data(data)])
     do {
       let value = try row.read("key1") as NSData
       assert(value, equals: data)
@@ -304,8 +324,9 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithDataValueThrowsExceptionForIntegerValue() {
-    let row = DatabaseRow(data: ["key1": DatabaseValue.Integer(5)])
+    let row = DatabaseRow(data: ["key1": SerializableValue.Integer(5)])
     do {
       _ = try row.read("key1") as NSData
       assert(false, message: "threw unexpected exception")
@@ -320,8 +341,9 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithDoubleValueCanReadDoubleValue() {
-    let row = DatabaseRow(data: ["key1": DatabaseValue.Double(1.5)])
+    let row = DatabaseRow(data: ["key1": SerializableValue.Double(1.5)])
     do {
       let value = try row.read("key1") as Double
       assert(value, equals: 1.5)
@@ -331,24 +353,9 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
-  func testReadWithDoubleValueThrowsExceptionForIntegerValue() {
-    let row = DatabaseRow(data: ["key1": DatabaseValue.Integer(5)])
-    do {
-      _ = try row.read("key1") as Double
-      assert(false, message: "threw unexpected exception")
-    }
-    catch let DatabaseError.FieldType(name, actualType, desiredType) {
-      assert(name, equals: "key1")
-      assert(actualType, equals: "Integer")
-      assert(desiredType, equals: "Double")
-    }
-    catch {
-      assert(false, message: "threw unexpected exception")
-    }
-  }
-  
+  @available(*, deprecated)
   func testReadWithOptionalValueCanReadRealValue() {
-    let row = DatabaseRow(data: ["key1": DatabaseValue.Integer(1)])
+    let row = DatabaseRow(data: ["key1": SerializableValue.Integer(1)])
     do {
       let value: Int? = try row.read("key1")
       assert(value, equals: 1)
@@ -358,8 +365,9 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithOptionalValueReturnsNilForMissingValue() {
-    let row = DatabaseRow(data: ["key2": DatabaseValue.Integer(1)])
+    let row = DatabaseRow(data: ["key2": SerializableValue.Integer(1)])
     do {
       let value: Int? = try row.read("key1")
       assert(isNil: value)
@@ -369,8 +377,9 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithOptionalValueReturnsNilForNullValue() {
-    let row = DatabaseRow(data: ["key1": DatabaseValue.Null])
+    let row = DatabaseRow(data: ["key1": SerializableValue.Null])
     do {
       let value: Int? = try row.read("key1")
       assert(isNil: value)
@@ -380,8 +389,9 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithOptionalValueReturnsNilForEmptyStringValue() {
-    let row = DatabaseRow(data: ["key1": DatabaseValue.String("")])
+    let row = DatabaseRow(data: ["key1": SerializableValue.String("")])
     do {
       let value: Int? = try row.read("key1")
       assert(isNil: value)
@@ -391,8 +401,9 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithOptionalValueThrowsExceptionForWrongType() {
-    let row = DatabaseRow(data: ["key1": DatabaseValue.String("hello")])
+    let row = DatabaseRow(data: ["key1": SerializableValue.String("hello")])
     do {
       let value: Int? = try row.read("key1")
       assert(isNil: value)
@@ -408,22 +419,24 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithUnsupportedTypeThrowsException() {
-    let row = DatabaseRow(data: ["key1": DatabaseValue.Integer(5)])
+    let row = DatabaseRow(data: ["key1": SerializableValue.Integer(5)])
     do {
-      _ = try row.read("key1") as DatabaseValue
+      _ = try row.read("key1") as SerializableValue
       assert(false, message: "threw unexpected exception")
     }
     catch let DatabaseError.FieldType(name, actualType, desiredType) {
       assert(name, equals: "key1")
       assert(actualType, equals: "Integer")
-      assert(desiredType, equals: "DatabaseValue")
+      assert(desiredType, equals: "SerializableValue")
     }
     catch {
       assert(false, message: "threw unexpected exception")
     }
   }
   
+  @available(*, deprecated)
   func testReadWithPersistableTypeWithOptionalWithMissingIdIsNil() {
     let record = Hat().save()!
     let row = DatabaseRow(rawData: ["hats_id": record.id])
@@ -436,6 +449,7 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithPersistableTypeWithOptionalWithValidIdReturnsRecord() {
     let record = Hat().save()!
     let row = DatabaseRow(rawData: ["hat_id": record.id])
@@ -448,6 +462,7 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithPersistableTypeWithOptionalWithInvalidIdReturnsNil() {
     let record = Hat().save()!
     let row = DatabaseRow(rawData: ["hat_id": record.id + 1])
@@ -460,6 +475,7 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithPersistableTypeWithOptionalWithStringIdThrowsException() {
     _ = Hat().save()!
     let row = DatabaseRow(rawData: ["hat_id": "blue"])
@@ -477,6 +493,7 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithPersistableTypeWithValidIdReturnsRecord() {
     let record = Hat().save()!
     let row = DatabaseRow(rawData: ["hat_id": record.id])
@@ -489,6 +506,7 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithPersistableTypeWithInvalidIdThrowsException() {
     let record = Hat().save()!
     let row = DatabaseRow(rawData: ["hat_id": record.id + 1])
@@ -503,6 +521,7 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadWithPersistableTypeWithStringIdThrowsException() {
     _ = Hat().save()!
     let row = DatabaseRow(rawData: ["hat_id": "blue"])
@@ -520,11 +539,12 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadEnumWithIdWithOptionalWithValidIdGivesValue() {
     typealias HatType = PersistableEnumTests.HatType
     let color1 = PersistableEnumTests.HatType.Feathered
     _ = PersistableEnumTests.HatType.WideBrim
-    let row = DatabaseRow(data: ["key1": color1.id.databaseValue])
+    let row = DatabaseRow(data: ["key1": color1.id.serialize])
     do {
       let value = try row.readEnum(id: "key1") as PersistableEnumTests.HatType?
       assert(value, equals: .Feathered)
@@ -534,11 +554,12 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadEnumWithIdWithOptionalWithBadIdReturnsNil() {
     typealias HatType = PersistableEnumTests.HatType
     _ = PersistableEnumTests.HatType.Feathered
     let color2 = PersistableEnumTests.HatType.WideBrim
-    let row = DatabaseRow(data: ["key1": (color2.id + 1).databaseValue])
+    let row = DatabaseRow(data: ["key1": (color2.id + 1).serialize])
     do {
       let value = try row.readEnum(id: "key1") as PersistableEnumTests.HatType?
       assert(isNil: value)
@@ -548,11 +569,12 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadEnumWithIdWithOptionalWithNoValueReturnsNil() {
     typealias HatType = PersistableEnumTests.HatType
     let color1 = PersistableEnumTests.HatType.Feathered
     _ = PersistableEnumTests.HatType.WideBrim
-    let row = DatabaseRow(data: ["key2": color1.id.databaseValue])
+    let row = DatabaseRow(data: ["key2": color1.id.serialize])
     do {
       let value = try row.readEnum(id: "key1") as PersistableEnumTests.HatType?
       assert(isNil: value)
@@ -563,10 +585,11 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
   }
 
   
+  @available(*, deprecated)
   func testReadEnumWithIdWithOptionalWithStringValueThrowsException() {
     typealias HatType = PersistableEnumTests.HatType
     _ = PersistableEnumTests.HatType.Feathered
-    let row = DatabaseRow(data: ["key1": "foo".databaseValue])
+    let row = DatabaseRow(data: ["key1": "foo".serialize])
     do {
       _ = try row.readEnum(id: "key1") as PersistableEnumTests.HatType?
       assert(false, message: "should throw exception")
@@ -581,11 +604,12 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadEnumWithIdWithValidValueGivesValue() {
     typealias HatType = PersistableEnumTests.HatType
     let color1 = PersistableEnumTests.HatType.Feathered
     _ = PersistableEnumTests.HatType.WideBrim
-    let row = DatabaseRow(data: ["key1": color1.id.databaseValue])
+    let row = DatabaseRow(data: ["key1": color1.id.serialize])
     do {
       let value = try row.readEnum(id: "key1") as PersistableEnumTests.HatType
       assert(value, equals: .Feathered)
@@ -595,11 +619,12 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadEnumWithIdWithBadIdThrowsException() {
     typealias HatType = PersistableEnumTests.HatType
     _ = PersistableEnumTests.HatType.Feathered
     let color2 = PersistableEnumTests.HatType.WideBrim
-    let row = DatabaseRow(data: ["key1": (color2.id + 1).databaseValue])
+    let row = DatabaseRow(data: ["key1": (color2.id + 1).serialize])
     do {
       _ = try row.readEnum(id: "key1") as PersistableEnumTests.HatType
       assert(false, message: "should throw exception")
@@ -612,10 +637,11 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadEnumWithIdWithStringValueThrowsException() {
     typealias HatType = PersistableEnumTests.HatType
     _ = PersistableEnumTests.HatType.Feathered
-    let row = DatabaseRow(data: ["key1": "foo".databaseValue])
+    let row = DatabaseRow(data: ["key1": "foo".serialize])
     do {
       _ = try row.readEnum(id: "key1") as PersistableEnumTests.HatType?
       assert(false, message: "should throw exception")
@@ -630,11 +656,12 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadEnumWithNameWithOptionalWithValidValueGivesValue() {
     typealias HatType = PersistableEnumTests.HatType
     _ = PersistableEnumTests.HatType.Feathered
     _ = PersistableEnumTests.HatType.WideBrim
-    let row = DatabaseRow(data: ["key1": "feathered".databaseValue])
+    let row = DatabaseRow(data: ["key1": "feathered".serialize])
     do {
       let value = try row.readEnum(name: "key1") as PersistableEnumTests.HatType?
       assert(value, equals: .Feathered)
@@ -644,11 +671,12 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadEnumWithNameWithOptionalWithBadNameReturnsNil() {
     typealias HatType = PersistableEnumTests.HatType
     _ = PersistableEnumTests.HatType.Feathered
     _ = PersistableEnumTests.HatType.WideBrim
-    let row = DatabaseRow(data: ["key1": "bad_value".databaseValue])
+    let row = DatabaseRow(data: ["key1": "bad_value".serialize])
     do {
       let value = try row.readEnum(name: "key1") as PersistableEnumTests.HatType?
       assert(isNil: value)
@@ -658,11 +686,12 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadEnumWithNameWithOptionalWithMissingValueReturnsNil() {
     typealias HatType = PersistableEnumTests.HatType
     _ = PersistableEnumTests.HatType.Feathered
     _ = PersistableEnumTests.HatType.WideBrim
-    let row = DatabaseRow(data: ["key2": "feathered".databaseValue])
+    let row = DatabaseRow(data: ["key2": "feathered".serialize])
     do {
       let value = try row.readEnum(name: "key1") as PersistableEnumTests.HatType?
       assert(isNil: value)
@@ -672,10 +701,11 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadEnumWithNameWithOptionalWithIntegerValueThrowsException() {
     typealias HatType = PersistableEnumTests.HatType
     _ = PersistableEnumTests.HatType.Feathered
-    let row = DatabaseRow(data: ["key1": 1.databaseValue])
+    let row = DatabaseRow(data: ["key1": 1.serialize])
     do {
       _ = try row.readEnum(name: "key1") as PersistableEnumTests.HatType?
       assert(false, message: "should throw exception")
@@ -690,11 +720,12 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadEnumWithNameWithValidValueGivesValue() {
     typealias HatType = PersistableEnumTests.HatType
     _ = PersistableEnumTests.HatType.Feathered
     _ = PersistableEnumTests.HatType.WideBrim
-    let row = DatabaseRow(data: ["key1": "feathered".databaseValue])
+    let row = DatabaseRow(data: ["key1": "feathered".serialize])
     do {
       let value = try row.readEnum(name: "key1") as PersistableEnumTests.HatType
       assert(value, equals: .Feathered)
@@ -704,11 +735,12 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadEnumWithNameWithBadNameThrowsException() {
     typealias HatType = PersistableEnumTests.HatType
     _ = PersistableEnumTests.HatType.Feathered
     _ = PersistableEnumTests.HatType.WideBrim
-    let row = DatabaseRow(data: ["key1": "bad_name".databaseValue])
+    let row = DatabaseRow(data: ["key1": "bad_name".serialize])
     do {
       _ = try row.readEnum(name: "key1") as PersistableEnumTests.HatType
       assert(false, message: "should throw exception")
@@ -721,10 +753,11 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadEnumWithNameWithIntegerValueThrowsException() {
     typealias HatType = PersistableEnumTests.HatType
     _ = PersistableEnumTests.HatType.Feathered
-    let row = DatabaseRow(data: ["key1": 1.databaseValue])
+    let row = DatabaseRow(data: ["key1": 1.serialize])
     do {
       _ = try row.readEnum(name: "key1") as PersistableEnumTests.HatType?
       assert(false, message: "should throw exception")

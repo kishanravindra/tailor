@@ -127,7 +127,7 @@ extension QueryType {
       clause.query += " AND "
     }
     clause.query += query
-    clause.parameters.appendContentsOf(parameters.map { $0.serialize() })
+    clause.parameters.appendContentsOf(parameters.map { $0.serialize })
     return self.dynamicType.init(
       copyFrom: self,
       whereClause: clause
@@ -154,7 +154,7 @@ extension QueryType {
         
         if let value = value {
           query += "\(tableName).\(columnName)=?"
-          parameters.append(value.serialize())
+          parameters.append(value.serialize)
         }
         else {
           query += "\(tableName).\(columnName) IS NULL"
@@ -249,7 +249,7 @@ extension QueryType {
       clause.query += " "
     }
     clause.query += query
-    clause.parameters.appendContentsOf(parameters.map { $0.serialize() })
+    clause.parameters.appendContentsOf(parameters.map { $0.serialize })
     let selectClause = self.selectClause == "*" ? "\(self.tableName).*" : self.selectClause
     return self.dynamicType.init(
       copyFrom: self,
@@ -382,7 +382,7 @@ extension QueryType {
     let results = Application.sharedDatabaseConnection().executeQuery(query, parameters: parameters)
     return results.flatMap {
       if $0.error == nil {
-        return recordType.build($0.serialize())
+        return recordType.build($0.serialize)
       }
       return nil
     }

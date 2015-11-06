@@ -3,9 +3,6 @@ import TailorTesting
 import XCTest
 
 class PersistableEnumTests: XCTestCase, TailorTestable {
-  func testFailure() {
-    assert(false)
-  }
   enum Color: String, StringPersistableEnum {
     case Red
     case DarkBlue
@@ -34,8 +31,8 @@ class PersistableEnumTests: XCTestCase, TailorTestable {
   }
   
   func testStringPersistableEnumGetsStringFromFromCaseName() {
-    assert(Color.Red.serialize(), equals: SerializableValue.String("red"))
-    assert(Color.DarkBlue.serialize(), equals: SerializableValue.String("dark_blue"))
+    assert(Color.Red.serialize, equals: SerializableValue.String("red"))
+    assert(Color.DarkBlue.serialize, equals: SerializableValue.String("dark_blue"))
   }
   
   func testStringPersistableEnumCanGenerateValueFromString() {
@@ -53,43 +50,43 @@ class PersistableEnumTests: XCTestCase, TailorTestable {
   
   func testDatabasePersistableEnumRecognizesExistingRecord() {
     let value = HatType.Feathered
-    assert(value.serialize(), equals: SerializableValue.Integer(1))
+    assert(value.serialize, equals: SerializableValue.Integer(1))
   }
   
   func testDatabasePersistableEnumCreatesNewRecord() {
     let value = HatType.WideBrim
-    assert(value.serialize(), equals: SerializableValue.Integer(2))
+    assert(value.serialize, equals: SerializableValue.Integer(2))
     let value2 = value
-    assert(value2.serialize(), equals: SerializableValue.Integer(2))
+    assert(value2.serialize, equals: SerializableValue.Integer(2))
   }
   
   func testDatabasePersistableEnumWithProblemInsertingRecordReturnsZero() {
     Application.sharedDatabaseConnection().executeQuery("DROP TABLE hat_types")
     Application.sharedDatabaseConnection().executeQuery("CREATE TABLE hat_types (id integer PRIMARY KEY, name string CHECK(length(name)>10))")
     let value = HatType.Feathered
-    assert(value.serialize(), equals: SerializableValue.Integer(0))
+    assert(value.serialize, equals: SerializableValue.Integer(0))
   }
   
   func testDatabasePersistableEnumWithBadStructureReturnsZero() {
     Application.sharedDatabaseConnection().executeQuery("DROP TABLE hat_types")
     Application.sharedDatabaseConnection().executeQuery("CREATE TABLE hat_types (id integer PRIMARY KEY)")
     let value = HatType.Feathered
-    assert(value.serialize(), equals: SerializableValue.Integer(0))
+    assert(value.serialize, equals: SerializableValue.Integer(0))
   }
   
   func testDatabasePersistableEnumCanGenerateValueFromId() {
-    let value1 = HatType.Feathered.serialize()
-    let value2 = HatType.WideBrim.serialize()
+    let value1 = HatType.Feathered.serialize
+    let value2 = HatType.WideBrim.serialize
     
     assert(HatType.fromSerializableValue(value1), equals: HatType.Feathered)
     assert(HatType.fromSerializableValue(value2), equals: HatType.WideBrim)
   }
   
   func testDatabasePersistableEnumGetsNilForInvalidId() {
-    _ = HatType.Feathered.serialize()
-    _ = HatType.WideBrim.serialize()
+    _ = HatType.Feathered.serialize
+    _ = HatType.WideBrim.serialize
     
-    assert(HatType.fromSerializableValue(3.serialize()) == nil)
+    assert(HatType.fromSerializableValue(3.serialize) == nil)
   }
 
   func testDatabasePersistableEnumGetsValuesToPersistWithCaseName() {
@@ -100,7 +97,7 @@ class PersistableEnumTests: XCTestCase, TailorTestable {
   }
   
   func testDatabasePersistableEnumCanBeInitializedFromDatabaseRowWithCaseName() {
-    let record = try? HatType(values: SerializableValue.Dictionary(["name": "wide_brim".serialize()]))
+    let record = try? HatType(values: SerializableValue.Dictionary(["name": "wide_brim".serialize]))
     assert(record, equals: HatType.WideBrim)
   }
 }

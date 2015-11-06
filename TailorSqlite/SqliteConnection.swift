@@ -39,7 +39,7 @@ public final class SqliteConnection: DatabaseDriver {
     - parameter query:        The query to execute
     - parameter parameters:   The parameters to bind to the inputs to the query.
     */
-  public func executeQuery(query: String, parameters bindParameters: [DatabaseValue]) -> [DatabaseRow] {
+  public func executeQuery(query: String, parameters bindParameters: [SerializableValue]) -> [DatabaseRow] {
     if Application.configuration.logQueries {
       NSLog("Executing query %@", query)
     }
@@ -57,8 +57,9 @@ public final class SqliteConnection: DatabaseDriver {
     let tableInfo = executeQuery("SELECT distinct tbl_name,sql FROM sqlite_master WHERE type='table'")
     var results = [String:String]()
     for table in tableInfo {
-      if let tableName = table.data["tbl_name"]?.stringValue,
-        let sql = table.data["sql"]?.stringValue {
+      if let tableNameValue = table.data["tbl_name"], sqlValue = table.data["sql"],
+        tableName = try? String(value: tableNameValue), sql = try? String(value: sqlValue)
+      {
           results[tableName] = sql
       }
     }

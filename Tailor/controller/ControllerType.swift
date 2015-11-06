@@ -275,7 +275,7 @@ extension ControllerType {
   public func respondWith(json json: SerializationEncodable) {
     var response = self.state.response
     do {
-      let jsonData = try json.serialize().jsonData()
+      let jsonData = try json.serialize.jsonData()
       response.responseCode = .Ok
       response.headers["Content-Type"] = "application/json"
       response.appendData(jsonData)

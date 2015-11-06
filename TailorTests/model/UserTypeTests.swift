@@ -19,7 +19,7 @@ class UserTypeTests: XCTestCase, TailorTestable {
       self.emailAddress = try values.read("email_address")
       self.encryptedPassword = try values.read("encrypted_password")
       self.lastSignInIp = (try values.read("last_sign_in_ip")) ?? ""
-      self.lastSignInTime = (try values.read("last_sign_in_time")) ?? Timestamp(epochSeconds: 0)
+      self.lastSignInTime = (try values.read("last_sign_in_time") as Timestamp?) ?? Timestamp(epochSeconds: 0)
     }
     
     func valuesToPersist() -> [String : SerializationEncodable?] {

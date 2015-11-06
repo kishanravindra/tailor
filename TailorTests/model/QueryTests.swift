@@ -10,7 +10,7 @@ class QueryTests: XCTestCase, TailorTestable {
   
   let baseQuery = GenericQuery(
     selectClause: "hats.id,hats.color,hats.brim_size",
-    whereClause: ("hats.store_id=?", [DatabaseValue.Integer(5)]),
+    whereClause: ("hats.store_id=?", [SerializableValue.Integer(5)]),
     orderClause: ("hats.created_at ASC", []),
     limitClause: ("5", []),
     joinClause: ("INNER JOIN shelfs ON shelfs.id = hats.shelf_id", []),
@@ -58,7 +58,7 @@ class QueryTests: XCTestCase, TailorTestable {
     
     assert(query2.selectClause, equals: baseQuery.selectClause, message: "copies select clause")
     assert(query2.whereClause.query, equals: "hats.color=?", message: "sets where clause")
-    assert(query2.whereClause.parameters, equals: [DatabaseValue.String("red")], message: "sets where clause")
+    assert(query2.whereClause.parameters, equals: [SerializableValue.String("red")], message: "sets where clause")
     assert(query2.orderClause.query, equals: baseQuery.orderClause.query, message: "copies order clause")
     assert(query2.orderClause.parameters, equals: baseQuery.orderClause.parameters, message: "copies order clause")
     assert(query2.limitClause.query, equals: baseQuery.limitClause.query, message: "copies limit clause")
@@ -72,7 +72,7 @@ class QueryTests: XCTestCase, TailorTestable {
     
     assert(query.selectClause, equals: baseQuery.selectClause, message: "copies select clause")
     assert(query.whereClause.query, equals: "hats.store_id=? AND hats.color=?", message: "sets where clause")
-    assert(query.whereClause.parameters, equals: [5.databaseValue, "red".databaseValue], message: "sets where clause")
+    assert(query.whereClause.parameters, equals: [5.serialize, "red".serialize], message: "sets where clause")
     assert(query.orderClause.query, equals: baseQuery.orderClause.query, message: "copies order clause")
     assert(query.orderClause.parameters, equals: baseQuery.orderClause.parameters, message: "copies order clause")
     assert(query.limitClause.query, equals: baseQuery.limitClause.query, message: "copies limit clause")
@@ -100,7 +100,7 @@ class QueryTests: XCTestCase, TailorTestable {
     
     assert(query.selectClause, equals: baseQuery.selectClause, message: "copies select clause")
     assert(query.whereClause.query, equals: "hats.store_id=? AND hats.color=?", message: "sets where clause")
-    assert(query.whereClause.parameters, equals: [5.databaseValue, "red".databaseValue], message: "sets where clause")
+    assert(query.whereClause.parameters, equals: [5.serialize, "red".serialize], message: "sets where clause")
     assert(query.orderClause.query, equals: baseQuery.orderClause.query, message: "copies order clause")
     assert(query.orderClause.parameters, equals: baseQuery.orderClause.parameters, message: "copies order clause")
     assert(query.limitClause.query, equals: baseQuery.limitClause.query, message: "copies limit clause")
@@ -114,7 +114,7 @@ class QueryTests: XCTestCase, TailorTestable {
     
     assert(query.selectClause, equals: baseQuery.selectClause, message: "copies select clause")
     assert(query.whereClause.query, equals: "hats.store_id=? AND hats.color IS NULL", message: "sets where clause")
-    assert(query.whereClause.parameters, equals: [5.databaseValue], message: "sets where clause")
+    assert(query.whereClause.parameters, equals: [5.serialize], message: "sets where clause")
     assert(query.orderClause.query, equals: baseQuery.orderClause.query, message: "copies order clause")
     assert(query.orderClause.parameters, equals: baseQuery.orderClause.parameters, message: "copies order clause")
     assert(query.limitClause.query, equals: baseQuery.limitClause.query, message: "copies limit clause")
@@ -128,7 +128,7 @@ class QueryTests: XCTestCase, TailorTestable {
     
     assert(query.selectClause, equals: baseQuery.selectClause, message: "copies select clause")
     assert(query.whereClause.query, equals: "hats.store_id=? AND hats.brim_size=? AND hats.color=?", message: "sets where clause")
-    assert(query.whereClause.parameters, equals: [5.databaseValue, "10".databaseValue, "red".databaseValue], message: "sets where clause")
+    assert(query.whereClause.parameters, equals: [5.serialize, "10".serialize, "red".serialize], message: "sets where clause")
     assert(query.orderClause.query, equals: baseQuery.orderClause.query, message: "copies order clause")
     assert(query.orderClause.parameters, equals: baseQuery.orderClause.parameters, message: "copies order clause")
     assert(query.limitClause.query, equals: baseQuery.limitClause.query, message: "copies limit clause")
@@ -242,7 +242,7 @@ class QueryTests: XCTestCase, TailorTestable {
     assert(query.limitClause.query, equals: baseQuery.limitClause.query, message: "copies limit clause")
     assert(query.limitClause.parameters, equals: baseQuery.limitClause.parameters, message: "copies limit clause")
     assert(query.joinClause.query, equals: "INNER JOIN shelfs ON shelfs.id = hats.shelf_id INNER JOIN stores ON stores.id = shelfs.store_id AND stories.id > ?", message: "sets join clause")
-    assert(query.joinClause.parameters, equals: [5.databaseValue], message: "sets join clause")
+    assert(query.joinClause.parameters, equals: [5.serialize], message: "sets join clause")
   }
   
   func testJoinWithQueryStringWithWildcardSelectSpecifiesTableName() {
@@ -308,7 +308,7 @@ class QueryTests: XCTestCase, TailorTestable {
   func testToSqlCombinesPartsOfQuery() {
     let (query, parameters) = baseQuery.toSql()
     assert(query, equals: "SELECT hats.id,hats.color,hats.brim_size FROM hats INNER JOIN shelfs ON shelfs.id = hats.shelf_id WHERE hats.store_id=? ORDER BY hats.created_at ASC LIMIT 5", message: "combines all parts of the query")
-    assert(parameters, equals: [5.databaseValue], message: "combines all parameters")
+    assert(parameters, equals: [5.serialize], message: "combines all parameters")
   }
   
   func testAllFetchesRecordsUsingQuery() {
@@ -523,7 +523,7 @@ class QueryTests: XCTestCase, TailorTestable {
   
   func testTYpedQueryWithDifferentWhereClausesAreNotEqual() {
     let query1 = Query<Hat>(copyFrom: baseQuery)
-    let query2 = Query<Hat>(copyFrom: baseQuery, whereClause: ("color=?", ["red".databaseValue]))
+    let query2 = Query<Hat>(copyFrom: baseQuery, whereClause: ("color=?", ["red".serialize]))
     assert(query1, doesNotEqual: query2)
   }
 }

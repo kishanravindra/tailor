@@ -469,33 +469,6 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
     }
   }
   
-  func testReadNullWithNullGetsNull() {
-    let primitive = JsonPrimitive.Null
-    do {
-      _ = try primitive.read() as NSNull
-    }
-    catch {
-      assert(false, message: "threw unexpected exception")
-    }
-  }
-  
-  func testReadNullWithNumberThrowsException() {
-    let primitive = JsonPrimitive.Integer(9841)
-    do {
-      _ = try primitive.read() as NSNull
-      assert(false, message: "show throw some kind of exception")
-    }
-    catch JsonParsingError.WrongFieldType(field: let field, type: let type, caseType: let caseType) {
-      assert(field, equals: "root")
-      assert(type == NSNull.self)
-      assert(caseType == NSNumber.self)
-    }
-
-    catch {
-      assert(false, message: "threw unexpected exception")
-    }
-  }
-  
   func testReadIntWithIntGetsInt() {
     let primitive = JsonPrimitive.Integer(95)
     do {
@@ -599,16 +572,6 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
     do {
       let value: [String:JsonPrimitive] = try primitive.read("key3")
       assert(value, equals: try complexJsonDictionary["key3"]!.read())
-    }
-    catch {
-      assert(false, message: "should not throw exception")
-    }
-  }
-  
-  func testReadNullValueWithNullReturnsNull() {
-    let primitive = JsonPrimitive.Dictionary(complexJsonDictionary)
-    do {
-      _ = try primitive.read("nullKey") as NSNull
     }
     catch {
       assert(false, message: "should not throw exception")
@@ -881,16 +844,16 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
   
   func testDescriptionForArrayIsArrayDescription() {
     let value = JsonPrimitive.Array([JsonPrimitive.String("A"), JsonPrimitive.String("B")])
-    assert(value.valueDescription, equals: "[A, B]")
+    assert(value.valueDescription, equals: "[\"A\", \"B\"]")
   }
   
   func testDescriptionForDictionaryIsDictionaryDescription() {
     let value = JsonPrimitive.Dictionary(["key1": JsonPrimitive.Integer(891), "key2": JsonPrimitive.String("C")])
-    assert(value.valueDescription, equals: "[\"key1\": 891, \"key2\": C]")
+    assert(value.valueDescription, equals: "[\"key1\": \"891\", \"key2\": \"C\"]")
   }
   
   func testDescriptionForNullIsNull() {
     let value = JsonPrimitive.Null
-    assert(value.valueDescription, equals: "null")
+    assert(value.valueDescription, equals: "NULL")
   }
 }

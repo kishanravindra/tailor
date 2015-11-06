@@ -88,7 +88,7 @@ public extension PersistableEnum {
   
   @available(*, deprecated)
   var databaseValue: DatabaseValue {
-    return self.serialize()
+    return self.serialize
   }
 }
 
@@ -103,7 +103,7 @@ public extension StringPersistableEnum {
     - returns:                    The matching case.
     */
   static func fromSerializableValue(value: SerializableValue?) -> Self? {
-    if let caseName = value?.stringValue {
+    if let value2 = value, caseName = try? String(value: value2) {
       return self.fromCaseName(caseName)
     }
     else {
@@ -116,8 +116,8 @@ public extension StringPersistableEnum {
 
     This will just be the case name.
     */
-  func serialize() -> SerializableValue {
-    return self.caseName.serialize()
+  var serialize: SerializableValue {
+    return self.caseName.serialize
   }
 }
 
@@ -145,8 +145,12 @@ public extension TablePersistableEnum {
     var result = connection.executeQuery("SELECT * FROM \(tableName) WHERE id=?", id)
     
     if result.isEmpty { return nil }
-    let name = result[0].data["name"]
-    return name?.stringValue
+    if let name = result[0].data["name"] {
+      return try? String(value: name)
+    }
+    else {
+      return nil
+    }
   }
   
   /**
@@ -172,7 +176,8 @@ public extension TablePersistableEnum {
     - returns:                    The matching case.
     */
   static func fromSerializableValue(value: SerializableValue?) -> Self? {
-    guard let id = value?.intValue else { return nil }
+    guard let value2 = value else { return nil }
+    guard let id = try? Int(value: value2) else { return nil }
     return self.fromId(id)
   }
   
@@ -195,7 +200,9 @@ public extension TablePersistableEnum {
         return 0
       }
     }
-    return UInt(result[0].data["id"]?.intValue ?? 0)
+    guard let value = result[0].data["id"] else { return 0 }
+    guard let id = try? UInt(value: value) else { return 0 }
+    return id
   }
   
   /**
@@ -203,8 +210,8 @@ public extension TablePersistableEnum {
 
     This just be the id.
     */
-  func serialize() -> SerializableValue {
-    return self.id.serialize()
+  var serialize: SerializableValue {
+    return self.id.serialize
   }
   
   /**

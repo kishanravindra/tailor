@@ -33,7 +33,7 @@ class PersistableTests: XCTestCase, TailorTestable {
     let query : Query<Hat> = shelf.toMany()
     let clause = query.whereClause
     assert(clause.query, equals: "hats.shelf_id=?", message: "has the shelf ID in the query")
-    assert(clause.parameters, equals: [DatabaseValue.Integer(Int(shelf.id))], message: "has the id as the parameter")
+    assert(clause.parameters, equals: [SerializableValue.Integer(Int(shelf.id))], message: "has the id as the parameter")
   }
   
   func testToManyWithSpecificForeignKeyUsesThatForeignKey() {
@@ -41,7 +41,7 @@ class PersistableTests: XCTestCase, TailorTestable {
     let query : Query<Hat> = shelf.toMany(foreignKey: "shelfId")
     let clause = query.whereClause
     assert(clause.query, equals: "hats.shelfId=?", message: "has the shelf ID in the query")
-    assert(clause.parameters, equals: [shelf.id.databaseValue], message: "has the id as the parameter")
+    assert(clause.parameters, equals: [shelf.id.serialize], message: "has the id as the parameter")
   }
   
   func testToManyThroughFetchesManyRecordsByForeignKey() {
@@ -51,7 +51,7 @@ class PersistableTests: XCTestCase, TailorTestable {
     
     let whereClause = query.whereClause
     assert(whereClause.query, equals: "shelfs.store_id=?")
-    assert(whereClause.parameters, equals: [store.id.databaseValue], message: "has the id as the parameter")
+    assert(whereClause.parameters, equals: [store.id.serialize], message: "has the id as the parameter")
     
     let joinClause = query.joinClause
     assert(joinClause.query, equals: "INNER JOIN shelfs ON shelfs.id = hats.shelf_id", message: "joins between shelves and hats in the join clause")
@@ -65,7 +65,7 @@ class PersistableTests: XCTestCase, TailorTestable {
     
     let whereClause = query.whereClause
     assert(whereClause.query, equals: "shelfs.id=?")
-    assert(whereClause.parameters, equals: [hat.shelfId!.databaseValue], message: "has the id as the parameter")
+    assert(whereClause.parameters, equals: [hat.shelfId!.serialize], message: "has the id as the parameter")
     
     let joinClause = query.joinClause
     assert(joinClause.query, equals: "INNER JOIN shelfs ON shelfs.store_id = stores.id", message: "joins between shelves and stores in the join clause")
@@ -80,11 +80,11 @@ class PersistableTests: XCTestCase, TailorTestable {
     
     let whereClause = query.whereClause
     assert(whereClause.query, equals: "shelfs.id=?")
-    assert(whereClause.parameters, equals: [hat.shelfId!.databaseValue], message: "has the id as the parameter")
+    assert(whereClause.parameters, equals: [hat.shelfId!.serialize], message: "has the id as the parameter")
     
     let joinClause = query.joinClause
     assert(joinClause.query, equals: "INNER JOIN shelfs ON shelfs.store_id = stores.id INNER JOIN foo ON foo.bar = shelfs.id AND foo.baz = ?", message: "adds the new join clause to the existing one")
-    assert(joinClause.parameters.first, equals: DatabaseValue.Integer(1), message: "has the existing parameters from the join clause")
+    assert(joinClause.parameters.first, equals: SerializableValue.Integer(1), message: "has the existing parameters from the join clause")
   }
 
   
@@ -145,7 +145,7 @@ class PersistableTests: XCTestCase, TailorTestable {
         let (query, parameters) = connection.queries[0]
         self.assert(query, equals: "INSERT INTO stores (name) VALUES (?)", message: "has the query to insert the record")
         
-        self.assert(parameters, equals: ["Little Shop".databaseValue], message: "has the name as the parameter")
+        self.assert(parameters, equals: ["Little Shop".serialize], message: "has the name as the parameter")
       }
     }
   }
@@ -194,20 +194,26 @@ class PersistableTests: XCTestCase, TailorTestable {
         self.assert(query, equals: "INSERT INTO hats (brim_size, color, created_at, updated_at) VALUES (?, ?, ?, ?)", message: "has the query to insert the record")
         
         let expectedParameters = [
-          10.databaseValue,
-          "red".databaseValue,
-          Timestamp.now().databaseValue,
-          Timestamp.now().databaseValue
+          10.serialize,
+          "red".serialize,
+          Timestamp.now().serialize,
+          Timestamp.now().serialize
         ]
         
         self.assert(parameters[0], equals: expectedParameters[0], message: "has the brim size parameter")
         self.assert(parameters[1], equals: expectedParameters[1], message: "has the color parameter")
         
         let currentTimestamp = Timestamp.now().epochSeconds
-        let timestamp1 = parameters[2].timestampValue?.epochSeconds ?? 0
-        let timestamp2 = parameters[3].timestampValue?.epochSeconds ?? 0
-        assert(timestamp1, within:1, of: currentTimestamp)
-        assert(timestamp2, within:1, of: currentTimestamp)
+        
+        do {
+          let timestamp1 = try Timestamp(value: parameters[2]).epochSeconds
+          let timestamp2 = try Timestamp(value: parameters[3]).epochSeconds
+          assert(timestamp1, within:1, of: currentTimestamp)
+          assert(timestamp2, within:1, of: currentTimestamp)
+        }
+        catch {
+          assert(false, message: "threw unexpected error")
+        }
       }
     }
   }
@@ -256,9 +262,9 @@ class PersistableTests: XCTestCase, TailorTestable {
         self.assert(query, equals: "UPDATE shelfs SET name = ?, store_id = ? WHERE id = ?", message: "has the update query")
         
         let expectedParameters = [
-          "Bottom Shelf".databaseValue,
-          2.databaseValue,
-          shelf.id.databaseValue
+          "Bottom Shelf".serialize,
+          2.serialize,
+          shelf.id.serialize
         ]
         self.assert(parameters, equals: expectedParameters, message: "has the name, store ID, and id as parameters")
       }
@@ -278,8 +284,8 @@ class PersistableTests: XCTestCase, TailorTestable {
         self.assert(query, equals: "UPDATE shelfs SET name = NULL, store_id = ? WHERE id = ?", message: "has the update query")
         
         let expectedParameters = [
-          1.databaseValue,
-          shelf.id.databaseValue
+          1.serialize,
+          shelf.id.serialize
         ]
         self.assert(parameters, equals: expectedParameters, message: "has the storeId and id as parameters")
       }
@@ -306,29 +312,29 @@ class PersistableTests: XCTestCase, TailorTestable {
       if connection.queries.count == 1 {
         let (query, parameters) = connection.queries[0]
         self.assert(query, equals: "DELETE FROM shelfs WHERE id = ?", message: "executes a destroy query")
-        let data = shelf.id.databaseValue
+        let data = shelf.id.serialize
         self.assert(parameters, equals: [data], message: "has the id as the parameter for the query")
       }
     }
   }
   
   func testBuildWithNoErrorBuildsRecord() {
-    let hat = Hat.build(SerializableValue.Dictionary(["brim_size": 10.databaseValue, "color": "red".databaseValue, "id": 1.databaseValue]))
+    let hat = Hat.build(SerializableValue.Dictionary(["brim_size": 10.serialize, "color": "red".serialize, "id": 1.serialize]))
     assert(isNotNil: hat)
   }
   
   func testBuildWithGeneralErrorIsNil() {
-    let shelf = Shelf.build(SerializableValue.Dictionary(["name": "hi".databaseValue, "throwError": true.databaseValue, "id": 1.databaseValue]))
+    let shelf = Shelf.build(SerializableValue.Dictionary(["name": "hi".serialize, "throwError": true.serialize, "id": 1.serialize]))
     assert(isNil: shelf)
   }
   
   func testBuildWithMissingFieldReturnsNil() {
-    let hat = Hat.build(SerializableValue.Dictionary(["brim_size": 10.databaseValue, "id": 1.databaseValue]))
+    let hat = Hat.build(SerializableValue.Dictionary(["brim_size": 10.serialize, "id": 1.serialize]))
     assert(isNil: hat)
   }
   
   func testBuildWithWrongFieldTypeReturnsNil() {
-    let hat = Hat.build(SerializableValue.Dictionary(["brim_size": 10.databaseValue, "color": 5.databaseValue, "id": 1.databaseValue]))
+    let hat = Hat.build(SerializableValue.Dictionary(["brim_size": 10.serialize, "color": 5.serialize, "id": 1.serialize]))
     assert(isNil: hat)
   }
   
@@ -336,6 +342,7 @@ class PersistableTests: XCTestCase, TailorTestable {
     assert(TopHat.tableName, equals: "top_hats")
   }
   
+  @available(*, deprecated)
   func testToJsonCreatesJsonDictionaryBasedOnDataMapping() {
     let hat = Hat(brimSize: 10, color: "red", shelfId: nil, owner: "John", id: 5)
     let json = hat.toJson()
@@ -347,6 +354,19 @@ class PersistableTests: XCTestCase, TailorTestable {
       "created_at": JsonPrimitive.Null,
       "updated_at": JsonPrimitive.Null
     ]))
+  }
+  
+  func testSerializeCreatesSerializedDictionaryBasedOnDataMapping() {
+    let hat = Hat(brimSize: 10, color: "red", shelfId: nil, owner: "John", id: 5)
+    let json = hat.serialize
+    assert(json, equals: .Dictionary([
+      "brim_size": SerializableValue.Integer(10),
+      "color": SerializableValue.String("red"),
+      "shelf_id": SerializableValue.Null,
+      "id": SerializableValue.Integer(5),
+      "created_at": SerializableValue.Null,
+      "updated_at": SerializableValue.Null
+      ]))
   }
   
   func testCanFetchResultsFromQueryOnClass() {
