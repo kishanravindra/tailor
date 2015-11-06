@@ -62,9 +62,9 @@ class DatabaseDriverTests: XCTestCase, TailorTestable {
         let (query,parameters) = connection.queries[0]
         self.assert(query, equals: "SELECT * FROM hats WHERE color=? AND brimSize=?")
         if parameters.count == 2 {
-          var data = "red".databaseValue
+          var data = "red".serialize
           self.assert(parameters[0], equals: data, message: "has data for the first parameters")
-          data = "10".databaseValue
+          data = "10".serialize
           self.assert(parameters[1], equals: data, message: "has data for the second parameter")
         }
         else {
@@ -85,9 +85,9 @@ class DatabaseDriverTests: XCTestCase, TailorTestable {
         let (query,parameters) = connection.queries[0]
         self.assert(query, equals: "SELECT * FROM hats WHERE color=? AND brim_size=?")
         if parameters.count == 2 {
-          var data = "red".databaseValue
+          var data = "red".serialize
           self.assert(parameters[0], equals: data, message: "has data for the first parameters")
-          data = "10".databaseValue
+          data = "10".serialize
           self.assert(parameters[1], equals: data, message: "has data for the second parameter")
         }
         else {

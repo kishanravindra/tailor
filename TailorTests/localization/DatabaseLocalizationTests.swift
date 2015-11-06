@@ -14,8 +14,8 @@ class DatabaseLocalizationTests: XCTestCase, TailorTestable {
   }
   
   func testTranslationInitializationWithAllFieldsSetsFields() {
-    let translation = try! DatabaseLocalization.Translation(values: SerializableValue.Dictionary(["translation_key": "database.message".databaseValue
-      , "locale": "en".databaseValue, "translated_text": "Hello".databaseValue, "id": 1.databaseValue]))
+    let translation = try! DatabaseLocalization.Translation(values: SerializableValue.Dictionary(["translation_key": "database.message".serialize
+      , "locale": "en".serialize, "translated_text": "Hello".serialize, "id": 1.serialize]))
     assert(translation.id, equals: 1)
     assert(translation.translationKey, equals: "database.message")
     assert(translation.locale, equals: "en")
@@ -25,30 +25,30 @@ class DatabaseLocalizationTests: XCTestCase, TailorTestable {
   func testTranslationInitializationWithNoKeyIsNil() {
     do {
       _ = try DatabaseLocalization.Translation(values: SerializableValue.Dictionary([
-        "locale": "en".databaseValue,
-        "translated_text": "Hello".databaseValue,
-        "id": 1.databaseValue
+        "locale": "en".serialize,
+        "translated_text": "Hello".serialize,
+        "id": 1.serialize
       ]))
       assert(false, message: "should throw an exception")
     }
-    catch let DatabaseError.MissingField(name) {
+    catch let SerializationParsingError.MissingField(name) {
       assert(name, equals: "translation_key")
     }
     catch {
-      assert(false, message: "threw unexpected exception")
+      assert(false, message: "threw unexpected exception)")
     }
   }
   
   func testTranslationInitializationWithNoLocaleIsNil() {
     do {
       _ = try DatabaseLocalization.Translation(values: SerializableValue.Dictionary([
-        "translation_key": "database.message".databaseValue,
-        "translated_text": "Hello".databaseValue,
-        "id": 1.databaseValue
+        "translation_key": "database.message".serialize,
+        "translated_text": "Hello".serialize,
+        "id": 1.serialize
         ]))
       assert(false, message: "should throw an exception")
     }
-    catch let DatabaseError.MissingField(name) {
+    catch let SerializationParsingError.MissingField(name) {
       assert(name, equals: "locale")
     }
     catch {
@@ -59,13 +59,13 @@ class DatabaseLocalizationTests: XCTestCase, TailorTestable {
   func testTranslationInitializationWithNoTranslatedTextIsNil() {
     do {
       _ = try DatabaseLocalization.Translation(values: SerializableValue.Dictionary([
-        "translation_key": "database.message".databaseValue,
-        "locale": "en".databaseValue,
-        "id": 1.databaseValue
+        "translation_key": "database.message".serialize,
+        "locale": "en".serialize,
+        "id": 1.serialize
         ]))
       assert(false, message: "should throw an exception")
     }
-    catch let DatabaseError.MissingField(name) {
+    catch let SerializationParsingError.MissingField(name) {
       assert(name, equals: "translated_text")
     }
     catch {

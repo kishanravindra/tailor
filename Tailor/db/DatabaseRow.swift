@@ -26,7 +26,7 @@ public struct DatabaseRow {
   public init(rawData: [String:SerializationConvertible]) {
     var wrappedData = [String:SerializableValue]()
     for (key,value) in rawData {
-      wrappedData[key] = value.serialize()
+      wrappedData[key] = value.serialize
     }
     self.init(data: wrappedData)
   }
@@ -222,7 +222,7 @@ extension DatabaseRow: SerializationConvertible {
     }
   }
   
-  public func serialize() -> SerializableValue {
+  public var serialize: SerializableValue {
     return .Dictionary(self.data)
   }
 }

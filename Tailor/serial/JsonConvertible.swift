@@ -24,7 +24,7 @@ public protocol JsonConvertible: JsonEncodable, SerializationConvertible {
 
 @available(*, deprecated)
 extension JsonEncodable {
-  public func serialize() -> SerializableValue {
+  public var serialize: SerializableValue {
     return self.toJson()
   }
 }

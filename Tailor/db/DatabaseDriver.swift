@@ -57,7 +57,7 @@ public extension DatabaseDriver {
     - returns:                    The interpreted result set.
     */
   public func executeQuery(query: String, parameterValues bindParameters: [SerializationEncodable]) -> [DatabaseRow] {
-    let wrappedParameters = bindParameters.map { $0.serialize() }
+    let wrappedParameters = bindParameters.map { $0.serialize }
     return executeQuery(query, parameters: wrappedParameters)
   }
   

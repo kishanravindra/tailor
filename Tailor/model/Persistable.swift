@@ -2,7 +2,7 @@
   This protocol describes methods that a model class must provide in order to
   be persisted to a database.
   */
-public protocol Persistable: ModelType, SerializationEncodable {
+public protocol Persistable: ModelType {
   /**
     This method initializes a record with a row from the database.
     
@@ -82,8 +82,8 @@ extension Persistable {
     catch let DatabaseError.FieldType(name, actualType, desiredType) {
       NSLog("Error building record in %@: %@ should be %@, but was %@", self.tableName, name, desiredType, actualType)
     }
-    catch {
-      NSLog("Unknown error building record")
+    catch let e {
+      NSLog("Unknown error building record: %@", String(e))
     }
     return nil
   }
@@ -127,7 +127,7 @@ extension Persistable {
     */
   public func destroy() {
     let query = "DELETE FROM \(self.dynamicType.tableName) WHERE id = ?"
-    Application.sharedDatabaseConnection().executeQuery(query, parameters: [id.serialize()])
+    Application.sharedDatabaseConnection().executeQuery(query, parameters: [id.serialize])
   }
 
   /**
@@ -202,7 +202,7 @@ extension Persistable {
     for key in values.keys.sort() {
       guard let value = values[key] else { continue }
       
-      let databaseValue = value?.serialize() ?? SerializableValue.Null
+      let databaseValue = value?.serialize ?? SerializableValue.Null
       mappedValues[key] = databaseValue
       
       if value == nil {
@@ -250,7 +250,7 @@ extension Persistable {
     var firstParameter = true
     for key in values.keys.sort() {
       guard let value = values[key] else { continue }
-      let databaseValue = value?.serialize() ?? SerializableValue.Null
+      let databaseValue = value?.serialize ?? SerializableValue.Null
       mappedValues[key] = databaseValue
       if firstParameter {
         query += " SET "
@@ -269,8 +269,8 @@ extension Persistable {
       }
     }
     query += " WHERE id = ?"
-    parameters.append(id.serialize())
-    mappedValues["id"] = id.serialize()
+    parameters.append(id.serialize)
+    mappedValues["id"] = id.serialize
     let result = Application.sharedDatabaseConnection().executeQuery(query, parameters: parameters)
     
     if result.count > 0 {
@@ -317,9 +317,9 @@ extension Persistable {
    
    - returns:    The JSON value.
    */
-  public func serialize() -> SerializableValue {
-    let values = self.valuesToPersist().map { $0?.serialize() ?? .Null }
-    return .Dictionary(merge(values, ["id": self.id.serialize() ?? .Null]))
+  public var serialize: SerializableValue {
+    let values = self.valuesToPersist().map { $0?.serialize ?? .Null }
+    return .Dictionary(merge(values, ["id": self.id.serialize ?? .Null]))
   }
 }
 
@@ -334,7 +334,7 @@ extension Persistable {
     - returns:    The JSON value.
     */
   public func toJson() -> JsonPrimitive {
-    let values = self.valuesToPersist().map { $0?.serialize() ?? .Null }
-    return .Dictionary(merge(values, ["id": self.id.serialize() ?? .Null]))
+    let values = self.valuesToPersist().map { $0?.serialize ?? .Null }
+    return .Dictionary(merge(values, ["id": self.id.serialize ?? .Null]))
   }
 }

@@ -43,29 +43,29 @@ public final class SqliteStatement {
                           one.
     - returns:            The parsed value.
     */
-  private func fetchValue(column column: Int) -> DatabaseValue {
+  private func fetchValue(column column: Int) -> SerializableValue {
     let type = sqlite3_column_type(statement, Int32(column))
-    let value: DatabaseValue
+    let value: SerializableValue
     switch(type) {
     case SQLITE_INTEGER:
-      value = Int(sqlite3_column_int(statement, Int32(column))).databaseValue
+      value = Int(sqlite3_column_int(statement, Int32(column))).serialize
     case SQLITE_TEXT:
       let characters = sqlite3_column_text(statement, Int32(column))
       let string = String.fromCString(UnsafePointer<CChar>(characters))
-      value = string?.databaseValue ?? DatabaseValue.Null
+      value = string?.serialize ?? SerializableValue.Null
     case SQLITE_NULL:
-      value = DatabaseValue.Null
+      value = SerializableValue.Null
     case SQLITE_FLOAT:
       let double = sqlite3_column_double(statement, Int32(column))
-      value = DatabaseValue.Double(double)
+      value = SerializableValue.Double(double)
     case SQLITE_BLOB:
       let size = sqlite3_column_bytes(statement, Int32(column))
       let bytes = sqlite3_column_blob(statement, Int32(column))
       let data = NSData(bytes: bytes, length: Int(size))
-      value = DatabaseValue.Data(data)
+      value = SerializableValue.Data(data)
     default:
       print("Could not parse result type: \(type)")
-      value = DatabaseValue.Null
+      value = SerializableValue.Null
     }
     return value
   }
@@ -78,7 +78,7 @@ public final class SqliteStatement {
     - returns:    The parsed row.
     */
   private func fetchRow() -> DatabaseRow {
-    var data = [String:DatabaseValue]()
+    var data = [String:SerializableValue]()
     let columnCount = Int(sqlite3_column_count(statement))
     
     for column in 0..<columnCount {
@@ -110,7 +110,7 @@ public final class SqliteStatement {
 
     - parameter parameters:   The parameters to bind.
     */
-  public func bind(parameters: [DatabaseValue]) {
+  public func bind(parameters: [SerializableValue]) {
     for (index,parameter) in parameters.enumerate() {
       let column = Int32(index + 1)
       switch(parameter) {

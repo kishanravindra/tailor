@@ -14,7 +14,7 @@ extension TailorTestable {
 }
 final class TestConnection : DatabaseDriver {
   var timeZone: TimeZone
-  var queries = [(String,[DatabaseValue])]()
+  var queries = [(String,[SerializableValue])]()
   var response : [DatabaseRow] = []
   static var connectionCount = 0
   
@@ -22,7 +22,7 @@ final class TestConnection : DatabaseDriver {
     timeZone = TimeZone.systemTimeZone()
     TestConnection.connectionCount += 1
   }
-  func executeQuery(query: String, parameters bindParameters: [DatabaseValue]) -> [DatabaseRow] {
+  func executeQuery(query: String, parameters bindParameters: [SerializableValue]) -> [DatabaseRow] {
     NSLog("Executing %@", query)
     queries.append((query, bindParameters))
     let temporaryResponse = response
@@ -106,7 +106,7 @@ struct Shelf : Persistable, Equatable {
     self.id = try values.read("id")
     self.storeId = try values.read("store_id") ?? 0
     
-    let error = try? values.read("throwError") as String
+    let error = try? values.read("throwError") as Bool
     if error != nil {
       throw DatabaseError.GeneralError(message: "I was told to throw an error")
     }
@@ -179,6 +179,7 @@ struct TestUser: UserType, Equatable {
   }
   
   init(values: SerializableValue) throws {
+    NSLog("Building user: %@", String(values))
     self.id = try values.read("id")
     self.emailAddress = try values.read("email_address")
     self.encryptedPassword = try values.read("encrypted_password")

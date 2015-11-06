@@ -165,7 +165,7 @@ public struct Validation: Equatable {
       
       if let value = value {
         parameterString += "\(sanitizedKey)=?"
-        parameters.append(value.serialize())
+        parameters.append(value.serialize)
       }
       else {
         parameterString += "\(sanitizedKey) IS NULL"
@@ -174,7 +174,7 @@ public struct Validation: Equatable {
     
     if record.id > 0 {
       parameterString += " AND id != ?"
-      parameters.append(record.id.serialize())
+      parameters.append(record.id.serialize)
     }
     
     query += parameterString
