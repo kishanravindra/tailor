@@ -37,7 +37,7 @@ public struct PaginatedList<RecordType: Persistable>: Equatable {
     return results.flatMap {
       (row: DatabaseRow)->RecordType? in
       do {
-        return try RecordType(values: row.serialize)
+        return try RecordType(deserialize: row.serialize)
       }
       catch {
         return nil

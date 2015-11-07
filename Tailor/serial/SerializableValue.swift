@@ -64,7 +64,7 @@ public enum SerializableValue: Equatable {
   */
   @available(*, deprecated)
   public var stringValue: Swift.String? {
-    return try? Swift.String(value: self)
+    return try? Swift.String(deserialize: self)
   }
   
   /**
@@ -72,7 +72,7 @@ public enum SerializableValue: Equatable {
    */
   @available(*, deprecated)
   public var boolValue: Bool? {
-    return try? Bool(value: self)
+    return try? Bool(deserialize: self)
   }
   
   /**
@@ -80,7 +80,7 @@ public enum SerializableValue: Equatable {
    */
   @available(*, deprecated)
   public var intValue: Int? {
-    return try? Int.init(value: self)
+    return try? Int.init(deserialize: self)
   }
   
   /**
@@ -101,7 +101,7 @@ public enum SerializableValue: Equatable {
    */
   @available(*, deprecated)
   public var doubleValue: Swift.Double? {
-    return try? Swift.Double.init(value: self)
+    return try? Swift.Double.init(deserialize: self)
   }
   
   /**
@@ -119,7 +119,7 @@ public enum SerializableValue: Equatable {
    */
   @available(*, deprecated)
   public var timestampValue: Tailor.Timestamp? {
-    return try? Tailor.Timestamp(value: self)
+    return try? Tailor.Timestamp(deserialize: self)
   }
   
   /**
@@ -127,7 +127,7 @@ public enum SerializableValue: Equatable {
    */
   @available(*, deprecated)
   public var dateValue: Tailor.Date? {
-    return try? Tailor.Date(value: self)
+    return try? Tailor.Date(deserialize: self)
   }
   
   /**
@@ -135,7 +135,7 @@ public enum SerializableValue: Equatable {
    */
   @available(*, deprecated)
   public var timeValue: Tailor.Time? {
-    return try? Tailor.Time(value: self)
+    return try? Tailor.Time(deserialize: self)
   }
   
   /**
@@ -180,9 +180,17 @@ public enum SerializableValue: Equatable {
    - returns:    The unwrapped value.
    */
   public func read<OutputType: SerializationInitializable>() throws -> OutputType {
-    return try OutputType.init(value: self)
+    return try OutputType.init(deserialize: self)
   }
   
+  /**
+    This method reads a value from a serialized dictionary and casts it to an
+    output type.
+
+    - parameter key:            The key that we are reading from our dictionary.
+    - parameter valueFetcher:   A function for casting from the serialized value
+                                for the key to the desired output type.
+    */
   private func read<OutputType>(key: Swift.String, valueFetcher: (SerializableValue) throws -> OutputType) throws -> OutputType {
     func fullField(field: Swift.String) -> Swift.String {
       let result: Swift.String
@@ -202,16 +210,9 @@ public enum SerializableValue: Equatable {
     catch let SerializationParsingError.WrongFieldType(field: field, type: type, caseType: caseType) {
       throw SerializationParsingError.WrongFieldType(field: fullField(field), type: type, caseType: caseType)
     }
-    catch let SerializationParsingError.MissingField(field: field) {
-      throw SerializationParsingError.MissingField(field: fullField(field))
-    }
     catch let e {
       throw e
     }
-  }
-  
-  public func read<OutputType: SerializationInitializable>(key: Swift.String) throws -> OutputType {
-    return try read(key) { try $0.read() }
   }
   
   /**
@@ -240,6 +241,24 @@ public enum SerializableValue: Equatable {
   }
   
   /**
+   This method reads a value from a key in a JSON dictionary, and casts it into
+    the desired type.
+   
+    If this is not a dictionary type, this will throw a
+    `SerializationParsingError.WrongFieldType` error. If there is no field on
+    the dictionary for the desired key, this will throw a
+    `SerializationParsingError.MissingField` error. If the field in the
+    dictionary is of the wrong type, this will throw a
+    `SerializationParsingError.WrongFieldType`.
+   
+    - parameter key:    The name of the key to read.
+    - returns:          The value at that key.
+    */
+  public func read<OutputType: SerializationInitializable>(key: Swift.String) throws -> OutputType {
+    return try read(key) { try $0.read() }
+  }
+  
+  /**
    This method takes a value from a key in a JSON dictionary and uses it to
    populate an instance of a JSON-convertible type.
    
@@ -257,7 +276,7 @@ public enum SerializableValue: Equatable {
    */
   public func read<T: SerializationInitializable>(key: Swift.String, into: T.Type) throws -> T {
     let value: SerializableValue = try self.read(key)
-    return try SerializationParsingError.withFieldPrefix(key) { return try T(value: value) }
+    return try SerializationParsingError.withFieldPrefix(key) { return try T(deserialize: value) }
   }
 }
 
@@ -351,7 +370,7 @@ extension SerializableValue {
 
   
   /**
-   This method initializes a JSON primitive with JSON data.
+   This method initializes a serialized value with JSON data.
    
    This method can throw whatever `NSJSONSerialization.JSONObjectWithData`
    throws. It can also throw a method if the decoded JSON object has a type
@@ -365,7 +384,7 @@ extension SerializableValue {
   }
   
   /**
-   This method initializes a JSON primitive with a raw JSON object.
+   This method initializes a serialized value with a raw JSON object.
    
    This can be a String, Dictionary, Array, or anything else that has a
    designated SerializableValue wrapper. In the case of dictionaries or arrays,
@@ -414,13 +433,10 @@ extension SerializableValue {
 
 extension SerializableValue {
   /**
-   This method loads JSON data from a plist file.
-   
-   This allows us to extract data from a plist file using the convenience
-   methods for fetching data from JSON.
+   This method loads serialized data from a plist file.
    
    - parameter path:   The path to the plist file.
-   - throws:           A `JsonConversionError`.
+   - throws:           A `SerializationConversionError`.
    */
   public init(plist path: Swift.String) throws {
     guard let data = NSData(contentsOfFile: path) else {
@@ -458,7 +474,7 @@ extension SerializableValue {
       let result: OutputType = try self.read(key)
       return result
     default:
-      return nil
+      throw SerializationParsingError.WrongFieldType(field: "root", type: Swift.Dictionary<Swift.String,SerializableValue>.self, caseType: wrappedType)
     }
   }
   
@@ -472,7 +488,7 @@ extension SerializableValue {
    - throws:                 A DatabaseError explaining why we couldn't fetch
    the record.
    */
-  public func read<RecordType: Persistable>(fieldName: Swift.String) throws -> RecordType? {
+  public func readRecord<RecordType: Persistable>(fieldName: Swift.String) throws -> RecordType? {
     guard let id = try read(fieldName) as Int? else { return nil }
     return Query<RecordType>().find(id)
   }
@@ -486,9 +502,9 @@ extension SerializableValue {
    - throws:                 A DatabaseError explaining why we couldn't fetch
    the record.
    */
-  public func read<RecordType: Persistable>(fieldName: Swift.String) throws -> RecordType {
-    guard let record = try self.read(fieldName) as RecordType? else {
-      throw DatabaseError.MissingField(name: fieldName)
+  public func readRecord<RecordType: Persistable>(fieldName: Swift.String) throws -> RecordType {
+    guard let record = try self.readRecord(fieldName) as RecordType? else {
+      throw SerializationParsingError.MissingField(field: fieldName)
     }
     return record
   }
@@ -516,7 +532,7 @@ extension SerializableValue {
    */
   public func readEnum<EnumType: TablePersistableEnum>(id fieldName: Swift.String) throws -> EnumType {
     guard let record = try self.readEnum(id: fieldName) as EnumType? else {
-      throw DatabaseError.MissingField(name: fieldName)
+      throw SerializationParsingError.MissingField(field: fieldName)
     }
     return record
   }
@@ -536,20 +552,27 @@ extension SerializableValue {
   
   
   /**
-   This method reads an enum case from a row in the database.
+    This method reads an enum case from a row in the database.
    
-   - parameter fieldName:    The name of the field that contains the case name.
-   - returns:                The fetched value.
-   - throws:                 A DatabaseError explaining why we couldn't fetch
-   the value.
+    - parameter fieldName:    The name of the field that contains the case name.
+    - returns:                The fetched value.
+    - throws:                 A DatabaseError explaining why we couldn't fetch
+                              the value.
    */
   public func readEnum<EnumType: PersistableEnum>(name fieldName: Swift.String) throws -> EnumType {
     guard let record = try self.readEnum(name: fieldName) as EnumType? else {
-      throw DatabaseError.MissingField(name: fieldName)
+      throw SerializationParsingError.MissingField(field: fieldName)
     }
     return record
   }
   
+  /**
+    This method reads a list of serialized values from this value.
+
+     - returns:    The list, cast to the desired output type.
+     - throws:     If the value is not an array, this will throw a
+                  `SerializationParsingError`.
+    */
   public func read<OutputType: SerializationInitializable>() throws -> [OutputType] {
     switch(self) {
     case let .Array(array):
@@ -559,10 +582,25 @@ extension SerializableValue {
     }
   }
   
+  
+  /**
+    This method reads a list of serialized values from a key on this value.
+     
+    - param key:  The key from this dictionary to read.
+    - returns:    The list, cast to the desired output type.
+    - throws:     If this is not a dictionary, or the value at the key is not
+                  an array, this will throw a `SerializationParsingError`.
+    */
   public func read<OutputType: SerializationInitializable>(key: Swift.String) throws -> [OutputType] {
     return try read(key) { try $0.read() }
   }
   
+  /**
+    This method reads a dictionary of serialized values from this record.
+     - returns:    The cast values.
+     - throws:     If this is not a dictionary, this will throw a
+                  `SerializationParsingError`.
+    */
   public func read<OutputType: SerializationInitializable>() throws -> [Swift.String:OutputType] {
     switch(self) {
     case let .Dictionary(dictionary):
@@ -576,6 +614,16 @@ extension SerializableValue {
     }
   }
   
+  /**
+    This method reads a dictionary from the value that is in a key on this
+    dictionary.
+   
+    - parameter key:    The key that we are reading from.
+    - returns:          The mapped dictionary.
+    - throws:           If this is not a dictionary, or the value at the key is
+                        not a dictionary, this will throw a
+                        `SerializationParsingError`.
+    */
   public func read<OutputType: SerializationInitializable>(key: Swift.String) throws -> [Swift.String:OutputType] {
     return try read(key) { try $0.read() }
   }

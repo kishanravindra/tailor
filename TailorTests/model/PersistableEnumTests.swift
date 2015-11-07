@@ -19,15 +19,7 @@ class PersistableEnumTests: XCTestCase, TailorTestable {
   
   override func setUp() {
     super.setUp()
-    setUpTestCase()
-    Application.sharedDatabaseConnection().executeQuery("DROP TABLE IF EXISTS hat_types")
-    Application.sharedDatabaseConnection().executeQuery("CREATE TABLE hat_types (id integer PRIMARY KEY, name string)")
-    Application.sharedDatabaseConnection().executeQuery("INSERT INTO hat_types VALUES (1,'feathered')")
-  }
-  
-  override func tearDown() {
-    Application.sharedDatabaseConnection().executeQuery("DROP TABLE hat_types")
-    super.tearDown()
+    setUpTestCase() 
   }
   
   func testStringPersistableEnumGetsStringFromFromCaseName() {
@@ -54,6 +46,7 @@ class PersistableEnumTests: XCTestCase, TailorTestable {
   }
   
   func testDatabasePersistableEnumCreatesNewRecord() {
+    _ = HatType.Feathered.id
     let value = HatType.WideBrim
     assert(value.serialize, equals: SerializableValue.Integer(2))
     let value2 = value
@@ -97,7 +90,7 @@ class PersistableEnumTests: XCTestCase, TailorTestable {
   }
   
   func testDatabasePersistableEnumCanBeInitializedFromDatabaseRowWithCaseName() {
-    let record = try? HatType(values: SerializableValue.Dictionary(["name": "wide_brim".serialize]))
+    let record = try? HatType(deserialize: SerializableValue.Dictionary(["name": "wide_brim".serialize]))
     assert(record, equals: HatType.WideBrim)
   }
 }

@@ -78,6 +78,9 @@
 		5262EEA41AD0BA3D006F864D /* Tailor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5262EEA21AD0BA3D006F864D /* Tailor.framework */; };
 		526378D91B4A06600008B2E1 /* JsonPrimitive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526378D81B4A06600008B2E1 /* JsonPrimitive.swift */; };
 		526525FE1B691B360043EB12 /* CsvParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526525FD1B691B360043EB12 /* CsvParserTests.swift */; };
+		5269F1DF1BED4CEF00D78C6C /* SerializableValueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5269F1DE1BED4CEF00D78C6C /* SerializableValueTests.swift */; };
+		5269F1E11BED799D00D78C6C /* SerializationErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5269F1E01BED799D00D78C6C /* SerializationErrorTests.swift */; };
+		5269F1E31BED79E100D78C6C /* SerializationConversionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5269F1E21BED79E100D78C6C /* SerializationConversionsTests.swift */; };
 		526A23771B30E0A30033A094 /* TestConfig.plist in Resources */ = {isa = PBXBuildFile; fileRef = 526A23761B30E0A30033A094 /* TestConfig.plist */; };
 		526ACD801B07922900CE0CC0 /* TimeFormatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526ACD7F1B07922900CE0CC0 /* TimeFormatTests.swift */; };
 		526ACD821B07A9FD00CE0CC0 /* TimeIntervalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526ACD811B07A9FD00CE0CC0 /* TimeIntervalTests.swift */; };
@@ -307,6 +310,9 @@
 		5262EEA31AD0BA3D006F864D /* TailorTesting.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TailorTesting.framework; path = build/TailorTesting.framework; sourceTree = "<group>"; };
 		526378D81B4A06600008B2E1 /* JsonPrimitive.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonPrimitive.swift; sourceTree = "<group>"; };
 		526525FD1B691B360043EB12 /* CsvParserTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CsvParserTests.swift; sourceTree = "<group>"; };
+		5269F1DE1BED4CEF00D78C6C /* SerializableValueTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SerializableValueTests.swift; sourceTree = "<group>"; };
+		5269F1E01BED799D00D78C6C /* SerializationErrorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SerializationErrorTests.swift; sourceTree = "<group>"; };
+		5269F1E21BED79E100D78C6C /* SerializationConversionsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SerializationConversionsTests.swift; sourceTree = "<group>"; };
 		526A23761B30E0A30033A094 /* TestConfig.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = TestConfig.plist; path = ../TestConfig.plist; sourceTree = "<group>"; };
 		526ACD7F1B07922900CE0CC0 /* TimeFormatTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeFormatTests.swift; sourceTree = "<group>"; };
 		526ACD811B07A9FD00CE0CC0 /* TimeIntervalTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeIntervalTests.swift; sourceTree = "<group>"; };
@@ -614,10 +620,13 @@
 		5262D1191B4A06AC00101154 /* serial */ = {
 			isa = PBXGroup;
 			children = (
+				526525FD1B691B360043EB12 /* CsvParserTests.swift */,
 				5262D11A1B4A06CC00101154 /* JsonPrimitiveTests.swift */,
 				5262D14A1B4B5A3800101154 /* JsonErrorsTests.swift */,
-				526525FD1B691B360043EB12 /* CsvParserTests.swift */,
 				5262D1501B4C956E00101154 /* JsonConvertibleTests.swift */,
+				5269F1DE1BED4CEF00D78C6C /* SerializableValueTests.swift */,
+				5269F1E01BED799D00D78C6C /* SerializationErrorTests.swift */,
+				5269F1E21BED79E100D78C6C /* SerializationConversionsTests.swift */,
 			);
 			path = serial;
 			sourceTree = "<group>";
@@ -1387,6 +1396,7 @@
 				526254351AABC9A600D63024 /* MemoryCacheStoreTests.swift in Sources */,
 				5248283E1B7FEB2C006257F2 /* EtagFilterTests.swift in Sources */,
 				5262D14B1B4B5A3800101154 /* JsonErrorsTests.swift in Sources */,
+				5269F1E31BED79E100D78C6C /* SerializationConversionsTests.swift in Sources */,
 				52B417361B3E12E400B274F7 /* TemplateFormTests.swift in Sources */,
 				52DD44FD1B5DC3A600312923 /* SendmailEmailAgentTests.swift in Sources */,
 				528D183F1A8FDD4A00A6E116 /* TailorTestHelpers.swift in Sources */,
@@ -1434,7 +1444,9 @@
 				523C80161BDD5238004D501D /* CollectionTypeTests.swift in Sources */,
 				52DD44EB1B5736AE00312923 /* EmailTests.swift in Sources */,
 				52A95E331AE0A3E6001AED1F /* DatabaseValueTests.swift in Sources */,
+				5269F1E11BED799D00D78C6C /* SerializationErrorTests.swift in Sources */,
 				529230061A3CF4E4006DD6EB /* ApplicationTests.swift in Sources */,
+				5269F1DF1BED4CEF00D78C6C /* SerializableValueTests.swift in Sources */,
 				523F29391A58459200C1BBC0 /* SanitizedTextTests.swift in Sources */,
 				52E784D11A5CC7AE0065C10D /* AlterationsTaskTests.swift in Sources */,
 				52A684521A3D0C5B00F4AA47 /* ConnectionTests.swift in Sources */,

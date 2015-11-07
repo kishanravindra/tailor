@@ -17,10 +17,10 @@ public protocol PersistableEnum: SerializationEncodable {
   static var cases: [Self] { get }
   
   /**
-    This method gets an enum case from a database value.
+    This method gets an enum case from a serialized value.
   
-    - parameter databaseValue:    The value from the database.
-    - returns                     The enum case
+    - parameter value:    The serialized value.
+    - returns             The enum case
     */
   static func fromSerializableValue(value: SerializableValue?) -> Self?
 }
@@ -81,12 +81,25 @@ public extension PersistableEnum {
     return nil
   }
   
-  @available(*, deprecated)
+  /**
+    This method gets an enum case from a database value.
+  
+    This method has been deprecated in favor of `fromSerializableValue`.
+    
+    - parameter databaseValue:    The value from the database.
+    - returns                     The enum case
+    */
+    @available(*, deprecated, message="Use fromSerializableValue instead")
   static func fromDatabaseValue(databaseValue: DatabaseValue?) -> Self? {
     return self.fromSerializableValue(databaseValue)
   }
   
-  @available(*, deprecated)
+  /**
+    This method gets a database-serialized value fo this case.
+
+    This has been deprecated in favor of the `serialize` method.
+    */
+  @available(*, deprecated, message="Use `serialize` instead")
   var databaseValue: DatabaseValue {
     return self.serialize
   }
@@ -94,16 +107,16 @@ public extension PersistableEnum {
 
 public extension StringPersistableEnum {
   /**
-    This method creates an enum case from a database value.
+    This method creates an enum case from a serialized value.
     
-    This interprets the database value as the case name, and looks for a case
+    This interprets the serialized value as the case name, and looks for a case
     with that case name.
 
     - parameter databaseValue:    The case name.
     - returns:                    The matching case.
     */
   static func fromSerializableValue(value: SerializableValue?) -> Self? {
-    if let value2 = value, caseName = try? String(value: value2) {
+    if let value2 = value, caseName = try? String(deserialize: value2) {
       return self.fromCaseName(caseName)
     }
     else {
@@ -112,7 +125,7 @@ public extension StringPersistableEnum {
   }
   
   /**
-    This method gets a database value for this enum case.
+    This method gets a serialized value for this enum case.
 
     This will just be the case name.
     */
@@ -146,7 +159,7 @@ public extension TablePersistableEnum {
     
     if result.isEmpty { return nil }
     if let name = result[0].data["name"] {
-      return try? String(value: name)
+      return try? String(deserialize: name)
     }
     else {
       return nil
@@ -168,16 +181,15 @@ public extension TablePersistableEnum {
   }
   
   /**
-    This method creates an enum case from a database value.
+    This method creates an enum case from a serialized value.
     
     This interprets an id, and tries to find a case with that id.
     
-    - parameter databaseValue:    The case id.
-    - returns:                    The matching case.
+    - parameter value:    The case id.
+    - returns:            The matching case.
     */
   static func fromSerializableValue(value: SerializableValue?) -> Self? {
-    guard let value2 = value else { return nil }
-    guard let id = try? Int(value: value2) else { return nil }
+    guard let id = try? (value ?? .Null).read() as Int else { return nil }
     return self.fromId(id)
   }
   
@@ -201,7 +213,7 @@ public extension TablePersistableEnum {
       }
     }
     guard let value = result[0].data["id"] else { return 0 }
-    guard let id = try? UInt(value: value) else { return 0 }
+    guard let id = try? UInt(deserialize: value) else { return 0 }
     return id
   }
   
@@ -219,7 +231,7 @@ public extension TablePersistableEnum {
   
     - parameter databaseRow:    The row in the database.
     */
-  init(values: SerializableValue) throws {
+  init(deserialize values: SerializableValue) throws {
     self = try values.readEnum(name: "name")
   }
   

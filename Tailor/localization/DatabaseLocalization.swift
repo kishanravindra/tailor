@@ -71,9 +71,9 @@ public final class DatabaseLocalization: LocalizationSource {
       The row must have fields for translation_key, locale, translated_text, and
       id. If these fields are not present, this initializer will return nil.
 
-      - parameter databaseRow:     The fields from the database.
+      - parameter values:     The fields from the database.
       */
-    public init(values: SerializableValue) throws {
+    public init(deserialize values: SerializableValue) throws {
       self.translationKey = try values.read("translation_key")
       self.locale = try values.read("locale")
       self.translatedText = try values.read("translated_text")
@@ -103,7 +103,8 @@ public final class DatabaseLocalization: LocalizationSource {
     let sql = Translation.query.select("DISTINCT(locale) as locale").toSql()
     return Application.sharedDatabaseConnection().executeQuery(sql.query).flatMap {
       row in
-      row.data["locale"]?.stringValue
+      let value = row.data["locale"] ?? SerializableValue.Null
+      return try? value.read() as String
     }.sort()
   }
 }

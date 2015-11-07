@@ -58,7 +58,7 @@ public final class SqliteConnection: DatabaseDriver {
     var results = [String:String]()
     for table in tableInfo {
       if let tableNameValue = table.data["tbl_name"], sqlValue = table.data["sql"],
-        tableName = try? String(value: tableNameValue), sql = try? String(value: sqlValue)
+        tableName = try? String(deserialize: tableNameValue), sql = try? String(deserialize: sqlValue)
       {
           results[tableName] = sql
       }

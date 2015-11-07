@@ -98,7 +98,10 @@ public extension DatabaseDriver {
 /**
   This enum holds errors that are thrown by methods for communicating with the
   database, or extracting data from a database result.
+ 
+  This has been deprecated in favor of the SerializationParsingError errors.
   */
+@available(*, deprecated, message="Use SerializationParsingError instead")
 public enum DatabaseError: ErrorType {
   /**
     This error is thrown when something goes wrong and we don't have a

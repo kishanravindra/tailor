@@ -52,7 +52,8 @@ public extension Application {
       alteration in
       return previousAlterations.filter {
         previousAlteration in
-        let id = previousAlteration.data["id"]?.stringValue
+        let value = previousAlteration.data["id"] ?? SerializableValue.Null
+        let id = try? value.read() as String
         return id == alteration.identifier
         }.isEmpty
     }

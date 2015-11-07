@@ -1,7 +1,9 @@
 /**
   This protocol describes a data structure that can be encoded as JSON.
+ 
+  This has been deprecated in favor of the SerializationEncodable protocol.
   */
-@available(*, deprecated)
+@available(*, deprecated, message="Use SerializationEncodable instead")
 public protocol JsonEncodable: SerializationEncodable {
   /**
     This method gets a JSON primitive representing this value.
@@ -11,8 +13,10 @@ public protocol JsonEncodable: SerializationEncodable {
 /**
   This protocol describes a data structure that can be converted to and from
   JSON.
+ 
+  This has been deprecated in favor of the SerializationConvertible protocol.
   */
-@available(*, deprecated)
+@available(*, deprecated, message="Use SerializationConvertible instead")
 public protocol JsonConvertible: JsonEncodable, SerializationConvertible {
   /**
     This method creates an instance from a JSON primitive.
@@ -31,7 +35,7 @@ extension JsonEncodable {
 
 @available(*, deprecated)
 extension JsonConvertible {
-  public init(value: SerializableValue) throws {
+  public init(deserialize value: SerializableValue) throws {
     try self.init(json: value)
   }
 }

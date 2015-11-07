@@ -206,8 +206,8 @@ class PersistableTests: XCTestCase, TailorTestable {
         let currentTimestamp = Timestamp.now().epochSeconds
         
         do {
-          let timestamp1 = try Timestamp(value: parameters[2]).epochSeconds
-          let timestamp2 = try Timestamp(value: parameters[3]).epochSeconds
+          let timestamp1 = try Timestamp(deserialize: parameters[2]).epochSeconds
+          let timestamp2 = try Timestamp(deserialize: parameters[3]).epochSeconds
           assert(timestamp1, within:1, of: currentTimestamp)
           assert(timestamp2, within:1, of: currentTimestamp)
         }
@@ -222,7 +222,7 @@ class PersistableTests: XCTestCase, TailorTestable {
     struct TestHat: Persistable {
       let id: UInt
       init() { self.id = 0 }
-      init(values: SerializableValue) throws {
+      init(deserialize values: SerializableValue) throws {
         self.id = try values.read("id")
       }
       func valuesToPersist() -> [String : SerializationEncodable?] {
@@ -390,7 +390,7 @@ class PersistableTests: XCTestCase, TailorTestable {
         ]
       }
       
-      required init(values: SerializableValue) {
+      required init(deserialize values: SerializableValue) {
         self.name = try! values.read("name")
         self.id = try! values.read("id")
         self.storeId = try! values.read("store_id") ?? 0

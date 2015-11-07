@@ -396,8 +396,8 @@ extension QueryType {
   public func count() -> Int {
     let (query, parameters) = self.select("count(*) as tailor_record_count").toSql()
     let results = Application.sharedDatabaseConnection().executeQuery(query, parameters: parameters)
-    let count = results.first?.data["tailor_record_count"]?.intValue ?? 0
-    return count
+    guard let value = results.first?.data["tailor_record_count"] else { return 0 }
+    return (try? Int(deserialize: value)) ?? 0
   }
   
   /**

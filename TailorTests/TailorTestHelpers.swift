@@ -72,7 +72,7 @@ struct Hat : Persistable, Equatable {
     ]
   }
   
-  init(values: SerializableValue) throws {
+  init(deserialize values: SerializableValue) throws {
     self.brimSize = try values.read("brim_size")
     self.color = try values.read("color")
     self.shelfId = try values.read("shelf_id")
@@ -101,14 +101,14 @@ struct Shelf : Persistable, Equatable {
     ]
   }
   
-  init(values: SerializableValue) throws {
+  init(deserialize values: SerializableValue) throws {
     self.name = try values.read("name")
     self.id = try values.read("id")
     self.storeId = try values.read("store_id") ?? 0
     
     let error = try? values.read("throwError") as Bool
     if error != nil {
-      throw DatabaseError.GeneralError(message: "I was told to throw an error")
+      throw SerializationParsingError.MissingField(field: "throwError")
     }
   }
 }
@@ -130,7 +130,7 @@ struct Store : Persistable {
     ]
   }
   
-  init(values: SerializableValue) throws {
+  init(deserialize values: SerializableValue) throws {
     self.name = try values.read("name")
     self.id = try values.read("id")
   }
@@ -178,7 +178,7 @@ struct TestUser: UserType, Equatable {
     encryptedPassword = "Foo"
   }
   
-  init(values: SerializableValue) throws {
+  init(deserialize values: SerializableValue) throws {
     NSLog("Building user: %@", String(values))
     self.id = try values.read("id")
     self.emailAddress = try values.read("email_address")
@@ -196,7 +196,7 @@ struct TestUser: UserType, Equatable {
 
 struct TopHat: Persistable {
   let id: UInt
-  init(values: SerializableValue) throws {
+  init(deserialize values: SerializableValue) throws {
     self.id = try values.read("id")
   }
   func valuesToPersist() -> [String : SerializationEncodable?] {

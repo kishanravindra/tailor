@@ -51,12 +51,15 @@ public struct DatabaseRow {
     This will use the `stringValue`, `intValue`, etc. family of methods on
     `DatabaseValue` to do the casting, so whereever those methods support
     automatic conversion, so will this method.
+   
+    This has been deprecated in favor of converting the row to a serializable
+    value using `serialize`, and then calling `read` on that value.
     
     - parameter key:    The key to read.
     - returns:          The cast value.
     - throws:           An exception from `DatabaseError`.
     */
-  @available(*, deprecated)
+  @available(*, deprecated, message="Use the `serialize` method and call `read` on the result")
   public func read<OutputType: DatabaseValueConvertible>(key: String) throws -> OutputType {
     guard let value = self.data[key] else {
       throw DatabaseError.MissingField(name: key)
@@ -103,12 +106,15 @@ public struct DatabaseRow {
     This method wraps around the other version of `read` which returns a
     non-optional type. If the value is missing, or is a null database value,
     this will return nil.
-    
+   
+    This has been deprecated in favor of converting the row to a serializable
+    value using `serialize`, and then calling `read` on that value.
+   
     - parameter key:    The key to read.
     - returns:          The cast value.
     - throws:           An exception from `DatabaseError`.
     */
-  @available(*, deprecated)
+  @available(*, deprecated, message="Use the `serialize` method and call `read` on the result")
   public func read<OutputType: DatabaseValueConvertible>(key: String) throws -> OutputType? {
     guard let value = self.data[key] else { return nil }
     if value == .Null { return nil }
@@ -121,13 +127,16 @@ public struct DatabaseRow {
   /**
     This method reads a row from the database from an id fetched from another
     table.
-    
+   
+    This has been deprecated in favor of converting the row to a serializable
+    value using `serialize`, and then calling `read` on that value.
+   
     - parameter fieldName:    The name of the field that contains the id.
     - returns:                The fetched record.
     - throws:                 A DatabaseError explaining why we couldn't fetch
     the record.
-    */
-  @available(*, deprecated)
+   */
+  @available(*, deprecated, message="Use the `serialize` method and call `read` on the result")
   public func read<RecordType: Persistable>(fieldName: String) throws -> RecordType? {
     guard let id = try read(fieldName) as Int? else { return nil }
     return Query<RecordType>().find(id)
@@ -136,13 +145,16 @@ public struct DatabaseRow {
   /**
     This method reads a row from the database from an id fetched from another
     table.
-    
+   
+    This has been deprecated in favor of converting the row to a serializable
+    value using `serialize`, and then calling `read` on that value.
+   
     - parameter fieldName:    The name of the field that contains the id.
     - returns:                The fetched record.
     - throws:                 A DatabaseError explaining why we couldn't fetch
     the record.
-    */
-  @available(*, deprecated)
+   */
+  @available(*, deprecated, message="Use the `serialize` method and call `read` on the result")
   public func read<RecordType: Persistable>(fieldName: String) throws -> RecordType {
     guard let record = try self.read(fieldName) as RecordType? else {
       throw DatabaseError.MissingField(name: fieldName)
@@ -152,13 +164,16 @@ public struct DatabaseRow {
   
   /**
     This method reads an enum case from a row in the database.
-    
+   
+    This has been deprecated in favor of converting the row to a serializable
+    value using `serialize`, and then calling `read` on that value.
+   
     - parameter fieldName:    The name of the field that contains the id.
     - returns:                The fetched value.
     - throws:                 A DatabaseError explaining why we couldn't fetch
                               the value.
-    */
-  @available(*, deprecated)
+   */
+  @available(*, deprecated, message="Use the `serialize` method and call `read` on the result")
   public func readEnum<EnumType: TablePersistableEnum>(id fieldName: String) throws -> EnumType? {
     guard let id = try read(fieldName) as Int? else { return nil }
     return EnumType.fromId(id)
@@ -166,13 +181,16 @@ public struct DatabaseRow {
   
   /**
     This method reads an enum case from a row in the database.
-    
+   
+    This has been deprecated in favor of converting the row to a serializable
+    value using `serialize`, and then calling `read` on that value.
+   
     - parameter fieldName:    The name of the field that contains the id.
     - returns:                The fetched value.
     - throws:                 A DatabaseError explaining why we couldn't fetch
                               the value.
-    */
-  @available(*, deprecated)
+   */
+  @available(*, deprecated, message="Use the `serialize` method and call `read` on the result")
   public func readEnum<EnumType: TablePersistableEnum>(id fieldName: String) throws -> EnumType {
     guard let record = try self.readEnum(id: fieldName) as EnumType? else {
       throw DatabaseError.MissingField(name: fieldName)
@@ -182,13 +200,16 @@ public struct DatabaseRow {
   
   /**
     This method reads an enum case from a row in the database.
-    
+   
+    This has been deprecated in favor of converting the row to a serializable
+    value using `serialize`, and then calling `read` on that value.
+   
     - parameter fieldName:    The name of the field that contains the case name.
     - returns:                The fetched value.
     - throws:                 A DatabaseError explaining why we couldn't fetch
                               the value.
-    */
-  @available(*, deprecated)
+   */
+  @available(*, deprecated, message="Use the `serialize` method and call `read` on the result")
   public func readEnum<EnumType: PersistableEnum>(name fieldName: String) throws -> EnumType? {
     guard let name = try read(fieldName) as String? else { return nil }
     return EnumType.fromCaseName(name)
@@ -197,13 +218,16 @@ public struct DatabaseRow {
   
   /**
     This method reads an enum case from a row in the database.
-    
+   
+    This has been deprecated in favor of converting the row to a serializable
+    value using `serialize`, and then calling `read` on that value.
+   
     - parameter fieldName:    The name of the field that contains the case name.
     - returns:                The fetched value.
     - throws:                 A DatabaseError explaining why we couldn't fetch
                               the value.
-    */
-  @available(*, deprecated)
+   */
+  @available(*, deprecated, message="Use the `serialize` method and call `read` on the result")
   public func readEnum<EnumType: PersistableEnum>(name fieldName: String) throws -> EnumType {
     guard let record = try self.readEnum(name: fieldName) as EnumType? else {
       throw DatabaseError.MissingField(name: fieldName)
@@ -213,15 +237,25 @@ public struct DatabaseRow {
 }
 
 extension DatabaseRow: SerializationConvertible {
-  public init(value: SerializableValue) throws {
-    switch(value) {
+  /**
+    This method creates a database row from the serialized values.
+    
+    - parameter values:   A serialized dictionary.
+    - throws:             A `SerializationParsingError`, if the input is not a
+                          dictionary.
+    */
+  public init(deserialize values: SerializableValue) throws {
+    switch(values) {
     case let .Dictionary(values):
       self.init(data: values)
     default:
-      throw SerializationParsingError.WrongFieldType(field: "root", type: Dictionary<String,SerializableValue>.self, caseType: value.wrappedType)
+      throw SerializationParsingError.WrongFieldType(field: "root", type: Dictionary<String,SerializableValue>.self, caseType: values.wrappedType)
     }
   }
   
+  /**
+    This method serializes the data into a serialized dictionary.
+    */
   public var serialize: SerializableValue {
     return .Dictionary(self.data)
   }

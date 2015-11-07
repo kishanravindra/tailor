@@ -2,7 +2,7 @@
   This protocol describes methods that a model class must provide in order to
   be persisted to a database.
   */
-public protocol Persistable: ModelType {
+public protocol Persistable: ModelType, SerializationConvertible {
   /**
     This method initializes a record with a row from the database.
     
@@ -12,7 +12,7 @@ public protocol Persistable: ModelType {
     - parameter values:     A serialized dictionary containing the values from
                             the database.
     */
-  init(values: SerializableValue) throws
+  init(deserialize values: SerializableValue) throws
   
   /** The unique identifier for the record. */
   var id: UInt { get }
@@ -66,12 +66,12 @@ extension Persistable {
     It wraps around the initializer to catch exceptions and log them, returning
     nil in the case of failure.
     
-    - parameter values:   The row to use to build the object.
+    - parameter values:   The dictionary with values to use to build the object.
     - returns:            The new record.
     */
   internal static func build(values: SerializableValue) -> Self? {
     do {
-      return try self.init(values: values)
+      return try self.init(deserialize: values)
     }
     catch let DatabaseError.GeneralError(message) {
       NSLog("Error building record in %@: %@", self.tableName, message)
@@ -319,11 +319,11 @@ extension Persistable {
    */
   public var serialize: SerializableValue {
     let values = self.valuesToPersist().map { $0?.serialize ?? .Null }
-    return .Dictionary(merge(values, ["id": self.id.serialize ?? .Null]))
+    return .Dictionary(merge(values, ["id": self.id.serialize]))
   }
 }
 
-@available(*, deprecated)
+@available(*, deprecated, message="Use `serialize` instead")
 extension Persistable {
   /**
     This method converts the record to a JSON representation.

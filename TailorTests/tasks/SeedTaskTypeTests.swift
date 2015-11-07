@@ -80,6 +80,7 @@ class SeedTaskTypeTests: XCTestCase, TailorTestable {
       ["alteration_tests",
         "CREATE TABLE `alteration_tests` (id integer primary key, `material` varchar(255), `colour` varchar(250))"
       ],
+      ["hat_types","CREATE TABLE `hat_types` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255))"],
       ["hats","CREATE TABLE `hats` ( `id` integer NOT NULL PRIMARY KEY, `color` varchar(255), `brim_size` integer, shelf_id integer, `created_at` timestamp, `updated_at` timestamp)"],
       ["shelfs","CREATE TABLE `shelfs` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255), `store_id` integer)"],
       ["stores", "CREATE TABLE `stores` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255))"],
@@ -112,6 +113,7 @@ class SeedTaskTypeTests: XCTestCase, TailorTestable {
       ["alteration_tests",
         "CREATE TABLE `alteration_tests` (id integer primary key, `material` varchar(255), `colour` varchar(250))"
       ],
+      ["hat_types","CREATE TABLE `hat_types` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255))"],
       ["hats","CREATE TABLE `hats` ( `id` integer NOT NULL PRIMARY KEY, `color` varchar(255), `brim_size` integer, shelf_id integer, `created_at` timestamp, `updated_at` timestamp)"],
       ["shelfs","CREATE TABLE `shelfs` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255), `store_id` integer)"],
       ["tailor_alterations", "CREATE TABLE tailor_alterations ( id varchar(255) PRIMARY KEY )"],
@@ -293,6 +295,7 @@ class SeedTaskTypeTests: XCTestCase, TailorTestable {
       ["alteration_tests",
         "CREATE TABLE `alteration_tests` (id integer primary key, `material` varchar(255), `colour` varchar(250))"
       ],
+      ["hat_types","CREATE TABLE `hat_types` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255))"],
       ["hats","CREATE TABLE `hats` ( `id` integer NOT NULL PRIMARY KEY, `color` varchar(255), `brim_size` integer, shelf_id integer, `created_at` timestamp, `updated_at` timestamp)"],
       ["shelfs","CREATE TABLE `shelfs` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255), `store_id` integer)"],
       ["stores", "CREATE TABLE `stores` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255))"],

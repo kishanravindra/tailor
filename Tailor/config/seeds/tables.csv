@@ -1,6 +1,7 @@
 table,sql
 alteration_tests,"CREATE TABLE `alteration_tests` (id integer primary key, `material` varchar(255), `colour` varchar(250))"
 hats,"CREATE TABLE `hats` ( `id` integer NOT NULL PRIMARY KEY, `color` varchar(255), `brim_size` integer, shelf_id integer, `created_at` timestamp, `updated_at` timestamp)"
+hat_types,"CREATE TABLE `hat_types` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255))"
 shelfs,"CREATE TABLE `shelfs` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255), `store_id` integer)"
 stores,"CREATE TABLE `stores` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255))"
 tailor_alterations,CREATE TABLE tailor_alterations ( id varchar(255) PRIMARY KEY )

@@ -14,7 +14,7 @@ class UserTypeTests: XCTestCase, TailorTestable {
       id = 0
     }
     
-    init(values: SerializableValue) throws {
+    init(deserialize values: SerializableValue) throws {
       self.id = try values.read("id")
       self.emailAddress = try values.read("email_address")
       self.encryptedPassword = try values.read("encrypted_password")
@@ -44,7 +44,7 @@ class UserTypeTests: XCTestCase, TailorTestable {
       id = 0
     }
     
-    init(values: SerializableValue) throws {
+    init(deserialize values: SerializableValue) throws {
       self.id = try values.read("id")
       self.emailAddress = try values.read("email_address")
       self.encryptedPassword = try values.read("encrypted_password")

@@ -17,9 +17,9 @@ public protocol SerializationInitializable {
   /**
    This method creates an instance from a serializable value.
    
-   - parameter value:   The primitive value.
+   - parameter value:   The serialized value.
    */
-  init(value: SerializableValue) throws
+  init(deserialize value: SerializableValue) throws
 }
 
 /**
@@ -31,11 +31,11 @@ public protocol SerializationConvertible: SerializationEncodable,SerializationIn
 
 extension String: SerializationConvertible {
   /**
-   This method creates an instance from a serializable primitive.
+   This method creates an instance from a serialized value.
    
-   - parameter value:   The primitive value.
+   - parameter value:   The value.
    */
-  public init(value: SerializableValue) throws {
+  public init(deserialize value: SerializableValue) throws {
     switch(value) {
     case let .String(string):
       self.init(string)
@@ -45,7 +45,7 @@ extension String: SerializationConvertible {
   }
   
   /**
-   This method gets a serializable primitive representing this value.
+   This method gets a serializable value representing this value.
    */
   public var serialize: SerializableValue {
     return .String(self)
@@ -54,11 +54,11 @@ extension String: SerializationConvertible {
 
 extension Int: SerializationConvertible {
   /**
-   This method creates an instance from a serializable primitive.
+   This method creates an instance from a serialized value.
    
-   - parameter json:   The primitive value.
+   - parameter value:   The value.
    */
-  public init(value: SerializableValue) throws {
+  public init(deserialize value: SerializableValue) throws {
     switch(value) {
     case let .Integer(int):
       self.init(int)
@@ -77,7 +77,7 @@ extension Int: SerializationConvertible {
   }
   
   /**
-   This method gets a serializable primitive representing this value.
+   This method gets a serializable value representing this value.
    */
   public var serialize: SerializableValue {
     return .Integer(self)
@@ -86,16 +86,16 @@ extension Int: SerializationConvertible {
 
 extension UInt: SerializationConvertible {
   /**
-   This method creates an instance from a serializable primitive.
+   This method creates an instance from a serialized value.
    
-   - parameter json:   The primitive value.
+   - parameter value:   The value.
    */
-  public init(value: SerializableValue) throws {
-    self.init(try Int(value: value))
+  public init(deserialize value: SerializableValue) throws {
+    self.init(try Int(deserialize: value))
   }
   
   /**
-   This method gets a serializable primitive representing this value.
+   This method gets a serializable value representing this value.
    */
   public var serialize: SerializableValue {
     return .Integer(Int(self))
@@ -104,11 +104,11 @@ extension UInt: SerializationConvertible {
 
 extension Bool: SerializationConvertible {
   /**
-   This method creates an instance from a serializable primitive.
+   This method creates an instance from a serialized value.
    
-   - parameter json:   The primitive value.
+   - parameter value:   The value.
    */
-  public init(value: SerializableValue) throws {
+  public init(deserialize value: SerializableValue) throws {
     switch(value) {
     case let .Boolean(bool):
       self.init(bool)
@@ -123,7 +123,7 @@ extension Bool: SerializationConvertible {
   }
   
   /**
-   This method gets a serializable primitive representing this value.
+   This method gets a serializable value representing this value.
    */
   public var serialize: SerializableValue {
     return .Boolean(self)
@@ -136,7 +136,7 @@ extension Bool: SerializationConvertible {
  value
  */
 extension NSDate: SerializationEncodable {
-  /** The wrapped database value. */
+  /** The wrapped value. */
   public var serialize: SerializableValue {
     return .Timestamp(Timestamp(foundationDate: self))
   }
@@ -147,7 +147,12 @@ extension NSDate: SerializationEncodable {
  database value.
  */
 extension Timestamp: SerializationConvertible {
-  public init(value: SerializableValue) throws {
+  /**
+   This method creates an instance from a serialized value.
+   
+   - parameter value:   The value.
+   */
+  public init(deserialize value: SerializableValue) throws {
     switch(value) {
     case let .Timestamp(timestamp):
       self.init(epochSeconds: timestamp.epochSeconds, timeZone: timestamp.timeZone, calendar: timestamp.calendar)
@@ -162,7 +167,7 @@ extension Timestamp: SerializationConvertible {
     }
 
   }
-  /** The wrapped database value. */
+  /** The serialized value. */
   public var serialize: SerializableValue {
     return .Timestamp(self)
   }
@@ -174,7 +179,7 @@ extension Timestamp: SerializationConvertible {
  database value.
  */
 extension Time: SerializationConvertible {
-  public init(value: SerializableValue) throws {
+  public init(deserialize value: SerializableValue) throws {
     switch(value) {
     case let .Time(time):
       self.init(hour: time.hour, minute: time.minute, second: time.second, nanosecond: time.nanosecond, timeZone: time.timeZone)
@@ -187,7 +192,7 @@ extension Time: SerializationConvertible {
       }
       self.init(hour: timestamp.hour, minute: timestamp.minute, second: timestamp.second, nanosecond: timestamp.nanosecond, timeZone: timestamp.timeZone)
     default:
-      throw SerializationParsingError.WrongFieldType(field: "root", type: Date.self, caseType: value.wrappedType)
+      throw SerializationParsingError.WrongFieldType(field: "root", type: Time.self, caseType: value.wrappedType)
     }
   }
   /** The wrapped database value. */
@@ -201,7 +206,7 @@ extension Time: SerializationConvertible {
  database value.
  */
 extension Date: SerializationConvertible {
-  public init(value: SerializableValue) throws {
+  public init(deserialize value: SerializableValue) throws {
     switch(value) {
     case let .Date(date):
       self.init(year: date.year, month: date.month, day: date.day, calendar: date.calendar)
@@ -230,7 +235,7 @@ extension SerializableValue: SerializationConvertible {
    
    - parameter value:   The primitive value.
    */
-  public init(value: SerializableValue) {
+  public init(deserialize value: SerializableValue) {
     self = value
   }
   
@@ -243,7 +248,7 @@ extension SerializableValue: SerializationConvertible {
 }
 
 extension Double: SerializationConvertible {
-  public init(value: SerializableValue) throws {
+  public init(deserialize value: SerializableValue) throws {
     switch(value) {
     case let .Double(double):
       self.init(double)

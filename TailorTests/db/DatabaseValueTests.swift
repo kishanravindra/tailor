@@ -228,7 +228,6 @@ class DatabaseValueTests: XCTestCase, TailorTestable {
     let value = DatabaseValue.Time(time).valueDescription.databaseValue
     assert(value.timeValue, equals: time)
   }
-
   
   func testDescriptionWithStringGetsString() {
     let value = DatabaseValue.String("Hello")
