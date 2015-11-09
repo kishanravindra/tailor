@@ -331,7 +331,8 @@ extension TemplateType {
     let params = self.controller.request.params.raw
     var filteredParams = [String:String]()
     for key in keys {
-      filteredParams[key] = params[key]
+      guard let value = params[key]?.first else { continue }
+      filteredParams[key] = value
     }
     return filteredParams
   }

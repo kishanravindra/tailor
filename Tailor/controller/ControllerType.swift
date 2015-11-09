@@ -388,7 +388,8 @@ extension ControllerType {
       https: https
     )
     if path != nil {
-      for (key,value) in self.request.params.raw {
+      for (key,list) in self.request.params.raw {
+        guard let value = list.first else { continue }
         if !key.isEmpty {
           path = path?.stringByReplacingOccurrencesOfString(":\(key)", withString: value)
         }

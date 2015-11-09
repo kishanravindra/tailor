@@ -14,29 +14,69 @@ public struct Request: Equatable {
     //MARK: - Structure
     
     /** The raw request parameters. */
-    public var raw: [String:String]
+    public var raw: [String:[String]]
     
     /**
       This initializer creates a parameter dictionary with request
       parameters.
 
-      - parameter rawParameters:    The request parameters.
+      - parameter flatParameters:     The request parameters, with the values as
+                                      strings rather than arrays.
       */
-    public init(_ rawParameters: [String:String] = [:]) {
-      self.raw = rawParameters
+    public init(_ flatParameters: [String:String] = [:]) {
+      self.raw = flatParameters.map { [$0] }
     }
     
+    /**
+     This initializer creates a parameter dictionary with request
+     parameters.
+     
+     - parameter parameters:    The request parameters.
+     */
+    public init(_ parameters: [String:[String]]) {
+      self.raw = parameters
+    }
+    
+    
     //MARK: - Parameter Access
+    
+    /**
+      This method adds a value to the list of parameters for a key.
+
+      If there are no parameters for that key yet, this will make the new value
+      the first parameter.
+    
+      - parameter value:    The value to add to the list.
+      - parameter key:      The key to add the value for.
+      */
+    public mutating func append(value value: String, forKey key: String) {
+      var values = self.raw[key] ?? []
+      values.append(value)
+      self.raw[key] = values
+    }
+    
+    /**
+      This method looks up a value as a list of strings.
+      */
+    public subscript(key: String) -> [String] {
+      get {
+        return self.raw[key] ?? []
+      }
+      set {
+        self.raw[key] = newValue
+      }
+    }
     
     /**
       This subscript looks up a value as an optional string.
       */
     public subscript(key: String) -> String? {
       get {
-        return self.raw[key]
+        let values = self.raw[key] ?? []
+        return values.first
       }
       set {
-        self.raw[key] = newValue
+        self.raw[key] = [newValue].flatMap { $0 }
       }
     }
     
@@ -48,6 +88,9 @@ public struct Request: Equatable {
     public subscript(key: String) -> String {
       get {
         return self[key] as String? ?? ""
+      }
+      set {
+        self.raw[key] = [newValue]
       }
     }
     
@@ -61,7 +104,12 @@ public struct Request: Equatable {
         return Int(self[key] as String)
       }
       set {
-        self[key] = String(newValue)
+        if let value = newValue {
+          self[key] = String(value)
+        }
+        else {
+          self[key] = []
+        }
       }
     }
     
@@ -74,23 +122,9 @@ public struct Request: Equatable {
       get {
         return self[key] as Int? ?? 0
       }
-    }
-    
-    /**
-      This method gets a subset of the keys in the parameter dictionary.
-
-      - parameter keys:   The keys to fetch
-      - returns:          A dictionary with the values from the dictionary
-                          matching those keys.
-      */
-    public func slice(keys: String...) -> [String:String] {
-      var results = [String:String]()
-      for key in keys {
-        if let value = self.raw[key] {
-          results[key] = value
-        }
+      set {
+        self[key] = String(newValue)
       }
-      return results
     }
   }
   
@@ -129,10 +163,10 @@ public struct Request: Equatable {
   @available(*, deprecated, message="Use params instead")
   public var requestParameters: [String:String] {
     get {
-      return params.raw
+      return params.raw.map { $0.first ?? "" }
     }
     set {
-      params.raw = newValue
+      params.raw = newValue.map { [$0] }
     }
   }
   
@@ -370,20 +404,25 @@ public struct Request: Equatable {
     - parameter string:     The query string.
     - returns:              The parameters.
     */
-  public static func decodeQueryString(string: String) -> [String:String] {
+  public static func decodeQueryString(string: String) -> [String:[String]] {
     if string == "" { return [:] }
-    var params: [String:String] = [:]
+    var params: [String:[String]] = [:]
     let simplifiedString = string.stringByReplacingOccurrencesOfString("+", withString: "%20")
     for param in simplifiedString.componentsSeparatedByString("&") {
       let components = param.componentsSeparatedByString("=").map {
         $0.stringByRemovingPercentEncoding ?? $0
       }
+      let key = components[0]
+      let value: String
       if components.count == 1 {
-        params[components[0]] = ""
+        value = ""
       }
       else {
-        params[components[0]] = components[1]
+        value = components[1]
       }
+      var values = params[key] ?? []
+      values.append(value)
+      params[key] = values
     }
     return params
   }
@@ -699,17 +738,26 @@ public func ==(lhs: Request.ContentPreference.Option, rhs: Request.ContentPrefer
   - returns:          Whether the two dictionaries are equal.
   */
 public func ==(lhs: Request.ParameterDictionary, rhs: Request.ParameterDictionary) -> Bool {
-  return lhs.raw == rhs.raw
+  return lhs == rhs.raw
 }
 
 
 /**
-  This method determines if two parameter dictionaries are equal.
-
-  - parameter lhs:    The left-hand side of the comparison.
-  - parameter rhs:    The right-hand side of the comparison.
-  - returns:          Whether the two dictionaries are equal.
-  */
-public func ==(lhs: Request.ParameterDictionary, rhs: [String:String]) -> Bool {
-  return lhs.raw == rhs
+ This method determines if two parameter dictionaries are equal.
+ 
+ - parameter lhs:    The left-hand side of the comparison.
+ - parameter rhs:    The right-hand side of the comparison.
+ - returns:          Whether the two dictionaries are equal.
+ */
+public func ==(lhs: Request.ParameterDictionary, rhs: [String:[String]]) -> Bool {
+  let leftKeysMatch = lhs.raw.keys.filter {
+    if let leftValue = lhs.raw[$0], rightValue = rhs[$0] {
+      return leftValue != rightValue
+    }
+    else {
+      return true
+    }
+    }.isEmpty
+  let rightKeysMatch = rhs.keys.filter { lhs.raw[$0] == nil }.isEmpty
+  return leftKeysMatch && rightKeysMatch
 }

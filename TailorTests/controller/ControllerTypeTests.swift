@@ -943,7 +943,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     TestController.callAction("index", TestController.indexAction, user: user, parameters: ["id": "5"]) {
       response, controller in
       expectation.fulfill()
-      self.assert(controller.request.params == ["id": "5"], message: "sets request parameters")
+      self.assert(controller.request.params == Request.ParameterDictionary(["id": "5"]), message: "sets request parameters")
       let currentUser = controller.currentUser
       self.assert(currentUser?.id, equals: user.id, message: "has the user given")
     }
