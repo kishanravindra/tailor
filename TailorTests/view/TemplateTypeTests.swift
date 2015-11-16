@@ -483,7 +483,7 @@ class TemplateTypeTests: XCTestCase, TailorTestable {
       actionName: "test",
       callback: controller.callback
     ))))
-    let parameters = template.requestParameters("id", "color", "shelf")
+    let parameters = template.requestParameters("id", "color", "sizes[]")
     assert(parameters, equals: ["id": "5", "color": "red", "sizes[]": "10"], message: "gets a subset of the request parameters")
   }
   
