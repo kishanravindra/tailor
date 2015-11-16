@@ -74,7 +74,7 @@ extension ControllerTestable {
     - parameter callback:     A callback that will perform checks on the
                               response.
     */
-  public func callAction(actionName: String, headers: [String:String] = [:], var sessionData: [String:String] = [:], file: String = __FILE__, line: UInt = __LINE__, callback: Response -> Void) {
+  public func callAction(actionName: String, headers: [String:String] = [:], var sessionData: [String:String] = [:], timeoutIn timeout: NSTimeInterval = 0.01, file: String = __FILE__, line: UInt = __LINE__, callback: Response -> Void) {
     var actionParams = params[actionName] ?? [:]
     let csrfKey = AesEncryptor.generateKey()
     sessionData["csrfKey"] = csrfKey
@@ -115,7 +115,7 @@ extension ControllerTestable {
       expectation.fulfill()
       callback(response)
     }
-    waitForExpectationsWithTimeout(0.01, handler: nil)
+    waitForExpectationsWithTimeout(timeout, handler: nil)
   }
   
   /**
