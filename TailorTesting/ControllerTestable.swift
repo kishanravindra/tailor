@@ -67,6 +67,7 @@ extension ControllerTestable {
     - parameter actionName:   The name of the action we are calling.
     - parameter headers:      Additional headers to include in the request.
     - parameter sessionData:  The data to put in the request's session.
+    - parameter cookies:      Cookies to include with the request.
     - parameter file:         The name of the file that is making the call. This
                               will be supplied automatically.
     - parameter line:         The line of the file that is making the call. This
@@ -74,7 +75,7 @@ extension ControllerTestable {
     - parameter callback:     A callback that will perform checks on the
                               response.
     */
-  public func callAction(actionName: String, headers: [String:String] = [:], var sessionData: [String:String] = [:], timeoutIn timeout: NSTimeInterval = 0.01, file: String = __FILE__, line: UInt = __LINE__, callback: Response -> Void) {
+  public func callAction(actionName: String, headers: [String:String] = [:], var sessionData: [String:String] = [:], cookies: [String:String] = [:], timeoutIn timeout: NSTimeInterval = 0.01, file: String = __FILE__, line: UInt = __LINE__, callback: Response -> Void) {
     var actionParams = params[actionName] ?? [:]
     let csrfKey = AesEncryptor.generateKey()
     sessionData["csrfKey"] = csrfKey
@@ -98,7 +99,7 @@ extension ControllerTestable {
       recordFailureWithDescription("could not generate route for \(TestedControllerType.name)/\(actionName)", inFile: file, atLine: line, expected: true)
       return
     }
-    var request = Request(parameters: actionParams, sessionData: sessionData, path: path!, method: method, headers: headers)
+    var request = Request(parameters: actionParams, sessionData: sessionData, path: path!, method: method, headers: headers, cookies: cookies)
     if let actionFiles = files[actionName] {
       request.uploadedFiles = actionFiles
     }

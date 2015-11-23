@@ -196,7 +196,7 @@ extension SeedTaskType {
     let placeholders = rows[0].map { _ in return "?" }.joinWithSeparator(",")
     let query = "INSERT INTO `\(table)` (`\(keys)`) VALUES (\(placeholders))"
     for index in 1..<rows.count {
-      let row = rows[index].map { $0.databaseValue }
+      let row = rows[index].map { $0 == "" ? DatabaseValue.Null : $0.databaseValue }
       connection.executeQuery(query, parameters: row)
     }
   }
