@@ -109,6 +109,12 @@ class RequestTests: XCTestCase, TailorTestable {
     assert(request.params["id"], equals: "6", message: "sets id parameter")
   }
   
+  func testParseRequestParametersCanParseMultipleValuesForParameter() {
+    requestString = requestString.stringByReplacingOccurrencesOfString("/test/path", withString: "/test/path?count=5&ids[]=6&ids[]=7")
+    assert(request.params["count"], equals: "5", message: "sets count parameter")
+    assert(request.params["ids[]"], equals: ["6","7"], message: "sets id parameters")
+  }
+  
   func testParseRequestParametersGetsParametersFromPostRequest() {
     requestString = requestString.stringByReplacingOccurrencesOfString("GET", withString: "POST")
     requestString = requestString.stringByReplacingOccurrencesOfString("X-Custom-Field: header value", withString: "Content-Type: application/x-www-form-urlencoded")
@@ -176,6 +182,24 @@ class RequestTests: XCTestCase, TailorTestable {
     assert(request.requestParameters, equals: ["foo": "bar", "baz": "bat", "a": "b"])
   }
   
+  func testParameterDictionarySubscriptWithStringArrayGetsValue() {
+    let params = Request.ParameterDictionary(["foo": ["bar", "baz"]])
+    let value = params["foo"] as [String]
+    assert(value, equals: ["bar", "baz"])
+  }
+  
+  func testParameterDictionarySubscriptWithStringArrayWithMissingValueGetsEmptyArray() {
+    let params = Request.ParameterDictionary(["foo": ["bar", "baz"]])
+    let value = params["baz"] as [String]
+    assert(value, equals: [])
+  }
+  
+  func testParameterDictionarySubscriptWithStringArrayCanSetValue() {
+    var params = Request.ParameterDictionary(["foo": ["bar", "baz"]])
+    params["foo"] = ["a","b"]
+    assert(params.raw["foo"] ?? [], equals: ["a", "b"])
+  }
+  
   func testParameterDictionarySubscriptWithStringGetsValue() {
     let params = Request.ParameterDictionary(["foo": "bar"])
     let value = params["foo"] as String
@@ -186,6 +210,18 @@ class RequestTests: XCTestCase, TailorTestable {
     let params = Request.ParameterDictionary(["foo": "bar"])
     let value = params["baz"] as String
     assert(value, equals: "")
+  }
+  
+  func testParameterDictionarySubscriptWithStringWithMultipleValuesGetsFirstValue() {
+    let params = Request.ParameterDictionary(["foo": ["bar", "baz"]])
+    let value = params["foo"] as String
+    assert(value, equals: "bar")
+  }
+  
+  func testParameterDictionarySubscriptWithStringCanSetValue() {
+    var params = Request.ParameterDictionary(["foo": ["bar", "baz"]])
+    params["foo"] = "a"
+    assert(params.raw["foo"] ?? [], equals: ["a"])
   }
   
   func testParameterDictionarySubscriptWithNullableStringGetsValue() {
@@ -199,6 +235,21 @@ class RequestTests: XCTestCase, TailorTestable {
     let value = params["baz"] as String?
     assert(isNil: value)
     assert(params["baz"] ?? "bat", equals: "bat")
+  }
+  
+  func testParameterDictionarySubscriptWithNullableStringWithMultipleValuesIsFirstValue() {
+    let params = Request.ParameterDictionary(["foo": ["baz", "bat"]])
+    let value = params["foo"] as String?
+    assert(value, equals: "baz")
+  }
+  
+  func testParameterDictionarySubscriptWithNullableStringCanSetValue() {
+    var params = Request.ParameterDictionary(["foo": ["bar", "baz"]])
+    let value: String? = "a"
+    params["foo"] = value
+    assert(params.raw["foo"] ?? [], equals: ["a"])
+    params["foo"] = nil as String?
+    assert(params.raw["foo"] ?? [], equals: [])
   }
   
   func testParameterDictionarySubscriptCanTriggerGuardStatements() {
@@ -249,6 +300,27 @@ class RequestTests: XCTestCase, TailorTestable {
     let value: Int? = params["foo"]
     assert(isNil: value)
   }
+  
+  func testParameterDictionarySubscriptWithIntegerCanSetValue() {
+    var params = Request.ParameterDictionary(["foo": "bar"])
+    params["foo"] = 25
+    assert(params.raw["foo"] ?? [], equals: ["25"])
+  }
+  
+  func testParameterDictionaryCanAppendValueToList() {
+    var params = Request.ParameterDictionary(["foo": "bar"])
+    params.append(value: "baz", forKey: "foo")
+    assert(params.raw["foo"] ?? [], equals: ["bar", "baz"])
+  }
+  
+  func testParameterDictionarySubscriptWithNullableIntegerCanSetValue() {
+    var params = Request.ParameterDictionary(["foo": ["bar", "baz"]])
+    let value: Int? = 5
+    params["foo"] = value
+    assert(params.raw["foo"] ?? [], equals: ["5"])
+    params["foo"] = nil as Int?
+    assert(params.raw["foo"] ?? [], equals: [])
+  }
 
   //MARK: - Helper Methods
   
@@ -274,22 +346,30 @@ class RequestTests: XCTestCase, TailorTestable {
     let decoded = Request.decodeQueryString(queryString)
     
     assert(decoded.keys.count, equals: 2)
-    assert(decoded["key1"], equals: "value1", message: "gets simple param")
-    assert(decoded["key2"], equals: "value=a b", message: "decodes param with escapes")
+    assert(decoded["key1"] ?? [], equals: ["value1"], message: "gets simple param")
+    assert(decoded["key2"] ?? [], equals: ["value=a b"], message: "decodes param with escapes")
   }
   
-  func testDecodedStringGetsEmptyStringWithoutEqualSign() {
+  func testDecodeQueryStringGetsEmptyStringWithoutEqualSign() {
     let queryString = "key1&key2"
     let decoded = Request.decodeQueryString(queryString)
     
-    assert(decoded["key1"], equals: "", message: "gets key1")
-    assert(decoded["key2"], equals: "", message: "gets key2")
+    assert(decoded["key1"] ?? [], equals: [""], message: "gets key1")
+    assert(decoded["key2"] ?? [], equals: [""], message: "gets key2")
   }
   
   func testDecodeQueryStringLeavesBadEscapeValueUnescaped() {
     let queryString = "key1=1&key%1=2"
     let decoded = Request.decodeQueryString(queryString)
     assert(Array(decoded.keys), equals: ["key1", "key%1"])
+  }
+  
+  func testDecodeQueryStringCanGetMultipleValuesForParameter() {
+    let queryString = "key1=value1&key1=value2"
+    let decoded = Request.decodeQueryString(queryString)
+    
+    assert(decoded.keys.count, equals: 1)
+    assert(decoded["key1"] ?? [], equals: ["value1", "value2"], message: "gets simple param")
   }
   
   func testParseTimeCanParseRfc822Format() {
@@ -378,7 +458,7 @@ class RequestTests: XCTestCase, TailorTestable {
     let data = NSData(bytes: [0xD8, 0x00])
     let badString = NSString(data: data, encoding: NSUTF16BigEndianStringEncoding)! as String
     let request = Request(parameters: ["key": badString])
-    assert(request.params.raw["key"], equals: "")
+    assert(request.params.raw["key"] ?? [], equals: [""])
   }
   
   //MARK: - Equality
@@ -395,17 +475,19 @@ class RequestTests: XCTestCase, TailorTestable {
   }
   
   func testParameterDictionariesAreEqualWithSameDictionaries() {
-    let dictionary1 = Request.ParameterDictionary(["a": "b", "c": "d"])
-    let dictionary2 = Request.ParameterDictionary(["a": "b", "c": "d"])
+    let dictionary1 = Request.ParameterDictionary(["a": ["b"], "c": ["d", "e"]])
+    let dictionary2 = Request.ParameterDictionary(["a": ["b"], "c": ["d", "e"]])
     assert(dictionary1, equals: dictionary2)
   }
   
   func testParameterDictionariesAreUnequalWithDifferentDictionaries() {
-    let dictionary1 = Request.ParameterDictionary(["a": "b", "c": "d"])
+    let dictionary1 = Request.ParameterDictionary(["a": ["b"], "c": ["d"]])
     let dictionary2 = Request.ParameterDictionary(["a": "b", "c": "e"])
     let dictionary3 = Request.ParameterDictionary(["a": "b", "e": "d"])
+    let dictionary4 = Request.ParameterDictionary(["a": ["b"], "c": ["d", "e"]])
     assert(dictionary1, doesNotEqual: dictionary2)
     assert(dictionary1, doesNotEqual: dictionary3)
+    assert(dictionary1, doesNotEqual: dictionary4)
   }
   
   //MARK: - Content Preferences

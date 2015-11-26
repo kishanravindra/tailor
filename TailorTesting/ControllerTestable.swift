@@ -16,6 +16,19 @@ public protocol ControllerTestable: class, TailorTestable {
     */
   var params: [String:[String:String]] { get set }
   
+  /**
+   The parameters for the actions where the value for the parameter is an array
+   of strings rather than just a string.
+   
+   The keys in this dictionary must be the names of the controller's actions,
+   and the values should be dictionaries that will provide the request
+   parameters for these actions.
+   
+   The default is an empty dictionary, so if you don't need array parameters
+   you can ignore this.
+   */
+  var arrayParams: [String:[String:[String]]] { get }
+  
   /** The user who should be logged in for our test requests. */
   var loggedInUser: UserType? { get }
   
@@ -26,6 +39,7 @@ public protocol ControllerTestable: class, TailorTestable {
 extension ControllerTestable {
   public var files: [String:[String:[String:Any]]] { return [:] }
   public var loggedInUser: UserType? { return nil }
+  public var arrayParams: [String:[String:[String]]] { return [:] }
 
   /**
     This method sets a value for a request parameter.
@@ -53,6 +67,7 @@ extension ControllerTestable {
     - parameter actionName:   The name of the action we are calling.
     - parameter headers:      Additional headers to include in the request.
     - parameter sessionData:  The data to put in the request's session.
+    - parameter cookies:      Cookies to include with the request.
     - parameter file:         The name of the file that is making the call. This
                               will be supplied automatically.
     - parameter line:         The line of the file that is making the call. This
@@ -60,7 +75,7 @@ extension ControllerTestable {
     - parameter callback:     A callback that will perform checks on the
                               response.
     */
-  public func callAction(actionName: String, headers: [String:String] = [:], var sessionData: [String:String] = [:], file: String = __FILE__, line: UInt = __LINE__, callback: Response -> Void) {
+  public func callAction(actionName: String, headers: [String:String] = [:], var sessionData: [String:String] = [:], cookies: [String:String] = [:], timeoutIn timeout: NSTimeInterval = 0.01, file: String = __FILE__, line: UInt = __LINE__, callback: Response -> Void) {
     var actionParams = params[actionName] ?? [:]
     let csrfKey = AesEncryptor.generateKey()
     sessionData["csrfKey"] = csrfKey
@@ -84,10 +99,16 @@ extension ControllerTestable {
       recordFailureWithDescription("could not generate route for \(TestedControllerType.name)/\(actionName)", inFile: file, atLine: line, expected: true)
       return
     }
-    var request = Request(parameters: actionParams, sessionData: sessionData, path: path!, method: method, headers: headers)
+    var request = Request(parameters: actionParams, sessionData: sessionData, path: path!, method: method, headers: headers, cookies: cookies)
     if let actionFiles = files[actionName] {
       request.uploadedFiles = actionFiles
     }
+    if let arrayParams = self.arrayParams[actionName] {
+      for (key,list) in arrayParams {
+        request.params[key] = list
+      }
+    }
+    
     let expectation = expectationWithDescription("response called")
   
     routes.handleRequest(request) {
@@ -95,7 +116,7 @@ extension ControllerTestable {
       expectation.fulfill()
       callback(response)
     }
-    waitForExpectationsWithTimeout(0.01, handler: nil)
+    waitForExpectationsWithTimeout(timeout, handler: nil)
   }
   
   /**

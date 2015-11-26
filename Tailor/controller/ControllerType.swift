@@ -275,13 +275,14 @@ extension ControllerType {
   /**
     This method generates a JSON response.
   
-    - parameter json:   The object to convert to JSON and render.
-    */
-  public func respondWith(json json: SerializationEncodable) {
+    - parameter json:           The object to convert to JSON and render.
+    - parameter responseCode:   The response code for the response.
+   */
+  public func respondWith(json json: SerializationEncodable, responseCode: Response.Code = .Ok) {
     var response = self.state.response
     do {
       let jsonData = try json.serialize.jsonData()
-      response.responseCode = .Ok
+      response.responseCode = responseCode
       response.headers["Content-Type"] = "application/json"
       response.appendData(jsonData)
     }
@@ -388,7 +389,8 @@ extension ControllerType {
       https: https
     )
     if path != nil {
-      for (key,value) in self.request.params.raw {
+      for (key,list) in self.request.params.raw {
+        guard let value = list.first else { continue }
         if !key.isEmpty {
           path = path?.stringByReplacingOccurrencesOfString(":\(key)", withString: value)
         }

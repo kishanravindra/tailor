@@ -476,35 +476,29 @@ class TemplateTypeTests: XCTestCase, TailorTestable {
   
   func testRequestParametersGetsKeysFromRequest() {
     var request = controller.request
-    request.params.raw = ["id": "5", "color": "red", "size": "10"]
+    request.params.raw = ["id": ["5"], "color": ["red"], "sizes[]": ["10", "11"]]
     let template = EmptyTemplate(state: TemplateState(TestController(state: ControllerState(
       request: request,
       response: Response(),
       actionName: "test",
       callback: controller.callback
     ))))
-    let parameters = template.requestParameters("id", "color", "shelf")
-    assert(parameters, equals: ["id": "5", "color": "red"], message: "gets a subset of the request parameters")
+    let parameters = template.requestParameters("id", "color", "sizes[]")
+    assert(parameters, equals: ["id": "5", "color": "red", "sizes[]": "10"], message: "gets a subset of the request parameters")
   }
   
   func testRequestParameterGetsKeyFromRequest() {
     var request = controller.request
-    request.params.raw = ["id": "5", "color": "red", "size": "10"]
+    request.params.raw = ["id": ["5"], "color": ["red"], "sizes[]": ["10", "11"]]
     let template = EmptyTemplate(state: TemplateState(TestController(state: ControllerState(
       request: request,
       response: Response(),
       actionName: "test",
       callback: controller.callback
       ))))
-    if let param1 = template.requestParameter("id") {
-      assert(param1, equals: "5", message: "gets the parameter from the controller")
-    }
-    else {
-      XCTFail("gets the parameter from the controller")
-    }
-    
-    let param2 = template.requestParameter("foo")
-    XCTAssertNil(param2, "gives nil for a missing parameter")
+    assert(template.requestParameter("id"), equals: "5", message: "gets the parameter from the controller")
+    assert(template.requestParameter("sizes[]"), equals: "10", message: "gets the first parameter when there is an array")
+    XCTAssertNil(template.requestParameter("foo"), "gives nil for a missing parameter")
   }
   
   func testAttributeNameGetsNameFromModel() {
