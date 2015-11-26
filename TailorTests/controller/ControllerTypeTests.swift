@@ -148,7 +148,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
   }
   
   //MARK: - Responses
-    func testRespondWithRendersTemplateInLayout() {
+  func testRespondWithRendersTemplateInLayout() {
     let expectation = expectationWithDescription("callback called")
     struct TestTemplate: TemplateType {
       var state: TemplateState
@@ -432,11 +432,11 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
       self.callback = {
         response in
         expectation.fulfill()
-        self.assert(response.responseCode, equals: .Ok, message: "gives a success response")
+        self.assert(response.responseCode, equals: .Created, message: "gives a success response")
         self.assert(response.headers, equals: ["Content-Type": "application/json"])
         self.assert(response.body, equals: data)
       }
-      self.controller.respondWith(json: hat)
+      self.controller.respondWith(json: hat, responseCode: .Created)
       waitForExpectationsWithTimeout(0.01, handler: nil)
     }
     catch {

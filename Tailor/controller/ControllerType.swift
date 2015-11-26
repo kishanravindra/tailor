@@ -275,13 +275,14 @@ extension ControllerType {
   /**
     This method generates a JSON response.
   
-    - parameter json:   The object to convert to JSON and render.
+    - parameter json:           The object to convert to JSON and render.
+    - parameter responseCode:   The response code for the response.
     */
-  public func respondWith(json json: JsonEncodable) {
+  public func respondWith(json json: JsonEncodable, responseCode: Response.Code = .Ok) {
     var response = self.state.response
     do {
       let jsonData = try json.toJson().jsonData()
-      response.responseCode = .Ok
+      response.responseCode = responseCode
       response.headers["Content-Type"] = "application/json"
       response.appendData(jsonData)
     }
