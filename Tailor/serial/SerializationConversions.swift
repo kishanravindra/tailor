@@ -271,6 +271,13 @@ extension Double: SerializationConvertible {
   }
 }
 
+extension NSData: SerializationEncodable {
+  /** This method gets a serialized value for this data buffer. */
+  public var serialize: SerializableValue {
+    return .Data(self)
+  }
+}
+
 extension CollectionType where Generator.Element: SerializationEncodable {
   /**
    This method gets a JSON primitive representing this value.
