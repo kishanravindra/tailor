@@ -2,6 +2,7 @@ import Foundation
 import Tailor
 import TailorTesting
 import TailorSqlite
+import XCTest
 
 extension TailorTestable {
   public func configure() {
@@ -204,4 +205,27 @@ struct TopHat: Persistable {
   }
 }
 
+
+
+class StubbedTestCase {
+  var failures = [(message: String, file: String, line: UInt, expected: Bool)]()
+  var expectations = [XCTestExpectation]()
   
+  dynamic func configure() {
+    
+  }
+  
+  func recordFailureWithDescription(message: String, inFile: String, atLine: UInt, expected: Bool) {
+    self.failures.append((message: message, file: inFile, line: atLine, expected: expected))
+  }
+  
+  func expectationWithDescription(description: String)->XCTestExpectation {
+    let expectation = XCTestExpectation()
+    self.expectations.append(expectation)
+    return expectation
+  }
+  
+  func waitForExpectationsWithTimeout(timeout: NSTimeInterval, handler: XCWaitCompletionHandler?) {
+    
+  }
+}

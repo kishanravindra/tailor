@@ -1,0 +1,195 @@
+import Tailor
+import Tailor
+import TailorSqlite
+@testable import TailorTesting
+import XCTest
+
+class TailorTestCaseTests : XCTestCase {
+  class TestCase: StubbedTestCase, TailorTestable {
+    
+  }
+  
+  enum TestExceptionType: ErrorType, Equatable {
+    case Exception1
+    case Exception2
+  }
+  
+  var testCase = TestCase()
+  override func setUp() {
+    super.setUp()
+    APPLICATION_ARGUMENTS = ("tailor.exit", [:])
+    Application.configuration.databaseDriver = { return SqliteConnection(path: "testing.sqlite") }
+    AlterationsTask.runTask()
+    Application.truncateTables()
+  }
+  
+  override func tearDown() {
+    TAILOR_TESTABLE_DATABASE_RESET = false
+  }
+  
+  //MARK: - Set Up
+  
+  func testResetDatabaseTruncatesTables() {
+    TAILOR_TESTABLE_DATABASE_RESET = false
+    Hat().save()
+    testCase.resetDatabase()
+    XCTAssertEqual(Hat.query.count(), 0)
+  }
+  
+  func testResetDatabaseRunsAlterations() {
+    Application.sharedDatabaseConnection().executeQuery("DELETE FROM tailor_alterations")
+    testCase.resetDatabase()
+    let resultSet = Application.sharedDatabaseConnection().executeQuery("SELECT * FROM tailor_alterations")
+    XCTAssertFalse(resultSet.isEmpty)
+  }
+  
+  func testResetDatabaseWithResetFlagSetTruncatesTables() {
+    TAILOR_TESTABLE_DATABASE_RESET = true
+    Hat().save()
+    testCase.resetDatabase()
+    XCTAssertEqual(Hat.query.count(), 0)
+  }
+  
+  func testResetDatabaseWithResetFlagSetDoesNotRunAlterations() {
+    TAILOR_TESTABLE_DATABASE_RESET = true
+    Application.sharedDatabaseConnection().executeQuery("DELETE FROM tailor_alterations")
+    testCase.resetDatabase()
+    let resultSet = Application.sharedDatabaseConnection().executeQuery("SELECT * FROM tailor_alterations")
+    XCTAssertTrue(resultSet.isEmpty)
+  }
+  
+  //MARK: - Equality Comparison
+  
+  func testAssertEqualsWithEqualValuesDoesNotTriggerAssertion() {
+    testCase.assert(1, equals: 1)
+    XCTAssertEqual(testCase.failures.count, 0)
+  }
+  
+  func testAssertEqualsWithUnequalValuesTriggersAssertion() {
+    testCase.assert(1, equals: 2, message: "Test Message")
+    XCTAssertEqual(testCase.failures.count, 1)
+    if let failure = testCase.failures.first {
+      XCTAssertEqual(failure.message, "1 != 2 - Test Message")
+      XCTAssertEqual(failure.file, __FILE__)
+      XCTAssertEqual(failure.line, __LINE__ - 5)
+      XCTAssertTrue(failure.expected)
+    }
+  }
+  
+  func testAssertEqualsWithNoMessageTriggersAssertion() {
+    testCase.assert(1, equals: 2)
+    XCTAssertEqual(testCase.failures.count, 1)
+    if let failure = testCase.failures.first {
+      XCTAssertEqual(failure.message, "1 != 2")
+    }
+  }
+  
+  func testAssertEqualsWithNilValueTriggersAssertion() {
+    testCase.assert(nil, equals: 2, message: "Test Message")
+    XCTAssertEqual(testCase.failures.count, 1)
+    if let failure = testCase.failures.first {
+      XCTAssertEqual(failure.message, "Value was nil - Test Message")
+    }
+  }
+  
+  //MARK: - Exceptions
+  
+  func testAssertNoExceptionsWithNoExceptionsDoesNotTriggerAssertion() {
+    testCase.assertNoExceptions {
+      _ = 1 + 1
+    }
+    XCTAssertEqual(testCase.failures.count, 0)
+  }
+  
+  func testAssertNoExceptionsWithExceptionTriggersAssertion() {
+    testCase.assertNoExceptions("Test Message") {
+      throw NSError(domain: "test.tailorframe.work", code: 101, userInfo: nil)
+    }
+    XCTAssertEqual(testCase.failures.count, 1)
+    if let failure = testCase.failures.first {
+      XCTAssertEqual(failure.message, "Threw exception Error Domain=test.tailorframe.work Code=101 \"(null)\" - Test Message")
+      XCTAssertEqual(failure.file, __FILE__)
+      XCTAssertEqual(failure.line, __LINE__ - 7)
+      XCTAssertTrue(failure.expected)
+    }
+  }
+  
+  func testAssertNoExceptionsWithExceptionWithNoMessageTriggersAssertion() {
+    testCase.assertNoExceptions {
+      throw NSError(domain: "test.tailorframe.work", code: 101, userInfo: nil)
+    }
+    XCTAssertEqual(testCase.failures.count, 1)
+    if let failure = testCase.failures.first {
+      XCTAssertEqual(failure.message, "Threw exception Error Domain=test.tailorframe.work Code=101 \"(null)\"")
+    }
+  }
+  
+  func testAssertThrowsExceptionWithNoExceptionTriggersAssertion() {
+    testCase.assertThrows(TestExceptionType.Exception1, message: "Throws Good") {
+      _ = 1 + 1
+    }
+    XCTAssertEqual(testCase.failures.count, 1)
+    if let failure = testCase.failures.first {
+      XCTAssertEqual(failure.message, "Did not throw exception - Throws Good")
+      XCTAssertEqual(failure.file, __FILE__)
+      XCTAssertEqual(failure.line, __LINE__ - 7)
+      XCTAssertTrue(failure.expected)
+    }
+  }
+  
+  func testAssertThrowsExceptionWithNoExceptionWithNoMessageTriggersAssertion() {
+    testCase.assertThrows(TestExceptionType.Exception1) {
+      _ = 1 + 1
+    }
+    XCTAssertEqual(testCase.failures.count, 1)
+    if let failure = testCase.failures.first {
+      XCTAssertEqual(failure.message, "Did not throw exception")
+    }
+  }
+  
+  func testAssertThrowsExceptionWithWrongExceptionTriggersAssertion() {
+    testCase.assertThrows(TestExceptionType.Exception1, message: "Throws Good") {
+      throw TestExceptionType.Exception2
+    }
+    XCTAssertEqual(testCase.failures.count, 1)
+    if let failure = testCase.failures.first {
+      XCTAssertEqual(failure.message, "Exception2 != Exception1 - Throws Good")
+      XCTAssertEqual(failure.file, __FILE__)
+      XCTAssertEqual(failure.line, __LINE__ - 7)
+      XCTAssertTrue(failure.expected)
+    }
+  }
+  
+  func testAssertThrowsExceptionWithWrongExceptionWithNoMessageTriggersAssertion() {
+    testCase.assertThrows(TestExceptionType.Exception1) {
+      throw TestExceptionType.Exception2
+    }
+    XCTAssertEqual(testCase.failures.count, 1)
+    if let failure = testCase.failures.first {
+      XCTAssertEqual(failure.message, "Exception2 != Exception1")
+    }
+  }
+  
+  func testAssertThrowsExceptionWithWrongExceptionTypeTriggersAssertion() {
+    testCase.assertThrows(TestExceptionType.Exception1, message: "Throws Good") {
+      throw NSError(domain: "test.tailorframe.work", code: 101, userInfo: nil)
+    }
+    XCTAssertEqual(testCase.failures.count, 1)
+    if let failure = testCase.failures.first {
+      XCTAssertEqual(failure.message, "Threw exception Error Domain=test.tailorframe.work Code=101 \"(null)\" - Throws Good")
+      XCTAssertEqual(failure.file, __FILE__)
+      XCTAssertEqual(failure.line, __LINE__ - 7)
+      XCTAssertTrue(failure.expected)
+    }
+  }
+  
+  func testAssertThrowsExceptionWithWrongExceptionTypeWithNoMessageTriggersAssertion() {
+    testCase.assertThrows(TestExceptionType.Exception1) {
+      throw NSError(domain: "test.tailorframe.work", code: 101, userInfo: nil)
+    }
+    XCTAssertEqual(testCase.failures.count, 1)
+    if let failure = testCase.failures.first {
+      XCTAssertEqual(failure.message, "Threw exception Error Domain=test.tailorframe.work Code=101 \"(null)\"")
+    }
+  }
+}

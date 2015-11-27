@@ -50,6 +50,16 @@ public protocol TailorTestable {
 }
 
 extension TailorTestable {
+  //MARK: - Set Up
+  
+  /**
+    This method resets the test database.
+
+    This will rebuild the database from the seeds, if there are any, and
+    run any pending alterations. It will only do this once per execution. It
+    will also truncate all the tables in the database, every time you call the
+    method.
+    */
   public func resetDatabase() {
     if !TAILOR_TESTABLE_DATABASE_RESET {
       Application.removeSharedDatabaseConnection()
@@ -66,6 +76,13 @@ extension TailorTestable {
     Application.truncateTables()
   }
   
+  /**
+    This method prepares the test case.
+
+    This will freeze the timestamp to give consistent timings, run the
+    `configure` method to load your testing configuration, and reset the
+    database.
+    */
   public func setUpTestCase() {
     Timestamp.unfreeze()
     Timestamp.freeze()
@@ -73,6 +90,7 @@ extension TailorTestable {
     resetDatabase()
   }
   
+  //MARK: - Equality Checks
   
   /**
     This method asserts that two things are equal.
@@ -159,6 +177,8 @@ extension TailorTestable {
       self.recordFailureWithDescription("\(lhs) != \(rhs)\(message)", inFile: file, atLine: line, expected: true)
     }
   }
+  
+  //MARK: - Fuzzy Checks
   
   /**
     This method asserts that one string contains another.
@@ -313,6 +333,8 @@ extension TailorTestable {
     }
   }
   
+  //MARK: - Template Rendering
+  
   /**
     This method asserts that something includes a template
     of a given type.
@@ -388,6 +410,60 @@ extension TailorTestable {
         failureMessage += " - \(message)"
       }
       self.recordFailureWithDescription(failureMessage, inFile: file, atLine: line, expected: true)
+    }
+  }
+  
+  //MARK: - Exceptions
+  
+  /**
+    This method asserts that a block does not throw an exception.
+
+    - parameter message:            The message to show if the assertion fails.
+    - parameter file:               The file that the assertion is coming from.
+                                    You should generally omit this, since it
+                                    will be provided automatically.
+    - parameter line:               The line that the assertion is coming from.
+                                    You should generally omit this, since it
+                                    will be provided automatically.
+    - parameter block:              The block that we are checking for
+                                    exceptions.
+    */
+  public func assertNoExceptions(message: String = "", file: String = __FILE__, line: UInt = __LINE__, @noescape block: Void throws -> Void) {
+    do {
+      try block()
+    }
+    catch let e {
+      let fullMessage = "Threw exception \(e)" +  (message.isEmpty ? "" : " - \(message)")
+      self.recordFailureWithDescription(fullMessage, inFile: file, atLine: line, expected: true)
+    }
+  }
+  
+  /**
+    This method asserts that a block throws a certain exception.
+   
+    - parameter exception:          The exception that we are expecting to see.
+    - parameter message:            The message to show if the assertion fails.
+    - parameter file:               The file that the assertion is coming from.
+                                    You should generally omit this, since it
+                                    will be provided automatically.
+    - parameter line:               The line that the assertion is coming from.
+                                    You should generally omit this, since it
+                                    will be provided automatically.
+    - parameter block:              The block that we are checking for
+                                    exceptions.
+   */
+  public func assertThrows<ExceptionType: ErrorType where ExceptionType: Equatable>(exception: ExceptionType, message: String = "", file: String = __FILE__, line: UInt = __LINE__, @noescape block: Void throws -> Void) {
+    do {
+      try block()
+      let fullMessage = "Did not throw exception" + (message.isEmpty ? "" : " - \(message)")
+      self.recordFailureWithDescription(fullMessage, inFile: file, atLine: line, expected: true)
+    }
+    catch let thrown as ExceptionType {
+      self.assert(thrown, equals: exception, message: message, file: file, line: line)
+    }
+    catch let e {
+      let fullMessage = "Threw exception \(e)"  + (message.isEmpty ? "" : " - \(message)")
+      self.recordFailureWithDescription(fullMessage, inFile: file, atLine: line, expected: true)
     }
   }
 }

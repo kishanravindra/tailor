@@ -1,6 +1,7 @@
 # General
 
 * Memcache support
+* More testing of TailorTestable and company
 
 # Modeling
 
