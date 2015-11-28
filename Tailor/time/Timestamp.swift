@@ -1,7 +1,7 @@
 /**
   This struct encapsulates a moment in time.
   */
-public struct Timestamp: Equatable, Comparable, CustomStringConvertible {
+public struct Timestamp: Equatable, Comparable, CustomStringConvertible, TimeIntervalArithmeticType {
   /**
     The type that represents the interval between a timestamp and the Unix
     epoch.
@@ -201,6 +201,150 @@ public struct Timestamp: Equatable, Comparable, CustomStringConvertible {
   }
   
   /**
+    This method limits a number to a range of values by increasing or decreasing
+    another value.
+
+    - parameter lhs:      The number to limit
+    - parameter range:    The range of values that the number can have. This
+                          should always be positive, even if the number is
+                          supposed to be negative.
+    - parameter sign:     Either 1 or -1, to indicate whether the number should
+                          be positive or negative.
+    - parameter nextUnit: The number to increase to adjust the original number.
+    */
+  internal static func limit(inout lhs:  Int, var to range: (Int,Int), sign: Int, inout byIncreasing nextUnit: Int) -> Bool {
+    if sign < 0 {
+      let newRange = (-1 * range.1, -1 * range.0)
+      range = newRange
+    }
+    if lhs < range.0 {
+      lhs += (range.1 - range.0) + 1
+      nextUnit -= 1
+      return true
+    }
+    if lhs > range.1 {
+      lhs -= (range.1 - range.0) + 1
+      nextUnit += 1
+      return true
+    }
+    return false
+  }
+  
+  
+  /**
+    This method limits a number to a range of values by increasing or decreasing
+    another value.
+
+    - parameter lhs:      The number to limit
+    - parameter range:    The range of values that the number can have. This
+                          should always be positive, even if the number is
+                          supposed to be negative.
+    - parameter sign:     Either 1 or -1, to indicate whether the number should
+                          be positive or negative.
+    - parameter nextUnit: The number to increase to adjust the original number.
+    */
+  internal static func limit(inout lhs:  Double, var to range: (Double,Double), sign: Int, inout byIncreasing nextUnit: Int) -> Bool {
+    if sign < 0 {
+      let newRange = (-1 * range.1, -1 * range.0)
+      range = newRange
+    }
+    if lhs < range.0 {
+      lhs += (range.1 - range.0) + 1
+      nextUnit -= 1
+      return true
+    }
+    if lhs > range.1 {
+      lhs -= (range.1 - range.0) + 1
+      nextUnit += 1
+      return true
+    }
+    return false
+  }
+  
+  /**
+    This method normalizes a date, ensuring that the month and day are both
+    valid.
+
+    - parameter year:       The year for the date.
+    - parameter month:      The month for the date.
+    - parameter day:        The day for the date.
+    - parameter calendar:   The calendar that the date is interpreted in.
+    */
+  internal static func normalizeDate(inout year year: Int, inout month: Int, inout day: Int, var inCalendar calendar: Calendar) {
+    
+    calendar = calendar.inYear(year)
+    var months = (1,calendar.months)
+    
+    func handleMonthOverlap() {
+      repeat {
+        calendar = calendar.inYear(year)
+        months = (1,calendar.months)
+      } while limit(&month, to: months, sign: 1, byIncreasing: &year)
+      calendar = calendar.inYear(year)
+    }
+    
+    var days = (1,calendar.daysInMonth(month))
+    repeat {
+      handleMonthOverlap()
+      calendar = calendar.inYear(year)
+      let monthForDayRange = (day < 0 ? (month == 1 ? calendar.months : month - 1) : month)
+      days = (1,calendar.daysInMonth(monthForDayRange))
+    } while limit(&day, to: days, sign: 1, byIncreasing: &month)
+  }
+  
+  /**
+    This method normalizes a time, ensuring that the hour, minute, second, and
+    nanosecond are within the valid ranges.
+
+    - parameter day:          The day that we should add to if the hours overrun
+    - parameter hour:         The hour for the time
+    - parameter minute:       The minute for the time
+    - parameter second:       The second for the time
+    - parameter nanosecond:   The nanosecond for the time
+    - parameter calendar:     The calendar that we use to get the ranges for the
+                              values.
+    */
+  internal static func normalizeTime(inout day day: Int, inout hour: Int,  inout minute: Int, inout second: Int, inout nanosecond: Double, inCalendar calendar: Calendar) {
+    while limit(&nanosecond, to: (0,999999999.0), sign: 1, byIncreasing: &second) {}
+    while limit(&second, to: (0,calendar.secondsPerMinute - 1), sign: 1, byIncreasing: &minute) {}
+    while limit(&minute, to: (0,calendar.minutesPerHour - 1), sign: 1, byIncreasing: &hour) {}
+    while limit(&hour, to: (0,calendar.hoursPerDay - 1), sign: 1, byIncreasing: &day) {}
+  }
+  
+  /**
+    This method normalizes a time interval, ensuring that all the values are of
+    the same sign.
+
+    - parameter interval:     The time interval that we need to normalize.
+    - parameter sign:         Either 1 or -1, indicating the sign that the
+                              values in the time interval should have.
+    - parameter calendar:     The calendar that we use to get the number of days
+                              in a month.
+    - parameter month:        The month to use when getting the number of days.
+    */
+  internal static func normalizeTimeInterval(interval: TimeInterval, withSign sign: Int, inCalendar calendar: Calendar, inMonth month: Int) -> TimeInterval {
+    var years = interval.years
+    var months = interval.months
+    var days = interval.days
+    var hours = interval.hours
+    var minutes = interval.minutes
+    var seconds = interval.seconds
+    var nanoseconds = interval.nanoseconds
+    
+    limit(&nanoseconds, to: (0,999999999), sign: sign, byIncreasing: &seconds)
+    limit(&seconds, to: (0,calendar.secondsPerMinute - 1), sign: sign, byIncreasing: &minutes)
+    limit(&minutes, to: (0,calendar.minutesPerHour - 1), sign: sign, byIncreasing: &hours)
+    limit(&hours, to: (0,calendar.hoursPerDay - 1), sign: sign, byIncreasing: &days)
+    
+    let pastMonth = sign == -1 ? month : (month == 1 ? calendar.months : month - 1)
+    
+    limit(&days, to: (0,calendar.daysInMonth(pastMonth)-1), sign: sign, byIncreasing: &months)
+    limit(&months, to: (0,calendar.months-1), sign: sign, byIncreasing: &years)
+    
+    return TimeInterval(years: years, months: months, days: days, hours: hours, minutes: minutes, seconds: seconds, nanoseconds: nanoseconds)
+  }
+  
+  /**
     This method adds a time interval to this second.
 
     This will add the local components of the interval to the local components
@@ -223,32 +367,9 @@ public struct Timestamp: Equatable, Comparable, CustomStringConvertible {
     nanosecond = nanosecond % 1000000000
     second += excess
     
-    func limit(inout lhs:  Int, to range: (Int,Int), inout byIncreasing nextUnit: Int) -> Bool {
-      if lhs < range.0 {
-        lhs += (range.1 - range.0) + 1
-        nextUnit -= 1
-        return true
-      }
-      if lhs > range.1 {
-        lhs -= (range.1 - range.0) + 1
-        nextUnit += 1
-        return true
-      }
-      return false
-    }
-    
-    var calendar = self.calendar.inYear(year)
-    while(limit(&second, to: (0,calendar.secondsPerMinute - 1), byIncreasing: &minute)) {}
-    while(limit(&minute, to: (0,calendar.minutesPerHour - 1), byIncreasing: &hour)) {}
-    while(limit(&hour, to: (0,calendar.hoursPerDay - 1), byIncreasing: &day)) {}
-    while(limit(&month, to: (1,calendar.inYear(year).months), byIncreasing: &year)) {}
-    
-    calendar = self.calendar.inYear(year)
-    while(limit(&day, to: (1,calendar.daysInMonth(day < 1 ? (month == 1 ? calendar.months : month - 1) : month)), byIncreasing: &month)) {
-      while(limit(&month, to: (1,calendar.inYear(year).months), byIncreasing: &year)) {}
-    }
-    while(limit(&month, to: (1,calendar.inYear(year).months), byIncreasing: &year)) {}
-    
+    let calendar = self.calendar.inYear(year)
+    Timestamp.normalizeTime(day: &day, hour: &hour, minute: &minute, second: &second, nanosecond: &nanosecond, inCalendar: calendar)
+    Timestamp.normalizeDate(year: &year, month: &month, day: &day, inCalendar: calendar)
     return Timestamp(year: year, month: month, day: day, hour: hour, minute: minute, second: second, nanosecond: nanosecond, timeZone: self.timeZone, calendar: self.calendar)
   }
   
@@ -265,33 +386,16 @@ public struct Timestamp: Equatable, Comparable, CustomStringConvertible {
   public func intervalSince(other: Timestamp) -> TimeInterval {
     let other = Timestamp(epochSeconds: other.epochSeconds, timeZone: self.timeZone, calendar: self.calendar)
     let sign = self < other ? -1 : 1
-    var years = self.year - other.year
-    var months = self.month - other.month
-    var days = self.day - other.day
-    var hours = self.hour - other.hour
-    var minutes = self.minute - other.minute
-    var seconds = self.second - other.second
-    var nanoseconds = self.nanosecond - other.nanosecond
-    
-    func limit(inout value: Int, toSign sign: Int, inout byIncreasing nextValue: Int, max: Int) {
-      if value * sign < 0 {
-        value += max * sign
-        nextValue -= sign
-      }
-    }
-    
-    if nanoseconds * Double(sign) < 0 {
-      nanoseconds += 1000000000.0 * Double(sign)
-      seconds -= sign
-    }
-    limit(&seconds, toSign: sign, byIncreasing: &minutes, max: self.calendar.secondsPerMinute)
-    limit(&minutes, toSign: sign, byIncreasing: &hours, max: self.calendar.minutesPerHour)
-    limit(&hours, toSign: sign, byIncreasing: &days, max: self.calendar.hoursPerDay)
-    
-    let pastMonth = sign == -1 ? self.month : (self.month == 1 ? self.calendar.months : self.month - 1)
-    limit(&days, toSign: sign, byIncreasing: &months, max: self.calendar.daysInMonth(pastMonth))
-    limit(&months, toSign: sign, byIncreasing: &years, max: self.calendar.months)
-    return TimeInterval(years: years, months: months, days: days, hours: hours, minutes: minutes, seconds: seconds, nanoseconds: nanoseconds)
+    let interval = TimeInterval(
+      years: self.year - other.year,
+      months: self.month - other.month,
+      days: self.day - other.day,
+      hours: self.hour - other.hour,
+      minutes: self.minute - other.minute,
+      seconds: self.second - other.second,
+      nanoseconds: self.nanosecond - other.nanosecond
+    )
+    return Timestamp.normalizeTimeInterval(interval, withSign: sign, inCalendar: self.calendar, inMonth: self.month)
   }
   
   /**
@@ -477,16 +581,4 @@ public func ==(lhs: Timestamp, rhs: Timestamp) -> Bool {
   */
 public func <(lhs: Timestamp, rhs: Timestamp) -> Bool {
   return lhs.epochSeconds < rhs.epochSeconds
-}
-
-/**
-  This method gets the interval between two timestamps.
-
-  - parameter lhs:    The first timestamp
-  - parameter rhs:    The second timestamp
-  - returns:          The interval that would have to be added to the second
-                      timestamp to produce the first timestamp
-  */
-public func -(lhs: Timestamp, rhs: Timestamp) -> TimeInterval {
-  return lhs.intervalSince(rhs)
 }

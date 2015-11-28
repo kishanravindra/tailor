@@ -112,4 +112,62 @@ class DateTests: XCTestCase, TailorTestable {
     assert(date.month, equals: timestamp.month)
     assert(date.day, equals: timestamp.day)
   }
+  
+  func testByAddingIntervalCanAddSimpleInterval() {
+    let date = Date(year: 2015, month: 11, day: 20)
+    let interval = TimeInterval(years: 3, months: 1, days: 5, hours: 12)
+    let date2 = date.byAddingInterval(interval)
+    assert(date2.year, equals: 2018)
+    assert(date2.month, equals: 12)
+    assert(date2.day, equals: 25)
+  }
+  
+  func testByAddingIntervalCanAddNegativeInterval() {
+    let date = Date(year: 2015, month: 11, day: 20)
+    let interval = TimeInterval(years: -2, months: -5, days: -10, hours: 12)
+    let date2 = date.byAddingInterval(interval)
+    assert(date2.year, equals: 2013)
+    assert(date2.month, equals: 6)
+    assert(date2.day, equals: 10)
+  }
+  
+  func testByAddingIntervalCanHandleOverruns() {
+    let date = Date(year: 2015, month: 11, day: 20)
+    let interval = TimeInterval(years: 3, months: 3, days: 95)
+    let date2 = date.byAddingInterval(interval)
+    assert(date2.year, equals: 2019)
+    assert(date2.month, equals: 5)
+    assert(date2.day, equals: 26)
+  }
+  
+  func testIntervalSinceCanGetInterval() {
+    let date1 = Date(year: 2015, month: 11, day: 20)
+    let date2 = Date(year: 2013, month: 3, day: 4)
+    let interval = date1.intervalSince(date2)
+    assert(interval.years, equals: 2)
+    assert(interval.months, equals: 8)
+    assert(interval.days, equals: 16)
+  }
+  
+  func testIntervalSinceCanGetMixedInterval() {
+    let date1 = Date(year: 2015, month: 11, day: 20)
+    let date2 = Date(year: 2017, month: 3, day: 31)
+    let interval = date1.intervalSince(date2)
+    assert(interval.years, equals: -1)
+    assert(interval.months, equals: -4)
+    assert(interval.days, equals: -11)
+  }
+  
+  func testSupportsArithmeticOperators() {
+    let date1 = Date(year: 2015, month: 11, day: 20)
+    let date2 = date1 + 2.years + 35.days
+    assert(date2.year, equals: 2017)
+    assert(date2.month, equals: 12)
+    assert(date2.day, equals: 25)
+    
+    let interval = date2 - date1
+    assert(interval.years, equals: 2)
+    assert(interval.months, equals: 1)
+    assert(interval.days, equals: 5)
+  }
 }

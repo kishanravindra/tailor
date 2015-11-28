@@ -1,7 +1,7 @@
 /**
   This struct encapsulates a date, without any time information.
   */
-public struct Date: Comparable,CustomStringConvertible {
+public struct Date: Comparable, CustomStringConvertible, TimeIntervalArithmeticType {
   /** The calendar system the date is expressed in. */
   public let calendar: Calendar
   
@@ -84,6 +84,37 @@ public struct Date: Comparable,CustomStringConvertible {
     */
   public static func today() -> Date {
     return Timestamp.now().date
+  }
+  
+  /**
+    This method adds a time interval to this date.
+
+    - parameter interval:   The interval to add.
+    - returns:              The new date.
+    */
+  public func byAddingInterval(interval: TimeInterval) -> Date {
+    var year = self.year + interval.years
+    var month = self.month + interval.months
+    var day = self.day + interval.days
+    
+    Timestamp.normalizeDate(year: &year, month: &month, day: &day, inCalendar: calendar)
+    return Date(year: year, month: month, day: day, calendar: calendar)
+  }
+  
+  /**
+    This method gets the time interval between this date and another date.
+   
+    - parameter other:    The other date.
+    - returns:            The time interval.
+    */
+  public func intervalSince(other: Date) -> TimeInterval {
+    let interval = TimeInterval(
+      years: self.year - other.year,
+      months: self.month - other.month,
+      days: self.day - other.day
+    )
+    let sign = (self < other) ? -1 : 1
+    return Timestamp.normalizeTimeInterval(interval, withSign: sign, inCalendar: calendar, inMonth: month)
   }
 }
 

@@ -288,19 +288,6 @@ class TimestampTests: XCTestCase, TailorTestable {
     assert(timestamp2 + interval, equals: timestamp1)
   }
   
-  func testSubtractionGetsIntervalBetweenTimestamps() {
-    let timestamp1 = Timestamp(epochSeconds: 1770009956, timeZone: TimeZone(name: "UTC"), calendar: GregorianCalendar())
-    let timestamp2 = Timestamp(epochSeconds: 1733629141, timeZone: TimeZone(name: "UTC"), calendar: GregorianCalendar())
-    let interval = timestamp1 - timestamp2
-    assert(interval.years, equals: 1)
-    assert(interval.months, equals: 1)
-    assert(interval.days, equals: 25)
-    assert(interval.hours, equals: 1)
-    assert(interval.minutes, equals: 46)
-    assert(interval.seconds, equals: 55)
-    assert(timestamp2 + interval, equals: timestamp1)
-  }
-  
   //MARK: - Formatting
   
   func testFormatMethodFormatsTime() {

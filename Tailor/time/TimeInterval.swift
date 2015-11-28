@@ -150,32 +150,6 @@ public func -(lhs: TimeInterval, rhs: TimeInterval) -> TimeInterval {
 }
 
 /**
-  This method adds a time interval to a timestamp.
-
-  See Timestamp#byAddingInterval for more details.
-
-  - parameter lhs:    The timestamp that we are adding to.
-  - parameter rhs:    The interval we are adding.
-  - returns:          The new timestamp.
-  */
-public func +(lhs: Timestamp, rhs: TimeInterval) -> Timestamp {
-  return lhs.byAddingInterval(rhs)
-}
-
-/**
-  This method substracts a time interval from a timestamp.
-
-  See Timestamp#byAddingInterval for more details.
-
-  - parameter lhs:    The timestamp that we are subtracting from.
-  - parameter rhs:    The time interval we are subtracting.
-  - returns:          The new timestamp.
-  */
-public func -(lhs: Timestamp, rhs: TimeInterval) -> Timestamp {
-  return lhs.byAddingInterval(rhs.invert())
-}
-
-/**
   This extension provides shorthand for constructing time intervals out of
   integers.
   */

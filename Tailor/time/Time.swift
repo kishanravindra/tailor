@@ -2,7 +2,7 @@
   This structure represents a time in a day, independent of the day it occurs
   on.
   */
-public struct Time: Comparable, CustomStringConvertible {
+public struct Time: Comparable, CustomStringConvertible, TimeIntervalArithmeticType {
   /** The hour, in 24 hour time. */
   public let hour: Int
   
@@ -48,6 +48,44 @@ public struct Time: Comparable, CustomStringConvertible {
     */
   public var today: Timestamp {
     return Timestamp.now().change(hour: hour, minute: minute, second: second, nanosecond: nanosecond)
+  }
+  
+  //MARK: - Time Intervals
+  
+  /**
+    This method adds a time interval to this time.
+
+    - parameter interval:     The interval to add.
+    - returns:                The new time.
+    */
+  public func byAddingInterval(interval: TimeInterval) -> Time {
+    var day = 0
+    var hour = self.hour + interval.hours
+    var minute = self.minute + interval.minutes
+    var second = self.second + interval.seconds
+    var nanosecond = self.nanosecond + interval.nanoseconds
+    
+    Timestamp.normalizeTime(day: &day, hour: &hour, minute: &minute, second: &second, nanosecond: &nanosecond, inCalendar: GregorianCalendar())
+    
+    return Time(hour: hour, minute: minute, second: second, nanosecond: nanosecond, timeZone: timeZone)
+  }
+  
+  /**
+    This method gets the interval between this time and another time.
+   
+    - parameter other:    The other time.
+    - returns:            The interval.
+    */
+  public func intervalSince(other: Time) -> TimeInterval {
+    let interval = TimeInterval(
+      hours: self.hour - other.hour,
+      minutes: self.minute - other.minute,
+      seconds: self.second - other.second,
+      nanoseconds: self.nanosecond - other.nanosecond
+    )
+    
+    let sign = (self < other ? -1 : 1)
+    return Timestamp.normalizeTimeInterval(interval, withSign: sign, inCalendar: GregorianCalendar(), inMonth: 1)
   }
 }
 

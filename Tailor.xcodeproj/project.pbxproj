@@ -173,6 +173,8 @@
 		52DD44FF1B5ED2FC00312923 /* EmptyController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DD44FE1B5ED2FC00312923 /* EmptyController.swift */; };
 		52DD45001B5ED8E700312923 /* TailorTesting.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5262EEA31AD0BA3D006F864D /* TailorTesting.framework */; };
 		52DDCF011A538C5800D3A47E /* QueryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DDCF001A538C5800D3A47E /* QueryTests.swift */; };
+		52E3B65F1C0A1B560086608D /* TimeIntervalArithmeticType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E3B65E1C0A1B560086608D /* TimeIntervalArithmeticType.swift */; };
+		52E3B6611C0A1CCE0086608D /* TimeIntervalArithmeticType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E3B6601C0A1CCE0086608D /* TimeIntervalArithmeticType.swift */; };
 		52E784B51A59C12D0065C10D /* SessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784B41A59C12D0065C10D /* SessionTests.swift */; };
 		52E784B81A59F2030065C10D /* AesEncryptorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784B71A59F2030065C10D /* AesEncryptorTests.swift */; };
 		52E784BA1A5A04590065C10D /* ShaPasswordHasherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E784B91A5A04590065C10D /* ShaPasswordHasherTests.swift */; };
@@ -425,6 +427,8 @@
 		52DD44FC1B5DC3A600312923 /* SendmailEmailAgentTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendmailEmailAgentTests.swift; sourceTree = "<group>"; };
 		52DD44FE1B5ED2FC00312923 /* EmptyController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptyController.swift; sourceTree = "<group>"; };
 		52DDCF001A538C5800D3A47E /* QueryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = QueryTests.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		52E3B65E1C0A1B560086608D /* TimeIntervalArithmeticType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeIntervalArithmeticType.swift; sourceTree = "<group>"; };
+		52E3B6601C0A1CCE0086608D /* TimeIntervalArithmeticType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeIntervalArithmeticType.swift; sourceTree = "<group>"; };
 		52E758951AF68AE000EA7EEE /* localization.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = localization.plist; sourceTree = "<group>"; };
 		52E784B41A59C12D0065C10D /* SessionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionTests.swift; sourceTree = "<group>"; };
 		52E784B71A59F2030065C10D /* AesEncryptorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AesEncryptorTests.swift; sourceTree = "<group>"; };
@@ -531,6 +535,7 @@
 				52C10D041B0927F3005D85D4 /* Time.swift */,
 				5226431B1B06C7F40081D04E /* TimeFormat.swift */,
 				5226431C1B06C7F40081D04E /* TimeInterval.swift */,
+				52E3B65E1C0A1B560086608D /* TimeIntervalArithmeticType.swift */,
 				5226431D1B06C7F40081D04E /* Timestamp.swift */,
 				5226431F1B06C7F40081D04E /* TimeZone.swift */,
 				522643201B06C7F40081D04E /* TimeZoneReader.swift */,
@@ -547,6 +552,7 @@
 				52C10D061B092838005D85D4 /* TimeTests.swift */,
 				526ACD7F1B07922900CE0CC0 /* TimeFormatTests.swift */,
 				526ACD811B07A9FD00CE0CC0 /* TimeIntervalTests.swift */,
+				52E3B6601C0A1CCE0086608D /* TimeIntervalArithmeticType.swift */,
 				526ACD831B07B8FC00CE0CC0 /* TimestampTests.swift */,
 				52135CA41B07FE0D00595794 /* TimeZoneTests.swift */,
 			);
@@ -1361,6 +1367,7 @@
 				52A05A331B7FAA2800DB1248 /* RouteSet.swift in Sources */,
 				52C5B4841B47055000F4A5C5 /* TestTask.swift in Sources */,
 				526254301AABC37900D63024 /* CacheImplementation.swift in Sources */,
+				52E3B65F1C0A1B560086608D /* TimeIntervalArithmeticType.swift in Sources */,
 				52BD143119E9DA1D006D72B0 /* Session.swift in Sources */,
 				5262D14F1B4C8DF400101154 /* JsonConvertible.swift in Sources */,
 				524828311B7FE95F006257F2 /* EtagFilter.swift in Sources */,
@@ -1455,6 +1462,7 @@
 				52DD44F71B5C4C8800312923 /* EmailAgentTests.swift in Sources */,
 				523C80161BDD5238004D501D /* CollectionTypeTests.swift in Sources */,
 				52DD44EB1B5736AE00312923 /* EmailTests.swift in Sources */,
+				52E3B6611C0A1CCE0086608D /* TimeIntervalArithmeticType.swift in Sources */,
 				52A95E331AE0A3E6001AED1F /* DatabaseValueTests.swift in Sources */,
 				5269F1E11BED799D00D78C6C /* SerializationErrorTests.swift in Sources */,
 				529230061A3CF4E4006DD6EB /* ApplicationTests.swift in Sources */,
