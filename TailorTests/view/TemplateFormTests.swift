@@ -57,6 +57,17 @@ class TemplateFormTests: XCTestCase, TailorTestable {
   func testDefaultInputBuilderAddsLabelAndTextField() {
     form.input("color", "black", attributes: ["maxLength": "20"])
     assert(template.contents, equals: "<div><label>color</label><input maxLength=\"20\" name=\"hat[color]\" value=\"black\"></input></div>", message: "puts label and input in template")
+    class TopHat: ModelType {
+      static func modelName() -> String {
+        return "top_hat"
+      }
+    }
+  }
+  
+  func testDefaultInputBuilderWithMultiWordNamesAddsLabelAndTextField() {
+    form = TemplateForm(controller: controller, type: TopHat.self)
+    form.input("brimSize", "12")
+    assert(template.contents, equals: "<div><label>brim size</label><input name=\"topHat[brimSize]\" value=\"12\"></input></div>", message: "puts label and input in template")
   }
   
   func testFormWithNeitherNameNorTypeHasNameModel() {

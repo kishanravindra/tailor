@@ -56,7 +56,7 @@ public struct TemplateForm {
   */
   public init(controller: ControllerType, name: String? = nil, type: ModelType.Type? = nil, validationErrors: [ValidationError] = [], inputBuilder: InputBuilder? = nil) {
     self.template = InnerTemplate(state: TemplateState(controller))
-    self.name = type?.modelName() ?? name ?? "model"
+    self.name = type?.modelName().camelCase() ?? name ?? "model"
     self.modelType = type
     self.validationErrors = validationErrors
     
@@ -84,13 +84,21 @@ public struct TemplateForm {
   public static func defaultInputBuilder(form: TemplateForm, key: String, value: String, attributes: [String:String], errors: [ValidationError]) -> TemplateType {
     var template = form.template
     template.tag("div") {
-      var label = key
+      let localization = form.template.controller.localization
+      var label: String
+      if let type = form.modelType {
+        label = type.attributeName(key, localization: localization)
+      }
+      else {
+        label = localization.fetch(form.name.underscored() + ".attributes." + key) ?? key
+      }
       if let type = attributes["type"] {
         if type == "radio" {
           label = template.localize("\(form.name).\(key).\(value)") ?? value
         }
       }
-      template.tag("label", text: label)
+      
+      template.tag("label") { template.text(label, localize: false) }
       var mergedAttributes = attributes
       mergedAttributes["name"] = "\(form.name)[\(key)]"
       mergedAttributes["value"] = value
