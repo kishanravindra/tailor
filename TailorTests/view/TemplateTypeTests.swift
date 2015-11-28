@@ -329,7 +329,7 @@ class TemplateTypeTests: XCTestCase, TailorTestable {
       form.input("brimSize", "10")
     }
     template.tag("p", text: "Goodbye")
-    assert(template.contents, equals: "<p>Hello</p><form action=\"/hats/5\" form-type=\"my-form\" method=\"POST\"><div><label>color</label><input name=\"hat[color]\" value=\"red\"></input></div><div><label>brimSize</label><input name=\"hat[brimSize]\" value=\"10\"></input></div></form><p>Goodbye</p>")
+    assert(template.contents, equals: "<p>Hello</p><form action=\"/hats/5\" form-type=\"my-form\" method=\"POST\"><div><label>color</label><input name=\"hat[color]\" value=\"red\"></input></div><div><label>brim size</label><input name=\"hat[brimSize]\" value=\"10\"></input></div></form><p>Goodbye</p>")
   }
   
   func testRenderTemplatePutsTemplateContentsInBuffer() {
