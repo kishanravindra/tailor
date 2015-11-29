@@ -164,6 +164,49 @@ extension QueryType {
     return self.dynamicType.init(copyFrom: self.filter(query, parameters.map { $0 as SerializationConvertible }))
   }
   
+  /**
+    This method adds a filter checking that a column has a value in a list of
+    possible values.
+
+    This will create an "IN" clause, with the format
+    `column in ("value1","value2")`. The values in the list will be
+    automatically SQL-sanitized, so they can include untrusted input. The column
+    will not be sanitized, so you must make sure that it does not contain
+    arbitrary or malicious SQL yourself.
+
+    - parameter column:     The column whose values we are filtering on
+    - parameter list:       The possible values for the column
+    - returns:              The new queries.
+    */
+  public func filter(column: String, inList list: [String]) -> Self {
+    var query = "\(column) in ("
+    query += list.map {
+      value -> String in
+      return "\"" + Sanitizer.sqlSanitizer.sanitizeString(value) + "\""
+    }.joinWithSeparator(",")
+    query += ")"
+    return self.filter(query)
+  }
+  
+  
+  /**
+    This method adds a filter checking that a column has a value in a list of
+    possible values.
+
+    This will create an "IN" clause, with the format
+    `column in (value1,value2)`. The column will not be sanitized, so you must
+    make sure that it does not contain arbitrary or malicious SQL yourself.
+
+    - parameter column:     The column whose values we are filtering on
+    - parameter list:       The possible values for the column
+    - returns:              The new queries.
+    */
+  public func filter(column: String, inList list: [Int]) -> Self {
+    var query = "\(column) in ("
+    query += list.map { String($0) }.joinWithSeparator(",")
+    query += ")"
+    return self.filter(query)
+  }
   
   /**
     This method attaches an ordering to the query, and returns the result.

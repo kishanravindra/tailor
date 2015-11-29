@@ -137,6 +137,21 @@ class QueryTests: XCTestCase, TailorTestable {
     assert(query.joinClause.parameters, equals: baseQuery.joinClause.parameters, message: "copies join clause")
   }
   
+  func testFilterWithArrayOfStringsCreatesInClause() {
+    let query = baseQuery.filter("color", inList: ["red", "black"])
+    assert(query.whereClause.query, equals: "hats.store_id=? AND color in (\"red\",\"black\")")
+  }
+  
+  func testFilterWithDangerousTextInListFiltersText() {
+    let query = baseQuery.filter("color", inList: ["red", "\"; DROP TABLE hats;"])
+    assert(query.whereClause.query, equals: "hats.store_id=? AND color in (\"red\",\"\\\"; DROP TABLE hats;\")")
+  }
+  
+  func testFilterWithArrayOfNumbersCreatesInClause() {
+    let query = baseQuery.filter("id", inList: [1,2,3])
+    assert(query.whereClause.query, equals: "hats.store_id=? AND id in (1,2,3)")
+  }
+  
   func testOrderAppendsNewOrdering() {
     let query = baseQuery.order("hats.color ASC")
     
