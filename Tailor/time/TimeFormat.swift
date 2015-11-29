@@ -5,7 +5,7 @@ public protocol TimeFormatter {
   /**
     This method formats a timestamp using the rules of this time formatter.
     */
-  func formatTime(timestamp: Timestamp) -> String
+  func format(components: TimeFormat.TimeComponentContainer) -> String
   
   /**
     This method parses information from a string into a timestamp.
@@ -21,7 +21,163 @@ public protocol TimeFormatter {
     - parameter calendar:    The calendar that the date is formatted in.
     - returns:           The remaining string.
     */
-  func parseTime(from string: String, inout into container: (year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int, nanosecond: Double, timeZone: TimeZone), calendar: Calendar) -> String?
+  func parse(from string: String, inout into container: TimeFormat.TimeComponentContainer) -> String?
+}
+
+extension TimeFormatter {
+  /**
+    This method formats a timestamp.
+
+    This has been deprecated in favor of the `format` method.
+
+    - parameter timestamp:      The timestamp we are formatting.
+    - returns:                  The formatted description.
+    */
+  @available(*, deprecated, message="Use the format method instead")
+  public func formatTime(timestamp: Timestamp) -> String {
+    return self.format(timestamp)
+  }
+  
+  /**
+    This method parses a timestamp from a string.
+
+    This has been deprecated in favor of the `parse` method, which has
+    additional fields in the container.
+
+    - parameter string:             The formatted time string
+    - parameter container:          A tuple that will contain the time fields
+    - parameter calendar:           A calendar that specifies how to interpret
+                                    the month names and other time information.
+    - returns:                      The remainder of the string after we have
+                                    extracted the time components. If the string
+                                    did not satisfy our format, this will return
+                                    nil.
+    */
+  @available(*, deprecated, message="Use the parse method instead")
+  public func parseTime(from string: String, inout into container: (year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int, nanosecond: Double, timeZone: TimeZone), calendar: Calendar) -> String? {
+    
+    var fullContainer = (year: container.year, month: container.month, day: container.month, weekDay: 0, hour: container.hour, minute: container.minute, second: container.second, nanosecond: container.nanosecond, epochSeconds: 0.0, calendar: calendar, timeZone: container.timeZone)
+    let result = self.parse(from: string, into: &fullContainer)
+    container.year = fullContainer.year
+    container.month = fullContainer.month
+    container.day = fullContainer.day
+    container.hour = fullContainer.hour
+    container.minute = fullContainer.minute
+    container.second = fullContainer.second
+    container.nanosecond = fullContainer.nanosecond
+    container.timeZone = fullContainer.timeZone
+    return result
+  }
+
+  /**
+   This method formats a timestamp based on the rules of this component.
+   
+   - parameter timestamp:    The timestamp to format.
+   - returns:                The formatted string.
+   */
+  public func format(timestamp: Timestamp) -> String {
+    return self.format((year: timestamp.year, month: timestamp.month,
+      day: timestamp.day, weekDay: timestamp.weekDay, hour: timestamp.hour,
+      minute: timestamp.minute, second: timestamp.second,
+      nanosecond: timestamp.nanosecond, epochSeconds: timestamp.epochSeconds,
+      calendar: timestamp.calendar, timeZone: timestamp.timeZone))
+  }
+  
+  /**
+   This method formats a timestamp based on the rules of this component.
+   
+   - parameter timestamp:    The timestamp to format.
+   - returns:                The formatted string.
+   */
+  public func format(date: Date) -> String {
+    return self.format((year: date.year, month: date.month,
+      day: date.day, weekDay: 0, hour: 0, minute: 0, second: 0,
+      nanosecond: 0, epochSeconds: 0, calendar: date.calendar,
+      timeZone: Tailor.TimeZone.systemTimeZone()))
+  }
+  
+  /**
+   This method formats a timestamp based on the rules of this component.
+   
+   - parameter timestamp:    The timestamp to format.
+   - returns:                The formatted string.
+   */
+  public func format(time: Time) -> String {
+    return self.format((year: 0, month: 0, day: 0, weekDay: 0,
+      hour: time.hour, minute: time.minute, second: time.second,
+      nanosecond: time.nanosecond, epochSeconds: 0,
+      calendar: GregorianCalendar(), timeZone: time.timeZone))
+  }
+  
+  /**
+    This method parses a timestamp from a string.
+   
+    This has been deprecated in favor of the parseTimestamp method.
+
+    - parameter string:     The string to parse.
+    - parameter timeZone:   The time zone to interpret the string with.
+    - parameter calendar:   The calendar to interpret the string with.
+    - returns:              The parsed timestamp. If the string didn't match the
+                            expected format, this will return nil.
+    */
+  @available(*, deprecated, message="Use the parseTimestamp method instead")
+  public func parseTime(string: String, timeZone: TimeZone = TimeZone.systemTimeZone(), calendar: Calendar = GregorianCalendar()) -> Timestamp? {
+    return self.parseTimestamp(string, timeZone: timeZone, calendar: calendar)
+  }
+  
+  /**
+    This method parses a timestamp from a string.
+
+    - parameter string:     The string to parse.
+    - parameter timeZone:   The time zone to interpret the string with.
+    - parameter calendar:   The calendar to interpret the string with.
+    - returns:              The parsed timestamp. If the string didn't match the
+                            expected format, this will return nil.
+    */
+  public func parseTimestamp(string: String, timeZone: TimeZone = TimeZone.systemTimeZone(), calendar: Calendar = GregorianCalendar()) -> Timestamp? {
+    var timeInformation = (year: 0, month: 0, day: 0, weekDay: 0, hour: 0, minute: 0, second: 0, nanosecond: 0.0, epochSeconds: 0.0, calendar: calendar, timeZone: timeZone)
+    let result = parse(from: string, into: &timeInformation)
+    if result == nil {
+      return nil
+    }
+    return Timestamp(year: timeInformation.year, month: timeInformation.month, day: timeInformation.day, hour: timeInformation.hour, minute: timeInformation.minute, second: timeInformation.second, nanosecond: timeInformation.nanosecond, timeZone: timeInformation.timeZone, calendar: calendar)
+  }
+  
+  /**
+    This method parses a date from a string.
+
+    - parameter string:     The string to parse.
+    - parameter timeZone:   The time zone to interpret the string with.
+    - parameter calendar:   The calendar to interpret the string with.
+    - returns:              The parsed date. If the string didn't match the
+                            expected format, this will return nil.
+    */
+  public func parseDate(string: String, timeZone: TimeZone = TimeZone.systemTimeZone(), calendar: Calendar = GregorianCalendar()) -> Date? {
+    var timeInformation = (year: 0, month: 0, day: 0, weekDay: 0, hour: 0, minute: 0, second: 0, nanosecond: 0.0, epochSeconds: 0.0, calendar: calendar, timeZone: timeZone)
+    let result = parse(from: string, into: &timeInformation)
+    if result == nil {
+      return nil
+    }
+    return Date(year: timeInformation.year, month: timeInformation.month, day: timeInformation.day, calendar: calendar)
+  }
+  
+  /**
+    This method parses a time from a string.
+
+    - parameter string:     The string to parse.
+    - parameter timeZone:   The time zone to interpret the string with.
+    - parameter calendar:   The calendar to interpret the string with.
+    - returns:              The parsed timestamp. If the string didn't match the
+                            expected format, this will return nil.
+    */
+  public func parseTime(string: String, timeZone: TimeZone = TimeZone.systemTimeZone(), calendar: Calendar = GregorianCalendar()) -> Time? {
+    var timeInformation = (year: 0, month: 0, day: 0, weekDay: 0, hour: 0, minute: 0, second: 0, nanosecond: 0.0, epochSeconds: 0.0, calendar: calendar, timeZone: timeZone)
+    let result = parse(from: string, into: &timeInformation)
+    if result == nil {
+      return nil
+    }
+    return Time(hour: timeInformation.hour, minute: timeInformation.minute, second: timeInformation.second, nanosecond: timeInformation.nanosecond, timeZone: timeInformation.timeZone)
+  }
 }
 
 /**
@@ -31,6 +187,12 @@ public protocol TimeFormatter {
   typically TimeFormatComponents.
   */
 public struct TimeFormat: TimeFormatter {
+  /**
+    This type holds individual parts of a timestamp for use in formatting and
+    parsing times.
+    */
+  public typealias TimeComponentContainer = (year: Int, month: Int, day: Int, weekDay: Int, hour: Int, minute: Int, second: Int, nanosecond: Double, epochSeconds: Double, calendar: Calendar, timeZone: TimeZone)
+  
   /** The components of this time format. */
   public private(set) var components: [TimeFormatter]
   
@@ -133,11 +295,13 @@ public struct TimeFormat: TimeFormatter {
   /**
     This method formats a timestamp using the rules of this time formatter.
 
-    - parameter timestamp:   The timestamp to format.
-    - returns:           The formatted string.
+    - parameter timestamp:    The timestamp to format.
+    - returns:                The formatted string.
     */
-  public func formatTime(timestamp: Timestamp) -> String {
-    return self.components.map { $0.formatTime(timestamp) }.joinWithSeparator("")
+  public func format(timeComponents: TimeComponentContainer) -> String {
+    return self.components.map {
+      $0.format(timeComponents)
+    }.joinWithSeparator("")
   }
   
   /**
@@ -154,34 +318,16 @@ public struct TimeFormat: TimeFormatter {
     - parameter calendar:    The calendar that the date is formatted in.
     - returns:           The remaining string.
   */
-  public func parseTime(from string: String, inout into container: (year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int, nanosecond: Double, timeZone: TimeZone), calendar: Calendar = GregorianCalendar()) -> String? {
+  public func parse(from string: String, inout into container: TimeFormat.TimeComponentContainer) -> String? {
     var string: String = string
     
     for component in components {
-      guard let newString = component.parseTime(from: string, into: &container, calendar: calendar) else {
+      guard let newString = component.parse(from: string, into: &container) else {
         return nil
       }
       string = newString
     }
     return string
-  }
-  
-  /**
-    This method parses a timestamp from a string.
-
-    - parameter string:    The string to parse.
-    - parameter timeZone:  The time zone to interpret the string with.
-    - parameter calendar:  The calendar to interpret the string with.
-    - returns:         The parsed timestamp. If the string didn't match the
-                      expected format, this will return nil.
-    */
-  public func parseTime(string: String, timeZone: TimeZone = TimeZone.systemTimeZone(), calendar: Calendar = GregorianCalendar()) -> Timestamp? {
-    var timeInformation = (year: 0, month: 0, day: 0, hour: 0, minute: 0, second: 0, nanosecond: 0.0, timeZone: timeZone)
-    let result = parseTime(from: string, into: &timeInformation)
-    if result == nil {
-      return nil
-    }
-    return Timestamp(year: timeInformation.year, month: timeInformation.month, day: timeInformation.day, hour: timeInformation.hour, minute: timeInformation.minute, second: timeInformation.second, nanosecond: timeInformation.nanosecond, timeZone: timeInformation.timeZone, calendar: calendar)
   }
 }
 
@@ -300,16 +446,16 @@ public enum TimeFormatComponent: TimeFormatter {
   }
   
   /**
-    This method formats a timestamp based on the rules of this component.
-
-    - parameter timestamp:    The timestamp to format.
-    - returns:                The formatted string.
-    */
-  public func formatTime(timestamp: Timestamp) -> String {
+    This method formats a timestamp based on the rules of this formatter.
+   
+    - parameter components:     The individual parts of the timestamp to format.
+    - returns:                  The formatted string.
+   */
+  public func format(components: TimeFormat.TimeComponentContainer) -> String {
     switch(self) {
     case let .Literal(s): return s
     case let .YearWith(padding, length, truncate):
-      var year = String(timestamp.year)
+      var year = String(components.year)
       if let padding = padding {
         year = pad(year, with: padding, length: length)
       }
@@ -319,7 +465,7 @@ public enum TimeFormatComponent: TimeFormatter {
       }
       return year
     case let .MonthWith(padding):
-      let month = String(timestamp.month)
+      let month = String(components.month)
       if let padding = padding {
         return pad(month, with: padding, length: 2)
       }
@@ -331,22 +477,22 @@ public enum TimeFormatComponent: TimeFormatter {
       let key: String
       let fallbacks: [String]
       if abbreviate {
-        key = "dates.\(timestamp.calendar.identifier).month_names.abbreviated.\(timestamp.month)"
-        fallbacks = timestamp.calendar.abbreviatedMonthNames
+        key = "dates.\(components.calendar.identifier).month_names.abbreviated.\(components.month)"
+        fallbacks = components.calendar.abbreviatedMonthNames
       }
       else {
-        key = "dates.\(timestamp.calendar.identifier).month_names.full.\(timestamp.month)"
-        fallbacks = timestamp.calendar.monthNames
+        key = "dates.\(components.calendar.identifier).month_names.full.\(components.month)"
+        fallbacks = components.calendar.monthNames
       }
       if let value = localization.fetch(key) { return value }
-      if timestamp.month < fallbacks.count + 1 && timestamp.month > 0 {
-        return fallbacks[timestamp.month - 1]
+      if components.month < fallbacks.count + 1 && components.month > 0 {
+        return fallbacks[components.month - 1]
       }
       else {
-        return "\(timestamp.month)"
+        return "\(components.month)"
       }
     case let .DayWith(padding):
-      let day = String(timestamp.day)
+      let day = String(components.day)
       if let padding = padding {
         return pad(day, with: padding, length: 2)
       }
@@ -354,56 +500,56 @@ public enum TimeFormatComponent: TimeFormatter {
         return day
       }
     case let .HourWith(twelveHour, padding):
-      let hour: String
-      if twelveHour && timestamp.hour > 12 {
-        hour = String(timestamp.hour - 12)
+      let hourString: String
+      if twelveHour && components.hour > 12 {
+        hourString = String(components.hour - 12)
       }
-      else if twelveHour && timestamp.hour == 0 {
-        hour = "12"
+      else if twelveHour && components.hour == 0 {
+        hourString = "12"
       }
       else {
-        hour = String(timestamp.hour)
+        hourString = String(components.hour)
       }
       if let padding = padding {
-        return pad(hour, with: padding, length: 2)
+        return pad(hourString, with: padding, length: 2)
       }
       else {
-        return hour
+        return hourString
       }
-    case .Minute: return pad(String(timestamp.minute), with: "0", length: 2)
-    case .Seconds: return pad(String(timestamp.second), with: "0", length: 2)
-    case .WeekDay: return String(timestamp.weekDay)
+    case .Minute: return pad(String(components.minute), with: "0", length: 2)
+    case .Seconds: return pad(String(components.second), with: "0", length: 2)
+    case .WeekDay: return String(components.weekDay)
     case let .WeekDayName(abbreviate):
       let localization = Application.configuration.localization("en")
       let key: String
       let fallbacks: [String]
       if abbreviate {
-        key = "dates.\(timestamp.calendar.identifier).week_day_names.abbreviated.\(timestamp.weekDay)"
-        fallbacks = timestamp.calendar.abbreviatedDayNames
+        key = "dates.\(components.calendar.identifier).week_day_names.abbreviated.\(components.weekDay)"
+        fallbacks = components.calendar.abbreviatedDayNames
       }
       else {
-        key = "dates.\(timestamp.calendar.identifier).week_day_names.full.\(timestamp.weekDay)"
-        fallbacks = timestamp.calendar.dayNames
+        key = "dates.\(components.calendar.identifier).week_day_names.full.\(components.weekDay)"
+        fallbacks = components.calendar.dayNames
       }
       if let value = localization.fetch(key) { return value }
-      if timestamp.weekDay < fallbacks.count + 1 && timestamp.weekDay > 0 {
-        return fallbacks[timestamp.weekDay - 1]
+      if components.weekDay < fallbacks.count + 1 && components.weekDay > 0 {
+        return fallbacks[components.weekDay - 1]
       }
       else {
-        return "\(timestamp.weekDay)"
+        return "\(components.weekDay)"
       }
-    case .EpochSeconds: return String(Int(timestamp.epochSeconds))
+    case .EpochSeconds: return String(Int(components.epochSeconds))
     case .TimeZone:
-      let policy = timestamp.timeZone.policy(timestamp: timestamp.epochSeconds)
+      let policy = components.timeZone.policy(timestamp: components.epochSeconds)
       return policy.abbreviation
     case .TimeZoneOffset:
-      let policy = timestamp.timeZone.policy(timestamp: timestamp.epochSeconds)
+      let policy = components.timeZone.policy(timestamp: components.epochSeconds)
       let seconds = policy.offset
       let hour = (abs(seconds) / 3600) % 24
       let minute = (abs(seconds) / 60) % 60
       let offset = pad(String(hour), with: "0", length: 2) + pad(String(minute), with: "0", length: 2)
       return (seconds < 0 ? "-" : "+") + offset
-    case .Meridian: return timestamp.hour > 12 ? "PM": "AM"
+    case .Meridian: return components.hour > 12 ? "PM": "AM"
     }
   }
   
@@ -497,7 +643,7 @@ public enum TimeFormatComponent: TimeFormatter {
   
     **TODO:** Parsing more types of components.
     */
-  public func parseTime(from string: String, inout into container: (year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int, nanosecond: Double, timeZone: Tailor.TimeZone), calendar: Calendar = GregorianCalendar()) -> String? {
+  public func parse(from string: String, inout into container: TimeFormat.TimeComponentContainer) -> String? {
     switch(self) {
     case let .Literal(literal):
       if string.hasPrefix(literal) {
@@ -523,8 +669,8 @@ public enum TimeFormatComponent: TimeFormatter {
       return result
     case let .MonthName(abbreviated):
       let key = abbreviated ? "month_names.abbreviated" : "month_names.full"
-      let fallbacks = abbreviated ? calendar.abbreviatedMonthNames : calendar.monthNames
-      let (month,result) = parseText(from: string, key: key, calendar: calendar, range: 1...calendar.months, fallbacks: fallbacks)
+      let fallbacks = abbreviated ? container.calendar.abbreviatedMonthNames : container.calendar.monthNames
+      let (month,result) = parseText(from: string, key: key, calendar: container.calendar, range: 1...container.calendar.months, fallbacks: fallbacks)
       if result != nil {
         container.month = month
       }
@@ -560,8 +706,8 @@ public enum TimeFormatComponent: TimeFormatter {
       return result
     case let .WeekDayName(abbreviate):
       let key = abbreviate ? "week_day_names.abbreviated" : "week_day_names.full"
-      let fallbacks = abbreviate ? calendar.abbreviatedDayNames : calendar.dayNames
-      let (_, result) = parseText(from: string, key: key, calendar: calendar, range: 1...calendar.daysInWeek, fallbacks: fallbacks)
+      let fallbacks = abbreviate ? container.calendar.abbreviatedDayNames : container.calendar.dayNames
+      let (_, result) = parseText(from: string, key: key, calendar: container.calendar, range: 1...container.calendar.daysInWeek, fallbacks: fallbacks)
       return result
     case .EpochSeconds:
       return nil

@@ -56,7 +56,7 @@ public struct Session {
     }
     let dateString = cookieData["expirationDate"] ?? ""
     
-    guard let expirationDate = TimeFormat.Cookie.parseTime(dateString) else { return }
+    guard let expirationDate = TimeFormat.Cookie.parseTimestamp(dateString) else { return }
     guard let address = cookieData["clientAddress"] else { return }
     guard address == clientAddress else { return }
     guard expirationDate >= Timestamp.now() else { return }

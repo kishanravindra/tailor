@@ -157,7 +157,7 @@ extension Timestamp: SerializationConvertible {
     case let .Timestamp(timestamp):
       self.init(epochSeconds: timestamp.epochSeconds, timeZone: timestamp.timeZone, calendar: timestamp.calendar)
     case let .String(string):
-      guard let timestamp = TimeFormat.Database.parseTime(string, timeZone: Application.sharedDatabaseConnection().timeZone, calendar: SystemCalendar()) else {
+      guard let timestamp = TimeFormat.Database.parseTimestamp(string, timeZone: Application.sharedDatabaseConnection().timeZone, calendar: SystemCalendar()) else {
         
         throw SerializationParsingError.WrongFieldType(field: "root", type: Timestamp.self, caseType: value.wrappedType)
       }
@@ -186,7 +186,7 @@ extension Time: SerializationConvertible {
     case let .Timestamp(timestamp):
       self.init(hour: timestamp.hour, minute: timestamp.minute, second: timestamp.second, nanosecond: timestamp.nanosecond, timeZone: timestamp.timeZone)
     case let .String(string):
-      guard let timestamp = TimeFormat.DatabaseTime.parseTime(string, timeZone: Application.sharedDatabaseConnection().timeZone, calendar: SystemCalendar()) else {
+      guard let timestamp = TimeFormat.DatabaseTime.parseTimestamp(string, timeZone: Application.sharedDatabaseConnection().timeZone, calendar: SystemCalendar()) else {
         
         throw SerializationParsingError.WrongFieldType(field: "root", type: Time.self, caseType: value.wrappedType)
       }
@@ -213,7 +213,7 @@ extension Date: SerializationConvertible {
     case let .Timestamp(timestamp):
       self.init(year: timestamp.year, month: timestamp.month, day: timestamp.day, calendar: timestamp.calendar)
     case let .String(string):
-      guard let timestamp = TimeFormat.DatabaseDate.parseTime(string, timeZone: Application.sharedDatabaseConnection().timeZone, calendar: SystemCalendar()) else {
+      guard let timestamp = TimeFormat.DatabaseDate.parseTimestamp(string, timeZone: Application.sharedDatabaseConnection().timeZone, calendar: SystemCalendar()) else {
         
         throw SerializationParsingError.WrongFieldType(field: "root", type: Date.self, caseType: value.wrappedType)
       }

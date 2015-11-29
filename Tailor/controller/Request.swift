@@ -393,9 +393,9 @@ public struct Request: Equatable {
     - returns:        The timestamp.
     */
   public static func parseTime(string: String) -> Timestamp? {
-    return TimeFormat.Rfc822.parseTime(string) ??
-      TimeFormat.Rfc850.parseTime(string) ??
-      TimeFormat.Posix.parseTime(string)
+    return TimeFormat.Rfc822.parseTimestamp(string) ??
+      TimeFormat.Rfc850.parseTimestamp(string) ??
+      TimeFormat.Posix.parseTimestamp(string)
   }
   
   /**

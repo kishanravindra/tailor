@@ -555,7 +555,7 @@ public struct Timestamp: Equatable, Comparable, CustomStringConvertible, TimeInt
     - returns:              The formatted string.
     */
   public func format(format: TimeFormatter) -> String {
-    return format.formatTime(self)
+    return format.format(self)
   }
 }
 

@@ -293,13 +293,13 @@ class TimestampTests: XCTestCase, TailorTestable {
   func testFormatMethodFormatsTime() {
     let timestamp = Timestamp(epochSeconds: 1427459650)
     let formattedString = timestamp.format(TimeFormat.Full)
-    assert(formattedString, equals: TimeFormat.Full.formatTime(timestamp))
+    assert(formattedString, equals: TimeFormat.Full.format(timestamp))
   }
   
   func testDescriptionGetsDatabaseFormattedTime() {
     let timestamp = Timestamp(epochSeconds: 1427459650)
     let formattedString = timestamp.description
-    assert(formattedString, equals: TimeFormat.Database.formatTime(timestamp))
+    assert(formattedString, equals: TimeFormat.Database.format(timestamp))
   }
   
   //MARK: - Foundation Support

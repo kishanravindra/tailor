@@ -6,7 +6,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   var timestampSeconds = 1431788231.0
   var timestamp: Timestamp { return Timestamp(epochSeconds: timestampSeconds, timeZone: TimeZone(name: "UTC")) }
   var formatter: TimeFormatter! = nil
-  var formatted: String? { return formatter?.formatTime(timestamp) }
+  var formatted: String? { return formatter?.format(timestamp) }
   
   override func setUp() {
     super.setUp()
@@ -105,7 +105,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
     Application.configuration.staticContent = [:]
     timestampSeconds += 86400 * 30
     let formatter = TimeFormatComponent.MonthName(abbreviate: false)
-    let formatted = formatter.formatTime(timestamp)
+    let formatted = formatter.format(timestamp)
     assert(formatted, equals: "June")
   }
   
@@ -113,7 +113,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
     Application.configuration.staticContent = [:]
     timestampSeconds += 86400 * 30
     let formatter = TimeFormatComponent.MonthName(abbreviate: true)
-    let formatted = formatter.formatTime(timestamp)
+    let formatted = formatter.format(timestamp)
     assert(formatted, equals: "Jun")
   }
   
@@ -122,7 +122,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
     timestampSeconds += 86400 * 30
     let timestamp = self.timestamp.inCalendar(IslamicCalendar())
     let formatter = TimeFormatComponent.MonthName(abbreviate: false)
-    let formatted = formatter.formatTime(timestamp)
+    let formatted = formatter.format(timestamp)
     assert(formatted, equals: "Sha‘bān")
   }
   
@@ -130,7 +130,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
     Application.configuration.staticContent = [:]
     let timestamp = self.timestamp.inCalendar(HebrewCalendar())
     let formatter = TimeFormatComponent.MonthName(abbreviate: false)
-    let formatted = formatter.formatTime(timestamp)
+    let formatted = formatter.format(timestamp)
     assert(formatted, equals: "Iyar")
   }
   
@@ -139,14 +139,14 @@ class TimeFormatTests: XCTestCase, TailorTestable {
     timestampSeconds += 86400 * 30 * 10
     let timestamp = self.timestamp.inCalendar(HebrewCalendar())
     let formatter = TimeFormatComponent.MonthName(abbreviate: false)
-    let formatted = formatter.formatTime(timestamp)
+    let formatted = formatter.format(timestamp)
     assert(formatted, equals: "Adar II")
   }
   
   func testFormatComponentsWithMonthNameBeyondBoundsGetsMonthNumber() {
     let timestamp = self.timestamp.inCalendar(WeirdCalendar(year: 0)).change(month: 13)
     let formatter = TimeFormatComponent.MonthName(abbreviate: false)
-    let formatted = formatter.formatTime(timestamp)
+    let formatted = formatter.format(timestamp)
     assert(formatted, equals: "13")
   }
   
@@ -230,7 +230,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   func testFormatComponentsWithWeekDayNameWithUntranslatedNameGetsEnglishName() {
     Application.configuration.staticContent = [:]
     let formatter = TimeFormatComponent.WeekDayName(abbreviate: false)
-    let formatted = formatter.formatTime(timestamp)
+    let formatted = formatter.format(timestamp)
     assert(formatted, equals: "Saturday")
   }
   
@@ -243,7 +243,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   func testFormatComponentsWithAbbreviatedWeekDayNameWithUntranslatedNameGetsEnglishName() {
     Application.configuration.staticContent = [:]
     let formatter = TimeFormatComponent.WeekDayName(abbreviate: true)
-    let formatted = formatter.formatTime(timestamp)
+    let formatted = formatter.format(timestamp)
     assert(formatted, equals: "Sat")
   }
   
@@ -252,7 +252,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
     timestamp = timestamp + (8 - timestamp.weekDay).days
     Application.configuration.staticContent = [:]
     let formatter = TimeFormatComponent.WeekDayName(abbreviate: true)
-    let formatted = formatter.formatTime(timestamp)
+    let formatted = formatter.format(timestamp)
     assert(formatted, equals: "8")
   }
   
@@ -264,14 +264,14 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   func testFormatComponentWithTimeZoneGetsAbbreviation() {
     formatter = TimeFormatComponent.TimeZone
     assert(formatted, equals: "UTC")
-    assert(formatter?.formatTime(timestamp.inTimeZone("US/Eastern")), equals: "EDT")
+    assert(formatter?.format(timestamp.inTimeZone("US/Eastern")), equals: "EDT")
   }
   
   func testFormatComponentWithTimeZoneOffsetGetsOffset() {
     formatter = TimeFormatComponent.TimeZoneOffset
     assert(formatted, equals: "+0000")
-    assert(formatter?.formatTime(timestamp.inTimeZone("US/Eastern")), equals: "-0400")
-    assert(formatter?.formatTime(timestamp.inTimeZone("Europe/Rome")), equals: "+0200")
+    assert(formatter?.format(timestamp.inTimeZone("US/Eastern")), equals: "-0400")
+    assert(formatter?.format(timestamp.inTimeZone("Europe/Rome")), equals: "+0200")
   }
   
   func testFormatComponentWithMeridianGetsAmOrPm() {
@@ -286,56 +286,73 @@ class TimeFormatTests: XCTestCase, TailorTestable {
     assert(formatted, equals: "2015-05 16")
   }
   
+  @available(*, deprecated)
+  func testFormatWithMultipleComponentsWithOldMethodCombinesResults() {
+    formatter = TimeFormat(.Year, "-", .Month, " ", .Day)
+    let formatted = formatter.formatTime(timestamp)
+    assert(formatted, equals: "2015-05 16")
+  }
+  
   func testFormatWithDatabaseFormatGetsProperFormat() {
     formatter = TimeFormat.Database
     assert(formatted, equals: "2015-05-16 14:57:11")
   }
   
+  func testFormatDateWithDatabaseFormatGetsProperFormat() {
+    assert(TimeFormat.Database.format(timestamp.date), equals: "2015-05-16 00:00:00")
+    assert(TimeFormat.DatabaseDate.format(timestamp.date), equals: "2015-05-16")
+  }
+  
+  func testFormatTimeWithDatabaseFormatGetsProperFormat() {
+    assert(TimeFormat.Database.format(timestamp.time), equals: "0000-00-00 14:57:11")
+    assert(TimeFormat.DatabaseTime.format(timestamp.time), equals: "14:57:11")
+  }
+  
   func testFormatWithCookieFormatGetsProperFormat() {
     let timestamp = Timestamp(epochSeconds: 1418729233, timeZone: TimeZone(name: "UTC"))
-    let formatted = TimeFormat.Cookie.formatTime(timestamp)
+    let formatted = TimeFormat.Cookie.format(timestamp)
     assert(formatted, equals: "Tue, 16 Dec 2014 11:27:13 UTC", message: "formats string using cookie date format")
   }
   
   func testFormatWithFullFormatGetsHumanReadableDateAndTime() {
     let timestamp = Timestamp(epochSeconds: 1157469107, timeZone: TimeZone(name: "UTC"))
-    let formatted = TimeFormat.Full.formatTime(timestamp)
+    let formatted = TimeFormat.Full.format(timestamp)
     assert(formatted, equals: "5 September, 2006, 15:11:47 UTC")
   }
   
   func testFormatWithFullUsGetsHumanReadableDateAndTime() {
     let timestamp = Timestamp(epochSeconds: 1684782968, timeZone: TimeZone(name: "UTC"))
-    let formatted = TimeFormat.FullUS.formatTime(timestamp)
+    let formatted = TimeFormat.FullUS.format(timestamp)
     assert(formatted, equals: "May 22, 2023, 7:16:08 PM UTC")
   }
   
   func testFormatWithFullDateGetsHumanReadableDate() {
     let timestamp = Timestamp(epochSeconds: 1383010760, timeZone: TimeZone(name: "UTC"))
-    let formatted = TimeFormat.FullDate.formatTime(timestamp)
+    let formatted = TimeFormat.FullDate.format(timestamp)
     assert(formatted, equals: "29 October, 2013")
   }
   
   func testFormatWithFullDateUsGetsHumanReadableDate() {
     let timestamp = Timestamp(epochSeconds: 803301470, timeZone: TimeZone(name: "UTC"))
-    let formatted = TimeFormat.FullDateUS.formatTime(timestamp)
+    let formatted = TimeFormat.FullDateUS.format(timestamp)
     assert(formatted, equals: "June 16, 1995")
   }
   
   func testFormatWithFullTimeGetsHumanReadableTime() {
     let timestamp = Timestamp(epochSeconds: 1526472439, timeZone: TimeZone(name: "UTC"))
-    let formatted = TimeFormat.FullTime.formatTime(timestamp)
+    let formatted = TimeFormat.FullTime.format(timestamp)
     assert(formatted, equals: "12:07:19 UTC")
   }
   
   func testFormatWithFullTimeUsGetsHumanReadableTime() {
     let timestamp = Timestamp(epochSeconds: 1377257661, timeZone: TimeZone(name: "UTC"))
-    let formatted = TimeFormat.FullTimeUS.formatTime(timestamp)
+    let formatted = TimeFormat.FullTimeUS.format(timestamp)
     assert(formatted, equals: "11:34:21 AM UTC")
   }
   
   func testFormatWithRfc2822GetsProperFormat() {
     let timestamp = Timestamp(epochSeconds: 1412440809, timeZone: TimeZone(name: "US/Eastern"))
-    let formatted = TimeFormat.Rfc2822.formatTime(timestamp)
+    let formatted = TimeFormat.Rfc2822.format(timestamp)
     assert(formatted, equals: "4 Oct 2014 12:40:09 -0400")
   }
   
@@ -382,12 +399,12 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   //MARK: - Parsing
   
-  var timeComponents = (year: 0, month: 0, day: 0, hour: 0, minute: 0, second: 0, nanosecond: 0.0, timeZone: TimeZone(name: "UTC"))
+  var timeComponents: TimeFormat.TimeComponentContainer = (year: 0, month: 0, day: 0, weekDay: 0, hour: 0, minute: 0, second: 0, nanosecond: 0.0, epochSeconds: 0.0, calendar: GregorianCalendar(), timeZone: TimeZone(name: "UTC"))
   let calendar = GregorianCalendar()
   
   func testParseTimeComponentWithLiteralComponentLeavesTimeAlone() {
     formatter = TimeFormatComponent.Literal("Hello")
-    let result = formatter.parseTime(from: "Hello, World", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "Hello, World", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -400,19 +417,19 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeComponentWithFullMatchReturnsEmptyString() {
     formatter = TimeFormatComponent.Literal("Hello")
-    let result = formatter.parseTime(from: "Hello", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "Hello", into: &timeComponents)
     assert(result, equals: "")
   }
   
   func testParseTimeComponentWithLiteralComponentWithNonMatchingStringReturnsNil() {
     formatter = TimeFormatComponent.Literal("Hello")
-    let result = formatter.parseTime(from: "Goodbye, World", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "Goodbye, World", into: &timeComponents)
     assert(isNil: result)
   }
   
   func testParseTimeComponentWithYearGetsYear() {
     formatter = TimeFormatComponent.YearWith(padding: "0", length: 4, truncate: false)
-    let result = formatter.parseTime(from: "2010-", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "2010-", into: &timeComponents)
     assert(timeComponents.year, equals: 2010)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -425,7 +442,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeComponentWithYearWithPaddingGetsYear() {
     formatter = TimeFormatComponent.YearWith(padding: "_", length: 4, truncate: false)
-    let result = formatter.parseTime(from: "__99_", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "__99_", into: &timeComponents)
     assert(timeComponents.year, equals: 99)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -438,21 +455,21 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeComponentWithYearWithNonNumericCharacterReturnsNil() {
     formatter = TimeFormatComponent.YearWith(padding: "0", length: 4, truncate: false)
-    let result = formatter.parseTime(from: "Wednesday", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "Wednesday", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(isNil: result)
   }
   
   func testParseTimeComponentWithYearWithTooFewCharactersReturnsNil() {
     formatter = TimeFormatComponent.YearWith(padding: "0", length: 4, truncate: false)
-    let result = formatter.parseTime(from: "201", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "201", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(isNil: result)
   }
   
   func testParseTimeComponentWithTwoDigitYearPutsYearIn1900s() {
     formatter = TimeFormatComponent.YearWith(padding: "0", length: 2, truncate: false)
-    let result = formatter.parseTime(from: "75-", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "75-", into: &timeComponents)
     assert(timeComponents.year, equals: 1975)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -465,7 +482,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeComponentWithMonthGetsMonth() {
     formatter = TimeFormatComponent.MonthWith(padding: "0")
-    let result = formatter.parseTime(from: "123", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "123", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 12)
     assert(timeComponents.day, equals: 0)
@@ -478,7 +495,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeComponentWithPaddedMonthGetsMonth() {
     formatter = TimeFormatComponent.MonthWith(padding: " ")
-    let result = formatter.parseTime(from: " 3-", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: " 3-", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 3)
     assert(timeComponents.day, equals: 0)
@@ -491,7 +508,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeComponentWithNonNumericValueIsNil() {
     formatter = TimeFormatComponent.MonthWith(padding: "0")
-    let result = formatter.parseTime(from: "bad", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "bad", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -505,7 +522,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   func testParseTimeComponentWithMonthNameGetsMonth() {
     Application.configuration.staticContent["en.dates.gregorian.month_names.full.11"] = "noviembre"
     formatter = TimeFormatComponent.MonthName(abbreviate: false)
-    let result = formatter.parseTime(from: "noviembre 3", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "noviembre 3", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 11)
     assert(timeComponents.day, equals: 0)
@@ -519,7 +536,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   func testParseTimeComponentWithAbbreviatedMonthNameGetsMonth() {
     Application.configuration.staticContent["en.dates.gregorian.month_names.abbreviated.12"] = "dez"
     formatter = TimeFormatComponent.MonthName(abbreviate: true)
-    let result = formatter.parseTime(from: "dezo 3", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "dezo 3", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 12)
     assert(timeComponents.day, equals: 0)
@@ -533,7 +550,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   func testParseTimeComponentWithNoTranslationParsesEnglishMonth() {
     Application.configuration.staticContent = [:]
     formatter = TimeFormatComponent.MonthName(abbreviate: false)
-    let result = formatter.parseTime(from: "November 3", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "November 3", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 11)
     assert(timeComponents.day, equals: 0)
@@ -547,7 +564,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   func testParseTimeComponentWithAbbreviatedMonthNameWithNoTranslationParsesEnglishMonth() {
     Application.configuration.staticContent = [:]
     formatter = TimeFormatComponent.MonthName(abbreviate: true)
-    let result = formatter.parseTime(from: "December 3", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "December 3", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 12)
     assert(timeComponents.day, equals: 0)
@@ -560,7 +577,8 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeComponentWithMonthOutsideBoundsParsesMonthNumber() {
     formatter = TimeFormatComponent.MonthName(abbreviate: false)
-    let result = formatter.parseTime(from: "13 15", into: &timeComponents, calendar: WeirdCalendar(year: 0))
+    timeComponents.calendar = WeirdCalendar(year: 0)
+    let result = formatter.parse(from: "13 15", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 13)
     assert(timeComponents.day, equals: 0)
@@ -573,7 +591,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeComponentWithInvalidMonthNameIsNil() {
     formatter = TimeFormatComponent.MonthName(abbreviate: true)
-    let result = formatter.parseTime(from: "noviembre", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "noviembre", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -586,7 +604,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeComponentWithMonthNumberWithinBoundsIsNil() {
     formatter = TimeFormatComponent.MonthName(abbreviate: true)
-    let result = formatter.parseTime(from: "12 14", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "12 14", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -599,7 +617,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeComponentWithDayGetsDay() {
     formatter = TimeFormatComponent.DayWith(padding: "0")
-    let result = formatter.parseTime(from: "23-12", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "23-12", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 23)
@@ -612,7 +630,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeComponentWithPaddedDayGetsDay() {
     formatter = TimeFormatComponent.DayWith(padding: " ")
-    let result = formatter.parseTime(from: " 3-12", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: " 3-12", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 3)
@@ -625,7 +643,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeComponentWithInvalidDayIsNil() {
     formatter = TimeFormatComponent.DayWith(padding: " ")
-    let result = formatter.parseTime(from: "Test", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "Test", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -638,7 +656,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeWith24HourTimeGetsHour() {
     formatter = TimeFormatComponent.HourWith(twelveHour: false, padding: "0")
-    let result = formatter.parseTime(from: "13:45", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "13:45", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -651,7 +669,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeWithPaddedHourTimeGetsHour() {
     formatter = TimeFormatComponent.HourWith(twelveHour: false, padding: "0")
-    let result = formatter.parseTime(from: "01:45", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "01:45", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -664,7 +682,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeWithTwelveHourTimeGetsHour() {
     formatter = TimeFormatComponent.HourWith(twelveHour: true, padding: "0")
-    let result = formatter.parseTime(from: "11:45", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "11:45", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -677,7 +695,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeWithMonthWithInvalidTextReturnsNil() {
     formatter = TimeFormatComponent.HourWith(twelveHour: true, padding: "0")
-    let result = formatter.parseTime(from: "twelve o'clock", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "twelve o'clock", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -690,7 +708,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeWithMinuteGetsMinute() {
     formatter = TimeFormatComponent.Minute
-    let result = formatter.parseTime(from: "37 T", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "37 T", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -703,7 +721,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeWithPaddedMinuteGetsMinute() {
     formatter = TimeFormatComponent.Minute
-    let result = formatter.parseTime(from: "07 T", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "07 T", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -716,7 +734,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeWithMinuteWithInvalidTextReturnsNil() {
     formatter = TimeFormatComponent.Minute
-    let result = formatter.parseTime(from: "forty", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "forty", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -729,7 +747,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeWithSecondGetsSecond() {
     formatter = TimeFormatComponent.Seconds
-    let result = formatter.parseTime(from: "37 T", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "37 T", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -742,7 +760,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeWithPaddedSecondGetsSecond() {
     formatter = TimeFormatComponent.Seconds
-    let result = formatter.parseTime(from: "07 T", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "07 T", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -755,7 +773,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeWithSecondWithInvalidTextReturnsNil() {
     formatter = TimeFormatComponent.Seconds
-    let result = formatter.parseTime(from: "forty", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "forty", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -768,7 +786,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeWithWeekdayWithNumberTextDoesNotChangeTime() {
     formatter = TimeFormatComponent.WeekDay
-    let result = formatter.parseTime(from: "1 2", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "1 2", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -781,7 +799,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeWithWeekDayWithInvalidTextReturnsNil() {
     formatter = TimeFormatComponent.WeekDay
-    let result = formatter.parseTime(from: "January", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "January", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -794,7 +812,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeWithWeekDayNameWithValidNameDoesNotChangeTime() {
     formatter = TimeFormatComponent.WeekDayName(abbreviate: false)
-    let result = formatter.parseTime(from: "Wednesday at noon", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "Wednesday at noon", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -808,7 +826,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   func testParseTimeWithWeekDayNameWithValidNameWithNoTranslationDoesNotChangeTime() {
     Application.configuration.staticContent = [:]
     formatter = TimeFormatComponent.WeekDayName(abbreviate: false)
-    let result = formatter.parseTime(from: "Wednesday at noon", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "Wednesday at noon", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -822,7 +840,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeWithWeekDayNameWithInvalidNameReturnsNil() {
     formatter = TimeFormatComponent.WeekDayName(abbreviate: false)
-    let result = formatter.parseTime(from: "January", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "January", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -835,7 +853,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeWithWeekDayNameWithAbbreviatedNameOnlyConsumesAbbreviatedName() {
     formatter = TimeFormatComponent.WeekDayName(abbreviate: true)
-    let result = formatter.parseTime(from: "Wednesday", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "Wednesday", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -849,7 +867,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   func testParseTimeWithWeekDayNameWithAbbreviatedNameWithNoTranslationOnlyConsumesAbbreviatedName() {
     Application.configuration.staticContent = [:]
     formatter = TimeFormatComponent.WeekDayName(abbreviate: true)
-    let result = formatter.parseTime(from: "Wednesday", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "Wednesday", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -862,7 +880,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeWithEpochSecondsReturnsNil() {
     formatter = TimeFormatComponent.EpochSeconds
-    let result = formatter.parseTime(from: "12345", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "12345", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -875,7 +893,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeWithTimeZoneSetsTimeZone() {
     formatter = TimeFormatComponent.TimeZone
-    let result = formatter.parseTime(from: "EST ", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "EST ", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -889,7 +907,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeWithTimeZoneWithUnderThreeCharactersReturnsNil() {
     formatter = TimeFormatComponent.TimeZone
-    let result = formatter.parseTime(from: "ES", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "ES", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -903,7 +921,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeWithTimeZoneOffsetDoesNotModifyTime() {
     formatter = TimeFormatComponent.TimeZoneOffset
-    let result = formatter.parseTime(from: "+03:00 Z", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "+03:00 Z", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -916,7 +934,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeWithNegativeTimeZoneOffsetDoesNotModifyTime() {
     formatter = TimeFormatComponent.TimeZoneOffset
-    let result = formatter.parseTime(from: "-04:00 Z", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "-04:00 Z", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -929,7 +947,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeWithTimeZoneOffsetWithInvalidOffsetReturnsNil() {
     formatter = TimeFormatComponent.TimeZoneOffset
-    let result = formatter.parseTime(from: "+0300", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "+0300", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -942,7 +960,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeWithTimeZoneOffsetWithBadStringReturnsNil() {
     formatter = TimeFormatComponent.TimeZoneOffset
-    let result = formatter.parseTime(from: "badstring", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "badstring", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -955,7 +973,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeWithTimeZoneOffsetWithNonNumericHourReturnsNil() {
     formatter = TimeFormatComponent.TimeZoneOffset
-    let result = formatter.parseTime(from: "+AM:PM", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "+AM:PM", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -969,7 +987,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   func testParseTimeWithMeridianWithAMLeavesHourIntact() {
     timeComponents.hour = 11
     formatter = TimeFormatComponent.Meridian
-    let result = formatter.parseTime(from: "AM Z", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "AM Z", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -983,7 +1001,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   func testParseTimeWithMeridianWithPMAddsTwelveToHour() {
     timeComponents.hour = 11
     formatter = TimeFormatComponent.Meridian
-    let result = formatter.parseTime(from: "PM Z", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "PM Z", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -997,7 +1015,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   func testParseTimeWithMeridianWithBadMeridianReturnsNil() {
     timeComponents.hour = 11
     formatter = TimeFormatComponent.Meridian
-    let result = formatter.parseTime(from: "FM Z", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "FM Z", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -1011,7 +1029,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   func testParseTimeWithMeridianWithOneLetterReturnsNil() {
     timeComponents.hour = 11
     formatter = TimeFormatComponent.Meridian
-    let result = formatter.parseTime(from: "F", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "F", into: &timeComponents)
     assert(timeComponents.year, equals: 0)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -1024,7 +1042,23 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeWithMultipleComponentsParsesAllComponents() {
     formatter = TimeFormat(.Year, "-", .Month, "-", .Day)
-    let result = formatter.parseTime(from: "2015-05-12 00:00:00", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "2015-05-12 00:00:00", into: &timeComponents)
+    assert(timeComponents.year, equals: 2015)
+    assert(timeComponents.month, equals: 5)
+    assert(timeComponents.day, equals: 12)
+    assert(timeComponents.hour, equals: 0)
+    assert(timeComponents.minute, equals: 0)
+    assert(timeComponents.second, equals: 0)
+    assert(timeComponents.nanosecond, equals: 0.0)
+    assert(result, equals: " 00:00:00")
+  }
+  
+  @available(*, deprecated)
+  func testParseTimeWithMultipleComponentsWithOldMethodParsesAllComponents() {
+    formatter = TimeFormat(.Year, "-", .Month, "-", .Day)
+    var timeComponents = (year: 0, month: 0, day: 0, hour: 0, minute: 0, second: 0, nanosecond: 0.0, timeZone: TimeZone(name: "UTC"))
+    
+    let result = formatter.parseTime(from: "2015-05-12 00:00:00", into: &timeComponents, calendar: GregorianCalendar())
     assert(timeComponents.year, equals: 2015)
     assert(timeComponents.month, equals: 5)
     assert(timeComponents.day, equals: 12)
@@ -1037,7 +1071,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeWithMultipleComponentsWithMissingComponentsReturnsNil() {
     formatter = TimeFormat(.Year, "-", .Month, "-", .Day)
-    let result = formatter.parseTime(from: "2015-May-12 00:00:00", into: &timeComponents, calendar: calendar)
+    let result = formatter.parse(from: "2015-May-12 00:00:00", into: &timeComponents)
     assert(timeComponents.year, equals: 2015)
     assert(timeComponents.month, equals: 0)
     assert(timeComponents.day, equals: 0)
@@ -1048,10 +1082,42 @@ class TimeFormatTests: XCTestCase, TailorTestable {
     assert(isNil: result)
   }
   
-  func testParseTimeToTimestampBuildsTimestamp() {
+  func testParseTimestampBuildsTimestamp() {
     let formatter = TimeFormat(.Year, "-", .Month, "-", .Day, " ", .Hour, ":", .Minute, ":", .Seconds)
     let zone = TimeZone(name: "UTC")
-    let result = formatter.parseTime("2015-05-12 15:23:11", timeZone: zone, calendar: GregorianCalendar())
+    let result = formatter.parseTimestamp("2015-05-12 15:23:11", timeZone: zone, calendar: GregorianCalendar())
+    assert(result?.epochSeconds, equals: 1431444191)
+    assert(result?.year, equals: 2015)
+    assert(result?.month, equals: 5)
+    assert(result?.day, equals: 12)
+    assert(result?.hour, equals: 15)
+    assert(result?.minute, equals: 23)
+    assert(result?.second, equals: 11)
+  }
+  
+  func testParseDateBuildsDate() {
+    let formatter = TimeFormat(.Year, "-", .Month, "-", .Day, " ", .Hour, ":", .Minute, ":", .Seconds)
+    let zone = TimeZone(name: "UTC")
+    let result = formatter.parseDate("2015-05-12 15:23:11", timeZone: zone, calendar: GregorianCalendar())
+    assert(result?.year, equals: 2015)
+    assert(result?.month, equals: 5)
+    assert(result?.day, equals: 12)
+  }
+  
+  func testParseTimeBuildsTime() {
+    let formatter = TimeFormat(.Year, "-", .Month, "-", .Day, " ", .Hour, ":", .Minute, ":", .Seconds)
+    let zone = TimeZone(name: "UTC")
+    let result = formatter.parseTime("2015-05-12 15:23:11", timeZone: zone, calendar: GregorianCalendar()) as Time?
+    assert(result?.hour, equals: 15)
+    assert(result?.minute, equals: 23)
+    assert(result?.second, equals: 11)
+  }
+  
+  @available(*, deprecated)
+  func testParseTimeAsTimestampBuildsTimestamp() {
+    let formatter = TimeFormat(.Year, "-", .Month, "-", .Day, " ", .Hour, ":", .Minute, ":", .Seconds)
+    let zone = TimeZone(name: "UTC")
+    let result = formatter.parseTime("2015-05-12 15:23:11", timeZone: zone, calendar: GregorianCalendar()) as Timestamp?
     assert(result?.epochSeconds, equals: 1431444191)
     assert(result?.year, equals: 2015)
     assert(result?.month, equals: 5)
@@ -1064,7 +1130,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   func testParseTimeToTimestampWithTimeZoneInFormatUsesThatTimeZone() {
     let formatter = TimeFormat(.Year, "-", .Month, "-", .Day, " ", .Hour, ":", .Minute, ":", .Seconds, " ", .TimeZone)
     let zone = TimeZone(name: "UTC")
-    let result = formatter.parseTime("2015-05-12 15:23:11 EDT", timeZone: zone, calendar: GregorianCalendar())
+    let result = formatter.parseTimestamp("2015-05-12 15:23:11 EDT", timeZone: zone, calendar: GregorianCalendar())
     assert(result?.epochSeconds, equals: 1431458591)
     assert(result?.year, equals: 2015)
     assert(result?.month, equals: 5)
@@ -1075,15 +1141,27 @@ class TimeFormatTests: XCTestCase, TailorTestable {
     assert(result?.timeZone.name, equals: "EDT")
   }
   
-  func testParseTimeToTimestampWithInvalidStringReturnsNil() {
+  func testParseTimestampWithInvalidStringReturnsNil() {
     let formatter = TimeFormat(.Year, "-", .Month, "-", .Day, " ", .Hour, ":", .Minute, ":", .Seconds)
-    let result = formatter.parseTime("2015-May-12 00:00:00")
+    let result = formatter.parseTimestamp("2015-May-12 00:00:00")
+    assert(isNil: result)
+  }
+  
+  func testParseDateWithInvalidStringReturnsNil() {
+    let formatter = TimeFormat(.Year, "-", .Month, "-", .Day, " ", .Hour, ":", .Minute, ":", .Seconds)
+    let result = formatter.parseDate("2015-May-12 00:00:00")
+    assert(isNil: result)
+  }
+  
+  func testParseTimeWithInvalidStringReturnsNil() {
+    let formatter = TimeFormat(.Year, "-", .Month, "-", .Day, " ", .Hour, ":", .Minute, ":", .Seconds)
+    let result = formatter.parseTime("2015-May-12 00:00:00") as Time?
     assert(isNil: result)
   }
   
   func testParseTimeWithDatabaseFormatCanParseValidTime() {
     let formatter = TimeFormat.Database
-    let result = formatter.parseTime("1996-11-12 05:26:09", timeZone: TimeZone(name: "UTC"))
+    let result = formatter.parseTimestamp("1996-11-12 05:26:09", timeZone: TimeZone(name: "UTC"))
     assert(result?.epochSeconds, equals: 847776369)
     assert(result?.year, equals: 1996)
     assert(result?.month, equals: 11)
@@ -1095,7 +1173,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   
   func testParseTimeWithCookieFormatCanParseValidTime() {
     let formatter = TimeFormat.Cookie
-    let result = formatter.parseTime("Fri, 21 Dec 2001 23:11:51 GMT", timeZone:
+    let result = formatter.parseTimestamp("Fri, 21 Dec 2001 23:11:51 GMT", timeZone:
       TimeZone(name: "UTC"))
     assert(result?.epochSeconds, equals: 1008976311)
     assert(result?.year, equals: 2001)
@@ -1107,7 +1185,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   }
   
   func testParseTimeWithRfc822CanParseValidTime() {
-    let result = TimeFormat.Rfc822.parseTime("Sun, 06 Nov 1994 08:49:37 GMT")
+    let result = TimeFormat.Rfc822.parseTimestamp("Sun, 06 Nov 1994 08:49:37 GMT")
     assert(result?.year, equals: 1994)
     assert(result?.month, equals: 11)
     assert(result?.day, equals: 6)
@@ -1118,7 +1196,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   }
   
   func testParseTimeWithRfc850CanParseValidTime() {
-    let result = TimeFormat.Rfc850.parseTime("Sunday, 06-Nov-94 08:49:37 GMT")
+    let result = TimeFormat.Rfc850.parseTimestamp("Sunday, 06-Nov-94 08:49:37 GMT")
     assert(result?.year, equals: 1994)
     assert(result?.month, equals: 11)
     assert(result?.day, equals: 6)
@@ -1129,7 +1207,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   }
   
   func testParseTimeWithPosixFormatCanParseValidTime() {
-    let result = TimeFormat.Posix.parseTime("Sun Nov  6 08:49:37 1994")
+    let result = TimeFormat.Posix.parseTimestamp("Sun Nov  6 08:49:37 1994")
     assert(result?.year, equals: 1994)
     assert(result?.month, equals: 11)
     assert(result?.day, equals: 6)
