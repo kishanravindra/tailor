@@ -97,4 +97,58 @@ class TimeIntervalTests: XCTestCase, TailorTestable {
     let interval = timestamp2.epochSeconds - timestamp1.epochSeconds
     assert(interval, within: 1, of: -10800)
   }
+  
+  func testTotalCanGetNumberOfYears() {
+    var interval = 2.years + 5.months
+    assert(interval.total(.Years), equals: 2)
+    interval = interval + 10.months
+    assert(interval.total(.Years), equals: 3)
+  }
+  
+  func testTotalCanGetNumberOfMonths() {
+    var interval = 2.years + 5.months + 20.days
+    assert(interval.total(.Months), equals: 29)
+    interval = interval + 20.days
+    assert(interval.total(.Months), equals: 30)
+  }
+  
+  func testTotalCanGetNumberOfDays() {
+    var interval = 2.years + 5.months + 20.days + 14.hours
+    Timestamp.freeze(at: Timestamp(epochSeconds: 1448840916))
+    assert(interval.total(.Days), equals: 890)
+    interval = interval + 20.hours
+    assert(interval.total(.Days), equals: 891)
+  }
+  
+  func testTotalCanGetNumberOfHours() {
+    var interval = 2.years + 5.months + 20.days + 14.hours + 35.minutes
+    Timestamp.freeze(at: Timestamp(epochSeconds: 1448840916))
+    assert(interval.total(.Hours), equals: 21374)
+    interval = interval + 40.minutes
+    assert(interval.total(.Hours), equals: 21375)
+  }
+  
+  func testTotalCanGetNumberOfMinutes() {
+    var interval = 2.years + 5.months + 20.days
+    interval = interval + 14.hours + 35.minutes + 17.seconds
+    Timestamp.freeze(at: Timestamp(epochSeconds: 1448840916))
+    assert(interval.total(.Minutes), equals: 1282475)
+    interval = interval + 50.seconds
+    assert(interval.total(.Minutes), equals: 1282476)
+  }
+  
+  func testTotalCanGetNumberOfSeconds() {
+    var interval = 2.years + 5.months + 20.days
+    interval = interval + 14.hours + 35.minutes + 17.seconds + 500000000.nanoseconds
+    Timestamp.freeze(at: Timestamp(epochSeconds: 1448840916))
+    assert(interval.total(.Seconds), equals: 76948517)
+    interval = interval + 600000000.nanoseconds
+    assert(interval.total(.Seconds), equals: 76948518)
+  }
+  
+  func testTotalCanGetNumberOfNanoseconds() {
+    var interval = 2.years + 5.months + 20.days
+    interval = interval + 14.hours + 35.minutes + 17.seconds + 500000000.nanoseconds
+    assert(interval.total(.Nanoseconds), equals: 76948517500000000)
+  }
 }

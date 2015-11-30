@@ -99,6 +99,76 @@ public struct TimeInterval: Equatable,CustomStringConvertible {
     }
     return text
   }
+  
+  //MARK: - Totals
+  
+  /**
+    This type provides the units of a time interval, for use in normalization.
+    */
+  public enum Unit {
+    case Years
+    case Months
+    case Days
+    case Hours
+    case Minutes
+    case Seconds
+    case Nanoseconds
+    
+    /** The available units, from largest to smallest. */
+    public static let units = [Years,Months,Days,Hours,Minutes,Seconds,Nanoseconds]
+  }
+  
+  /**
+    This method gets the total value for this interval expressed in a single
+    unit.
+
+    - parameter unit:         The unit that we want the interval expressed in.
+    - parameter calendar:     The calendar that we should use when expressing
+                              months.
+    - returns:                The total value for the interval.
+    */
+  public func total(unit: Unit, inCalendar calendar: Calendar = SystemCalendar()) -> Int {
+    let month = Timestamp.now().month
+    let normalized = Timestamp.normalizeTimeInterval(self, withSign: 1, inCalendar: calendar, inMonth: month)
+    let years = normalized.years
+    var months = normalized.months
+    var days = normalized.days
+    var hours = normalized.hours
+    var minutes = normalized.minutes
+    var seconds = normalized.seconds
+    var nanoseconds = normalized.nanoseconds
+    let index = Unit.units.indexOf(unit) ?? 0
+    let includedUnits = Unit.units.prefix(index + 1)
+    
+    if includedUnits.contains(.Months) {
+      months += years * calendar.months
+    }
+    if includedUnits.contains(.Days) {
+      days += months * calendar.daysInMonth(month)
+    }
+    if includedUnits.contains(.Hours) {
+      hours += days * calendar.hoursPerDay
+    }
+    if includedUnits.contains(.Minutes) {
+      minutes += hours * calendar.minutesPerHour
+    }
+    if includedUnits.contains(.Seconds) {
+      seconds += minutes * calendar.secondsPerMinute
+    }
+    if includedUnits.contains(.Nanoseconds) {
+      nanoseconds += Double(seconds) * 1000000000.0
+    }
+  
+    switch(unit) {
+    case .Years: return years
+    case .Months: return months
+    case .Days: return days
+    case .Hours: return hours
+    case .Minutes: return minutes
+    case .Seconds: return seconds
+    case .Nanoseconds: return Int(nanoseconds)
+    }
+  }
 }
 
 /**
