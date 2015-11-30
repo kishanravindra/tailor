@@ -875,6 +875,28 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     }
   }
   
+  func testRedirectErrorGeneratesError() {
+    let state = ControllerState()
+    let error = ControllerError.redirectResponse(state, path: "/test/path", message: "Success!")
+    switch(error) {
+    case let ControllerError.UnprocessableRequest(response):
+      assert(response.responseCode, equals: .SeeOther)
+      assert(response.headers["Location"], equals: "/test/path")
+      assert(response.session.flash("error"), equals: "Success!")
+    }
+  }
+  
+  func testRedirectErrorWithNilParametersFillsInDefaults() {
+    let state = ControllerState()
+    let error = ControllerError.redirectResponse(state)
+    switch(error) {
+    case let ControllerError.UnprocessableRequest(response):
+      assert(response.responseCode, equals: .SeeOther)
+      assert(response.headers["Location"], equals: "/")
+      assert(isNil: response.session.flash("error"))
+    }
+  }
+  
   //MARK: - Test Helpers
   
   @available(*, deprecated) func testCallActionCanCallAction() {

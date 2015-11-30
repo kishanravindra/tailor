@@ -791,4 +791,24 @@ public enum ControllerError: ErrorType {
     response.appendString(message)
     return ControllerError.UnprocessableRequest(response)
   }
+  
+  
+  /**
+    This method generates a redirect response as a controller error.
+   
+    - parameter state:    The state from the controller throwing the error.
+    - parameter path:     The path that we should redirect to. If this is not
+                          provided, this will redirect to the root path.
+    - parameter message:  The message to include in the flash messages.
+    - returns:            The error you can throw to trigger this redirect.
+    */
+  public static func redirectResponse(state: ControllerState, path: String? = nil, message: String? = nil) -> ControllerError {
+    var response = state.response
+    var session = state.request.session
+    response.responseCode = .SeeOther
+    response.headers["Location"] = path ?? "/"
+    session.setFlash("error", message)
+    session.storeInCookies(&response.cookies)
+    return ControllerError.UnprocessableRequest(response)
+  }
 }
