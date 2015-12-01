@@ -977,6 +977,7 @@ class SerializableValueTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadEnumWithWithValidIdFetchesRecord() {
     let type = PersistableEnumTests.HatType.Feathered
     let data = ["hat_type_id": type.id].serialize
@@ -989,6 +990,7 @@ class SerializableValueTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadEnumWithWithStringIdThrowsException() {
     let data = ["hat_type_id": "5by5".serialize].serialize
     do {
@@ -1005,6 +1007,7 @@ class SerializableValueTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadEnumWithMissingIdThrowsException() {
     let type = PersistableEnumTests.HatType.WideBrim
     let data = ["id": type.id].serialize
@@ -1019,6 +1022,7 @@ class SerializableValueTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadEnumWithNonDictionaryValueThrowsException() {
     let type = PersistableEnumTests.HatType.WideBrim
     let data = type.id.serialize
@@ -1036,6 +1040,7 @@ class SerializableValueTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadOptionalEnumWithWithValidIdFetchesRecord() {
     let type = HatType.Feathered
     let data = ["hat_type_id": type.id].serialize
@@ -1048,6 +1053,7 @@ class SerializableValueTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadOptionalEnumWithWithStringIdThrowsException() {
     let data = ["hat_type_id": "5by5".serialize].serialize
     do {
@@ -1064,6 +1070,7 @@ class SerializableValueTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadOptionalEnumWithMissingIdReturnsNil() {
     let type = PersistableEnumTests.HatType.WideBrim
     let data = ["id": type.id].serialize
@@ -1076,6 +1083,7 @@ class SerializableValueTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadOptionalEnumWithNonDictionaryValueThrowsException() {
     let type = HatType.WideBrim
     let data = type.id.serialize
@@ -1093,6 +1101,7 @@ class SerializableValueTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadEnumWithWithValidNameGetsEnumCase() {
     let value = Color.Red
     let data = ["color": value.caseName].serialize
@@ -1105,6 +1114,7 @@ class SerializableValueTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadEnumWithWithIntegerForNameThrowsException() {
     let data = ["color": 5].serialize
     do {
@@ -1121,6 +1131,7 @@ class SerializableValueTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadEnumWithMissingNameThrowsException() {
     let type = Color.Red
     let data = ["color_name": type.caseName].serialize
@@ -1135,6 +1146,7 @@ class SerializableValueTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadEnumWithNonDictionaryValueForNameThrowsException() {
     let type = Color.Red
     let data = type.caseName.serialize
@@ -1152,6 +1164,7 @@ class SerializableValueTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadOptionalEnumWithWithValidNameFetchesRecord() {
     let value = Color.Red
     let data = ["color": value.caseName].serialize
@@ -1164,6 +1177,7 @@ class SerializableValueTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadOptionalEnumWithWithIntegerNameThrowsException() {
     let data = ["color": 5].serialize
     do {
@@ -1180,6 +1194,7 @@ class SerializableValueTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadOptionalEnumWithMissingNameReturnsNil() {
     let value = Color.Red
     let data = ["color_name": value.caseName].serialize
@@ -1192,6 +1207,7 @@ class SerializableValueTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadOptionalEnumWithNonDictionaryValueForNameThrowsException() {
     let type = HatType.WideBrim
     let data = type.id.serialize
@@ -1206,6 +1222,109 @@ class SerializableValueTests: XCTestCase, TailorTestable {
     }
     catch let e {
       assert(false, message: "threw unexpected error: \(e)")
+    }
+  }
+  
+  func testReadEnumWithIdForTableReadsRecord() {
+    let type = PersistableEnumTests.HatType.Feathered
+    let data = ["hat_type_id": type.id].serialize
+    assertNoExceptions {
+      let type2 = try data.readEnum("hat_type_id") as HatType
+      assert(type2, equals: type)
+    }
+  }
+  
+  func testReadEnumWithIdForTableWithStringIdReadsRecord() {
+    let type = PersistableEnumTests.HatType.Feathered
+    let data = ["hat_type_id": String(type.id).serialize].serialize
+    assertNoExceptions {
+      let type2 = try data.readEnum("hat_type_id") as HatType
+      assert(type2, equals: type)
+    }
+  }
+  
+  func testReadEnumWithIdForTableMissingIdThrowsException() {
+    let type = PersistableEnumTests.HatType.WideBrim
+    let data = ["id": type.id].serialize
+    assertThrows(SerializationParsingError.MissingField(field: "hat_type_id")) {
+      try data.readEnum("hat_type_id") as PersistableEnumTests.HatType
+    }
+  }
+  
+  func testReadEnumWithNameWithValidNameGetsEnumCase() {
+    let value = Color.Red
+    let data = ["color": value.caseName].serialize
+    assertNoExceptions {
+      let value2 = try data.readEnum("color") as Color
+      assert(value2, equals: value)
+    }
+  }
+  
+  func testReadEnumWithNameWithIntegerForNameThrowsException() {
+    let data = ["color": 5].serialize
+    assertThrows(SerializationParsingError.MissingField(field: "color")) {
+      _ = try data.readEnum("color") as Color
+    }
+  }
+  
+  func testReadEnumWithNameWithMissingNameThrowsException() {
+    let type = Color.Red
+    let data = ["color_name": type.caseName].serialize
+    assertThrows(SerializationParsingError.MissingField(field: "color")) {
+      _ = try data.readEnum("color") as Color
+    }
+  }
+  
+  func testReadOptionalEnumWithIdForTableReadsRecord() {
+    let type = PersistableEnumTests.HatType.Feathered
+    let data = ["hat_type_id": type.id].serialize
+    assertNoExceptions {
+      let type2 = try data.readEnum("hat_type_id") as HatType?
+      assert(type2, equals: type)
+    }
+  }
+  
+  func testReadOptionalEnumWithIdForTableWithStringIdReadsRecord() {
+    let type = PersistableEnumTests.HatType.Feathered
+    let data = ["hat_type_id": String(type.id).serialize].serialize
+    assertNoExceptions {
+      let type2 = try data.readEnum("hat_type_id") as HatType?
+      assert(type2, equals: type)
+    }
+  }
+  
+  func testReadOptionalEnumWithIdForTableMissingIdReturnsNil() {
+    let type = PersistableEnumTests.HatType.WideBrim
+    let data = ["id": type.id].serialize
+    assertNoExceptions {
+      let value = try data.readEnum("hat_type_id") as PersistableEnumTests.HatType?
+      assert(isNil: value)
+    }
+  }
+  
+  func testReadOptionalEnumWithNameWithValidNameGetsEnumCase() {
+    let value = Color.Red
+    let data = ["color": value.caseName].serialize
+    assertNoExceptions {
+      let value2 = try data.readEnum("color") as Color?
+      assert(value2, equals: value)
+    }
+  }
+  
+  func testReadOptionalEnumWithNameWithIntegerForNameReturnsNil() {
+    let data = ["color": 5].serialize
+    assertNoExceptions {
+      let value = try data.readEnum("color") as Color?
+      assert(isNil: value)
+    }
+  }
+  
+  func testReadOptionalEnumWithNameWithMissingNameThrowsException() {
+    let type = Color.Red
+    let data = ["color_name": type.caseName].serialize
+    assertNoExceptions {
+      let value = try data.readEnum("color") as Color?
+      assert(isNil: value)
     }
   }
   

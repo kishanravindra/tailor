@@ -26,3 +26,5 @@
 * Turning localization sources into structs rather than classes
 * Using type parameters in functions dealing with Persistable and UserType
 * Use of underscores in renderedTemplates in TemplateRenderingType.
+* Using the readEnumIndirect method instead of a dynamicType in persistable enum
+  initializer.

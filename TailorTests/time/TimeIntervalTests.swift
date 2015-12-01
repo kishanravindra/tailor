@@ -149,6 +149,7 @@ class TimeIntervalTests: XCTestCase, TailorTestable {
   func testTotalCanGetNumberOfNanoseconds() {
     var interval = 2.years + 5.months + 20.days
     interval = interval + 14.hours + 35.minutes + 17.seconds + 500000000.nanoseconds
+    Timestamp.freeze(at: Timestamp(epochSeconds: 1448840916))
     assert(interval.total(.Nanoseconds), equals: 76948517500000000)
   }
 }

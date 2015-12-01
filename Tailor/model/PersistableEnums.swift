@@ -232,7 +232,7 @@ public extension TablePersistableEnum {
     - parameter databaseRow:    The row in the database.
     */
   init(deserialize values: SerializableValue) throws {
-    self = try values.readEnum(name: "name")
+    self = try values.readEnumIndirect("name")
   }
   
   /**

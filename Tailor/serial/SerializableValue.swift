@@ -512,11 +512,15 @@ extension SerializableValue {
   /**
    This method reads an enum case from a row in the database.
    
+   This has been deprecated in favor of the version without a name for the
+   parameter.
+   
    - parameter fieldName:    The name of the field that contains the id.
    - returns:                The fetched value.
    - throws:                 A DatabaseError explaining why we couldn't fetch
    the value.
    */
+  @available(*, deprecated, message="Use the version without a name for the parameter")
   public func readEnum<EnumType: TablePersistableEnum>(id fieldName: Swift.String) throws -> EnumType? {
     guard let id = try read(fieldName) as Int? else { return nil }
     return EnumType.fromId(id)
@@ -525,11 +529,15 @@ extension SerializableValue {
   /**
    This method reads an enum case from a row in the database.
    
+   This has been deprecated in favor of the version without a name for the
+   parameter.
+   
    - parameter fieldName:    The name of the field that contains the id.
    - returns:                The fetched value.
    - throws:                 A DatabaseError explaining why we couldn't fetch
-   the value.
+                              the value.
    */
+  @available(*, deprecated, message="Use the version without a name for the parameter")
   public func readEnum<EnumType: TablePersistableEnum>(id fieldName: Swift.String) throws -> EnumType {
     guard let record = try self.readEnum(id: fieldName) as EnumType? else {
       throw SerializationParsingError.MissingField(field: fieldName)
@@ -540,11 +548,15 @@ extension SerializableValue {
   /**
    This method reads an enum case from a row in the database.
    
+   This has been deprecated in favor of the version without a name for the
+   parameter.
+   
    - parameter fieldName:    The name of the field that contains the case name.
    - returns:                The fetched value.
    - throws:                 A DatabaseError explaining why we couldn't fetch
    the value.
    */
+  @available(*, deprecated, message="Use the version without a name for the parameter")
   public func readEnum<EnumType: PersistableEnum>(name fieldName: Swift.String) throws -> EnumType? {
     guard let name = try read(fieldName) as Swift.String? else { return nil }
     return EnumType.fromCaseName(name)
@@ -554,16 +566,70 @@ extension SerializableValue {
   /**
     This method reads an enum case from a row in the database.
    
+    This has been deprecated in favor of the version without a name for the
+    parameter.
+   
     - parameter fieldName:    The name of the field that contains the case name.
     - returns:                The fetched value.
     - throws:                 A DatabaseError explaining why we couldn't fetch
                               the value.
    */
+  @available(*, deprecated, message="Use the version without a name for the parameter")
   public func readEnum<EnumType: PersistableEnum>(name fieldName: Swift.String) throws -> EnumType {
     guard let record = try self.readEnum(name: fieldName) as EnumType? else {
       throw SerializationParsingError.MissingField(field: fieldName)
     }
     return record
+  }
+  
+  /**
+   This method reads an enum case from a row in the database.
+   
+   - parameter fieldName:     The name of the field that contains the value.
+   - returns:                 The fetched value.
+   - throws:                  A SerializableError explaining why we couldn't fetch
+                              the value.
+   */
+  public func readEnum<EnumType: PersistableEnum>(fieldName: Swift.String) throws -> EnumType? {
+    guard let value = try read(fieldName) as SerializableValue? else { return nil }
+    return EnumType.fromSerializableValue(value)
+  }
+  
+  /**
+   This method reads an enum case from a row in the database.
+   
+   - parameter fieldName:     The name of the field that contains the case name.
+   - returns:                 The fetched value.
+   - throws:                  A SerializableError explaining why we couldn't fetch
+                              the value.
+   */
+  public func readEnum<EnumType: PersistableEnum>(fieldName: Swift.String) throws -> EnumType {
+    guard let record = try self.readEnum(fieldName) as EnumType? else {
+      throw SerializationParsingError.MissingField(field: fieldName)
+    }
+    return record
+  }
+  
+  /**
+    This method reads an enum case from a row in the database.
+   
+    This will read the value as a string, and then use `fromCaseName` to get the
+    value. This is designed as an alternative to the normal `readEnum` method,
+    which will interpret the field as an id and use the `fromId` method. This
+    is a temporary workaround until we can use `self.dynamicType` in the
+    `TablePersistableEnum` initializer.
+   
+    - parameter fieldName:      The name of the field that contains the value.
+    - returns:                  The fetched value.
+    - throws:                   A DatabaseError explaining why we couldn't fetch
+                                the value.
+    */
+  internal func readEnumIndirect<EnumType: TablePersistableEnum>(fieldName: Swift.String) throws -> EnumType {
+    let name = try read(fieldName) as Swift.String
+    guard let enumCase = EnumType.fromCaseName(name) else {
+      throw SerializationParsingError.MissingField(field: fieldName)
+    }
+    return enumCase
   }
   
   /**

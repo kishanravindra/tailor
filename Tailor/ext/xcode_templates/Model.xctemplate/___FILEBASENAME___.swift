@@ -10,10 +10,10 @@ struct ___FILEBASENAME___ : Persistable, Equatable {
     You should extract the fields that your record needs, and return nil if any
     required fields are missing.
 
-    - parameter databaseRow:  The row in the database.
+    - parameter values:  The row in the database.
     */
-  init(values: SerializableValue) throws {
-    self.id = try values.read("id")
+  init(deserialize values: SerializableValue) throws {
+    id = try values.read("id")
   }
   
   /**
