@@ -73,14 +73,11 @@ extension Persistable {
     do {
       return try self.init(deserialize: values)
     }
-    catch let DatabaseError.GeneralError(message) {
-      NSLog("Error building record in %@: %@", self.tableName, message)
-    }
-    catch let DatabaseError.MissingField(name) {
+    catch let SerializationParsingError.MissingField(name) {
       NSLog("Error building record in %@: %@ was missing", self.tableName, name)
     }
-    catch let DatabaseError.FieldType(name, actualType, desiredType) {
-      NSLog("Error building record in %@: %@ should be %@, but was %@", self.tableName, name, desiredType, actualType)
+    catch let SerializationParsingError.WrongFieldType(name, actualType, desiredType) {
+      NSLog("Error building record in %@: %@ should be %@, but was %@", self.tableName, name, String(desiredType), String(actualType))
     }
     catch let e {
       NSLog("Unknown error building record: %@", String(e))
