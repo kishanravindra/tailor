@@ -214,6 +214,16 @@ class TimestampTests: XCTestCase, TailorTestable {
     assert(timestamp2.epochSeconds, equals: 1451606400.1)
   }
   
+  func testAddingIntervalCanRollBackToPreviousMonth() {
+    let timestamp = Timestamp(year: 2015, month: 12, day: 1, hour: 18, minute: 36)
+    let timestamp2 = timestamp.byAddingInterval(TimeInterval(days: -1))
+    assert(timestamp2.year, equals: 2015)
+    assert(timestamp2.month, equals: 11)
+    assert(timestamp2.day, equals: 30)
+    assert(timestamp2.hour, equals: 18)
+    assert(timestamp2.minute, equals: 36)
+  }
+  
   func testAddingIntervalCanAddAndSubtractAtOnce() {
     let timestamp1 = Timestamp(year: 2015, month: 3, day: 16, hour: 12, minute: 34, second: 10, nanosecond: 0, timeZone: TimeZone(name: "UTC"))
     let timestamp2 = timestamp1.byAddingInterval(TimeInterval(months: 1, days: -20))

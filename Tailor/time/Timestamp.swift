@@ -287,7 +287,7 @@ public struct Timestamp: Equatable, Comparable, CustomStringConvertible, TimeInt
     repeat {
       handleMonthOverlap()
       calendar = calendar.inYear(year)
-      let monthForDayRange = (day < 0 ? (month == 1 ? calendar.months : month - 1) : month)
+      let monthForDayRange = (day < 1 ? (month == 1 ? calendar.months : month - 1) : month)
       days = (1,calendar.daysInMonth(monthForDayRange))
     } while limit(&day, to: days, sign: 1, byIncreasing: &month)
   }
