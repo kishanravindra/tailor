@@ -1,3 +1,5 @@
+import Foundation
+
 /**
   This protocol describes methods that a model class must provide in order to
   be persisted to a database.

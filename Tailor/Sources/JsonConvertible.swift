@@ -1,3 +1,5 @@
+import Foundation
+
 /**
   This protocol describes a data structure that can be encoded as JSON.
  

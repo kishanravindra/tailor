@@ -1,3 +1,5 @@
+import Foundation
+
 /**
   This class provides an email agent for sending mail using sendmail.
 

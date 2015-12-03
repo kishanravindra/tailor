@@ -1,3 +1,5 @@
+import Foundation
+
 /**
   This class provides an agent for delivering email via SMTP.
   */

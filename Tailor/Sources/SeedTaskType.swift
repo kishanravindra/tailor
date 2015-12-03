@@ -1,3 +1,5 @@
+import Foundation
+
 /**
   This protocol describes a task that is responsible for writing database seeds.
 

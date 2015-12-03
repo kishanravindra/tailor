@@ -1,3 +1,5 @@
+import Foundation
+
 /**
   This structure represents a row of data returned from the database.
   */

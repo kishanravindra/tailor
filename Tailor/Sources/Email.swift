@@ -1,3 +1,5 @@
+import Foundation
+
 /**
   This structure represents an email.
 

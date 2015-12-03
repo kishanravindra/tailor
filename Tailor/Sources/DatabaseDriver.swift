@@ -1,3 +1,5 @@
+import Foundation
+
 /**
   This protocol describes an interface to a database.
   */

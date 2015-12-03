@@ -1,3 +1,5 @@
+import Foundation
+
 /**
   This class provides an email delivery system that stores the messages in a
   local file.

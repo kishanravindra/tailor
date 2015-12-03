@@ -1,3 +1,5 @@
+import Foundation
+
 /**
   This class provides a Swift wrapper for hashing a password with SHA-512.
   */

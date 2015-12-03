@@ -1,3 +1,4 @@
+import Foundation
 extension NSCharacterSet {
   /**
     This method gets the characters that are allowed in a parameter in a URL.

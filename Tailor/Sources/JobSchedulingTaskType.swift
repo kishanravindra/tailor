@@ -1,3 +1,5 @@
+import Foundation
+
 /**
   This type represents an entry in a job schedule.
 

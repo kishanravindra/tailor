@@ -1,3 +1,5 @@
+import Foundation
+
 /**
   This structure represents a time zone, which is a set of rules for the offset
   from UTC in a geographic or political region.

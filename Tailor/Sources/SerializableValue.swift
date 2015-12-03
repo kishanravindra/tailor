@@ -1,3 +1,5 @@
+import Foundation
+
 /**
   This enum represents a simple value that can be natively serialized into
   multiple formats.

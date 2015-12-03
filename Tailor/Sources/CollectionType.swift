@@ -1,3 +1,5 @@
+import Foundation
+
 extension CollectionType where Generator.Element: Equatable {
   /**
     This method gets an array with the contents of this collection, with

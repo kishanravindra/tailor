@@ -1,3 +1,5 @@
+import Foundation
+
 /**
   This type provides a filter for checking that a non-idempotent request has a
   CSRF token in its request parameters matching the one in the session.
