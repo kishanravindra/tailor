@@ -300,7 +300,8 @@ extension TailorTestable {
                                 since it will be provided automatically.
   */
 
-  public func assert(string: String, matches pattern: String, var message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+  public func assert(string: String, matches pattern: String, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+    var message = message
     if !message.isEmpty {
       message = " - " + message
     }

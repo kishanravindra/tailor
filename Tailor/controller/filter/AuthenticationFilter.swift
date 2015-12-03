@@ -29,7 +29,8 @@ public struct AuthenticationFilter: RequestFilterType, Equatable {
     - parameter response:   The initial response from the other filters.
     - returns:              The redirect response.
     */
-  private func redirectResponse(request: Request, var _ response: Response) -> Response {
+  private func redirectResponse(request: Request, _ response: Response) -> Response {
+    var response = response
     var session = request.session
     session["_redirectPath"] = request.path
     session.storeInCookies(&response.cookies)

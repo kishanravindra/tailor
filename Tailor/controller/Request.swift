@@ -441,8 +441,8 @@ public struct Request: Equatable {
     - parameter headers:          Additional headers to put in the request.
     - parameter path:             The path that the request should go to.
     */
-  public init(clientAddress: String = "0.0.0.0", method: String = "GET", parameters: [String: String] = [:], sessionData: [String: String] = [:], cookies: [String:String] = [:], headers: [String:String] = [:], var path: String = "/") {
-    
+  public init(clientAddress: String = "0.0.0.0", method: String = "GET", parameters: [String: String] = [:], sessionData: [String: String] = [:], cookies: [String:String] = [:], headers: [String:String] = [:], path: String = "/") {
+    var path = path
     
     var queryString = ""
     

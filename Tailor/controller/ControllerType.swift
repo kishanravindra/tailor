@@ -300,7 +300,8 @@ extension ControllerType {
     - parameter response:   The response to send.
     - parameter session:    The session info for the response.
     */
-  public func respondWith(var response: Response, session: Session? = nil) {
+  public func respondWith(response: Response, session: Session? = nil) {
+    var response = response
     let session = session ?? request.session
     session.storeInCookies(&response.cookies)
     self.callback(response)
@@ -442,7 +443,8 @@ extension ControllerType {
                                     to the connection as soon as it is provided.
     */
 
-  public func renderStream(var headerResponse: Response, continuationCallback: (Bool->Void)? = nil, callback: ((NSData)->Void)->Void) {
+  public func renderStream(headerResponse: Response, continuationCallback: (Bool->Void)? = nil, callback: ((NSData)->Void)->Void) {
+    var headerResponse = headerResponse
     headerResponse.hasDefinedLength = false
     headerResponse.continuationCallback = continuationCallback
     self.callback(headerResponse)
@@ -539,7 +541,8 @@ extension ControllerType {
     */
   public func signIn(user: UserType) -> Session {
     var session = self.request.session
-    if var trackableUser = user as? TrackableUserType {
+    if let trackableUser = user as? TrackableUserType {
+      var trackableUser = trackableUser
       trackableUser.lastSignInIp = request.clientAddress
       trackableUser.lastSignInTime = Timestamp.now()
       trackableUser.save()

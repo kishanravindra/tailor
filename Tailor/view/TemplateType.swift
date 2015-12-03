@@ -188,7 +188,9 @@ extension TemplateType {
                               class.
     - parameter contents:     A block for adding contents within the div.
     */
-  public mutating func div(var styleClass: String, var attributes: [String:String] = [:], @noescape with contents: Void->Void) {
+  public mutating func div(styleClass: String, attributes: [String:String] = [:], @noescape with contents: Void->Void) {
+    var styleClass = styleClass
+    var attributes = attributes
     if let otherClass = attributes["class"] {
       styleClass += " \(otherClass)"
     }

@@ -112,7 +112,7 @@ public struct Email: Equatable {
                             ignored.
     - parameter attachments:    The attachments to the email.
     */
-  public init(from sender: String, to recipient: String? = nil, recipients: [String] = [], ccs: [String] = [], bccs: [String] = [], subject: String, body: String = "", var template: TemplateType? = nil, attachments: [Attachment] = []) {
+  public init(from sender: String, to recipient: String? = nil, recipients: [String] = [], ccs: [String] = [], bccs: [String] = [], subject: String, body: String = "", template: TemplateType? = nil, attachments: [Attachment] = []) {
     self.sender = sender
     var recipients = recipients
     if let recipient = recipient {
@@ -122,8 +122,10 @@ public struct Email: Equatable {
     self.ccs = ccs
     self.bccs = bccs
     self.subject = subject
-    self.body = template?.generate() ?? body
-    self.renderedTemplates = [template].flatMap { $0 }
+    
+    var renderedTemplate = template
+    self.body = renderedTemplate?.generate() ?? body
+    self.renderedTemplates = [renderedTemplate].flatMap { $0 }
     self.attachments = attachments
   }
   

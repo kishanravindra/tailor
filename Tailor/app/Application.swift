@@ -173,10 +173,10 @@ public final class Application {
       */
     internal static func pathForConfigFile(name: String) -> String? {
       for bundle in NSBundle.allBundles() {
-        guard var bundlePath = bundle.resourcePath else { continue }
-        bundlePath += "/\(name).plist"
-        if NSFileManager.defaultManager().fileExistsAtPath(bundlePath) {
-          return bundlePath
+        guard let bundlePath = bundle.resourcePath else { continue }
+        let fullPath = bundlePath + "/\(name).plist"
+        if NSFileManager.defaultManager().fileExistsAtPath(fullPath) {
+          return fullPath
         }
       }
       return nil

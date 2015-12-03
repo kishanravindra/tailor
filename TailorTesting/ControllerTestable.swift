@@ -52,7 +52,8 @@ extension ControllerTestable {
     - parameter all:      Whether we should set the value on all actions.
     */
   public func setParam(name: String, to value: String, all: Bool = false) {
-    for (key, var paramList) in params {
+    for (key, paramList) in params {
+      var paramList = paramList
       if paramList[name] != nil || all {
         paramList[name] = value
       }
@@ -75,7 +76,8 @@ extension ControllerTestable {
     - parameter callback:     A callback that will perform checks on the
                               response.
     */
-  public func callAction(actionName: String, headers: [String:String] = [:], var sessionData: [String:String] = [:], cookies: [String:String] = [:], timeoutIn timeout: NSTimeInterval = 0.01, file: String = __FILE__, line: UInt = __LINE__, callback: Response -> Void) {
+  public func callAction(actionName: String, headers: [String:String] = [:], sessionData: [String:String] = [:], cookies: [String:String] = [:], timeoutIn timeout: NSTimeInterval = 0.01, file: String = __FILE__, line: UInt = __LINE__, callback: Response -> Void) {
+    var sessionData = sessionData
     var actionParams = params[actionName] ?? [:]
     let csrfKey = AesEncryptor.generateKey()
     sessionData["csrfKey"] = csrfKey

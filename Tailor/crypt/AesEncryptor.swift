@@ -97,7 +97,8 @@ public final class AesEncryptor {
     }
     for indexOfByte in (0..<hexKey.characters.count/2) {
       let range = Range(start: hexKey.startIndex.advancedBy(indexOfByte), end: hexKey.startIndex.advancedBy(indexOfByte + 2))
-      if var byte = AesEncryptor.getHex(hexKey.substringWithRange(range)) {
+      if let byte = AesEncryptor.getHex(hexKey.substringWithRange(range)) {
+        var byte = byte
         keyData.appendBytes(&byte, length: 1)
       }
     }

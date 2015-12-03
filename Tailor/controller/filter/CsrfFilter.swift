@@ -29,7 +29,9 @@ public struct CsrfFilter: RequestFilterType, Equatable {
     - parameter response:   The response so far.
     - parameter callback:   A callback to call with our response.
     */
-  public func preProcess(var request: Request, var response: Response, callback: (Request, Response, stop: Bool) -> Void) {
+  public func preProcess(request: Request, response: Response, callback: (Request, Response, stop: Bool) -> Void) {
+    var request = request
+    var response = response
     let key: String
     if let sessionKey = request.session["csrfKey"] {
       key = sessionKey

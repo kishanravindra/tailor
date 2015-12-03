@@ -212,7 +212,8 @@ public struct Timestamp: Equatable, Comparable, CustomStringConvertible, TimeInt
                           be positive or negative.
     - parameter nextUnit: The number to increase to adjust the original number.
     */
-  internal static func limit(inout lhs:  Int, var to range: (Int,Int), sign: Int, inout byIncreasing nextUnit: Int) -> Bool {
+  internal static func limit(inout lhs:  Int, to range: (Int,Int), sign: Int, inout byIncreasing nextUnit: Int) -> Bool {
+    var range = range
     if sign < 0 {
       let newRange = (-1 * range.1, -1 * range.0)
       range = newRange
@@ -243,7 +244,8 @@ public struct Timestamp: Equatable, Comparable, CustomStringConvertible, TimeInt
                           be positive or negative.
     - parameter nextUnit: The number to increase to adjust the original number.
     */
-  internal static func limit(inout lhs:  Double, var to range: (Double,Double), sign: Int, inout byIncreasing nextUnit: Int) -> Bool {
+  internal static func limit(inout lhs:  Double, to range: (Double,Double), sign: Int, inout byIncreasing nextUnit: Int) -> Bool {
+    var range = range
     if sign < 0 {
       let newRange = (-1 * range.1, -1 * range.0)
       range = newRange
@@ -270,8 +272,8 @@ public struct Timestamp: Equatable, Comparable, CustomStringConvertible, TimeInt
     - parameter day:        The day for the date.
     - parameter calendar:   The calendar that the date is interpreted in.
     */
-  internal static func normalizeDate(inout year year: Int, inout month: Int, inout day: Int, var inCalendar calendar: Calendar) {
-    
+  internal static func normalizeDate(inout year year: Int, inout month: Int, inout day: Int, inCalendar calendar: Calendar) {
+    var calendar = calendar
     calendar = calendar.inYear(year)
     var months = (1,calendar.months)
     
