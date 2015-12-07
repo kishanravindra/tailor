@@ -95,11 +95,15 @@ public final class AesEncryptor {
       self.key = nil
       return nil
     }
-    for indexOfByte in (0..<hexKey.characters.count/2) {
-      let range = Range(start: hexKey.startIndex.advancedBy(indexOfByte), end: hexKey.startIndex.advancedBy(indexOfByte + 2))
+    
+    var index = hexKey.startIndex
+    while index < hexKey.endIndex {
+      let nextIndex = index.advancedBy(2)
+      let range = Range(start: index, end: nextIndex)
       if var byte = AesEncryptor.getHex(hexKey.substringWithRange(range)) {
         keyData.appendBytes(&byte, length: 1)
       }
+      index = nextIndex
     }
     
     let keyParams = [

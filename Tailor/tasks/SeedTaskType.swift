@@ -57,7 +57,7 @@ extension SeedTaskType {
   public static var seedFolder: String {
     var projectName = Application.projectName
     if projectName.hasSuffix("Tests") {
-      projectName = projectName.substringToIndex(projectName.startIndex.advancedBy(projectName.characters.count - 5))
+      projectName = projectName.substringToIndex(projectName.endIndex.advancedBy(-5))
     }
     return Application.projectPath + "/" + projectName + "/config/seeds"
   }

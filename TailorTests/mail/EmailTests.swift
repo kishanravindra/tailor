@@ -152,7 +152,9 @@ class EmailTests: XCTestCase, TailorTestable {
       return
     }
     let range = matches[0].rangeAtIndex(1)
-    let boundary = strippedMessage.substringWithRange(strippedMessage.startIndex.advancedBy(range.location)..<strippedMessage.startIndex.advancedBy(range.location + range.length))
+    let start = strippedMessage.startIndex.advancedBy(range.location)
+    let end = start.advancedBy(range.length)
+    let boundary = strippedMessage.substringWithRange(start..<end)
     assert(message, equals:
       "From: test1@johnbrownlee.com\r\n" +
         "To: test2@johnbrownlee.com,test3@johnbrownlee.com\r\n" +

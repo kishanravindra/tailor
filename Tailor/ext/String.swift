@@ -27,7 +27,7 @@ public extension String {
     ]
     for (suffix, pluralSuffix) in replacements {
       if self.hasSuffix(suffix) {
-        return self.substringToIndex(self.startIndex.advancedBy(self.characters.count - suffix.characters.count)) + pluralSuffix
+        return self.substringToIndex(self.endIndex.advancedBy(-1 * suffix.characters.count)) + pluralSuffix
       }
     }
     return self + "s"
