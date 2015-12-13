@@ -331,15 +331,15 @@ extension QueryType {
       orderClause.query = "id DESC"
     }
     else {
-      var components = orderClause.query.componentsSeparatedByString(",")
+      var components = orderClause.query.bridge().componentsSeparatedByString(",")
       components = components.map {
         component in
         var reversed = component
         if reversed.uppercaseString.hasSuffix("ASC") {
-          reversed = reversed.stringByReplacingOccurrencesOfString(" ASC", withString: " DESC", options: .CaseInsensitiveSearch)
+          reversed = reversed.bridge().stringByReplacingOccurrencesOfString(" ASC", withString: " DESC", options: .CaseInsensitiveSearch, range: NSMakeRange(0, reversed.characters.count))
         }
         else {
-          reversed = reversed.stringByReplacingOccurrencesOfString(" DESC", withString: " ASC", options: .CaseInsensitiveSearch)
+          reversed = reversed.bridge().stringByReplacingOccurrencesOfString(" DESC", withString: " ASC", options: .CaseInsensitiveSearch, range: NSMakeRange(0, reversed.characters.count))
         }
         return reversed
       }
@@ -413,7 +413,7 @@ extension QueryType {
         Application.cache.write(cacheKey, value: ids.joinWithSeparator(","), expireIn: nil)
         return results
       }
-      let ids = idString.componentsSeparatedByString(",").map { UInt($0) ?? 0 } ?? []
+      let ids = idString.bridge().componentsSeparatedByString(",").map { UInt($0) ?? 0 } ?? []
       let results = self.dynamicType.init().filter("id IN (\(idString))").allRecords()
       return results.sort {
         (record1, record2) -> Bool in

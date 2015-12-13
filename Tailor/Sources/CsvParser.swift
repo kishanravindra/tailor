@@ -177,7 +177,7 @@ public struct CsvParser {
     }
     let strings = byteSections.map {
       (bytes) -> String in
-      return NSString(bytes: bytes, length: bytes.count, encoding: NSUTF8StringEncoding) as! String
+      return NSString(bytes: bytes, length: bytes.count, encoding: NSUTF8StringEncoding)!.bridge()
     }
     self.rows.append(strings)
   }
@@ -202,15 +202,15 @@ public struct CsvParser {
         }
         
         var cleanColumn = column
-        let searchRange = cleanColumn.rangeOfCharacterFromSet(NSCharacterSet(charactersInString: self.delimiter + "\"\n"))
-        if searchRange?.startIndex != nil {
-          cleanColumn = cleanColumn.stringByReplacingOccurrencesOfString("\"", withString: "\"\"")
+        let searchRange = cleanColumn.bridge().rangeOfCharacterFromSet(NSCharacterSet(charactersInString: self.delimiter + "\"\n"))
+        if searchRange.location != NSNotFound {
+          cleanColumn = cleanColumn.bridge().stringByReplacingOccurrencesOfString("\"", withString: "\"\"")
           cleanColumn = "\"" + cleanColumn + "\""
         }
         contents += cleanColumn
       }
     }
-    return contents.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!
+    return contents.bridge().dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!
   }
   
   //MARK: Easy Reading and Writing

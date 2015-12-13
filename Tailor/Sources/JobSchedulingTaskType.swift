@@ -415,7 +415,7 @@ extension JobSchedulingTaskType {
     var finished = false
     ExternalProcess(launchPath: "/usr/bin/crontab", arguments: ["-l"]) {
       listResult, listData in
-      guard let listText = NSString(data: listData, encoding: NSUTF8StringEncoding) as? String else {
+      guard let listText = NSString(data: listData, encoding: NSUTF8StringEncoding)?.bridge() else {
         NSLog("Error listing crontab: %@", listData)
         finished = true
         return
@@ -450,7 +450,7 @@ extension JobSchedulingTaskType {
       ExternalProcess(launchPath: "/usr/bin/crontab", arguments: [crontabLocation]) {
         writeResult, writeData in
         if writeResult != 0 {
-          let writeString = NSString(data: writeData, encoding: NSUTF8StringEncoding) ?? String(writeData)
+          let writeString = NSString(data: writeData, encoding: NSUTF8StringEncoding)?.bridge() ?? String(writeData)
           NSLog("Error writing crontab: %@", writeString)
         }
         finished = true

@@ -107,7 +107,7 @@ extension Bool: JsonConvertible {
    - parameter json:   The JSON primitive value.
    */
   public init(json: JsonPrimitive) throws {
-    try self.init(json.read() as Int)
+    try self.init(NSNumber(integer: json.read()))
   }
   
   /**

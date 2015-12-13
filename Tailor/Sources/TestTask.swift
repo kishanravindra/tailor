@@ -1,4 +1,6 @@
+#if os(OSX)
 import Cocoa
+#endif
 
 /**
   This task is used by the unit tests.

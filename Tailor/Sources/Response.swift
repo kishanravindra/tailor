@@ -392,11 +392,11 @@ public struct Response: Equatable {
     if bodyOnly { return self.body }
     let data = NSMutableData()
     
-    func add(string: NSString) {
-      data.appendData(NSData(bytes: (string as String).utf8))
+    func add(string: String) {
+      data.appendData(NSData(bytes: string.utf8))
     }
     
-    add(NSString(format: "HTTP/1.1 %d %@\r\n", responseCode.code, responseCode.description))
+    add("HTTP/1.1 \(responseCode.code) \(responseCode.description)")
     
     var headers = self.headers
     
@@ -407,7 +407,7 @@ public struct Response: Equatable {
     headers["Date"] = headers["Date"] ?? Timestamp.now().inTimeZone("GMT").format(TimeFormat.Rfc822)
     
     for (key,value) in headers {
-      add(NSString(format: "%@: %@\r\n", key, value))
+      add("\(key): \(value)\r\n")
     }
     add(cookies.headerStringForChanges)
     add("\r\n")
@@ -417,7 +417,7 @@ public struct Response: Equatable {
   
   /** The string version of the response body. */
   public var bodyString: String { get {
-    return NSString(data: self.bodyDataForReading, encoding: NSUTF8StringEncoding) as? String ?? ""
+    return NSString(data: self.bodyDataForReading, encoding: NSUTF8StringEncoding)?.bridge() ?? ""
   } }
 }
 

@@ -1,4 +1,7 @@
 import Foundation
+#if os(Linux)
+import Glibc
+#endif
 
 extension CollectionType where Generator.Element: Equatable {
   /**

@@ -112,7 +112,7 @@ internal struct ExternalProcess: Equatable {
     - parameter encoding: The encoding to encode the string with.
     */
   internal func writeString(string: String, encoding: UInt = NSASCIIStringEncoding) {
-    if let data = string.dataUsingEncoding(encoding) {
+    if let data = string.bridge().dataUsingEncoding(encoding) {
       self.writeData(data)
     }
   }

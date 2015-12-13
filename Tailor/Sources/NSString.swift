@@ -8,7 +8,7 @@ public extension String {
     - returns:                  The camel-cased string.
     */
   public func camelCase(capitalize capitalize: Bool = false) -> String {
-    let result = NSMutableString()
+    let result = NSMutableString(capacity: self.characters.count)
     var lastWasUnderscore = false
     
     for character in self.characters {
@@ -22,7 +22,7 @@ public extension String {
       }
       result.appendString(newCharacter)
     }
-    return result as String
+    return result.bridge()
   }
   
   /**
@@ -31,7 +31,7 @@ public extension String {
     - returns: The converted string.
     */
   public func underscored() -> String {
-    let result = NSMutableString()
+    let result = NSMutableString(capacity: self.characters.count)
     
     let alnumSet = NSCharacterSet.alphanumericCharacterSet()
     var lastWasAlnum = false
@@ -43,8 +43,8 @@ public extension String {
       }
       result.appendString(lowercase)
       
-      lastWasAlnum = newCharacter.rangeOfCharacterFromSet(alnumSet) != nil
+      lastWasAlnum = newCharacter.bridge().rangeOfCharacterFromSet(alnumSet).location != NSNotFound
     }
-    return result as String
+    return result.bridge()
   }
 }

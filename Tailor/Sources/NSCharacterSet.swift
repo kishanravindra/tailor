@@ -11,6 +11,6 @@ extension NSCharacterSet {
     periods, and tildes.
     */
   public static func URLParameterAllowedCharacterSet() -> NSCharacterSet {
-    return self.init(charactersInString: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_-.~")
+    return NSCharacterSet(charactersInString: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_-.~")
   }
 }

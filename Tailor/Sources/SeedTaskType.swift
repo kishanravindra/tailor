@@ -59,7 +59,7 @@ extension SeedTaskType {
   public static var seedFolder: String {
     var projectName = Application.projectName
     if projectName.hasSuffix("Tests") {
-      projectName = projectName.substringToIndex(projectName.startIndex.advancedBy(projectName.characters.count - 5))
+      projectName = projectName.bridge().substringToIndex(projectName.characters.count - 5)
     }
     return Application.projectPath + "/" + projectName + "/config/seeds"
   }
@@ -94,7 +94,7 @@ extension SeedTaskType {
     let rows = [["table","sql"]] + tables.filter { !excludedTables.contains($0.0) }.map { [$0.0, $0.1] }.sort { $0[0] < $1[0] }
     let path = self.pathForFile("tables")
     let data = CsvParser.encode(rows)
-    let folderPath = (path as NSString).stringByDeletingLastPathComponent
+    let folderPath = path.bridge().stringByDeletingLastPathComponent
     do {
       let manager = NSFileManager.defaultManager()
       try manager.createDirectoryAtPath(folderPath, withIntermediateDirectories: true, attributes: nil)

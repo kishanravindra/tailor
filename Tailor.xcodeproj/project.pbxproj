@@ -93,6 +93,8 @@
 		5284BD351B779AFC00C2D601 /* UserTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5284BD341B779AFC00C2D601 /* UserTypeTests.swift */; };
 		528D183F1A8FDD4A00A6E116 /* TailorTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D183E1A8FDD4A00A6E116 /* TailorTestHelpers.swift */; };
 		528D94901B51B99A004E3E7A /* TestConfig2.plist in Resources */ = {isa = PBXBuildFile; fileRef = 528D948F1B51B99A004E3E7A /* TestConfig2.plist */; };
+		5291ADF51C1DE4F000FE9195 /* FoundationExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5291ADF41C1DE4F000FE9195 /* FoundationExt.swift */; };
+		5291ADF81C1DF9D000FE9195 /* NSThread+Caching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5291ADF61C1DF8D800FE9195 /* NSThread+Caching.swift */; };
 		529230061A3CF4E4006DD6EB /* ApplicationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529230051A3CF4E4006DD6EB /* ApplicationTests.swift */; };
 		52A05A291B7F93D100DB1248 /* TestStylesheet.css in Resources */ = {isa = PBXBuildFile; fileRef = 52A05A281B7F93D100DB1248 /* TestStylesheet.css */; };
 		52A05A2F1B7FAA2800DB1248 /* Cookie.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A05A2A1B7FAA2800DB1248 /* Cookie.swift */; };
@@ -338,6 +340,8 @@
 		52915C731BC2E706003B65C9 /* TemplateInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = TemplateInfo.plist; sourceTree = "<group>"; };
 		52915C791BC2E7CB003B65C9 /* ___FILEBASENAME___.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "___FILEBASENAME___.swift"; sourceTree = "<group>"; };
 		52915C7A1BC2E7CB003B65C9 /* TemplateInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = TemplateInfo.plist; sourceTree = "<group>"; };
+		5291ADF41C1DE4F000FE9195 /* FoundationExt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoundationExt.swift; sourceTree = "<group>"; };
+		5291ADF61C1DF8D800FE9195 /* NSThread+Caching.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSThread+Caching.swift"; sourceTree = "<group>"; };
 		529230051A3CF4E4006DD6EB /* ApplicationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApplicationTests.swift; sourceTree = "<group>"; };
 		5292303B1A3CF74A006DD6EB /* TailorTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TailorTests.h; sourceTree = "<group>"; };
 		52A05A281B7F93D100DB1248 /* TestStylesheet.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = TestStylesheet.css; sourceTree = "<group>"; };
@@ -912,6 +916,7 @@
 		52BD141519E9DA1D006D72B0 /* ext */ = {
 			isa = PBXGroup;
 			children = (
+				5291ADF41C1DE4F000FE9195 /* FoundationExt.swift */,
 				521E87471A0FCEDA00D84B7B /* NSData.swift */,
 				52BD141719E9DA1D006D72B0 /* NSString.swift */,
 				52BD141819E9DA1D006D72B0 /* String.swift */,
@@ -919,6 +924,7 @@
 				5232ACC31B618FBF0043F9A2 /* ExternalProcess.swift */,
 				52A8AFD21BA736BC007A2762 /* NSCharacterSet.swift */,
 				523C80131BDD51E2004D501D /* CollectionType.swift */,
+				5291ADF61C1DF8D800FE9195 /* NSThread+Caching.swift */,
 				52B2B6DD19F365130086261B /* xcode_templates */,
 			);
 			name = ext;
@@ -1330,6 +1336,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				52DD44FF1B5ED2FC00312923 /* EmptyController.swift in Sources */,
+				5291ADF81C1DF9D000FE9195 /* NSThread+Caching.swift in Sources */,
 				52BD143A19E9DA1D006D72B0 /* String.swift in Sources */,
 				52B2B69A19F1DCF10086261B /* Dictionary.swift in Sources */,
 				52C10D051B0927F3005D85D4 /* Time.swift in Sources */,
@@ -1349,6 +1356,7 @@
 				52DD44F91B5DB93500312923 /* SendmailEmailAgent.swift in Sources */,
 				52A05A311B7FAA2800DB1248 /* Request.swift in Sources */,
 				5233011D1B45FC1500C9E5EE /* PersistableEnums.swift in Sources */,
+				5291ADF51C1DE4F000FE9195 /* FoundationExt.swift in Sources */,
 				522643251B06C7F40081D04E /* FoundationTimes.swift in Sources */,
 				5248284C1B812DCC006257F2 /* JobSchedulingTaskType.swift in Sources */,
 				52BD144219E9DA1D006D72B0 /* Validation.swift in Sources */,

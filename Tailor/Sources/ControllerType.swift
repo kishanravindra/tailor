@@ -393,7 +393,7 @@ extension ControllerType {
       for (key,list) in self.request.params.raw {
         guard let value = list.first else { continue }
         if !key.isEmpty {
-          path = path?.stringByReplacingOccurrencesOfString(":\(key)", withString: value)
+          path = path?.bridge().stringByReplacingOccurrencesOfString(":\(key)", withString: value)
         }
       }
     }

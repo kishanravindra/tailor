@@ -67,12 +67,11 @@ public struct CookieJar: Equatable {
     - parameter string:    The header string with the cookies.
     */
   public mutating func addHeaderString(string: String) {
-    for component in string.componentsSeparatedByString("; ") {
-      if let equalSignRange = component.rangeOfString("=", options: [], range: nil, locale: nil) {
-        let key = component.substringToIndex(equalSignRange.startIndex)
-        let value = component.substringFromIndex(equalSignRange.endIndex)
-        self.cookies.append(Cookie(key: key, value: value))
-      }
+    for component in string.bridge().componentsSeparatedByString("; ") {
+      let equalSignRange = component.bridge().rangeOfString("=", options: [], range: NSMakeRange(0, component.characters.count), locale: nil)
+      let key = component.bridge().substringToIndex(equalSignRange.location)
+      let value = component.bridge().substringFromIndex(equalSignRange.location + equalSignRange.length)
+      self.cookies.append(Cookie(key: key, value: value))
     }
   }
   

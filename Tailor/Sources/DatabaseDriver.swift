@@ -133,17 +133,13 @@ public extension Application {
     This gets the shared global database connection.
     */
   public static func sharedDatabaseConnection() -> DatabaseDriver {
-    let dictionary = NSThread.currentThread().threadDictionary
-    if let connection = dictionary["databaseConnection"] as? DatabaseDriver {
-      return connection
-    }
-    else {
+    return NSThread.cacheInDictionary("databaseConnection") {
+      () -> AnyObject in
       guard let connection = Application.configuration.databaseDriver?() else {
         fatalError("Could not get database driver from config")
       }
-      dictionary["databaseConnection"] = connection
       return connection
-    }
+    } as! DatabaseDriver
   }
   
   /**
@@ -151,6 +147,10 @@ public extension Application {
     to `sharedDatabaseConnection` to open a new connection.
     */
   public static func removeSharedDatabaseConnection() {
-    NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")
+    #if os(Linux)
+      NSThread.currentThread().threadDictionary.removeValueForKey("databaseConnection")
+    #else
+      NSThread.currentThread().threadDictionary.removeObjectForKey("databaseConnection")
+    #endif
   }
 }

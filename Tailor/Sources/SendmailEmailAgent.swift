@@ -26,8 +26,8 @@ public struct SendmailEmailAgent: EmailAgent {
   public func deliver(email: Email, callback: Email.ResultHandler) {
     let process = ExternalProcess(launchPath: "/usr/sbin/sendmail", arguments: ["-bs"]) {
       code, data in
-      let response = NSString(data: data, encoding: NSUTF8StringEncoding) as? String ?? ""
-      let lastLine = response.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()) .lastComponent(separator: "\n")
+      let response = NSString(data: data, encoding: NSUTF8StringEncoding)?.bridge() ?? ""
+      let lastLine = response.bridge().stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()) .lastComponent(separator: "\n")
       let success = lastLine.hasPrefix("250")
       callback(success: success, code: (success ? 0 : 1), message: response)
     }

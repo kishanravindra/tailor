@@ -1,4 +1,7 @@
 import Foundation
+#if os(Linux)
+  import Glibc
+#endif
 
 /**
   This protocol describes an alteration, which is a one-time script that is run

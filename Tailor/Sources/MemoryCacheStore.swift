@@ -27,7 +27,7 @@ public final class MemoryCacheStore: CacheImplementation {
         return nil
       }
     }
-    return cache.objectForKey(key) as? String
+    return (cache.objectForKey(key.bridge()) as? NSString)?.bridge()
   }
   
   /**
@@ -38,7 +38,7 @@ public final class MemoryCacheStore: CacheImplementation {
     - parameter expiryTime:    The time until the cache entry should expire.
     */
   public func write(key: String, value: String, expireIn expiryTime: TimeInterval?=nil) {
-    cache.setObject(value, forKey: key)
+    cache.setObject(value.bridge(), forKey: key.bridge())
     if expiryTime != nil {
       expiryTimes[key] = expiryTime?.fromNow
     }
@@ -50,7 +50,7 @@ public final class MemoryCacheStore: CacheImplementation {
     - parameter key:     The key for the entry to remove.
     */
   public func clear(key: String) {
-    cache.removeObjectForKey(key)
+    cache.removeObjectForKey(key.bridge())
   }
   
   /**

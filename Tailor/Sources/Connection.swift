@@ -1,4 +1,7 @@
 import Foundation
+#if os(Linux)
+  import Glibc
+#endif
 
 /**
   This class represents a connection with a client.
@@ -200,7 +203,7 @@ public struct Connection {
           hasCompleteRequest = true
           break
         }
-        let scanner = NSScanner(string: chunkLengthString as String)
+        let scanner = NSScanner(string: chunkLengthString.bridge())
         var newChunkLength: UInt32 = 0
         scanner.scanHexInt(&newChunkLength)
         remainingChunkLength = Int(newChunkLength)
@@ -336,7 +339,11 @@ public struct Connection {
       return socketDescriptor + 1
     }
     else {
-      return Foundation.accept(socketDescriptor, nil, nil)
+      #if os(Linux)
+        return Glibc.accept(socketDescriptor, nil, nil)
+      #else
+        return Foundation.accept(socketDescriptor, nil, nil)
+      #endif
     }
   }
   
@@ -355,7 +362,11 @@ public struct Connection {
       return 0
     }
     else {
-      return Foundation.getpeername(connection, address, addressLength)
+      #if os(Linux)
+        return Glibc.getpeername(connection, address, addressLength)
+      #else
+        return Foundation.getpeername(connection, address, addressLength)
+      #endif
     }
   }
   
@@ -385,7 +396,11 @@ public struct Connection {
       }
     }
     else {
-      return Foundation.read(connection, buffer, maxLength)
+      #if os(Linux)
+        return Glibc.read(connection, buffer, maxLength)
+      #else
+        return Foundation.read(connection, buffer, maxLength)
+      #endif
     }
   }
   
@@ -399,7 +414,11 @@ public struct Connection {
       closedConnections.append(connection)
     }
     else {
-      Foundation.close(connection)
+      #if os(Linux)
+        Glibc.close(connection)
+      #else
+        Foundation.close(connection)
+      #endif
     }
   }
   
@@ -416,7 +435,11 @@ public struct Connection {
       return data.length
     }
     else {
-      let result = Foundation.write(connection, data.bytes, data.length)
+      #if os(Linux)
+        let result = Glibc.write(connection, data.bytes, data.length)
+      #else
+        let result = Foundation.write(connection, data.bytes, data.length)
+      #endif
       return result
     }
   }

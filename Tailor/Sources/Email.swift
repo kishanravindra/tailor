@@ -1,4 +1,7 @@
 import Foundation
+#if os(Linux)
+  import Glibc
+#endif
 
 /**
   This structure represents an email.
@@ -268,7 +271,7 @@ public struct Email: Equatable {
   private func appendHeader(data: NSMutableData, label: String, value: String) {
     let fullHeader = label + ": " + value
     
-    if let asciiData = fullHeader.dataUsingEncoding(NSASCIIStringEncoding) {
+    if let asciiData = fullHeader.bridge().dataUsingEncoding(NSASCIIStringEncoding) {
       if asciiData.length < Email.maxLineLength || label != "Subject" {
         data.appendData(asciiData)
         data.appendData(Email.newline)

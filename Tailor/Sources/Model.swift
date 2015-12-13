@@ -42,8 +42,10 @@ public extension ModelType {
     */
   public static func modelName() -> String {
     var fullName = String(reflecting: self)
-    if let range = fullName.rangeOfString(".", options: NSStringCompareOptions.BackwardsSearch, range: nil, locale: nil) {
-      fullName = fullName.substringFromIndex(range.startIndex.advancedBy(1))
+    let length = fullName.characters.count
+    let range = fullName.bridge().rangeOfString(".", options: NSStringCompareOptions.BackwardsSearch, range: NSMakeRange(0,length), locale: nil)
+    if range.location != NSNotFound {
+      fullName = fullName.bridge().substringFromIndex(1)
     }
     return fullName.underscored()
   }

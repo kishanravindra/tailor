@@ -66,13 +66,14 @@ public class RouteSet {
       parameterPattern.enumerateMatchesInString(path.pathPattern, options: [], range: NSMakeRange(0, path.pathPattern.characters.count), usingBlock: {
         (match, _, _) in
         guard let match = match else { return }
-        let range = Range<String.Index>(start: path.pathPattern.startIndex.advancedBy(match.range.location + 1), end: path.pathPattern.startIndex.advancedBy(match.range.location + match.range.length))
-        parameterNames.append(path.pathPattern.substringWithRange(range))
+        let range = NSMakeRange(match.range.location + 1, match.range.length - 1)
+        parameterNames.append(path.pathPattern.bridge().substringWithRange(range))
       })
       
       self.pathParameters = parameterNames
       
-      let filteredPathPattern = NSMutableString(string: path.pathPattern)
+      let filteredPathPattern = NSMutableString(capacity: path.pathPattern.characters.count)
+      filteredPathPattern.appendString(path.pathPattern)
       
       parameterPattern.replaceMatchesInString(filteredPathPattern, options: [], range: NSMakeRange(0, path.pathPattern.characters.count), withTemplate: "([^/]*)")
       
@@ -91,7 +92,7 @@ public class RouteSet {
       - returns: The description
       */
     public func fullDescription() -> String {
-      return NSString(format: "%@ %@", self.path.description, self.description) as String
+      return "\(self.path.description) \(self.description)"
     }
     
     //MARK: - Request Handling
@@ -103,7 +104,7 @@ public class RouteSet {
       - returns:              Whether the route can handle the request.
       */
     public func canHandleRequest(request: Request) -> Bool {
-      let path = request.path.stringByRemovingPercentEncoding ?? request.path
+      let path = request.path.bridge().stringByRemovingPercentEncoding ?? request.path
       let range = NSRange(location: 0, length: path.characters.count)
       let match = self.regex?.firstMatchInString(path, options: [], range: range)
       return match != nil && request.method == self.path.methodName
@@ -122,7 +123,7 @@ public class RouteSet {
       
       let parameterValues = Request.extractWithPattern(path, pattern: self.regex?.pattern ?? "")
       for (index, key) in self.pathParameters.enumerate() {
-        requestCopy.params[key] = parameterValues[index].stringByRemovingPercentEncoding
+        requestCopy.params[key] = parameterValues[index].bridge().stringByRemovingPercentEncoding
       }
       
       NSLog("Parameters: %@", requestCopy.params.raw)
@@ -393,7 +394,7 @@ public class RouteSet {
     - parameter action          The body of the action.
     */
   public func route<T: ControllerType>(path: RoutePath, to action: (T)->()->(), name actionName: String) {
-    let description = NSString(format: "%@#%@", T.name, actionName) as String
+    let description = "\(T.name)#\(actionName)"
     let filters = self.currentFilters
     let handler: Connection.RequestHandler = {
       (request: Request, callback: Connection.ResponseCallback) in

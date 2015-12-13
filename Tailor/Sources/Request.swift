@@ -220,8 +220,9 @@ public struct Request: Equatable {
       lines.removeAtIndex(0)
     }
     
-    if let queryStringLocation = self.fullPath.rangeOfString("?", options: NSStringCompareOptions.BackwardsSearch) {
-      self.path = self.fullPath.substringToIndex(queryStringLocation.startIndex)
+    let queryStringLocation = self.fullPath.bridge().rangeOfString("?", options: NSStringCompareOptions.BackwardsSearch)
+    if queryStringLocation.location != NSNotFound {
+      self.path = self.fullPath.bridge().substringToIndex(queryStringLocation.location)
     }
     else {
       self.path = self.fullPath
@@ -278,7 +279,7 @@ public struct Request: Equatable {
   
   /** The text of the request body. */
   public var bodyText : String { get {
-    return (NSString(data: self.body, encoding: NSUTF8StringEncoding) as? String) ?? ""
+    return NSString(data: self.body, encoding: NSUTF8StringEncoding)?.bridge() ?? ""
   } }
   
   /**
@@ -286,8 +287,9 @@ public struct Request: Equatable {
     request body.
     */
   private mutating func parseRequestParameters() {
-    if let queryStringLocation = self.fullPath.rangeOfString("?", options: NSStringCompareOptions.BackwardsSearch) {
-      let queryString = self.fullPath.substringFromIndex(queryStringLocation.startIndex.successor())
+    let queryStringLocation = self.fullPath.bridge().rangeOfString("?", options: NSStringCompareOptions.BackwardsSearch)
+    if queryStringLocation.location != NSNotFound {
+      let queryString = self.fullPath.bridge().substringFromIndex(queryStringLocation.location + 1)
       for (key, value) in Request.decodeQueryString(queryString) {
         self.params[key] = value
       }
@@ -312,7 +314,7 @@ public struct Request: Equatable {
   private mutating func parseMultipartForm() {
     guard let contentType = headers["Content-Type"] else { return }
     
-    let boundaryComponents = contentType.componentsSeparatedByString("boundary=")
+    let boundaryComponents = contentType.bridge().componentsSeparatedByString("boundary=")
     guard boundaryComponents.count > 1 else { return }
     
     let boundary = boundaryComponents[1]
@@ -327,9 +329,9 @@ public struct Request: Equatable {
       var parameterName : String? = nil
       
       if let disposition = subRequest.headers["Content-Disposition"] {
-        for dispositionComponent in disposition.componentsSeparatedByString("; ") {
+        for dispositionComponent in disposition.bridge().componentsSeparatedByString("; ") {
           if dispositionComponent.hasPrefix("name=") {
-            parameterName = dispositionComponent.substringFromIndex(dispositionComponent.startIndex.advancedBy(5)).stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: "\""))
+            parameterName = dispositionComponent.bridge().substringFromIndex(5).bridge().stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: "\""))
           }
         }
       }
@@ -343,7 +345,7 @@ public struct Request: Equatable {
         ]
       }
       else {
-        self.params[name] = NSString(data: subRequest.body, encoding: NSUTF8StringEncoding) as? String
+        self.params[name] = NSString(data: subRequest.body, encoding: NSUTF8StringEncoding)?.bridge()
       }
     }
   }
@@ -374,9 +376,7 @@ public struct Request: Equatable {
       for index in 1..<result.numberOfRanges {
         let range = result.rangeAtIndex(index)
         if range.location == NSNotFound { continue }
-        let startIndex = line.startIndex.advancedBy(range.location)
-        let endIndex = startIndex.advancedBy(range.length)
-        let section = line.substringWithRange(Range(start: startIndex, end: endIndex))
+        let section = line.bridge().substringWithRange(range)
         sections.append(section)
       }
     })
@@ -407,8 +407,8 @@ public struct Request: Equatable {
   public static func decodeQueryString(string: String) -> [String:[String]] {
     if string == "" { return [:] }
     var params: [String:[String]] = [:]
-    let simplifiedString = string.stringByReplacingOccurrencesOfString("+", withString: "%20")
-    for param in simplifiedString.componentsSeparatedByString("&") {
+    let simplifiedString = string.bridge().stringByReplacingOccurrencesOfString("+", withString: "%20")
+    for param in simplifiedString.bridge().componentsSeparatedByString("&") {
       let components = param.componentsSeparatedByString("=").map {
         $0.stringByRemovingPercentEncoding ?? $0
       }
@@ -450,8 +450,8 @@ public struct Request: Equatable {
       if !queryString.isEmpty {
         queryString += "&"
       }
-      let convertedKey = key.stringByAddingPercentEncodingWithAllowedCharacters(.URLParameterAllowedCharacterSet()) ?? ""
-      let convertedValue = value.stringByAddingPercentEncodingWithAllowedCharacters(.URLParameterAllowedCharacterSet()
+      let convertedKey = key.bridge().stringByAddingPercentEncodingWithAllowedCharacters(.URLParameterAllowedCharacterSet()) ?? ""
+      let convertedValue = value.bridge().stringByAddingPercentEncodingWithAllowedCharacters(.URLParameterAllowedCharacterSet()
         ) ?? ""
       queryString += convertedKey + "=" + convertedValue
     }
@@ -588,8 +588,8 @@ public extension Request {
         for indexOfComponent in 1..<components.count {
           let splitFlag = components[indexOfComponent].split("=")
           if splitFlag.count == 2 {
-            let key = String(splitFlag[0]).stringByTrimmingCharactersInSet(.whitespaceCharacterSet())
-            let value = String(splitFlag[1]).stringByTrimmingCharactersInSet(.whitespaceCharacterSet())
+            let key = String(splitFlag[0]).bridge().stringByTrimmingCharactersInSet(.whitespaceCharacterSet())
+            let value = String(splitFlag[1]).bridge().stringByTrimmingCharactersInSet(.whitespaceCharacterSet())
             if key == "q" {
               quality = Double(value) ?? 0
             }
@@ -599,8 +599,8 @@ public extension Request {
           }
         }
         self.init(
-          type: type.stringByTrimmingCharactersInSet(.whitespaceCharacterSet()),
-          subtype: subtype.stringByTrimmingCharactersInSet(.whitespaceCharacterSet()),
+          type: type.bridge().stringByTrimmingCharactersInSet(.whitespaceCharacterSet()),
+          subtype: subtype.bridge().stringByTrimmingCharactersInSet(.whitespaceCharacterSet()),
           flags: flags,
           quality: quality)
       }

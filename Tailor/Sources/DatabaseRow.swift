@@ -94,7 +94,7 @@ public struct DatabaseRow {
     let typeName = String(OutputType.self)
     var actualTypeName = String(value)
     if let index = actualTypeName.characters.indexOf("(") {
-      actualTypeName = actualTypeName.substringToIndex(index)
+      actualTypeName = actualTypeName.bridge().substringToIndex(actualTypeName.startIndex.distanceTo(index))
     }
     throw DatabaseError.FieldType(name: key, actualType: actualTypeName, desiredType: typeName)
   }

@@ -328,15 +328,15 @@ extension SerializableValue {
   public var toFoundationJsonObject: AnyObject {
     switch(self) {
     case let String(string):
-      return string
+      return string.bridge()
     case let Array(array):
-      return array.map { $0.toFoundationJsonObject }
+      return array.map { $0.toFoundationJsonObject }.bridge()
     case let Dictionary(dictionary):
-      var results : [Swift.String:AnyObject] = [:]
+      var results : [NSString:AnyObject] = [:]
       for (key,value) in dictionary {
-        results[key] = value.toFoundationJsonObject
+        results[key.bridge()] = value.toFoundationJsonObject
       }
-      return results
+      return results.bridge()
     case Null:
       return NSNull()
     case let Integer(number):
@@ -346,11 +346,11 @@ extension SerializableValue {
     case let Boolean(boolean):
       return NSNumber(bool: boolean)
     case let Timestamp(timestamp):
-      return timestamp.format(TimeFormat.Database)
+      return timestamp.format(TimeFormat.Database).bridge()
     case let Time(time):
-      return time.description
+      return time.description.bridge()
     case let Date(date):
-      return date.description
+      return date.description.bridge()
     case let Data(data):
       return data
     }
@@ -398,7 +398,7 @@ extension SerializableValue {
    
    - parameter jsonObject:   The JSON object.
    */
-  public init(jsonObject: AnyObject) throws {
+  public init(jsonObject: Any) throws {
     if let s = jsonObject as? Swift.String {
       self = String(s)
     }

@@ -1,4 +1,7 @@
 import Foundation
+#if os(Linux)
+  import Glibc
+#endif
 
 /**
   This class represents a web application.
@@ -313,12 +316,9 @@ public final class Application {
   
   /** The application that we are running. */
   public class func sharedApplication() -> Application {
-    let dictionary = NSThread.currentThread().threadDictionary
-    return dictionary["SHARED_APPLICATION"] as? Application ?? {
-      let application = Application.init()
-      dictionary["SHARED_APPLICATION"] = application
-      return application
-    }()
+    return NSThread.cacheInDictionary("SHARED_APPLICATION") {
+      return Application.init()
+    }
   }
   
   //MARK: - Running
@@ -389,7 +389,7 @@ public final class Application {
     if !arguments.isEmpty {
       command = arguments[0]
       for indexOfFlag in 1..<arguments.count {
-        let flagParts = arguments[indexOfFlag].componentsSeparatedByString("=")
+        let flagParts = arguments[indexOfFlag].bridge().componentsSeparatedByString("=")
         if flagParts.count == 1 {
           flags[flagParts[0]] = "1"
         }
@@ -424,7 +424,7 @@ public final class Application {
     let inputData = keyboard.availableData
     let commandLine = NSString(data: inputData, encoding:NSUTF8StringEncoding)?.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()) ?? ""
     
-    let int = Int((commandLine as NSString).intValue)
+    let int = Int(commandLine) ?? 0
     if int > 0 && int <= tasks.count {
       return tasks[int - 1].commandName
     }
@@ -454,7 +454,7 @@ public final class Application {
           inQuotes = !inQuotes
         }
         return character == " " && !inQuotes
-        }.map { String($0).stringByReplacingOccurrencesOfString("\"", withString: "") }
+        }.map { String($0).bridge().stringByReplacingOccurrencesOfString("\"", withString: "") }
       (self.command, self.flags) = self.dynamicType.parseArguments(arguments)
     }
   }

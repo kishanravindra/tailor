@@ -63,7 +63,7 @@ public extension LocalizationSource {
     if locale == "en" {
       return locales
     }
-    var components = locale.componentsSeparatedByString("-")
+    var components = locale.bridge().componentsSeparatedByString("-")
     if components.count > 1 {
       var fallback = ""
       for component in components {
@@ -117,7 +117,10 @@ public extension LocalizationSource {
       }
     }
     for (key,value) in interpolations {
-      result = result?.stringByReplacingOccurrencesOfString("\\(\(key))", withString: value, options: [], range: nil)
+      if let length = result?.characters.count {
+        let range = NSMakeRange(0,length)
+        result = result?.bridge().stringByReplacingOccurrencesOfString("\\(\(key))", withString: value, options: [], range: range)
+      }
     }
     return result
   }
