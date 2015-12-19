@@ -4,7 +4,7 @@ public extension String {
   /** The string with the first character lowercased. */
   public var lowercaseInitial: String {
     get {
-      return String(self[self.startIndex]).lowercaseString + self.substringFromIndex(self.startIndex.advancedBy(1))
+      return String(self[self.startIndex]).lowercaseString + self.bridge().substringFromIndex(1)
       
     }
   }
@@ -13,7 +13,7 @@ public extension String {
   public var capitalizeInitial: String {
     get {
       return String(self[self.startIndex]).capitalizedString +
-        self.substringFromIndex(self.startIndex.advancedBy(1))
+        self.bridge().substringFromIndex(1)
       
     }
   }
@@ -27,7 +27,7 @@ public extension String {
     ]
     for (suffix, pluralSuffix) in replacements {
       if self.hasSuffix(suffix) {
-        return self.substringToIndex(self.startIndex.advancedBy(self.characters.count - suffix.characters.count)) + pluralSuffix
+        return self.bridge().substringToIndex(self.characters.count - suffix.characters.count) + pluralSuffix
       }
     }
     return self + "s"
@@ -35,7 +35,7 @@ public extension String {
   
   /** Whether this string contains another one. */
   public func contains(other: String) -> Bool {
-    return self.rangeOfString(other) != nil
+    return self.bridge().rangeOfString(other).location != NSNotFound
   }
   
   /**
@@ -71,8 +71,9 @@ public extension String {
     - returns:                The last component
     */
   public func lastComponent(separator separator: String) -> String {
-    if let range = self.rangeOfString(separator, options: [.BackwardsSearch], range: nil, locale: nil) {
-      return self.substringFromIndex(range.endIndex)
+    let range = self.bridge().rangeOfString(separator, options: [.BackwardsSearch])
+    if range.location != NSNotFound {
+      return self.bridge().substringFromIndex(range.location + range.length)
     }
     else {
       return self
@@ -99,7 +100,7 @@ public extension String {
     newCharacters.reserveCapacity(unicodeScalars.count)
     for character in unicodeScalars {
       let value = character.value
-      if value < UInt32(UINT16_MAX) && set.characterIsMember(UInt16(value)) {
+      if value < UInt32(UInt16.max) && set.characterIsMember(UInt16(value)) {
         newCharacters.append(character)
       }
       else {

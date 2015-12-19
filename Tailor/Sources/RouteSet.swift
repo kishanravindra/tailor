@@ -78,7 +78,7 @@ public class RouteSet {
       parameterPattern.replaceMatchesInString(filteredPathPattern, options: [], range: NSMakeRange(0, path.pathPattern.characters.count), withTemplate: "([^/]*)")
       
       do {
-        try self.regex = NSRegularExpression(pattern: "^" + (filteredPathPattern as String) + "/?$", options: [])
+        try self.regex = NSRegularExpression(pattern: "^" + filteredPathPattern.bridge() + "/?$", options: [])
       }
       catch {
         self.regex = nil
@@ -606,13 +606,18 @@ public class RouteSet {
         
         let mimeType: String
         if let contents = NSFileManager.defaultManager().contentsAtPath(fullPath) {
-          if let uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (fullPath as NSString).pathExtension, nil)?.takeRetainedValue(),
-            let type = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType)?.takeRetainedValue() {
-              mimeType = type as String
-          }
-          else {
+          //FIXME
+          #if os(Linux)
             mimeType = "text/plain"
-          }
+          #else
+            if let uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (fullPath as NSString).pathExtension, nil)?.takeRetainedValue(),
+              let type = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType)?.takeRetainedValue() {
+                mimeType = type as String
+            }
+            else {
+              mimeType = "text/plain"
+            }
+          #endif
           
           let eTag = contents.md5Hash
           var response = Response()
@@ -660,8 +665,9 @@ public class RouteSet {
         var path = route.path.pathPattern
         var hasQuery = false
         for (key, value) in parameters {
-          if let range = path.rangeOfString(":" + key, options: [], range: nil, locale: nil) {
-            path = path.stringByReplacingCharactersInRange(range, withString: value.stringByAddingPercentEncodingWithAllowedCharacters(.URLParameterAllowedCharacterSet()) ?? "")
+          let range = path.bridge().rangeOfString(":" + key)
+          if range.location != NSNotFound {
+            path = path.bridge().stringByReplacingCharactersInRange(range, withString: value.bridge().stringByAddingPercentEncodingWithAllowedCharacters(.URLParameterAllowedCharacterSet()) ?? "")
           }
           else {
             if hasQuery {
@@ -671,9 +677,9 @@ public class RouteSet {
               path += "?"
               hasQuery = true
             }
-            path += key.stringByAddingPercentEncodingWithAllowedCharacters(.URLParameterAllowedCharacterSet()) ?? ""
+            path += key.bridge().stringByAddingPercentEncodingWithAllowedCharacters(.URLParameterAllowedCharacterSet()) ?? ""
             path += "="
-            path += value.stringByAddingPercentEncodingWithAllowedCharacters(.URLParameterAllowedCharacterSet()) ?? ""
+            path += value.bridge().stringByAddingPercentEncodingWithAllowedCharacters(.URLParameterAllowedCharacterSet()) ?? ""
           }
         }
         matchingPath = path

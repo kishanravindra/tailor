@@ -86,7 +86,7 @@ public struct TimeInterval: Equatable,CustomStringConvertible {
         return nil
       }
       else if value == 1 {
-        let text = text.substringToIndex(text.endIndex.advancedBy(-1))
+        let text = text.bridge().substringToIndex(text.characters.count - 1)
         return "\(value) \(text)"
       }
       else {

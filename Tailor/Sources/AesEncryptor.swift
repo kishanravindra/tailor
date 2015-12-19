@@ -2,10 +2,15 @@ import Foundation
 
 /**
   This class provides a high-level interface for doing AES encryption.
+  FIXME
   */
 public final class AesEncryptor {
   /** The low-level key for the encryption. */
+  #if os(Linux)
+  private let key: String?
+  #else
   private let key: SecKey?
+  #endif
   
   //MARK: - Encodings
   
@@ -90,6 +95,9 @@ public final class AesEncryptor {
   
     */
   public init?(key hexKey: String) {
+    #if os(Linux)
+      self.key = nil
+    #else 
     let keyData = NSMutableData()
     if hexKey.characters.count < 64 {
       self.key = nil
@@ -109,6 +117,7 @@ public final class AesEncryptor {
     ]
     
     self.key = SecKeyCreateFromData(keyParams, keyData, nil)
+    #endif
   }
   
   //MARK: - Encryption
@@ -120,10 +129,14 @@ public final class AesEncryptor {
     - returns:            The encrypted data.
     */
   public func encrypt(data: NSData) -> NSData {
+    #if os(Linux)
+      return NSData()
+    #else
     guard let key = self.key else { return NSData() }
     let encryptor = SecEncryptTransformCreate(key, nil)
     SecTransformSetAttribute(encryptor, kSecTransformInputAttributeName, data, nil)
     return (SecTransformExecute(encryptor, nil) as? NSData) ?? NSData()
+    #endif
   }
   
   /**
@@ -133,10 +146,14 @@ public final class AesEncryptor {
     - returns:          The plaintext.
     */
   public func decrypt(data: NSData) -> NSData {
+    #if os(Linux)
+      return NSData()
+    #else
     guard let key = self.key else { return NSData() }
     let decryptor = SecDecryptTransformCreate(key, nil)
     SecTransformSetAttribute(decryptor, kSecTransformInputAttributeName, data, nil)
     return (SecTransformExecute(decryptor, nil) as? NSData) ?? NSData()
+    #endif
   }
   
   //MARK: - Key Generation
@@ -147,6 +164,9 @@ public final class AesEncryptor {
     - returns:   The hexadecimal encoding of the key.
     */
   public class func generateKey() -> String {
+    #if os(Linux)
+      return ""
+    #else
     let keyParams = [
       kSecAttrKeyType as NSString: kSecAttrKeyTypeAES as NSString,
       kSecAttrKeySizeInBits as NSString: NSNumber(int: 256)
@@ -167,5 +187,6 @@ public final class AesEncryptor {
       }
     }
     return keyString
+    #endif
   }
 }

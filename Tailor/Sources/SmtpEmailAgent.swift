@@ -65,7 +65,7 @@ public struct SmtpEmailAgent: EmailAgent {
       let process = ExternalProcess(launchPath: "/usr/bin/curl", arguments: arguments) {
         terminationStatus, data in
         
-        let fullResponse = NSString(data: data, encoding: NSUTF8StringEncoding) as? String ?? ""
+        let fullResponse = NSString(data: data, encoding: NSUTF8StringEncoding)?.bridge() ?? ""
         let lastLine = fullResponse.lastComponent(separator: "curl:")
         if terminationStatus == 0 {
           callback(success: true, code: terminationStatus, message: "")

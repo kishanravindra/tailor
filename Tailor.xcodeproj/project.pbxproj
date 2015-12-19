@@ -103,7 +103,6 @@
 		52A05A321B7FAA2800DB1248 /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A05A2D1B7FAA2800DB1248 /* Response.swift */; };
 		52A05A331B7FAA2800DB1248 /* RouteSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A05A2E1B7FAA2800DB1248 /* RouteSet.swift */; };
 		52A05A351B7FAA5F00DB1248 /* RequestFilterType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A05A341B7FAA5E00DB1248 /* RequestFilterType.swift */; };
-		52A2361A1C10FDA600EF8A16 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A236191C10FDA600EF8A16 /* Package.swift */; };
 		52A684521A3D0C5B00F4AA47 /* ConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A684511A3D0C5B00F4AA47 /* ConnectionTests.swift */; };
 		52A8AFD31BA736BC007A2762 /* NSCharacterSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A8AFD21BA736BC007A2762 /* NSCharacterSet.swift */; };
 		52A95E311AE0A3B9001AED1F /* DatabaseValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A95E301AE0A3B9001AED1F /* DatabaseValue.swift */; };
@@ -1368,7 +1367,6 @@
 				52A8AFD31BA736BC007A2762 /* NSCharacterSet.swift in Sources */,
 				527401451BB33844003C7821 /* DatabaseRow.swift in Sources */,
 				52C5B4811B47055000F4A5C5 /* ServerTask.swift in Sources */,
-				52A2361A1C10FDA600EF8A16 /* Package.swift in Sources */,
 				52C5B4801B47055000F4A5C5 /* ExitTask.swift in Sources */,
 				525F845A1B3A44A50025CA38 /* DatabaseDriver.swift in Sources */,
 				522643211B06C7F40081D04E /* Calendar.swift in Sources */,

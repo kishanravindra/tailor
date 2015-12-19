@@ -143,14 +143,14 @@ internal struct TimeZoneReader {
     for (index,character) in (reader.readArray(abbreviationCount) as [Int8]).enumerate() {
       characterBuffer.append(character)
       if character == 0 {
-        abbreviations[stringStart] = String(CString: characterBuffer, encoding: NSASCIIStringEncoding) ?? "???"
+        abbreviations[stringStart] = NSString(CString: characterBuffer, encoding: NSASCIIStringEncoding)?.bridge() ?? "???"
         characterBuffer = []
         stringStart = index + 1
       }
     }
     
     if !characterBuffer.isEmpty {
-      abbreviations[stringStart] = String(CString: &characterBuffer, encoding: NSASCIIStringEncoding) ?? "???"
+      abbreviations[stringStart] = NSString(CString: &characterBuffer, encoding: NSASCIIStringEncoding)?.bridge() ?? "???"
     }
     
     // Read information about whether the timestamps come from standard time or
@@ -167,7 +167,7 @@ internal struct TimeZoneReader {
       
       if transitionIndex == -1 {
         policyDataItem = policyData.filter { $0.1 == 0 }.first ?? (0,0,0)
-        timestamp = -1 * DBL_MAX
+        timestamp = -30000000000
       }
       else {
         timestamp = Timestamp.EpochInterval(transitionTimes[transitionIndex])

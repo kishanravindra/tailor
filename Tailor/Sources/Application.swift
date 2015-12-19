@@ -109,7 +109,8 @@ public final class Application {
       values.
       */
     public init() {
-      self.configure()
+      //FIXME
+      //self.configure()
     }
     
     /**
@@ -470,8 +471,11 @@ public final class Application {
     The registered subtype list will include the types passed in.
     
     - parameter types:   The types to get subtypes of.
+   
+    FIXME
     */
   private func registerSubtypes(parentType: Any.Type, matcher: (AnyClass->Bool)) {
+    #if os(OSX)
     let classCount = objc_getClassList(nil, 0)
     var allClasses = Array<AnyClass?>(count: Int(classCount), repeatedValue: nil)
     objc_getClassList(AutoreleasingUnsafeMutablePointer<AnyClass?>(&allClasses), classCount)
@@ -485,6 +489,7 @@ public final class Application {
         self.registeredSubtypes[key] = subtypes
       }
     }
+    #endif
   }
   
   /**
@@ -505,13 +510,17 @@ public final class Application {
     The registered subclass list will include the types passed in.
 
     - parameter types:   The types to get subclasses of.
+   
+    FIXME
     */
   public func registerSubclasses(types: AnyClass...) {
+    #if os(OSX)
     for type in types {
       self.registerSubtypes(type) {
         return class_getClassMethod($0, Selector("isSubclassOfClass:")) != nil && $0.isSubclassOfClass(type)
       }
     }
+    #endif
   }
   
   /**

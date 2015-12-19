@@ -409,8 +409,8 @@ public struct Request: Equatable {
     var params: [String:[String]] = [:]
     let simplifiedString = string.bridge().stringByReplacingOccurrencesOfString("+", withString: "%20")
     for param in simplifiedString.bridge().componentsSeparatedByString("&") {
-      let components = param.componentsSeparatedByString("=").map {
-        $0.stringByRemovingPercentEncoding ?? $0
+      let components = param.bridge().componentsSeparatedByString("=").map {
+        $0.bridge().stringByRemovingPercentEncoding ?? $0
       }
       let key = components[0]
       let value: String

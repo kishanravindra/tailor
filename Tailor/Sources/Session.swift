@@ -68,7 +68,7 @@ public struct Session {
     
     for (key, value) in self.data {
       if key.hasPrefix("_flash_") {
-        let flashKey = key.substringFromIndex(key.startIndex.advancedBy(7))
+        let flashKey = key.bridge().substringFromIndex(7)
         self.currentFlash[flashKey] = value
         self.data[key] = nil
       }

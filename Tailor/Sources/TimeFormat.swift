@@ -1,3 +1,5 @@
+import Foundation
+
 /**
   This protocol specifies that a type can be used to format a timestamp.
   */
@@ -461,7 +463,7 @@ public enum TimeFormatComponent: TimeFormatter {
       }
       let currentLength = year.characters.count
       if truncate && currentLength > length {
-        year = year.substringFromIndex(year.endIndex.advancedBy(length - currentLength))
+        year = year.bridge().substringFromIndex(year.characters.count + length - currentLength)
       }
       return year
     case let .MonthWith(padding):
@@ -569,7 +571,7 @@ public enum TimeFormatComponent: TimeFormatter {
       return (0,nil)
     }
     
-    var substring = string.substringToIndex(string.startIndex.advancedBy(length))
+    var substring = string.bridge().substringToIndex(length)
     var realStartIndex = -1
     for (index,character) in substring.unicodeScalars.enumerate() {
       
@@ -582,9 +584,9 @@ public enum TimeFormatComponent: TimeFormatter {
         realStartIndex = index
       }
     }
-    substring = substring.substringFromIndex(substring.startIndex.advancedBy(realStartIndex))
+    substring = substring.bridge().substringFromIndex(realStartIndex)
     if let value = Int(substring) {
-      return (value, string.substringFromIndex(string.startIndex.advancedBy(length)))
+      return (value, string.bridge().substringFromIndex(length))
     }
     else {
       return (0,nil)
@@ -621,7 +623,7 @@ public enum TimeFormatComponent: TimeFormatter {
         textValue = "\(value)"
       }
       if string.hasPrefix(textValue) {
-        return (value,string.substringFromIndex(string.startIndex.advancedBy(textValue.characters.count)))
+        return (value,string.bridge().substringFromIndex(textValue.characters.count))
       }
     }
     return (0,nil)
@@ -647,7 +649,7 @@ public enum TimeFormatComponent: TimeFormatter {
     switch(self) {
     case let .Literal(literal):
       if string.hasPrefix(literal) {
-        return string.substringFromIndex(string.startIndex.advancedBy(literal.characters.count))
+        return string.bridge().substringFromIndex(literal.characters.count)
       }
       else {
         return nil
@@ -713,9 +715,8 @@ public enum TimeFormatComponent: TimeFormatter {
       return nil
     case .TimeZone:
       if string.characters.count >= 3 {
-        let index = string.startIndex.advancedBy(3)
-        let timeZoneName = string.substringToIndex(index)
-        let remainder = string.substringFromIndex(index)
+        let timeZoneName = string.bridge().substringToIndex(3)
+        let remainder = string.bridge().substringFromIndex(3)
         container.timeZone = Tailor.TimeZone(name: timeZoneName)
         return remainder
       }
@@ -729,18 +730,17 @@ public enum TimeFormatComponent: TimeFormatter {
       if (string[string.startIndex] != "+" && string[string.startIndex] != "-") || string[string.startIndex.advancedBy(3)] != ":" {
         return nil
       }
-      let hours = Int(string.substringWithRange(string.startIndex.advancedBy(1)...string.startIndex.advancedBy(2)))
-      let minutes = Int(string.substringWithRange(string.startIndex.advancedBy(4)...string.startIndex.advancedBy(5)))
+      let hours = Int(string.bridge().substringWithRange(NSMakeRange(1,2)))
+      let minutes = Int(string.bridge().substringWithRange(NSMakeRange(4,2)))
       if hours == nil || minutes == nil {
         return nil
       }
-      return string.substringFromIndex(string.startIndex.advancedBy(6))
+      return string.bridge().substringFromIndex(6)
     case .Meridian:
       if string.characters.count < 2 {
         return nil
       }
-      let index = string.startIndex.advancedBy(2)
-      let meridian = string.substringToIndex(index)
+      let meridian = string.bridge().substringToIndex(2)
       switch(meridian) {
       case "AM":
         break
@@ -749,7 +749,7 @@ public enum TimeFormatComponent: TimeFormatter {
       default:
         return nil
       }
-      return string.substringFromIndex(index)
+      return string.bridge().substringFromIndex(2)
     }
   }
 }

@@ -20,8 +20,15 @@ public struct Connection {
   /** A callback to the code to provide the request. */
   let handler: RequestHandler
   
-  /** The queue that we put requests on. */
-  public static let dispatchQueue = dispatch_queue_create(nil, DISPATCH_QUEUE_CONCURRENT)
+  /**
+    The queue that we put requests on.
+    FIXME
+    */
+  #if os(Linux)
+    public static let dispatchQueue = 0
+  #else
+    public static let dispatchQueue = dispatch_queue_create(nil, DISPATCH_QUEUE_CONCURRENT)
+  #endif
   
   /**
     This method creates a new connection.
@@ -52,16 +59,29 @@ public struct Connection {
     if self.socketDescriptor < 0 {
       return
     }
-    NSOperationQueue.mainQueue().addOperationWithBlock {
+    #if os(Linux)
       let connectionDescriptor = Connection.accept(self.socketDescriptor)
-      
+        
       if connectionDescriptor > 0 {
-        dispatch_async(Connection.dispatchQueue) {
-          self.readFromSocket(connectionDescriptor)
-        }
+        self.readFromSocket(connectionDescriptor)
       }
       self.listenToSocket()
-    }
+    #else
+      NSOperationQueue.mainQueue().addOperationWithBlock {
+        let connectionDescriptor = Connection.accept(self.socketDescriptor)
+        
+        if connectionDescriptor > 0 {
+          #if os(Linux)
+            self.readFromSocket(connectionDescriptor)
+          #else
+            dispatch_async(Connection.dispatchQueue) {
+              self.readFromSocket(connectionDescriptor)
+            }
+          #endif
+        }
+        self.listenToSocket()
+      }
+    #endif
   }
   
   /**
@@ -79,11 +99,18 @@ public struct Connection {
     var request: Request = Request()
     var startTime: Timestamp? = nil
     
+    #if os(Linux)
+    var clientAddress = sockaddr(
+      sa_family: 0,
+      sa_data: (0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+    )
+    #else
     var clientAddress = sockaddr(
       sa_len: 0,
       sa_family: 0,
       sa_data: (0,0,0,0,0,0,0,0,0,0,0,0,0,0)
     )
+    #endif
     
     var size = UInt32(sizeof(sockaddr))
     Connection.getpeername(connectionDescriptor, address: &clientAddress, addressLength: &size)
@@ -173,9 +200,13 @@ public struct Connection {
         self.readFromSocket(connectionDescriptor)
       }
       else {
+        #if os(Linux)
+          self.readFromSocket(connectionDescriptor)
+        #else
         dispatch_async(Connection.dispatchQueue) {
           self.readFromSocket(connectionDescriptor)
         }
+        #endif
       }
     }
   }
@@ -242,7 +273,11 @@ public struct Connection {
     - returns:              Whether we were able to open the connection.
     */
   public static func startServer(address: (Int,Int,Int,Int), port: Int, handler: RequestHandler) -> Bool {
+    #if os(Linux)
+    let socketDescriptor = socket(PF_INET, Int32(SOCK_STREAM.rawValue), Int32(IPPROTO_TCP))
+    #else
     let socketDescriptor = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)
+    #endif
     let flag = [1]
     setsockopt(socketDescriptor, SOL_SOCKET, SO_REUSEADDR, flag, UInt32(sizeof(Int)))
     setsockopt(socketDescriptor, SOL_SOCKET, SO_KEEPALIVE, flag, UInt32(sizeof(Int)))
@@ -253,8 +288,13 @@ public struct Connection {
     }
     
     var socketAddress = sockaddr_in()
+    #if os(Linux)
+    socketAddress.sin_family = UInt16(AF_INET)
+    socketAddress.sin_port = UInt16((port & 0xFF) << 8 | port >> 8)
+    #else
     socketAddress.sin_family = UInt8(AF_INET)
     socketAddress.sin_port = CFSwapInt16(UInt16(port))
+    #endif
     
     func socketAddressPointer(pointer: UnsafePointer<sockaddr_in>) -> UnsafePointer<sockaddr> {
       return UnsafePointer<sockaddr>(pointer)
@@ -276,8 +316,10 @@ public struct Connection {
     _ = Connection(fileDescriptor: socketDescriptor, handler: handler)
     
     NSLog("Listening on port %d", port)
+    #if os(OSX)
     NSRunLoop.currentRunLoop().run()
-    
+    #endif
+
     return true
   }
   

@@ -103,7 +103,7 @@ public struct TimeZone: Equatable,CustomStringConvertible {
   public init(offset: Int) {
     let name = offset > 0 ? "+\(offset)" : "\(offset)"
     self.name = name
-    self.policies = [Policy(beginningTimestamp: -1 * DBL_MAX, abbreviation: name, offset: offset, isDaylightTime: false)]
+    self.policies = [Policy(beginningTimestamp: -30000000000, abbreviation: name, offset: offset, isDaylightTime: false)]
   }
   
   //MARK: - Policy Information
@@ -174,6 +174,7 @@ public struct TimeZone: Equatable,CustomStringConvertible {
   }
   
   static func loadTimeZones() -> [String: [TimeZone.Policy]] {
+    return [:] //FIXME
     guard let enumerator = NSFileManager.defaultManager().enumeratorAtPath(TimeZoneReader.zoneInfoPath) else { return [:] }
     var zones: [String: [TimeZone.Policy]] = [:]
     for element in enumerator {

@@ -2,6 +2,8 @@ import Foundation
 
 /**
   This class provides a Swift wrapper for hashing a password with SHA-512.
+ 
+  FIXME
   */
 public struct ShaPasswordHasher: PasswordHasherType {
   /**
@@ -59,10 +61,13 @@ public struct ShaPasswordHasher: PasswordHasherType {
     let saltedInput = encodedSalt + input
     let inputBytes = NSData(bytes: saltedInput.utf8)
     let hashBytes = [UInt8](count: 64, repeatedValue: 0)
-    CC_SHA512(inputBytes.bytes, UInt32(inputBytes.length), UnsafeMutablePointer<UInt8>(hashBytes))
+    #if os(Linux)
+    #else
+      CC_SHA512(inputBytes.bytes, UInt32(inputBytes.length), UnsafeMutablePointer<UInt8>(hashBytes))
+    #endif
     
     let encodedHash = NSData(bytes: hashBytes).base64EncodedStringWithOptions([])
-    let countString = NSString(format: "%02i", encodedSalt.characters.count) as String
+    let countString = String(encodedSalt.characters.count)
     return countString + encodedSalt + encodedHash
   }
   /**
@@ -90,10 +95,10 @@ public struct ShaPasswordHasher: PasswordHasherType {
     - returns:                        The salt from that hash.
     */
   public static func extractSalt(encryptedPassword: String) -> NSData? {
-    guard let saltLength = Int(encryptedPassword.substringToIndex(encryptedPassword.startIndex.advancedBy(2))) else {
+    guard let saltLength = Int(encryptedPassword.bridge().substringToIndex(2)) else {
       return nil
     }
-    let encodedSalt = encryptedPassword.substringWithRange(Range(start: encryptedPassword.startIndex.advancedBy(2), end: encryptedPassword.startIndex.advancedBy(2 + saltLength)))
+    let encodedSalt = encryptedPassword.bridge().substringWithRange(NSMakeRange(2,saltLength))
     let salt = NSData(base64EncodedString: encodedSalt, options: [])
     
     return salt

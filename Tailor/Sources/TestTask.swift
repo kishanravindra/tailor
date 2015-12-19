@@ -12,9 +12,15 @@ public final class TestTask: TaskType {
   /** The name of the command for the task. */
   public static var commandName: String { return "run_tests" }
   
-  /** This method runs the task. */
+  /**
+    This method runs the task.
+   
+    FIXME
+    */
   public static func runTask() {
-    NSApplication.sharedApplication().run()
+    #if os(OSX)
+      NSApplication.sharedApplication().run()
+    #endif
   }
 }
 

@@ -396,7 +396,7 @@ public struct Response: Equatable {
       data.appendData(NSData(bytes: string.utf8))
     }
     
-    add("HTTP/1.1 \(responseCode.code) \(responseCode.description)")
+    add("HTTP/1.1 \(responseCode.code) \(responseCode.description)\r\n")
     
     var headers = self.headers
     

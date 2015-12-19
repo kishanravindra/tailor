@@ -61,15 +61,21 @@ public extension NSData {
   
   /**
     This method gets an MD5 hash of the data.
+   
+    FIXME
     */
   public var md5Hash: String {
-    var buffer = [UInt8](count: CC_MD5_DIGEST_LENGTH, repeatedValue: 0)
-    CC_MD5(self.bytes, Int64(self.length), &buffer)
-    let output = NSMutableString(capacity: 2 * CC_MD5_DIGEST_LENGTH)
-    for byte in buffer {
-      output.appendFormat("%02x", byte)
-    }
-    return output as String
+    #if os(Linux)
+      return ""
+    #else
+      var buffer = [UInt8](count: CC_MD5_DIGEST_LENGTH, repeatedValue: 0)
+      CC_MD5(self.bytes, Int64(self.length), &buffer)
+      let output = NSMutableString(capacity: 2 * CC_MD5_DIGEST_LENGTH)
+      for byte in buffer {
+        output.appendFormat("%02x", byte)
+      }
+      return output as String
+    #endif
   }
 }
 

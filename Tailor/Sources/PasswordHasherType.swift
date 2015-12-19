@@ -84,9 +84,13 @@ public protocol PasswordHasherType {
 }
 
 extension PasswordHasherType {
+  //FIXME
   public static func generateSalt() -> NSData {
     var saltBytes = [UInt8](count: 16, repeatedValue: 0)
-    SecRandomCopyBytes(kSecRandomDefault, saltBytes.count, &saltBytes)
+    #if os(Linux)
+    #else
+      SecRandomCopyBytes(kSecRandomDefault, saltBytes.count, &saltBytes)
+    #endif
     return NSData(bytes: saltBytes)
   }
   

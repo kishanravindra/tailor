@@ -23,6 +23,6 @@ extension TaskType {
     The default is the class name, converted to snake case.
     */
   public static var commandName: String {
-    return String(reflecting: self).underscored().componentsSeparatedByString(".").last ?? ""
+    return String(reflecting: self).underscored().bridge().componentsSeparatedByString(".").last ?? ""
   }
 }
