@@ -381,8 +381,12 @@ extension SerializableValue {
    - parameter jsonData:   The JSON data.
    */
   public init(jsonData: NSData) throws {
-    let object = try NSJSONSerialization.JSONObjectWithData(jsonData, options: [])
-    try self.init(jsonObject: object)
+    if let object = try NSJSONSerialization.JSONObjectWithData(jsonData, options: []) as? AnyObject {
+      try self.init(jsonObject: object)
+    }
+    else {
+      throw SerializationConversionError.NotValidJsonObject
+    }
   }
   
   /**
@@ -398,7 +402,7 @@ extension SerializableValue {
    
    - parameter jsonObject:   The JSON object.
    */
-  public init(jsonObject: Any) throws {
+  public init(jsonObject: AnyObject) throws {
     if let s = jsonObject as? Swift.String {
       self = String(s)
     }
@@ -446,8 +450,12 @@ extension SerializableValue {
       NSLog("Could not open file")
       throw SerializationConversionError.NotValidJsonObject
     }
-    let contents = try NSPropertyListSerialization.propertyListWithData(data, options: [], format: nil)
-    try self.init(jsonObject: contents)
+    if let contents = try NSPropertyListSerialization.propertyListWithData(data, options: [], format: nil) as? AnyObject {
+      try self.init(jsonObject: contents)
+    }
+    else {
+      throw SerializationConversionError.NotValidJsonObject
+    }
   }
 }
 

@@ -167,9 +167,12 @@ public struct Connection {
       let responseData = response.data
       
       if response.chunked && response.bodyOnly {
-        let length = NSString(format: "%x", responseData.length)
-        let lengthData = NSData(bytes: "\(length)\r\n".utf8)
-        Connection.write(connectionDescriptor, data: lengthData)
+        let length = [responseData.length] as [CVarArgType]
+        withVaList(length) {
+          let length = NSString(format: "%x", arguments: $0)
+          let lengthData = NSData(bytes: "\(length)\r\n".utf8)
+          Connection.write(connectionDescriptor, data: lengthData)
+        }
       }
       
       let bytesWritten = Connection.write(connectionDescriptor, data: responseData)

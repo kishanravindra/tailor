@@ -178,7 +178,7 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
         ])
       ])
 
-    let expectedData = NSData(bytes: "{\"aKey1\":\"value1\",\"aKey2\":{\"bKey1\":\"value2\",\"bKey2\":\"value3\"}}".utf8)
+    let expectedData = NSData(bytes: "{\"aKey2\":{\"bKey2\":\"value3\",\"bKey1\":\"value2\"},\"aKey1\":\"value1\"}".utf8)
     do {
       let data = try primitive.jsonData()
       assert(data, equals: expectedData)
@@ -195,7 +195,7 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
       "aKey2": JsonPrimitive.Null
       ])
     
-    let expectedData = NSData(bytes: "{\"aKey1\":\"value1\",\"aKey2\":null}".utf8)
+    let expectedData = NSData(bytes: "{\"aKey2\":null,\"aKey1\":\"value1\"}".utf8)
     do {
       let data = try primitive.jsonData()
       assert(data, equals: expectedData)
@@ -213,7 +213,7 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
       "aKey3": JsonPrimitive.Double(3.14)
       ])
     
-    let expectedData = NSData(bytes: "{\"aKey3\":3.14,\"aKey1\":\"value1\",\"aKey2\":42}".utf8)
+    let expectedData = NSData(bytes: "{\"aKey2\":42,\"aKey1\":\"value1\",\"aKey3\":3.14}".utf8)
     do {
       let data = try primitive.jsonData()
       assert(data, equals: expectedData)

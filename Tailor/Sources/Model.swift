@@ -45,7 +45,7 @@ public extension ModelType {
     let length = fullName.characters.count
     let range = fullName.bridge().rangeOfString(".", options: NSStringCompareOptions.BackwardsSearch, range: NSMakeRange(0,length), locale: nil)
     if range.location != NSNotFound {
-      fullName = fullName.bridge().substringFromIndex(1)
+      fullName = fullName.bridge().substringFromIndex(range.location + 1)
     }
     return fullName.underscored()
   }

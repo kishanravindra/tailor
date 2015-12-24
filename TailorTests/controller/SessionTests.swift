@@ -17,7 +17,7 @@ class SessionTests: XCTestCase, TailorTestable {
     let key = Application.configuration.sessionEncryptionKey
     let jsonData: NSData
     do {
-      jsonData = try NSJSONSerialization.dataWithJSONObject(mergedData, options: [])
+      jsonData = try mergedData.serialize.jsonData()
     }
     catch {
       jsonData = NSData()

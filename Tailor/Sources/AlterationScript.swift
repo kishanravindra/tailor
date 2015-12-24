@@ -110,7 +110,7 @@ public extension AlterationScript {
     if !results.isEmpty {
       if let error = results[0].error {
         NSLog("Error running query")
-        NSLog("%@ %@", query, parameters.map { String($0.serialize.valueDescription) })
+        NSLog("%@ %@", query, parameters.map { String($0.serialize.valueDescription) }.bridge())
         NSLog("Error: %@", error)
         exit(1)
       }

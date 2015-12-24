@@ -333,7 +333,7 @@ public final class Application {
     If the provided command doesn't have a matching task, this will crash.
     */
   public func start() {
-    NSLog("Starting application: %@, %@", command, flags)
+    NSLog("Starting application: %@, %@", command, flags.bridge())
     
     for task in self.registeredTasks() {
       if task.commandName == command {
