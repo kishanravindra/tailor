@@ -327,6 +327,7 @@ class RequestTests: XCTestCase, TailorTestable {
   func testExtractWithPatternGetsPiecesOfLine() {
     let matches = Request.extractWithPattern("Content-Type: text/plain", pattern: "^([\\w-]*): (.*)$")
     assert(matches.count, equals: 2, message: "gets two matches")
+    if matches.count < 2 { return } 
     assert(matches[0], equals: "Content-Type", message: "gets the first match")
     assert(matches[1], equals: "text/plain", message: "gets the second match")
   }

@@ -89,6 +89,7 @@
 		527401451BB33844003C7821 /* DatabaseRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527401441BB33844003C7821 /* DatabaseRow.swift */; };
 		527401471BB33951003C7821 /* DatabaseRowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527401461BB33951003C7821 /* DatabaseRowTests.swift */; };
 		527CE34E1C0899610069BA3F /* TailorTestableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527CE34D1C0899610069BA3F /* TailorTestableTests.swift */; };
+		52841CCD1C2C5770001C5EA3 /* NSRegularExpression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52841CCC1C2C5770001C5EA3 /* NSRegularExpression.swift */; };
 		5284BD331B77994D00C2D601 /* UserType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5284BD321B77994D00C2D601 /* UserType.swift */; };
 		5284BD351B779AFC00C2D601 /* UserTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5284BD341B779AFC00C2D601 /* UserTypeTests.swift */; };
 		528D183F1A8FDD4A00A6E116 /* TailorTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D183E1A8FDD4A00A6E116 /* TailorTestHelpers.swift */; };
@@ -326,6 +327,7 @@
 		527401441BB33844003C7821 /* DatabaseRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseRow.swift; sourceTree = "<group>"; };
 		527401461BB33951003C7821 /* DatabaseRowTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseRowTests.swift; sourceTree = "<group>"; };
 		527CE34D1C0899610069BA3F /* TailorTestableTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TailorTestableTests.swift; sourceTree = "<group>"; };
+		52841CCC1C2C5770001C5EA3 /* NSRegularExpression.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSRegularExpression.swift; sourceTree = "<group>"; };
 		5284BD321B77994D00C2D601 /* UserType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserType.swift; sourceTree = "<group>"; };
 		5284BD341B779AFC00C2D601 /* UserTypeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserTypeTests.swift; sourceTree = "<group>"; };
 		5289AD141B2239CD0016CA40 /* CHANGELOG.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
@@ -915,6 +917,7 @@
 		52BD141519E9DA1D006D72B0 /* ext */ = {
 			isa = PBXGroup;
 			children = (
+				523C80131BDD51E2004D501D /* CollectionType.swift */,
 				5291ADF41C1DE4F000FE9195 /* FoundationExt.swift */,
 				521E87471A0FCEDA00D84B7B /* NSData.swift */,
 				52BD141719E9DA1D006D72B0 /* NSString.swift */,
@@ -922,7 +925,7 @@
 				52B2B69919F1DCF10086261B /* Dictionary.swift */,
 				5232ACC31B618FBF0043F9A2 /* ExternalProcess.swift */,
 				52A8AFD21BA736BC007A2762 /* NSCharacterSet.swift */,
-				523C80131BDD51E2004D501D /* CollectionType.swift */,
+				52841CCC1C2C5770001C5EA3 /* NSRegularExpression.swift */,
 				5291ADF61C1DF8D800FE9195 /* NSThread+Caching.swift */,
 				52B2B6DD19F365130086261B /* xcode_templates */,
 			);
@@ -1348,6 +1351,7 @@
 				52A95E311AE0A3B9001AED1F /* DatabaseValue.swift in Sources */,
 				52AE7CBC1BDD780200442634 /* SerializationConversions.swift in Sources */,
 				52DD44EF1B5C3A1500312923 /* FileEmailAgent.swift in Sources */,
+				52841CCD1C2C5770001C5EA3 /* NSRegularExpression.swift in Sources */,
 				524828401B7FF3C9006257F2 /* AuthenticationFilter.swift in Sources */,
 				52A05A301B7FAA2800DB1248 /* CookieJar.swift in Sources */,
 				5284BD331B77994D00C2D601 /* UserType.swift in Sources */,

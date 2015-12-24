@@ -83,7 +83,7 @@ public extension DatabaseDriver {
     - returns:                  The sanitized version.
     */
   public func sanitizeColumnName(columnName: String) -> String {
-    let keyRegex = try! NSRegularExpression(pattern: "[^A-Za-z_0-9]", options: [])
+    let keyRegex = try! Foundation.NSRegularExpression(pattern: "[^A-Za-z_0-9]", options: [])
     let range = NSMakeRange(0, columnName.characters.count)
     let sanitizedColumn = keyRegex.stringByReplacingMatchesInString(columnName, options: [], range: range, withTemplate: "")
     return sanitizedColumn

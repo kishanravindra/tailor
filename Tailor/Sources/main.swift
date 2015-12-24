@@ -15,8 +15,13 @@ RouteSet.load {
 		responseCallback(response)
 	}
 }
-let regex = try! NSRegularExpression(pattern: "\\S+", options: [])
+let regex = try! NSRegularExpression(pattern: "^([\\S]*) ([\\S]*) HTTP/([\\d.]*)$", options: [])
+func checkString(string: String) {
+	let match = regex.firstMatchInString(string, options: [], range: NSMakeRange(0,string.characters.count))?.range
+	print("\(string): \(match)")
+}
 print(String(regex.components))
-print(String(regex.firstMatchInString("abc", options: [], range: NSMakeRange(0,3))?.range))
-print(String(regex.firstMatchInString("  ", options: [], range: NSMakeRange(0,2))))
+checkString("GET /test/path HTTP/1.1")
+checkString("POST /test HTTP/1.1")
+
 ServerTask.runTask()
