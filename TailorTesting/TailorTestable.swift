@@ -305,7 +305,7 @@ extension TailorTestable {
     if !message.isEmpty {
       message = " - " + message
     }
-    guard let regex = try? NSRegularExpression(pattern: pattern, options: []) else {
+    guard let regex = try? Tailor.NSRegularExpression(pattern: pattern, options: []) else {
       self.recordFailureWithDescription("\(pattern) was not a valid pattern\(message)", inFile: file, atLine: line, expected: true)
       return
     }

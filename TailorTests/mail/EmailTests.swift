@@ -151,6 +151,10 @@ class EmailTests: XCTestCase, TailorTestable {
       assert(false, message: "Did not contain boundary")
       return
     }
+    if matches[0].numberOfRanges < 2 {
+      assert(false, message: "Did not have enough ranges")
+      return
+    }
     let range = matches[0].rangeAtIndex(1)
     let boundary = strippedMessage.substringWithRange(strippedMessage.startIndex.advancedBy(range.location)..<strippedMessage.startIndex.advancedBy(range.location + range.length))
     assert(message, equals:

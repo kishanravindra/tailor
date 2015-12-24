@@ -4,6 +4,8 @@ import TailorTesting
 import TailorSqlite
 import XCTest
 
+typealias NSRegularExpression=Tailor.NSRegularExpression
+
 extension TailorTestable {
   public func configure() {
     APPLICATION_ARGUMENTS = ("tailor.exit", [:])

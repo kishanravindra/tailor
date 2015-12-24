@@ -123,6 +123,7 @@ public class RouteSet {
       
       let parameterValues = Request.extractWithPattern(path, pattern: self.regex?.pattern ?? "")
       for (index, key) in self.pathParameters.enumerate() {
+        if index >= parameterValues.count { continue }
         requestCopy.params[key] = parameterValues[index].bridge().stringByRemovingPercentEncoding
       }
       
