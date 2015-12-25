@@ -3,8 +3,34 @@ import Foundation
 
 
 public final class NSRegularExpression: Equatable {
+  struct Match {
+    var fullRange: Range<String.Index>
+    var subranges: [Range<String.Index>]
+    
+    init(_ range: Range<String.Index>) {
+      self.fullRange = range
+      self.subranges = []
+    }
+    
+    func withStart(start: String.Index, startRanges: [Range<String.Index>] = []) -> Match {
+      var newMatch = self
+      newMatch.fullRange.startIndex = start
+      newMatch.subranges = startRanges
+      newMatch.subranges.appendContentsOf(self.subranges)
+      return newMatch
+    }
+    
+    mutating func prepend(range: Range<String.Index>) {
+      self.subranges.insert(range, atIndex: 0)
+    }
+    
+    mutating func appendContentsOf(ranges: [Range<String.Index>]) {
+      self.subranges.appendContentsOf(ranges)
+    }
+  }
   enum Component: Equatable {
     case Literal(Character)
+    case Wildcard
     case Start
     case End
     indirect case Alternation(Component, Component)
@@ -42,58 +68,71 @@ public final class NSRegularExpression: Equatable {
       default: return Component.Literal(symbol)
       }
     }
-    func match(string: String, startingAt start: String.Index) -> [Range<String.Index>] {
+    func match(string: String, startingAt start: String.Index) -> [Match] {
       switch(self) {
       case let .Literal(character):
         if start >= string.endIndex { return [] }
         if character == string[start] {
-          return [start...start]
+          return [Match(start...start)]
         }
         else {
           return []
         }
+      case Wildcard:
+        if start >= string.endIndex { return [] }
+        else { return [Match(start...start)] }
       case Start:
         if start == string.startIndex {
-          return [start..<start]
+          return [Match(start..<start)]
         }
         else {
           return []
         }
       case End:
         if start == string.endIndex {
-          return [start..<start]
+          return [Match(start..<start)]
         }
         else {
           return []
         }
       case let .Group(components):
-        var indices = [start]
+        if start == string.endIndex { return [] }
+        var matches = [Match(start..<start)]
         for component in components {
-          indices = indices.flatMap {
-            index in
-            return component.match(string, startingAt: index).map { $0.endIndex }
+          matches = matches.flatMap {
+            (match: Match) -> [Match] in
+            let newMatches = component.match(string, startingAt: match.fullRange.endIndex)
+            return newMatches.map { $0.withStart(match.fullRange.startIndex, startRanges: match.subranges) }
           }
         }
-        return indices.map { start..<$0 }
+        matches = matches.map { $0.withStart($0.fullRange.startIndex, startRanges: [$0.fullRange]) }
+        return matches
       case let .Repetition(component, minimum, maximum):
-        var allEnds = [start]
-        var lastEnds = allEnds
+        var allMatches = [Match(start..<start)]
+        var lastMatches = allMatches
         for _ in 0..<minimum {
-          let newEnds = lastEnds.flatMap { component.match(string, startingAt: $0).map { $0.endIndex } }
-          allEnds = newEnds
-          lastEnds = newEnds
+          let newMatches = lastMatches.flatMap {
+            (match: Match) -> [Match] in
+            return component.match(string, startingAt: match.fullRange.endIndex).map {
+              $0.withStart(start)
+            }
+          }
+          allMatches = newMatches
+          lastMatches = newMatches
         }
         var matchCount = minimum
-        while !lastEnds.isEmpty {
+        while !lastMatches.isEmpty {
           if matchCount == maximum {
             break
           }
-          let newEnds = lastEnds.flatMap { component.match(string, startingAt: $0).map { $0.endIndex } }
-          allEnds.appendContentsOf(newEnds)
-          lastEnds = newEnds
+          let newMatches = lastMatches.flatMap {
+            component.match(string, startingAt: $0.fullRange.endIndex).map { $0.withStart(start) }
+          }
+          allMatches.appendContentsOf(newMatches)
+          lastMatches = newMatches
           matchCount += 1
         }
-        return allEnds.map { start..<$0 }
+        return allMatches
       case let .Alternation(left,right):
         var ranges = left.match(string, startingAt: start)
         ranges.appendContentsOf(right.match(string, startingAt: start))
@@ -102,14 +141,14 @@ public final class NSRegularExpression: Equatable {
         if start == string.endIndex { return [] }
         var hasMatch = false
         for option in options {
-          let matches = option.match(string, startingAt: start).filter { $0.startIndex == start }
+          let matches = option.match(string, startingAt: start).filter { $0.fullRange.startIndex == start }
           if !matches.isEmpty {
             hasMatch = true
             break
           }
         }
         if positive == hasMatch {
-          return [(start...start)]
+          return [(Match(start...start))]
         }
         else {
           return []
@@ -249,6 +288,8 @@ public final class NSRegularExpression: Equatable {
       }
       let symbol = pattern.removeFirst()
       components.append(Component.metaclass(symbol: symbol))
+    case ".":
+      components.append(Component.Wildcard)
     default:
       components.append(.Literal(start))
     }
@@ -298,6 +339,9 @@ func ==(lhs: NSRegularExpression.Component, rhs: NSRegularExpression.Component) 
   case .End:
     if case .End = rhs { return true }
     else { return false }
+  case .Wildcard:
+    if case .Wildcard = rhs { return true }
+    else { return false }
   case let .Alternation(c1, c2):
     if case let .Alternation(c3, c4) = rhs {
       return c1 == c3 && c2 == c4
@@ -344,10 +388,12 @@ public extension NSRegularExpression {
     let group = NSRegularExpression.Component.Group(components)
     var stop: ObjCBool = false
     while index < end {
-      let ranges = group.match(string, startingAt: index).sort { $0.endIndex > $1.endIndex }
-      if let range = ranges.first {
-        var ranges = [NSMakeRange(string.startIndex.distanceTo(range.startIndex), range.startIndex.distanceTo(range.endIndex))]
-        let result = NSTextCheckingResult.regularExpressionCheckingResultWithRanges(&ranges, count: 1, regularExpression: self)
+      let matches = group.match(string, startingAt: index).sort { $0.fullRange.endIndex > $1.fullRange.endIndex }
+      if let match = matches.first {
+        var ranges = match.subranges.map {
+          NSMakeRange(string.startIndex.distanceTo($0.startIndex), $0.startIndex.distanceTo($0.endIndex))
+        }
+        let result = NSTextCheckingResult.regularExpressionCheckingResultWithRanges(&ranges, count: ranges.count, regularExpression: self)
         block(result, [], &stop)
       }
       if stop {
