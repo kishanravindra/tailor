@@ -127,7 +127,7 @@ public class RouteSet {
         requestCopy.params[key] = parameterValues[index].bridge().stringByRemovingPercentEncoding
       }
       
-      NSLog("Parameters: %@", requestCopy.params.raw.bridge())
+      //FIXME: NSLog("Parameters: %@", requestCopy.params.raw.bridge())
       self.handler(requestCopy, callback)
     }
   }

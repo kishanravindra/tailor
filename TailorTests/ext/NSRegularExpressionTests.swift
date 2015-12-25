@@ -73,6 +73,18 @@ class NSRegularExpressionTests : XCTestCase, TailorTestable {
     }
   }
   
+  func testCanCreateExpressionWithMetaclassWithDashAtEnd() {
+    assertNoExceptions {
+      let expression = try NSRegularExpression(pattern: "a[0-]", options: [])
+      let result1 = expression.matchesInString("a-b", options: [], range: NSMakeRange(0,3))
+      assert(result1.count, equals: 1)
+      assert(result1.first?.range.location, equals: 0)
+      assert(result1.first?.range.length, equals: 2)
+      let result2 = expression.matchesInString("a6", options: [], range: NSMakeRange(0,2))
+      assert(result2.count, equals: 0)
+    }
+  }
+  
   func testCanCaptureSubgroups() {
     assertNoExceptions {
       let expression = try NSRegularExpression(pattern: "a(bc*)")
@@ -127,6 +139,22 @@ class NSRegularExpressionTests : XCTestCase, TailorTestable {
       assert(result.rangeAtIndex(1).location, equals: 5)
       assert(result.rangeAtIndex(1).length, equals: 2)
     }
-    
+  }
+  
+  func testMatchingHeaderLine() {
+    let expression = try! NSRegularExpression(pattern: "^([\\w-]*):[ \t]*(.*)$")
+    let line = "X-Custom-Field: header value"
+    let results = expression.matchesInString(line, options: [], range: NSMakeRange(0, line.characters.count))
+    assert(!results.isEmpty)
+    if results.isEmpty { return }
+    let result = results[0]
+    assert(result.numberOfRanges, equals: 3)
+    if result.numberOfRanges < 3 { return }
+    assert(result.rangeAtIndex(0).location, equals: 0)
+    assert(result.rangeAtIndex(0).length, equals: 28)
+    assert(result.rangeAtIndex(1).location, equals: 0)
+    assert(result.rangeAtIndex(1).length, equals: 14)
+    assert(result.rangeAtIndex(2).location, equals: 16)
+    assert(result.rangeAtIndex(2).length, equals: 12)
   }
 }

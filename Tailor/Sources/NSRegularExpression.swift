@@ -132,7 +132,7 @@ public final class NSRegularExpression: Equatable {
           lastMatches = newMatches
           matchCount += 1
         }
-        return allMatches
+        return allMatches.reverse()
       case let .Alternation(left,right):
         var ranges = left.match(string, startingAt: start)
         ranges.appendContentsOf(right.match(string, startingAt: start))
@@ -201,6 +201,12 @@ public final class NSRegularExpression: Equatable {
         components.append(Component.metaclass(symbol: character))
         inEscape = false
       }
+      else if character == "]" {
+        if inRange {
+          components.append(Component.Literal("-"))
+        }
+        break
+      }
       else if inRange {
         let endCharacter: Character
         if character == "\\" {
@@ -228,9 +234,6 @@ public final class NSRegularExpression: Equatable {
       }
       else if character == "\\" {
         inEscape = true
-      }
-      else if character == "]" {
-        break
       }
       else if character == "-" {
         inRange = true

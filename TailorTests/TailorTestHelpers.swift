@@ -182,7 +182,6 @@ struct TestUser: UserType, Equatable {
   }
   
   init(deserialize values: SerializableValue) throws {
-    NSLog("Building user: %@", String(values))
     self.id = try values.read("id")
     self.emailAddress = try values.read("email_address")
     self.encryptedPassword = try values.read("encrypted_password")

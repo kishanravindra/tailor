@@ -76,7 +76,7 @@ import CoreFoundation
           continue
         }
         
-        if let _valueObject = key as? AnyObject {
+        if let _valueObject = value as? AnyObject {
           valueObject = _valueObject
         }
         else if let _valueString = value as? NSString {

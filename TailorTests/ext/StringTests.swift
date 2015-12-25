@@ -40,31 +40,31 @@ class StringTests: XCTestCase, TailorTestable {
   
   func testMatchesIsTrueWithMatchingPattern() {
     let string = "johnbrownlee.com"
-    let pattern = "[a-z]*\\.[a-z]{3}"
+    let pattern = "[a-z]*\\.[a-z][a-z][a-z]"
     XCTAssertTrue(string.matches(pattern), "finds a match")
   }
   
   func testMatchesIsFalseWithNonMatchingPattern() {
     let string = "johnbrownlee.com"
-    let pattern = "z[a-z]*\\.[a-z]{3}"
+    let pattern = "z[a-z]*\\.[a-z]"
     XCTAssertFalse(string.matches(pattern), "does not find a match")
   }
   
   func testMatchesIsFalseWithInvalidPattern() {
     let string = "johnbrownlee.com"
-    let pattern = "[a-z]*\\.[a-z]{3"
+    let pattern = "[a-z]*\\.[a-z][a-z][a"
     XCTAssertFalse(string.matches(pattern), "does not find a match")
   }
   
   func testMatchesIsFalseWithPartialMatch() {
     let string = "johnbrownlee.com/en"
-    let pattern = "[a-z]*\\.[a-z]{3}"
+    let pattern = "[a-z]*\\.[a-z][a-z][a-z]"
     XCTAssertFalse(string.matches(pattern), "does not find a match")
   }
   
   func testMatchesIsTrueWithPartialMatchAndAllowPartialFlag() {
     let string = "johnbrownlee.com/en"
-    let pattern = "[a-z]*\\.[a-z]{3}"
+    let pattern = "[a-z]*\\.[a-z]"
     XCTAssertTrue(string.matches(pattern, allowPartial: true), "finds a match")
   }
   
