@@ -60,15 +60,16 @@ import CoreFoundation
   }
   public extension Dictionary {
     public func bridge() -> NSDictionary {
-      let dictionary = NSMutableDictionary()
-      for (key, value) in self {
+      let result = NSMutableDictionary()
+      for (key,value) in self {
         let keyObject: NSCopying
         let valueObject: AnyObject
+        
         if let _keyObject = key as? NSCopying {
           keyObject = _keyObject
         }
-        else if let _keyString = key as? String {
-          keyObject = _keyString.bridge()
+        else if let _keyString = key as? NSString {
+          keyObject = _keyString
         }
         else {
           continue
@@ -77,16 +78,16 @@ import CoreFoundation
         if let _valueObject = value as? AnyObject {
           valueObject = _valueObject
         }
-        else if let _valueString = value as? String {
-          valueObject = _valueString.bridge()
+        else if let _valueString = value as? NSString {
+          valueObject = _valueString
         }
         else {
           continue
         }
         
-        dictionary.setObject(valueObject, forKey: keyObject)
+        result.setObject(valueObject, forKey: keyObject)
       }
-      return dictionary
+      return result
     }
   }
 #endif

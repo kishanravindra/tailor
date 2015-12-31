@@ -27,7 +27,7 @@ class TimeZoneTests: XCTestCase, TailorTestable {
     let timeZone = TimeZone(offset: 18000)
     assert(timeZone.name, equals: "+18000")
     assert(timeZone.policies, equals: [
-      TimeZone.Policy(beginningTimestamp: -1 * DBL_MAX, abbreviation: "+18000", offset: 18000, isDaylightTime: false)
+      TimeZone.Policy(beginningTimestamp: -30000000000, abbreviation: "+18000", offset: 18000, isDaylightTime: false)
     ])
   }
   
@@ -35,14 +35,14 @@ class TimeZoneTests: XCTestCase, TailorTestable {
     let timeZone = TimeZone(offset: -18000)
     assert(timeZone.name, equals: "-18000")
     assert(timeZone.policies, equals: [
-      TimeZone.Policy(beginningTimestamp: -1 * DBL_MAX, abbreviation: "-18000", offset: -18000, isDaylightTime: false)
+      TimeZone.Policy(beginningTimestamp: -30000000000, abbreviation: "-18000", offset: -18000, isDaylightTime: false)
       ])
   }
   
   func testInitializeWithoutListOfPoliciesReadsPoliciesFromDisk() {
     let timeZone = TimeZone(name: "Asia/Hong_Kong")
     let expectedPolicies = [
-      TimeZone.Policy(beginningTimestamp: -1 * DBL_MAX, abbreviation: "LMT", offset: 27402, isDaylightTime: false),
+      TimeZone.Policy(beginningTimestamp: -30000000000, abbreviation: "LMT", offset: 27402, isDaylightTime: false),
       TimeZone.Policy(beginningTimestamp: -2056693002, abbreviation: "HKT", offset: 28800, isDaylightTime: false),
       TimeZone.Policy(beginningTimestamp: -907389000, abbreviation: "HKST", offset: 32400, isDaylightTime: true),
       TimeZone.Policy(beginningTimestamp: -891667800, abbreviation: "HKT", offset: 28800, isDaylightTime: false),

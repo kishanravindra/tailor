@@ -35,6 +35,7 @@
 		5233019D1B46FBF400C9E5EE /* database.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5233019C1B46FBF400C9E5EE /* database.plist */; };
 		5233019F1B46FC1B00C9E5EE /* sessions.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5233019E1B46FC1B00C9E5EE /* sessions.plist */; };
 		523301A11B46FC4D00C9E5EE /* CreateTestDatabaseAlteration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523301A01B46FC4D00C9E5EE /* CreateTestDatabaseAlteration.swift */; };
+		52393E981C2CA09E0046AE7B /* NSRegularExpressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52393E971C2CA09E0046AE7B /* NSRegularExpressionTests.swift */; };
 		523C80101BDD48DA004D501D /* PaginatedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523C800F1BDD48DA004D501D /* PaginatedList.swift */; };
 		523C80121BDD4910004D501D /* PaginatedListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523C80111BDD4910004D501D /* PaginatedListTests.swift */; };
 		523C80141BDD51E2004D501D /* CollectionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523C80131BDD51E2004D501D /* CollectionType.swift */; };
@@ -89,7 +90,6 @@
 		527401451BB33844003C7821 /* DatabaseRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527401441BB33844003C7821 /* DatabaseRow.swift */; };
 		527401471BB33951003C7821 /* DatabaseRowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527401461BB33951003C7821 /* DatabaseRowTests.swift */; };
 		527CE34E1C0899610069BA3F /* TailorTestableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527CE34D1C0899610069BA3F /* TailorTestableTests.swift */; };
-		52841CCD1C2C5770001C5EA3 /* NSRegularExpression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52841CCC1C2C5770001C5EA3 /* NSRegularExpression.swift */; };
 		5284BD331B77994D00C2D601 /* UserType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5284BD321B77994D00C2D601 /* UserType.swift */; };
 		5284BD351B779AFC00C2D601 /* UserTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5284BD341B779AFC00C2D601 /* UserTypeTests.swift */; };
 		528D183F1A8FDD4A00A6E116 /* TailorTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528D183E1A8FDD4A00A6E116 /* TailorTestHelpers.swift */; };
@@ -105,6 +105,7 @@
 		52A05A331B7FAA2800DB1248 /* RouteSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A05A2E1B7FAA2800DB1248 /* RouteSet.swift */; };
 		52A05A351B7FAA5F00DB1248 /* RequestFilterType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A05A341B7FAA5E00DB1248 /* RequestFilterType.swift */; };
 		52A684521A3D0C5B00F4AA47 /* ConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A684511A3D0C5B00F4AA47 /* ConnectionTests.swift */; };
+		52A69CF81C35E16D001BC350 /* NSRegularExpression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52841CCC1C2C5770001C5EA3 /* NSRegularExpression.swift */; };
 		52A8AFD31BA736BC007A2762 /* NSCharacterSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A8AFD21BA736BC007A2762 /* NSCharacterSet.swift */; };
 		52A95E311AE0A3B9001AED1F /* DatabaseValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A95E301AE0A3B9001AED1F /* DatabaseValue.swift */; };
 		52A95E331AE0A3E6001AED1F /* DatabaseValueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A95E321AE0A3E6001AED1F /* DatabaseValueTests.swift */; };
@@ -270,6 +271,7 @@
 		5233019C1B46FBF400C9E5EE /* database.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = database.plist; sourceTree = "<group>"; };
 		5233019E1B46FC1B00C9E5EE /* sessions.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = sessions.plist; sourceTree = "<group>"; };
 		523301A01B46FC4D00C9E5EE /* CreateTestDatabaseAlteration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateTestDatabaseAlteration.swift; sourceTree = "<group>"; };
+		52393E971C2CA09E0046AE7B /* NSRegularExpressionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSRegularExpressionTests.swift; sourceTree = "<group>"; };
 		523C800F1BDD48DA004D501D /* PaginatedList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaginatedList.swift; sourceTree = "<group>"; };
 		523C80111BDD4910004D501D /* PaginatedListTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaginatedListTests.swift; sourceTree = "<group>"; };
 		523C80131BDD51E2004D501D /* CollectionType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionType.swift; sourceTree = "<group>"; };
@@ -1014,6 +1016,7 @@
 				52E784C01A5B64030065C10D /* NSDataTests.swift */,
 				52E784C21A5B6BFA0065C10D /* NSStringTests.swift */,
 				52E784C41A5B6E2D0065C10D /* StringTests.swift */,
+				52393E971C2CA09E0046AE7B /* NSRegularExpressionTests.swift */,
 			);
 			path = ext;
 			sourceTree = "<group>";
@@ -1351,7 +1354,7 @@
 				52A95E311AE0A3B9001AED1F /* DatabaseValue.swift in Sources */,
 				52AE7CBC1BDD780200442634 /* SerializationConversions.swift in Sources */,
 				52DD44EF1B5C3A1500312923 /* FileEmailAgent.swift in Sources */,
-				52841CCD1C2C5770001C5EA3 /* NSRegularExpression.swift in Sources */,
+				52A69CF81C35E16D001BC350 /* NSRegularExpression.swift in Sources */,
 				524828401B7FF3C9006257F2 /* AuthenticationFilter.swift in Sources */,
 				52A05A301B7FAA2800DB1248 /* CookieJar.swift in Sources */,
 				5284BD331B77994D00C2D601 /* UserType.swift in Sources */,
@@ -1466,6 +1469,7 @@
 				5262D11B1B4A06CC00101154 /* JsonPrimitiveTests.swift in Sources */,
 				5232ACC61B6198730043F9A2 /* ExternalProcessTests.swift in Sources */,
 				526ACD821B07A9FD00CE0CC0 /* TimeIntervalTests.swift in Sources */,
+				52393E981C2CA09E0046AE7B /* NSRegularExpressionTests.swift in Sources */,
 				523F29351A583EEB00C1BBC0 /* SanitizerTests.swift in Sources */,
 				52E784BA1A5A04590065C10D /* ShaPasswordHasherTests.swift in Sources */,
 				526E8DE51B379C320040CA35 /* ControllerTypeTests.swift in Sources */,

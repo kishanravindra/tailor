@@ -145,10 +145,14 @@ class EmailTests: XCTestCase, TailorTestable {
     let messageData = email.fullMessage
     let message = NSString(data: messageData, encoding: NSASCIIStringEncoding) as? String ?? ""
     let strippedMessage = message.stringByReplacingOccurrencesOfString("\r", withString: "")
-    let regex = try! Tailor.NSRegularExpression(pattern: "boundary=\"([A-Z0-9a-z]*)\"", options: [.DotMatchesLineSeparators])
+    let regex = try! NSRegularExpression(pattern: "boundary=\"([A-Z0-9a-z]*)\"", options: [.DotMatchesLineSeparators])
     let matches = regex.matchesInString(strippedMessage, options: [], range: NSMakeRange(0, strippedMessage.characters.count))
     if matches.count == 0 {
       assert(false, message: "Did not contain boundary")
+      return
+    }
+    if matches[0].numberOfRanges < 2 {
+      assert(false, message: "Did not have enough ranges")
       return
     }
     let range = matches[0].rangeAtIndex(1)
