@@ -61,9 +61,9 @@ public struct ShaPasswordHasher: PasswordHasherType {
     let saltedInput = encodedSalt + input
     let inputBytes = NSData(bytes: saltedInput.utf8)
     let hashBytes = [UInt8](count: 64, repeatedValue: 0)
-    #if os(Linux)
+    #if DEPLOYMENT_RUNTIME_SWIFT
     #else
-      CC_SHA512(inputBytes.bytes, UInt32(inputBytes.length), UnsafeMutablePointer<UInt8>(hashBytes))
+      //CC_SHA512(inputBytes.bytes, UInt32(inputBytes.length), UnsafeMutablePointer<UInt8>(hashBytes))
     #endif
     
     let encodedHash = NSData(bytes: hashBytes).base64EncodedStringWithOptions([])

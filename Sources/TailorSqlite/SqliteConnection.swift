@@ -1,4 +1,4 @@
-import sqlite3
+import CSqlite
 import Tailor
 
 /**
@@ -41,7 +41,7 @@ public final class SqliteConnection: DatabaseDriver {
     */
   public func executeQuery(query: String, parameters bindParameters: [SerializableValue]) -> [DatabaseRow] {
     if Application.configuration.logQueries {
-      NSLog("Executing query %@", query)
+      print("Executing query " + query)
     }
     guard let statement = SqliteStatement(connection: connection, query: query) else { return [DatabaseRow(error: "Error preparing statement")] }
     statement.bind(bindParameters)

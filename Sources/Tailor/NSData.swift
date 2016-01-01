@@ -65,7 +65,8 @@ public extension NSData {
     FIXME
     */
   public var md5Hash: String {
-    #if os(Linux)
+    /*
+    #if DEPLOYMENT_RUNTIME_SWIFT
       return ""
     #else
       var buffer = [UInt8](count: CC_MD5_DIGEST_LENGTH, repeatedValue: 0)
@@ -76,6 +77,8 @@ public extension NSData {
       }
       return output as String
     #endif
+    */
+    return ""
   }
 }
 

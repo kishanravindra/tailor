@@ -566,6 +566,7 @@ public class RouteSet {
   public func handleRequest(request: Request, callback: Connection.ResponseCallback) {
     NSLog("Processing %@ %@", request.method, request.path)
     for route in self.routes {
+      NSLog("Route has path: %@", route.path.pathPattern)
       if route.canHandleRequest(request) {
         route.handleRequest(request, callback: callback)
         return

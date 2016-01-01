@@ -1,5 +1,6 @@
-import sqlite3
+import CSqlite
 import Tailor
+import Foundation
 
 /**
   This class represents a prepared statement for a query.

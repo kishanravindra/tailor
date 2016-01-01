@@ -3,5 +3,6 @@ Tailor.xcodeproj/project.xcworkspace/xcuserdata
 TailorTests/config/database.plist
 build
 .build
+Packages
 .DS_STORE
 doc
