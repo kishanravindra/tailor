@@ -69,6 +69,9 @@ private var TIMESTAMP_FROZEN_TIME: Timestamp.EpochInterval? = nil
   while the app is running.
   */
 public func SystemCalendar() -> Calendar {
+  //FIXME
+  return GregorianCalendar()
+  /*
   if SYSTEM_CALENDAR != nil {
     return SYSTEM_CALENDAR
   }
@@ -81,6 +84,7 @@ public func SystemCalendar() -> Calendar {
     SYSTEM_CALENDAR = GregorianCalendar()
   }
   return SYSTEM_CALENDAR
+  */
 }
 
 private var SYSTEM_CALENDAR: Calendar!
