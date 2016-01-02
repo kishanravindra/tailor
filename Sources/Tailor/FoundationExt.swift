@@ -39,9 +39,28 @@ import CoreFoundation
         }
     }
 
+
   public extension NSData {
     //FIXME
     public func rangeOfData(dataToFind: NSData, options mask: NSDataSearchOptions, range searchRange: NSRange) -> NSRange {
+      if searchRange.length < dataToFind.length { return NSRange(location: NSNotFound, length: NSNotFound) }
+
+      let bytes = [UInt8](count: searchRange.length, repeatedValue: 0)
+      getBytes(UnsafeMutablePointer<Void>(bytes), range: searchRange)
+      let searchBytes = [UInt8](count: dataToFind.length, repeatedValue: 0)
+      dataToFind.getBytes(UnsafeMutablePointer<Void>(searchBytes), range: NSMakeRange(0, dataToFind.length))
+      for startIndex in searchRange.location ..< searchRange.location + searchRange.length - dataToFind.length {
+        var match = true
+        for indexOfByte in 0..<searchBytes.count {
+          if bytes[startIndex + indexOfByte] != searchBytes[indexOfByte] {
+            match = false
+            break
+          }
+        }
+        if match {
+          return NSRange(location: startIndex, length: searchBytes.count)
+        }
+      }
       return NSRange(location: NSNotFound, length: NSNotFound)
     }
   }
