@@ -58,13 +58,9 @@ public struct ShaPasswordHasher: PasswordHasherType {
     */
   public func encrypt(input: String) -> String {
     let encodedSalt = salt.base64EncodedStringWithOptions([])
-    let saltedInput = encodedSalt + input
-    let inputBytes = NSData(bytes: saltedInput.utf8)
+    //let saltedInput = encodedSalt + input
+    //let inputBytes = NSData(bytes: saltedInput.utf8)
     let hashBytes = [UInt8](count: 64, repeatedValue: 0)
-    #if DEPLOYMENT_RUNTIME_SWIFT
-    #else
-      //CC_SHA512(inputBytes.bytes, UInt32(inputBytes.length), UnsafeMutablePointer<UInt8>(hashBytes))
-    #endif
     
     let encodedHash = NSData(bytes: hashBytes).base64EncodedStringWithOptions([])
     let countString = String(encodedSalt.characters.count)

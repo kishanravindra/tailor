@@ -194,7 +194,7 @@ public struct Connection {
       
       if let startTime = startTime {
         let interval = Timestamp.now().epochSeconds - startTime.epochSeconds
-        NSLog("Finished processing %@ in %lf seconds", request.path, interval)
+        NSLog("Finished processing %@ in %lf seconds", request.path, String(interval))
       }
       if request.headers["Connection"] == "close" || response.headers["Connection"] == "close" {
         Connection.close(connectionDescriptor)

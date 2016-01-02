@@ -16,23 +16,27 @@ import CoreFoundation
       public static let MutableContainersAndLeaves = NSPropertyListMutabilityOptions(rawValue: 2)
   }
 
-  extension String: CVarArgType {
-    public var _cVarArgEncoding: [Int] {
-        return self.bridge()._cVarArgEncoding
-    }
-  }
-
-  extension NSObject : CVarArgType {
-      /// Transform `self` into a series of machine words that can be
-      /// appropriately interpreted by C varargs
-      public var _cVarArgEncoding: [Int] {
-        return _encodeBitsAsWords(self)
-      }
-    }
-
   //FIXME
+    public func NSLog(format: String) {
+      NSLog(format, "")
+    }
+    public func NSLog(format: String, _ arguments: String...) {
+      var result = format.bridge()
+      for argument in arguments {
+        let range = result.rangeOfString("%@")
+        if range.location == NSNotFound { return }
+        result = result.stringByReplacingCharactersInRange(range, withString: argument).bridge()
+      }
+      print(result)
+    }
     public func NSLog(format: String, _ arguments: CVarArgType...) {
-        print(format)
+      print("Getting va list")
+        withVaList(arguments) {
+          va_list in
+          print("Got list")
+          let string = NSString(format: format, arguments: va_list)
+          print(string)
+        }
     }
 
   public extension NSData {
