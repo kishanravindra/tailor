@@ -16,6 +16,11 @@ public protocol TailorTestable: XCTestCase {
     suite.
     */
   func configure()
+
+  /**
+    This method initializes a new test case.
+    */
+  init()
 }
 
 extension TailorTestable {

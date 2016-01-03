@@ -297,7 +297,9 @@ public final class Application {
     running scripts.
     */
   public required init() {
+    self.registeredSubtypes["Tailor.TaskType"] = []
     self.registerSubtypes(TaskType.self) { $0 is TaskType.Type }
+    self.registeredSubtypes["Tailor.TaskType"]!.append(Tailor.ExitTask.self)
     self.registerSubtypes(AlterationScript.self) { $0 is AlterationScript.Type }
     
     if NSProcessInfo.processInfo().environment["TestBundleLocation"] != nil {
@@ -421,9 +423,11 @@ public final class Application {
     for (index,task) in tasks.enumerate() {
       print("\(index + 1). \(task.commandName)\n", terminator: "")
     }
-    let keyboard = NSFileHandle.fileHandleWithStandardInput()
-    let inputData = keyboard.availableData
-    let commandLine = NSString(data: inputData, encoding:NSUTF8StringEncoding)?.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()) ?? ""
+    //FIXME
+    //let keyboard = NSFileHandle.fileHandleWithStandardInput()
+    //let inputData = keyboard.availableData
+    //let commandLine = NSString(data: inputData, encoding:NSUTF8StringEncoding)?.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()) ?? ""
+    let commandLine = "tailor.exit"
     
     let int = Int(commandLine) ?? 0
     if int > 0 && int <= tasks.count {

@@ -10,7 +10,7 @@ import Foundation
 
   This has been deprecated in favor of the TailorTestable protocol.
   */
-@available(*, deprecated, message="Use TailorTestable instead") public class TailorTestCase: XCTestCase {
+@available(*, deprecated, message="Use TailorTestable instead") public class TailorTestCase: XCTestCase, TailorTestable {
   public var allTests: [(String, () -> Void)] { return [] }
   /**
     This method configures the application for testing.
@@ -20,6 +20,10 @@ import Foundation
     like using a different test database.
     */
   public dynamic func configure() {
+  }
+
+  public required init() {
+  
   }
   
   /**

@@ -1,2 +1,7 @@
+import TailorTesting
 import XCTest
-XCTMain([TestCookie()])
+
+XCTMain([
+	TestApplication(),
+	TestCookie(),
+])
