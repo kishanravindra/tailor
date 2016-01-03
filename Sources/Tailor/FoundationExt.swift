@@ -24,16 +24,14 @@ import CoreFoundation
       var result = format.bridge()
       for argument in arguments {
         let range = result.rangeOfString("%@")
-        if range.location == NSNotFound { return }
+        if range.location == NSNotFound { continue }
         result = result.stringByReplacingCharactersInRange(range, withString: argument).bridge()
       }
       print(result)
     }
     public func NSLog(format: String, _ arguments: CVarArgType...) {
-      print("Getting va list")
         withVaList(arguments) {
           va_list in
-          print("Got list")
           let string = NSString(format: format, arguments: va_list)
           print(string)
         }

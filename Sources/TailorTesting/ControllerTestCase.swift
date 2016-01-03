@@ -59,10 +59,10 @@ public class ControllerTestCase : TailorTestCase {
                               should generally omit this, since it will be
                               provided automatically.
     */
-  public func assertResponse(response: Response, redirectsTo path: String?, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+  public func assertResponse(response: Response, redirectsTo path: String?, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     assert(response.responseCode, equals: .SeeOther, message: "gives a redirect response", file: file, line: line)
     if path == nil {
-      self.recordFailureWithDescription("Target path is nil - \(message)", inFile: file, atLine: line, expected: true)
+      self.testFailure("Target path is nil - \(message)", expected: true, file: file, line: line)
     }
     else {
       assert(response.headers["Location"], equals: path!, message: message, file:file, line:line)
@@ -82,10 +82,10 @@ public class ControllerTestCase : TailorTestCase {
                                 should generally omit this, since it will be
                                 provided automatically.
     */
-  public func assertResponse(response: Response, contains substring: String, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+  public func assertResponse(response: Response, contains substring: String, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     let body = response.bodyString
     if !body.contains(substring) {
-      self.recordFailureWithDescription("Assertion failed: \(body) does not contain \(substring) - \(message)", inFile: file, atLine: line, expected: true)
+      self.testFailure("Assertion failed: \(body) does not contain \(substring) - \(message)", expected: true, file: file, line: line)
     }
   }
   
@@ -121,7 +121,7 @@ public class ControllerTestCase : TailorTestCase {
 
 
   //MARK: - Calling Actions
-
+  #if DEPLOYMENT_RUNTIME_OBJC
   /**
     This method calls an action on the controller this test case is testing.
   
@@ -137,7 +137,7 @@ public class ControllerTestCase : TailorTestCase {
     - parameter callback:     A callback that will perform checks on the
                               response.
     */
-  public func callAction(actionName: String, headers: [String:String] = [:], file: String = __FILE__, line: UInt = __LINE__, callback: Response -> Void) {
+  public func callAction(actionName: String, headers: [String:String] = [:], file: StaticString = __FILE__, line: UInt = __LINE__, callback: Response -> Void) {
     var actionParams = params[actionName] ?? [:]
     var sessionData = [String:String]()
     let csrfKey = AesEncryptor.generateKey()
@@ -155,7 +155,7 @@ public class ControllerTestCase : TailorTestCase {
       return route.controller == type && route.actionName == actionName
     }.first?.path.methodName ?? "GET"
     if path == nil {
-      recordFailureWithDescription("could not generate route for \(type.name)/\(actionName)", inFile: file, atLine: line, expected: true)
+      testFailure("could not generate route for \(type.name)/\(actionName)", expected: true, file: file, line: line)
       return
     }
     var request = Request(parameters: actionParams, sessionData: sessionData, path: path!, method: method, headers: headers)
@@ -171,4 +171,5 @@ public class ControllerTestCase : TailorTestCase {
     }
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
+  #endif
 }

@@ -1,4 +1,5 @@
 import Tailor
+import Foundation
 
 /**
   This protocol describes a test case for testing a controller.
@@ -60,6 +61,7 @@ extension ControllerTestable {
       params[key] = paramList
     }
   }
+  #if DEPLOYMENT_RUNTIME_OBJC
   /**
     This method calls an action on the controller this test case is testing.
     
@@ -76,7 +78,7 @@ extension ControllerTestable {
     - parameter callback:     A callback that will perform checks on the
                               response.
     */
-  public func callAction(actionName: String, headers: [String:String] = [:], sessionData: [String:String] = [:], cookies: [String:String] = [:], timeoutIn timeout: NSTimeInterval = 0.01, file: String = __FILE__, line: UInt = __LINE__, callback: Response -> Void) {
+  public func callAction(actionName: String, headers: [String:String] = [:], sessionData: [String:String] = [:], cookies: [String:String] = [:], timeoutIn timeout: NSTimeInterval = 0.01, file: StaticString = __FILE__, line: UInt = __LINE__, callback: Response -> Void) {
     var sessionData = sessionData
     var actionParams = params[actionName] ?? [:]
     let csrfKey = AesEncryptor.generateKey()
@@ -89,8 +91,10 @@ extension ControllerTestable {
   
     var path = routes.pathFor(TestedControllerType.self, actionName: actionName, parameters: actionParams)
     
-    if let queryStringLocation = path?.rangeOfString("?", options: NSStringCompareOptions.BackwardsSearch) {
-      path = path?.substringToIndex(queryStringLocation.startIndex)
+    if let queryStringLocation = path?.bridge().rangeOfString("?", options: NSStringCompareOptions.BackwardsSearch) {
+      if queryStringLocation.location != NSNotFound {
+        path = path?.bridge().substringToIndex(queryStringLocation.location)
+      }
     }
     
     let method = routes.routes.filter {
@@ -98,7 +102,7 @@ extension ControllerTestable {
       return route.controller == TestedControllerType.self && route.actionName == actionName
     }.first?.path.methodName ?? "GET"
     if path == nil {
-      recordFailureWithDescription("could not generate route for \(TestedControllerType.name)/\(actionName)", inFile: file, atLine: line, expected: true)
+      testFailure("could not generate route for \(TestedControllerType.name)/\(actionName)", expected: true, file: file, line: line)
       return
     }
     var request = Request(parameters: actionParams, sessionData: sessionData, path: path!, method: method, headers: headers, cookies: cookies)
@@ -120,6 +124,7 @@ extension ControllerTestable {
     }
     waitForExpectationsWithTimeout(timeout, handler: nil)
   }
+  #endif
   
   /**
     This method gets the path to a controller route.
@@ -155,10 +160,10 @@ extension ControllerTestable {
                               should generally omit this, since it will be
                               provided automatically.
     */
-  public func assert(response: Response, redirectsTo path: String?, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+  public func assert(response: Response, redirectsTo path: String?, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     assert(response.responseCode, equals: .SeeOther, message: "gives a redirect response", file: file, line: line)
     if path == nil {
-      self.recordFailureWithDescription("Target path is nil - \(message)", inFile: file, atLine: line, expected: true)
+      self.testFailure("Target path is nil - \(message)", expected: true, file: file, line: line)
     }
     else {
       assert(response.headers["Location"], equals: path!, message: message, file:file, line:line)
@@ -177,10 +182,10 @@ extension ControllerTestable {
                                 should generally omit this, since it will be
                                 provided automatically.
     */
-  public func assert(response: Response, contains substring: String, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+  public func assert(response: Response, contains substring: String, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     let body = response.bodyString
     if !body.contains(substring) {
-      self.recordFailureWithDescription("Assertion failed: \(body) does not contain \(substring) - \(message)", inFile: file, atLine: line, expected: true)
+      self.testFailure("Assertion failed: \(body) does not contain \(substring) - \(message)", expected: true, file: file, line: line)
     }
   }
 }

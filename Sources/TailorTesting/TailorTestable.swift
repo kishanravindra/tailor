@@ -1,5 +1,6 @@
 import Tailor
 import XCTest
+import Foundation
 
 /**
   This protocol describes a test case for testing a tailor expectation.
@@ -7,7 +8,7 @@ import XCTest
   It provides helper methods for setting up the application for testing, as well
   as shorthands for making test assertions.
   */
-public protocol TailorTestable {
+public protocol TailorTestable: XCTestCase {
   /**
     This method configures the application for testing.
   
@@ -15,38 +16,6 @@ public protocol TailorTestable {
     suite.
     */
   func configure()
-  
-  /**
-    This method records a failure of a test case.
-
-    This is provided automatically by XCTestCase.
-
-    - parameter message:    A message identifying the failure.
-    - parameter inFile:     The file where the failure occurred.
-    - parameter atLine:     The line where the failure occurred.
-    - parameter expected:   Whether the failure came from an assertion.
-    */
-  func recordFailureWithDescription(message: String, inFile: String, atLine: UInt, expected: Bool)
-  
-  /**
-    This method creates an expectation that can be fulfilled asynchronously.
-
-    This is provided automatically by XCTestCase.
-    
-    - parameter description:    The description of the expectation.
-    - returns:                  The expectation.
-    */
-  func expectationWithDescription(description: String)->XCTestExpectation
-  
-  /**
-    This method blocks until all pending expectations is fulfilled.
-
-    If the expectations are not fulfilled, this will record a failure.
-
-    - parameter timeout:    How long we should wait before recording a failure.
-    - parameter handler:    A callback to call with failures.
-    */
-  func waitForExpectationsWithTimeout(timeout: NSTimeInterval, handler: XCWaitCompletionHandler?)
 }
 
 extension TailorTestable {
@@ -87,7 +56,6 @@ extension TailorTestable {
     Timestamp.unfreeze()
     Timestamp.freeze()
     configure()
-    resetDatabase()
   }
   
   //MARK: - Equality Checks
@@ -106,13 +74,13 @@ extension TailorTestable {
                             from. You should generally omit this, since it will
                             be provided automatically.
     */
-  public func assert<T : Equatable>(lhs: T!, equals rhs: T, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+  public func assert<T : Equatable>(lhs: T!, equals rhs: T, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     let message = (message.isEmpty ? message: " - " + message)
     if lhs == nil {
-      self.recordFailureWithDescription("Value was nil\(message)", inFile: file, atLine: line, expected: true)
+      self.testFailure("Value was nil\(message)", expected: true, file: file, line: line)
     }
     else if lhs != rhs {
-      self.recordFailureWithDescription("\(lhs) != \(rhs)\(message)", inFile: file, atLine: line, expected: true)
+      self.testFailure("\(lhs) != \(rhs)\(message)", expected: true, file: file, line: line)
     }
   }
   
@@ -131,10 +99,10 @@ extension TailorTestable {
                             from. You should generally omit this, since it will
                             be provided automatically.
     */
-  public func assert<T : Equatable>(lhs: T!, doesNotEqual rhs: T, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+  public func assert<T : Equatable>(lhs: T!, doesNotEqual rhs: T, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     let message = (message.isEmpty ? message: " - " + message)
     if lhs != nil && lhs == rhs {
-      self.recordFailureWithDescription("\(lhs) == \(rhs)\(message)", inFile: file, atLine: line, expected: true)
+      self.testFailure("\(lhs) == \(rhs)\(message)", expected: true, file: file, line: line)
     }
   }
   
@@ -151,10 +119,10 @@ extension TailorTestable {
                             from. You should generally omit this, since it will
                             be provided automatically.
     */
-  public func assert<T : Equatable>(lhs: [T], equals rhs: [T], message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+  public func assert<T : Equatable>(lhs: [T], equals rhs: [T], message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     let message = (message.isEmpty ? message: " - " + message)
     if lhs != rhs {
-      self.recordFailureWithDescription("\(lhs) != \(rhs)\(message)", inFile: file, atLine: line, expected: true)
+      self.testFailure("\(lhs) != \(rhs)\(message)", expected: true, file: file, line: line)
     }
   }
   
@@ -171,10 +139,10 @@ extension TailorTestable {
                             from. You should generally omit this, since it will
                             be provided automatically.
   */
-  public func assert<K : Equatable, V: Equatable>(lhs: [K:V], equals rhs: [K:V], message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+  public func assert<K : Equatable, V: Equatable>(lhs: [K:V], equals rhs: [K:V], message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     if lhs != rhs {
       let message = (message.isEmpty ? message: " - " + message)
-      self.recordFailureWithDescription("\(lhs) != \(rhs)\(message)", inFile: file, atLine: line, expected: true)
+      self.testFailure("\(lhs) != \(rhs)\(message)", expected: true, file: file, line: line)
     }
   }
   
@@ -192,11 +160,11 @@ extension TailorTestable {
                               from. You should generally omit this, since it
                               will be provided automatically.
     */
-  public func assert(string: String, contains substring: String, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
-    let range = string.rangeOfString(substring)
-    if range == nil {
+  public func assert(string: String, contains substring: String, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+    let range = string.bridge().rangeOfString(substring)
+    if range.location == NSNotFound {
       let message = (message.isEmpty ? message: " - " + message)
-      self.recordFailureWithDescription("\(string) does not contain \(substring)\(message)", inFile: file, atLine: line, expected: true)
+      self.testFailure("\(string) does not contain \(substring)\(message)", expected: true, file: file, line: line)
     }
   }
   
@@ -213,11 +181,11 @@ extension TailorTestable {
                               from. You should generally omit this, since it
                               will be provided automatically.
     */
-    public func assert(string: String, doesNotContain substring: String, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
-      let range = string.rangeOfString(substring)
-      if range != nil {
+    public func assert(string: String, doesNotContain substring: String, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+      let range = string.bridge().rangeOfString(substring)
+      if range.location != NSNotFound {
         let message = (message.isEmpty ? message: " - " + message)
-        self.recordFailureWithDescription("\(string) contains \(substring)\(message)", inFile: file, atLine: line, expected: true)
+        self.testFailure("\(string) contains \(substring)\(message)", expected: true, file: file, line: line)
       }
     }
   
@@ -233,10 +201,10 @@ extension TailorTestable {
                               from. You should generally omit this, since it
                               will be provided automatically.
     */
-  public func assert(isNil value: Any?, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+  public func assert(isNil value: Any?, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     if value != nil {
       let message = (message.isEmpty ? message: " - " + message)
-      self.recordFailureWithDescription("value was not nil\(message)", inFile: file, atLine: line, expected: true)
+      self.testFailure("value was not nil\(message)", expected: true, file: file, line: line)
     }
   }
   
@@ -252,10 +220,10 @@ extension TailorTestable {
                               from. You should generally omit this, since it
                               will be provided automatically.
   */
-  public func assert(isNotNil value: Any?, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+  public func assert(isNotNil value: Any?, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     if value == nil {
       let message = (message.isEmpty ? message: " - " + message)
-      self.recordFailureWithDescription("value was nil\(message)", inFile: file, atLine: line, expected: true)
+      self.testFailure("value was nil\(message)", expected: true, file: file, line: line)
     }
   }
   
@@ -274,14 +242,14 @@ extension TailorTestable {
                                 coming from. You should generally omit this,
                                 since it will be provided automatically.
     */
-  public func assert(value: Double?, within range: Double, of correctValue: Double, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+  public func assert(value: Double?, within range: Double, of correctValue: Double, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     let message = (message.isEmpty ? message: " - " + message)
     if value == nil {
-      self.recordFailureWithDescription("value was nil\(message)", inFile: file, atLine: line, expected: true)
+      self.testFailure("value was nil\(message)", expected: true, file: file, line: line)
     }
     else {
       if value! < correctValue - range || value! > correctValue + range {
-        self.recordFailureWithDescription("\(value!) is not within \(range) of \(correctValue)\(message)", inFile: file, atLine: line, expected: true)
+        self.testFailure("\(value!) is not within \(range) of \(correctValue)\(message)", expected: true, file: file, line: line)
       }
     }
   }
@@ -300,18 +268,18 @@ extension TailorTestable {
                                 since it will be provided automatically.
   */
 
-  public func assert(string: String, matches pattern: String, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+  public func assert(string: String, matches pattern: String, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     var message = message
     if !message.isEmpty {
       message = " - " + message
     }
     guard let regex = try? Tailor.NSRegularExpression(pattern: pattern, options: []) else {
-      self.recordFailureWithDescription("\(pattern) was not a valid pattern\(message)", inFile: file, atLine: line, expected: true)
+      self.testFailure("\(pattern) was not a valid pattern\(message)", expected: true, file: file, line: line)
       return
     }
     let matchCount = regex.numberOfMatchesInString(string, options: [], range: string.rangeOfSelf)
     if matchCount == 0 {
-      self.recordFailureWithDescription("\(string) did not match \(pattern)\(message)", inFile: file, atLine: line, expected: true)
+      self.testFailure("\(string) did not match \(pattern)\(message)", expected: true, file: file, line: line)
     }
   }
   
@@ -327,10 +295,10 @@ extension TailorTestable {
                               from. You should generally omit this, since it
                               will be provided automatically.
     */
-  public func assert(condition: Bool, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+  public func assert(condition: Bool, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     if !condition {
       let message = (message.isEmpty ? message: " - " + message)
-      self.recordFailureWithDescription("Condition was false\(message)", inFile: file, atLine: line, expected: true)
+      self.testFailure("Condition was false\(message)", expected: true, file: file, line: line)
     }
   }
   
@@ -353,7 +321,7 @@ extension TailorTestable {
     - parameter templateChecker:    A block that can perform additional checks
                                     on the template.
     */
-  public func assert<SpecificType: TemplateType>(renderer: TemplateRenderingType, renderedTemplate: SpecificType.Type, message: String = "", file: String = __FILE__, line: UInt = __LINE__, @noescape _ templateChecker: (SpecificType)->() = {_ in}) {
+  public func assert<SpecificType: TemplateType>(renderer: TemplateRenderingType, renderedTemplate: SpecificType.Type, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__, @noescape _ templateChecker: (SpecificType)->() = {_ in}) {
     var found = false
     for template in renderer._renderedTemplates {
       if let castTemplate = template as? SpecificType {
@@ -366,7 +334,7 @@ extension TailorTestable {
       if !message.isEmpty {
         failureMessage += " - \(message)"
       }
-      self.recordFailureWithDescription(failureMessage, inFile: file, atLine: line, expected: true)
+      self.testFailure(failureMessage, expected: true, file: file, line: line)
     }
   }
   
@@ -395,7 +363,7 @@ extension TailorTestable {
     - parameter templateChecker:    A block that determines if the template is
                                     the one we are looking for.
     */
-  public func assert<SpecificType: TemplateType>(renderer: TemplateRenderingType, renderedMatchingTemplate templateType: SpecificType.Type, message: String = "", file: String = __FILE__, line: UInt = __LINE__, _ templateChecker: (SpecificType)->(Bool)) {
+  public func assert<SpecificType: TemplateType>(renderer: TemplateRenderingType, renderedMatchingTemplate templateType: SpecificType.Type, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__, _ templateChecker: (SpecificType)->(Bool)) {
     var found = false
     for otherTemplate in renderer._renderedTemplates {
       if let castTemplate = otherTemplate as? SpecificType {
@@ -410,7 +378,7 @@ extension TailorTestable {
       if !message.isEmpty {
         failureMessage += " - \(message)"
       }
-      self.recordFailureWithDescription(failureMessage, inFile: file, atLine: line, expected: true)
+      self.testFailure(failureMessage, expected: true, file: file, line: line)
     }
   }
   
@@ -429,13 +397,13 @@ extension TailorTestable {
     - parameter block:              The block that we are checking for
                                     exceptions.
     */
-  public func assertNoExceptions(message: String = "", file: String = __FILE__, line: UInt = __LINE__, @noescape block: Void throws -> Void) {
+  public func assertNoExceptions(message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__, @noescape block: Void throws -> Void) {
     do {
       try block()
     }
     catch let e {
       let fullMessage = "Threw exception \(e)" +  (message.isEmpty ? "" : " - \(message)")
-      self.recordFailureWithDescription(fullMessage, inFile: file, atLine: line, expected: true)
+      self.testFailure(fullMessage, expected: true, file: file, line: line)
     }
   }
   
@@ -453,18 +421,18 @@ extension TailorTestable {
     - parameter block:              The block that we are checking for
                                     exceptions.
    */
-  public func assertThrows<ExceptionType: ErrorType where ExceptionType: Equatable>(exception: ExceptionType, message: String = "", file: String = __FILE__, line: UInt = __LINE__, @noescape block: Void throws -> Void) {
+  public func assertThrows<ExceptionType: ErrorType where ExceptionType: Equatable>(exception: ExceptionType, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__, @noescape block: Void throws -> Void) {
     do {
       try block()
       let fullMessage = "Did not throw exception" + (message.isEmpty ? "" : " - \(message)")
-      self.recordFailureWithDescription(fullMessage, inFile: file, atLine: line, expected: true)
+      self.testFailure(fullMessage, expected: true, file: file, line: line)
     }
     catch let thrown as ExceptionType {
       self.assert(thrown, equals: exception, message: message, file: file, line: line)
     }
     catch let e {
       let fullMessage = "Threw exception \(e)"  + (message.isEmpty ? "" : " - \(message)")
-      self.recordFailureWithDescription(fullMessage, inFile: file, atLine: line, expected: true)
+      self.testFailure(fullMessage, expected: true, file: file, line: line)
     }
   }
 }

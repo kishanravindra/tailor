@@ -316,9 +316,9 @@ public struct Connection {
     }
     
     signal(SIGPIPE, SIG_IGN)
-    _ = Connection(fileDescriptor: socketDescriptor, handler: handler)
-    
     NSLog("Listening on port %d", port)
+    _ = Connection(fileDescriptor: socketDescriptor, handler: handler)
+
     #if os(OSX)
     NSRunLoop.currentRunLoop().run()
     #endif

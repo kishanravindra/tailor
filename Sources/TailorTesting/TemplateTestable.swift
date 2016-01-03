@@ -66,7 +66,10 @@ extension TemplateTestable {
       NSLog("Error creating test controller: %@", String(error))
     }
   }
-  
+}
+
+#if os(OSX)
+extension TemplateTestable {
   /**
     This method asserts that an XML document contains an element.
 
@@ -80,7 +83,7 @@ extension TemplateTestable {
                                 should generally omit this.
     - parameter contents:       A block to run additional checks on the element.
     */
-  public func assert(xml: String, containsElement elementName: String, attributes: [String:String] = [:], message: String = "", file: String = __FILE__, line: UInt = __LINE__, @noescape contents: (NSXMLElement)->Void = {_ in}) {
+  public func assert(xml: String, containsElement elementName: String, attributes: [String:String] = [:], message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__, @noescape contents: (NSXMLElement)->Void = {_ in}) {
     assert(xml, containsElement: true, elementName: elementName, attributes: attributes, message: message, file: file, line: line, contents: contents)
   }
   
@@ -97,7 +100,7 @@ extension TemplateTestable {
     - parameter line:           The line that the assertion came from. You
                                 should generally omit this.
     */
-  public func assert(xml: String, doesNotContainElement elementName: String, attributes: [String:String] = [:], message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+  public func assert(xml: String, doesNotContainElement elementName: String, attributes: [String:String] = [:], message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     assert(xml, containsElement: false, elementName: elementName, attributes: attributes, message: message, file: file, line: line) { _ in }
   }
   
@@ -116,7 +119,7 @@ extension TemplateTestable {
                                 should generally omit this.
     - parameter contents:       A block to run additional checks on the element.
     */
-  public func assert(xml: NSXMLElement, containsElement elementName: String, attributes: [String:String] = [:], message: String = "", file: String = __FILE__, line: UInt = __LINE__, @noescape contents: (NSXMLElement)->Void = {_ in}) {
+  public func assert(xml: NSXMLElement, containsElement elementName: String, attributes: [String:String] = [:], message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__, @noescape contents: (NSXMLElement)->Void = {_ in}) {
     assert(xml, containsElement: true, elementName: elementName, attributes: attributes, message: message, file: file, line: line, contents: contents)
   }
   
@@ -132,7 +135,7 @@ extension TemplateTestable {
     - parameter line:           The line that the assertion came from. You
                                 should generally omit this.
   */
-  public func assert(xml: NSXMLElement, doesNotContainElement elementName: String, attributes: [String:String] = [:], message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+  public func assert(xml: NSXMLElement, doesNotContainElement elementName: String, attributes: [String:String] = [:], message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     assert(xml, containsElement: false, elementName: elementName, attributes: attributes, message: message, file: file, line: line) { _ in }
   }
   
@@ -152,7 +155,7 @@ extension TemplateTestable {
                                   should generally omit this.
     - parameter contents:         A block to run additional checks on the element.
     */
-  private func assert(xml: String, containsElement: Bool, elementName: String, attributes: [String:String], message: String, file: String, line: UInt, @noescape contents: (NSXMLElement)->Void) {
+  private func assert(xml: String, containsElement: Bool, elementName: String, attributes: [String:String], message: String, file: StaticString, line: UInt, @noescape contents: (NSXMLElement)->Void) {
     do {
       let body = try NSXMLDocument(XMLString: "<html><body>\(xml)</body></html>", options: 0)
       if let element = body.rootElement() {
@@ -161,13 +164,13 @@ extension TemplateTestable {
       else {
         var fullMessage = "Document \(xml) had no root element"
         if !message.isEmpty { fullMessage = "\(message) - " + fullMessage }
-        self.recordFailureWithDescription(fullMessage, inFile: file, atLine: line, expected: true)
+        self.testFailure(fullMessage, expected: true, file: file, line: line)
       }
     }
     catch {
       var fullMessage = "Document \(xml) was not a valid XML document"
       if !message.isEmpty { fullMessage = "\(message) - " + fullMessage }
-      self.recordFailureWithDescription(fullMessage, inFile: file, atLine: line, expected: true)
+      self.testFailure(fullMessage, expected: true, file: file, line: line)
     }
   }
   
@@ -187,7 +190,7 @@ extension TemplateTestable {
                                   should generally omit this.
     - parameter contents:         A block to run additional checks on the element.
     */
-  private func assert(xml: NSXMLElement, containsElement: Bool, elementName: String, attributes: [String:String], message: String, file: String, line: UInt, @noescape contents: (NSXMLElement)->Void) {
+  private func assert(xml: NSXMLElement, containsElement: Bool, elementName: String, attributes: [String:String], message: String, file: StaticString, line: UInt, @noescape contents: (NSXMLElement)->Void) {
     if let child = xml.findElement(elementName, attributes: attributes) {
       if containsElement {
         contents(child)
@@ -195,13 +198,13 @@ extension TemplateTestable {
       else {
         var fullMessage = "\(xml) contained element \(child) matching \(elementName)(\(attributes))"
         if !message.isEmpty { fullMessage = "\(message) - \(fullMessage)" }
-        recordFailureWithDescription(fullMessage, inFile: file, atLine: line, expected: true)
+        testFailure(fullMessage, expected: true, file: file, line: line)
       }
     }
     else if containsElement {
       var fullMessage = "\(xml) did not contain an element matching \(elementName)(\(attributes))"
       if !message.isEmpty { fullMessage = "\(message) - \(fullMessage)" }
-      recordFailureWithDescription(fullMessage, inFile: file, atLine: line, expected: true)
+      testFailure(fullMessage, expected: true, file: file, line: line)
     }
   }
 }
@@ -237,3 +240,4 @@ extension NSXMLElement {
   }
 }
 
+#endif

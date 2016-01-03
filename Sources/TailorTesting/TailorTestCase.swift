@@ -1,5 +1,6 @@
 import Tailor
 import XCTest
+import Foundation
 
 /**
   This class provides a test case for a Tailor application.
@@ -10,6 +11,7 @@ import XCTest
   This has been deprecated in favor of the TailorTestable protocol.
   */
 @available(*, deprecated, message="Use TailorTestable instead") public class TailorTestCase: XCTestCase {
+  public var allTests: [(String, () -> Void)] { return [] }
   /**
     This method configures the application for testing.
 
@@ -59,8 +61,7 @@ import XCTest
     will use that task to reload the schema. It will also run any pending
     alterations that have not been saved into the seeds.
     */
-  public override func setUp() {
-    super.setUp()
+  public func setUp() {
     Timestamp.freeze()
     configure()
     resetDatabase()
@@ -72,9 +73,8 @@ import XCTest
     It will unfreeze the current time, allowing it to proceed normally between
     test cases.
     */
-  public override func tearDown() {
+  public func tearDown() {
     Timestamp.unfreeze()
-    super.tearDown()
   }
 
   /**
@@ -92,13 +92,13 @@ import XCTest
                             from. You should generally omit this, since it will
                             be provided automatically.
     */
-  public func assert<T : Equatable>(lhs: T!, equals rhs: T, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+  public func assert<T : Equatable>(lhs: T!, equals rhs: T, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     let message = (message.isEmpty ? message: " - " + message)
     if lhs == nil {
-      self.recordFailureWithDescription("Value was nil\(message)", inFile: file, atLine: line, expected: true)
+      self.testFailure("Value was nil\(message)", expected: true, file: file, line: line)
     }
     else if lhs != rhs {
-      self.recordFailureWithDescription("\(lhs) != \(rhs)\(message)", inFile: file, atLine: line, expected: true)
+      self.testFailure("\(lhs) != \(rhs)\(message)", expected: true, file: file, line: line)
     }
   }
   
@@ -117,10 +117,10 @@ import XCTest
                             from. You should generally omit this, since it will
                             be provided automatically.
     */
-  public func assert<T : Equatable>(lhs: T!, doesNotEqual rhs: T, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+  public func assert<T : Equatable>(lhs: T!, doesNotEqual rhs: T, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     let message = (message.isEmpty ? message: " - " + message)
     if lhs != nil && lhs == rhs {
-      self.recordFailureWithDescription("\(lhs) == \(rhs)\(message)", inFile: file, atLine: line, expected: true)
+      self.testFailure("\(lhs) == \(rhs)\(message)", expected: true, file: file, line: line)
     }
   }
   
@@ -137,10 +137,10 @@ import XCTest
                       You should generally omit this, since it will be provided
                       automatically.
   */
-  public func assert<T : Equatable>(lhs: [T], equals rhs: [T], message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+  public func assert<T : Equatable>(lhs: [T], equals rhs: [T], message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     let message = (message.isEmpty ? message: " - " + message)
     if lhs != rhs {
-      self.recordFailureWithDescription("\(lhs) != \(rhs)\(message)", inFile: file, atLine: line, expected: true)
+      self.testFailure("\(lhs) != \(rhs)\(message)", expected: true, file: file, line: line)
     }
   }
   
@@ -157,10 +157,10 @@ import XCTest
                       You should generally omit this, since it will be provided
                       automatically.
   */
-  public func assert<K : Equatable, V: Equatable>(lhs: [K:V], equals rhs: [K:V], message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+  public func assert<K : Equatable, V: Equatable>(lhs: [K:V], equals rhs: [K:V], message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     if lhs != rhs {
       let message = (message.isEmpty ? message: " - " + message)
-      self.recordFailureWithDescription("\(lhs) != \(rhs)\(message)", inFile: file, atLine: line, expected: true)
+      self.testFailure("\(lhs) != \(rhs)\(message)", expected: true, file: file, line: line)
     }
   }
   
@@ -177,11 +177,11 @@ import XCTest
                         You should generally omit this, since it will be
                         provided automatically.
     */
-  public func assert(string: String, contains substring: String, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
-    let range = string.rangeOfString(substring)
-    if range == nil {
+  public func assert(string: String, contains substring: String, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+    let range = string.bridge().rangeOfString(substring)
+    if range.location == NSNotFound {
       let message = (message.isEmpty ? message: " - " + message)
-      self.recordFailureWithDescription("\(string) does not contain \(substring)\(message)", inFile: file, atLine: line, expected: true)
+      self.testFailure("\(string) does not contain \(substring)\(message)", expected: true, file: file, line: line)
     }
   }
   
@@ -197,10 +197,10 @@ import XCTest
                         You should generally omit this, since it will be
                         provided automatically.
     */
-  public func assert(isNil value: Any?, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+  public func assert(isNil value: Any?, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     if value != nil {
       let message = (message.isEmpty ? message: " - " + message)
-      self.recordFailureWithDescription("value was not nil\(message)", inFile: file, atLine: line, expected: true)
+      self.testFailure("value was not nil\(message)", expected: true, file: file, line: line)
     }
   }
   
@@ -216,10 +216,10 @@ import XCTest
                         You should generally omit this, since it will be
                         provided automatically.
   */
-  public func assert(isNotNil value: Any?, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+  public func assert(isNotNil value: Any?, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     if value == nil {
       let message = (message.isEmpty ? message: " - " + message)
-      self.recordFailureWithDescription("value was nil\(message)", inFile: file, atLine: line, expected: true)
+      self.testFailure("value was nil\(message)", expected: true, file: file, line: line)
     }
   }
   /**
@@ -236,14 +236,14 @@ import XCTest
                           from. You should generally omit this, since it will be
                           provided automatically.
   */
-  public func assert(value: Double?, within range: Double, of correctValue: Double, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+  public func assert(value: Double?, within range: Double, of correctValue: Double, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     let message = (message.isEmpty ? message: " - " + message)
     if value == nil {
-      self.recordFailureWithDescription("value was nil\(message)", inFile: file, atLine: line, expected: true)
+      self.testFailure("value was nil\(message)", expected: true, file: file, line: line)
     }
     else {
       if value! < correctValue - range || value! > correctValue + range {
-        self.recordFailureWithDescription("\(value!) is not within \(range) of \(correctValue)\(message)", inFile: file, atLine: line, expected: true)
+        self.testFailure("\(value!) is not within \(range) of \(correctValue)\(message)", expected: true, file: file, line: line)
       }
     }
   }
@@ -259,10 +259,10 @@ import XCTest
                         from. You should generally omit this, since it will be
                         provided automatically.
     */
-  public func assert(condition: Bool, message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
+  public func assert(condition: Bool, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     if !condition {
       let message = (message.isEmpty ? message: " - " + message)
-      self.recordFailureWithDescription("Condition was false\(message)", inFile: file, atLine: line, expected: true)
+      self.testFailure("Condition was false\(message)", expected: true, file: file, line: line)
     }
   }
   
@@ -282,7 +282,7 @@ import XCTest
     - parameter templateChecker:    A block that can perform additional checks
                                     on the template.
     */
-  public func assert<SpecificType: TemplateType>(response: Response, renderedTemplate: SpecificType.Type, message: String = "", file: String = __FILE__, line: UInt = __LINE__, @noescape _ templateChecker: (SpecificType)->() = {_ in}) {
+  public func assert<SpecificType: TemplateType>(response: Response, renderedTemplate: SpecificType.Type, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__, @noescape _ templateChecker: (SpecificType)->() = {_ in}) {
     self.assert(response.renderedTemplates, renderedTemplate: renderedTemplate, message: message, file: file, line: line, templateChecker)
   }
   
@@ -302,7 +302,7 @@ import XCTest
     - parameter templateChecker:    A block that can perform additional checks
                                     on the template.
   */
-  public func assert<SpecificType: TemplateType>(email: Email, renderedTemplate: SpecificType.Type, message: String = "", file: String = __FILE__, line: UInt = __LINE__, @noescape _ templateChecker: (SpecificType)->() = {_ in}) {
+  public func assert<SpecificType: TemplateType>(email: Email, renderedTemplate: SpecificType.Type, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__, @noescape _ templateChecker: (SpecificType)->() = {_ in}) {
     self.assert(email.renderedTemplates, renderedTemplate: renderedTemplate, message: message, file: file, line: line, templateChecker)
   }
   
@@ -322,7 +322,7 @@ import XCTest
     - parameter templateChecker:    A block that can perform additional checks
                                     on the template.
   */
-  public func assert<SpecificType: TemplateType>(template: TemplateType, renderedTemplate: SpecificType.Type, message: String = "", file: String = __FILE__, line: UInt = __LINE__, @noescape _ templateChecker: (SpecificType)->() = {_ in}) {
+  public func assert<SpecificType: TemplateType>(template: TemplateType, renderedTemplate: SpecificType.Type, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__, @noescape _ templateChecker: (SpecificType)->() = {_ in}) {
     self.assert(template.state.renderedTemplates, renderedTemplate: renderedTemplate, message: message, file: file, line: line, templateChecker)
   }
   
@@ -343,7 +343,7 @@ import XCTest
     - parameter templateChecker:    A block that can perform additional checks
                                     on the template.
     */
-  private func assert<SpecificType: TemplateType>(templates: [TemplateType], renderedTemplate: SpecificType.Type, message: String = "", file: String = __FILE__, line: UInt = __LINE__, @noescape _ templateChecker: (SpecificType)->() = {_ in}) {
+  private func assert<SpecificType: TemplateType>(templates: [TemplateType], renderedTemplate: SpecificType.Type, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__, @noescape _ templateChecker: (SpecificType)->() = {_ in}) {
     var found = false
     for template in templates {
       if let castTemplate = template as? SpecificType {
@@ -356,7 +356,7 @@ import XCTest
       if !message.isEmpty {
         failureMessage += " - \(message)"
       }
-      self.recordFailureWithDescription(failureMessage, inFile: file, atLine: line, expected: true)
+      self.testFailure(failureMessage, expected: true, file: file, line: line)
     }
   }
 }
