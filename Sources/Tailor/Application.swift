@@ -143,9 +143,12 @@ public final class Application {
     public static func flattenDictionary(dictionary: NSDictionary) -> [String:String] {
       var result = [String:String]()
       for (key,value) in dictionary {
-        guard let keyString = key as? String else { continue }
-        if let s = value as? String {
-          result[keyString] = s
+        let keyString: String
+        if let s = key as? NSString { keyString = s.bridge() }
+        else { continue }
+
+        if let s = value as? NSString {
+          result[keyString] = s.bridge()
         }
         else if let d = value as? NSDictionary {
           for (innerKey, innerValue) in flattenDictionary(d) {

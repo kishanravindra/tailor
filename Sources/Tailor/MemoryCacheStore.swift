@@ -1,11 +1,11 @@
 import Foundation
 
 /**
-  This class provides an in-memory cache store backed by NSCache.
+  This class provides an in-memory cache store backed by a dictionary.
   */
 public final class MemoryCacheStore: CacheImplementation {
   /** The internal storage. */
-  let cache = NSCache()
+  var cache = [String:String]()
   
   /** The times when we should clear keys from the cache. */
   public var expiryTimes = [String:Timestamp]()
@@ -27,7 +27,7 @@ public final class MemoryCacheStore: CacheImplementation {
         return nil
       }
     }
-    return (cache.objectForKey(key.bridge()) as? NSString)?.bridge()
+    return cache[key]
   }
   
   /**
@@ -38,7 +38,7 @@ public final class MemoryCacheStore: CacheImplementation {
     - parameter expiryTime:    The time until the cache entry should expire.
     */
   public func write(key: String, value: String, expireIn expiryTime: TimeInterval?=nil) {
-    cache.setObject(value.bridge(), forKey: key.bridge())
+    cache[key] = value
     if expiryTime != nil {
       expiryTimes[key] = expiryTime?.fromNow
     }
@@ -50,13 +50,13 @@ public final class MemoryCacheStore: CacheImplementation {
     - parameter key:     The key for the entry to remove.
     */
   public func clear(key: String) {
-    cache.removeObjectForKey(key.bridge())
+    cache.removeValueForKey(key)
   }
   
   /**
     This method removes all the entries from the cache.
     */
   public func clear() {
-    cache.removeAllObjects()
+    cache = [:]
   }
 }
