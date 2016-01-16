@@ -1,8 +1,12 @@
 import Foundation
+#if os(Linux)
+import COpenSSL
+import Glibc
+#endif
 
 /**
   This class provides a high-level interface for doing AES encryption.
-  FIXME
+  FIXME: Audit this more thoroughly.
   */
 public final class AesEncryptor {
   /** The low-level key for the encryption. */
@@ -95,22 +99,22 @@ public final class AesEncryptor {
   
     */
   public init?(key hexKey: String) {
-    #if os(Linux)
-      self.key = nil
-    #else 
     let keyData = NSMutableData()
     if hexKey.characters.count < 64 {
       self.key = nil
       return nil
     }
     for indexOfByte in (0..<hexKey.characters.count/2) {
-      let range = Range(start: hexKey.startIndex.advancedBy(indexOfByte), end: hexKey.startIndex.advancedBy(indexOfByte + 2))
-      if let byte = AesEncryptor.getHex(hexKey.substringWithRange(range)) {
+      let range = NSRange(location: indexOfByte, length: 2)
+      if let byte = AesEncryptor.getHex(hexKey.bridge().substringWithRange(range)) {
         var byte = byte
         keyData.appendBytes(&byte, length: 1)
       }
     }
     
+    #if os(Linux)
+      self.key = hexKey
+    #else 
     let keyParams = [
       kSecAttrKeyType as NSString: kSecAttrKeyTypeAES as NSString,
       kSecAttrKeySizeInBits as NSString: NSNumber(int: 256)
@@ -122,6 +126,69 @@ public final class AesEncryptor {
   
   //MARK: - Encryption
 
+  #if os(Linux)
+
+  /**
+    This method runs an EVP transformation on some data.
+
+    - parameter data:     The data to encrypt or decrypt.
+    - parameter encrypt:  Whether to encrypt or decrypt the data.
+    - returns:            The transformed data.
+    */
+  private func transform(data: NSData, encrypt: Bool) -> NSData {
+    guard let keyString = self.key?.bridge() else { return NSData() }
+    
+    let context = EVP_CIPHER_CTX_new()
+    let cipher = EVP_aes_256_cbc()
+    
+    let ivLength = Int(cipher.memory.iv_len)
+    
+    let initVectorBytes = Array<UInt8>(count: ivLength, repeatedValue: 0)
+    var initVectorData = NSData()
+
+    var targetData = data
+
+    if encrypt {
+      RAND_bytes(UnsafeMutablePointer<UInt8>(initVectorBytes), Int32(initVectorBytes.count))
+      initVectorData = NSData(bytes: initVectorBytes)
+    }
+    else {
+      initVectorData = data.subdataWithRange(NSRange(location: 0, length: ivLength))
+      targetData = data.subdataWithRange(NSRange(location: ivLength, length: data.length - ivLength))
+      initVectorData.getBytes(UnsafeMutablePointer<Void>(initVectorBytes), length: ivLength)
+    }
+    let initVector = initVectorBytes.map { AesEncryptor.getHexString($0) }.joinWithSeparator("")
+
+    EVP_CipherInit_ex(context, cipher, nil, UnsafePointer<UInt8>(keyString.cStringUsingEncoding(NSASCIIStringEncoding)), UnsafePointer<UInt8>(initVector.bridge().cStringUsingEncoding(NSASCIIStringEncoding)), encrypt ? 1 : 0)
+
+    let bufferLength = targetData.length
+    let buffer = calloc(bufferLength, 1)
+    targetData.getBytes(buffer, length: bufferLength)
+
+    let maxBlockSize = Int(cipher.memory.block_size) + bufferLength
+
+    var currentBlockSize: Int32 = 0
+    let block = calloc(maxBlockSize, 1)
+
+    let output = NSMutableData()
+    if encrypt {
+      output.appendData(initVectorData)
+    }
+
+    EVP_CipherUpdate(context, UnsafeMutablePointer<UInt8>(block), &currentBlockSize, UnsafeMutablePointer<UInt8>(buffer), Int32(bufferLength))
+    output.appendBytes(buffer, length: Int(currentBlockSize))
+
+    EVP_CipherFinal_ex(context, UnsafeMutablePointer<UInt8>(block), &currentBlockSize)
+    output.appendBytes(block, length: Int(currentBlockSize))
+    
+    free(buffer)
+    free(block)
+    EVP_CIPHER_CTX_free(context)
+
+    return output
+  }
+  #endif
+
   /**
     This method encrypts data with our key.
 
@@ -130,7 +197,7 @@ public final class AesEncryptor {
     */
   public func encrypt(data: NSData) -> NSData {
     #if os(Linux)
-      return NSData()
+      return transform(data, encrypt: true)
     #else
     guard let key = self.key else { return NSData() }
     let encryptor = SecEncryptTransformCreate(key, nil)
@@ -147,7 +214,7 @@ public final class AesEncryptor {
     */
   public func decrypt(data: NSData) -> NSData {
     #if os(Linux)
-      return NSData()
+      return self.transform(data, encrypt: false)
     #else
     guard let key = self.key else { return NSData() }
     let decryptor = SecDecryptTransformCreate(key, nil)
@@ -165,7 +232,19 @@ public final class AesEncryptor {
     */
   public class func generateKey() -> String {
     #if os(Linux)
-      return ""
+      if !AES_RANDOM_SEEDED {
+        AES_RANDOM_SEEDED = true
+        let seed = [UInt8](count: 32, repeatedValue: 0)
+        let filename = "/dev/urandom".bridge().cStringUsingEncoding(NSASCIIStringEncoding)
+        let file = open(UnsafePointer<CChar>(filename), O_RDONLY)
+        read(file, UnsafeMutablePointer<Void>(seed), seed.count)
+        close(file)
+        RAND_seed(seed, 0)
+      }
+      let bytes = [UInt8](count: 32, repeatedValue: 0)
+      RAND_bytes(UnsafeMutablePointer<UInt8>(bytes), Int32(bytes.count))
+      let key = bytes.map { getHexString($0) }.joinWithSeparator("")
+      return key
     #else
     let keyParams = [
       kSecAttrKeyType as NSString: kSecAttrKeyTypeAES as NSString,
@@ -190,3 +269,5 @@ public final class AesEncryptor {
     #endif
   }
 }
+
+private var AES_RANDOM_SEEDED = false

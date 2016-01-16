@@ -2,7 +2,8 @@ import PackageDescription
 
 let package = Package(
   dependencies: [
-    .Package(url: "https://github.com/brownleej/swift-sqlite", majorVersion: 1)
+    .Package(url: "https://github.com/brownleej/swift-sqlite", majorVersion: 1),
+    .Package(url: "https://github.com/brownleej/swift-openssl", majorVersion: 1)
   ],
   targets: [
   	Target(name: "Tailor"),
