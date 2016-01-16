@@ -5,8 +5,10 @@ import Foundation
 
 /**
   This class represents a connection with a client.
+
+  TODO: Improve thread management
   */
-public struct Connection {
+public final class Connection {
   
   /** A callback that can be given a response. */
   public typealias ResponseCallback = (Response)->Void
@@ -22,10 +24,8 @@ public struct Connection {
   
   /**
     The queue that we put requests on.
-    FIXME
     */
   #if os(Linux)
-    public static let dispatchQueue = 0
   #else
     public static let dispatchQueue = dispatch_queue_create(nil, DISPATCH_QUEUE_CONCURRENT)
   #endif
@@ -40,6 +40,7 @@ public struct Connection {
   public init(fileDescriptor: Int32, handler: RequestHandler) {
     self.socketDescriptor = fileDescriptor
     self.handler = handler
+    CONNECTION_POOL[fileDescriptor] = self
     self.listenToSocket()
   }
   
@@ -55,29 +56,20 @@ public struct Connection {
     queue for reading from the socket, and put an operation on the main queue
     for listening for a new connection.
     */
-  public mutating func listenToSocket() {
+  public func listenToSocket() {
     if self.socketDescriptor < 0 {
       return
     }
     #if os(Linux)
-      let connectionDescriptor = Connection.accept(self.socketDescriptor)
-        
-      if connectionDescriptor > 0 {
-        self.readFromSocket(connectionDescriptor)
-      }
-      self.listenToSocket()
+      self.spawnThread(ConnectionAcceptInThread, descriptor: 0)
     #else
       NSOperationQueue.mainQueue().addOperationWithBlock {
         let connectionDescriptor = Connection.accept(self.socketDescriptor)
         
         if connectionDescriptor > 0 {
-          #if os(Linux)
+          dispatch_async(Connection.dispatchQueue) {
             self.readFromSocket(connectionDescriptor)
-          #else
-            dispatch_async(Connection.dispatchQueue) {
-              self.readFromSocket(connectionDescriptor)
-            }
-          #endif
+          }
         }
         self.listenToSocket()
       }
@@ -92,7 +84,7 @@ public struct Connection {
   
     - parameter connectionDescriptor:    The file descriptor for the connection.
     */
-  public mutating func readFromSocket(connectionDescriptor: Int32) {
+  public func readFromSocket(connectionDescriptor: Int32) {
     let data = NSMutableData()
     let bufferLength = 1024
     var buffer = [UInt8](count: Int(bufferLength), repeatedValue: 0)
@@ -111,7 +103,7 @@ public struct Connection {
       sa_data: (0,0,0,0,0,0,0,0,0,0,0,0,0,0)
     )
     #endif
-    
+
     var size = UInt32(sizeof(sockaddr))
     Connection.getpeername(connectionDescriptor, address: &clientAddress, addressLength: &size)
     
@@ -194,7 +186,7 @@ public struct Connection {
       
       if let startTime = startTime {
         let interval = Timestamp.now().epochSeconds - startTime.epochSeconds
-        NSLog("Finished processing %@ in %lf seconds", request.path, String(interval))
+        NSLog("Finished processing %@ in %@ seconds", request.path, String(interval))
       }
       if request.headers["Connection"] == "close" || response.headers["Connection"] == "close" {
         Connection.close(connectionDescriptor)
@@ -204,7 +196,7 @@ public struct Connection {
       }
       else {
         #if os(Linux)
-          self.readFromSocket(connectionDescriptor)
+          self.spawnThread(ConnectionReadInThread, descriptor: connectionDescriptor)
         #else
         dispatch_async(Connection.dispatchQueue) {
           self.readFromSocket(connectionDescriptor)
@@ -260,6 +252,25 @@ public struct Connection {
     else {
       return nil
     }
+  }
+
+  /**
+    This method spawns a new thread for taking action on this connection.
+
+    The function that we are invoking in the new thread must accept a pointer to
+    a buffer of Int32 values. The first value in this pointer will be the
+    connection's socket descriptor, and the second value will be the descriptor
+    given to this call. The target function must free that buffer pointer.
+
+    - parameter function:     A global function to call in the new thread.
+    - parameter description:  The additional descriptor to pass to the function.
+    */
+  private func spawnThread(function: @convention(c) UnsafeMutablePointer<Void> -> UnsafeMutablePointer<Void>, descriptor: Int32) {
+    let buffer = UnsafeMutablePointer<Int32>(calloc(sizeof(Int32.self), 2))
+    buffer[0] = self.socketDescriptor
+    buffer[1] = descriptor
+    var thread = pthread_t()
+    pthread_create(&thread, nil, function, buffer)
   }
 
   /**
@@ -319,11 +330,13 @@ public struct Connection {
     NSLog("Listening on port %d", port)
     _ = Connection(fileDescriptor: socketDescriptor, handler: handler)
 
-    #if os(OSX)
+    #if os(Linux)
+    while(true) {
+      sleep(1)
+    }
+    #else
     NSRunLoop.currentRunLoop().run()
     #endif
-
-    return true
   }
   
   //MARK: - Stubbing
@@ -488,5 +501,69 @@ public struct Connection {
       return result
     }
   }
-
 }
+
+/**
+  A dictionary of all of the open connections.
+
+  The keys in this dictionary are the socket descriptors, and the values are
+  the connections on those socket descriptors.
+  */
+private var CONNECTION_POOL: [Int32: Connection] = [:]
+
+#if os(Linux)
+/**
+  This function listens for incoming connections on a socket descriptor.
+
+  Once a connection comes in, this will spawn a new thread to read from that
+  connection. It will listen from a new connection in the current thread. It
+  will continue listening for new connections until there is an error from
+  `accept`, at which point this will return.
+
+  This is designed to be used as an entry point for starting a new thread. 
+
+  - parameter pointer:    A buffer pointer containing one 32-bit integer: the
+                          socket descriptor that we are listening to. This will
+                          be freed once the values are extracted.
+  - returns:              This will always return nil
+  */
+func ConnectionAcceptInThread(pointer: UnsafeMutablePointer<Void>) -> UnsafeMutablePointer<Void> {
+  let buffer = UnsafeMutablePointer<Int32>(pointer)
+  let socketDescriptor = buffer.memory
+  free(buffer)
+  guard let connection = CONNECTION_POOL[Int32(socketDescriptor)] else { return nil }
+  
+  repeat {
+    let connectionDescriptor = Connection.accept(connection.socketDescriptor)
+    if connectionDescriptor > 0 {
+      connection.spawnThread(ConnectionReadInThread, descriptor: connectionDescriptor)
+    }
+    else {
+      break
+    }
+  } while true
+  return nil
+}
+
+/**
+  This function reads a request from a connection.
+
+  This is designed to be used as an entry point for starting a new thread. 
+
+  - parameter pointer:    A buffer pointer containing two 32-bit integers: the
+                          socket descriptor that we are listening to and the
+                          connection descriptor that we should read from. This
+                          will be freed once the values are extracted.
+  - returns:              This will always return nil
+  */
+func ConnectionReadInThread(pointer: UnsafeMutablePointer<Void>) -> UnsafeMutablePointer<Void> {
+  let buffer = UnsafeMutablePointer<Int32>(pointer)
+  let socketDescriptor = buffer[0]
+  let connectionDescriptor = buffer[1]
+  free(buffer)
+
+  guard let connection = CONNECTION_POOL[Int32(socketDescriptor)] else { return nil }
+  connection.readFromSocket(connectionDescriptor)
+  return nil
+}
+#endif

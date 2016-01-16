@@ -5,8 +5,9 @@ import XCTest
 typealias NSRegularExpression=Tailor.NSRegularExpression
 XCTMain([
   TestAesEncryptor(),
-	TestApplication(),
-	TestCacheImplementation(),
-	TestCookie(),
-	TestMemoryCacheStore(),
+  TestApplication(),
+  TestCacheImplementation(),
+  TestConnection(),
+  TestCookie(),
+  TestMemoryCacheStore(),
 ])

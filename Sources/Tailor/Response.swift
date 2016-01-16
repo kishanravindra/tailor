@@ -406,7 +406,8 @@ public struct Response: Equatable {
     headers["Content-Type"] = headers["Content-Type"] ?? "text/html; charset=UTF-8"
     headers["Date"] = headers["Date"] ?? Timestamp.now().inTimeZone("GMT").format(TimeFormat.Rfc822)
     
-    for (key,value) in headers {
+    for key in headers.keys.sort() {
+      guard let value = headers[key] else { continue }
       add("\(key): \(value)\r\n")
     }
     add(cookies.headerStringForChanges)

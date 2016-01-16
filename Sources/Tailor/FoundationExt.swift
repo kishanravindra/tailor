@@ -27,7 +27,8 @@ import CoreFoundation
         if range.location == NSNotFound { continue }
         result = result.stringByReplacingCharactersInRange(range, withString: argument).bridge()
       }
-      print(result)
+      let timestamp = Timestamp.now().format(TimeFormat.Database)
+      print(timestamp + ": " + result.bridge())
     }
     public func NSLog(format: String, _ arguments: CVarArgType...) {
         withVaList(arguments) {
@@ -47,7 +48,7 @@ import CoreFoundation
       getBytes(UnsafeMutablePointer<Void>(bytes), range: searchRange)
       let searchBytes = [UInt8](count: dataToFind.length, repeatedValue: 0)
       dataToFind.getBytes(UnsafeMutablePointer<Void>(searchBytes), range: NSMakeRange(0, dataToFind.length))
-      for startIndex in searchRange.location ..< searchRange.location + searchRange.length - dataToFind.length {
+      for startIndex in 0 ..< searchRange.length - dataToFind.length {
         var match = true
         for indexOfByte in 0..<searchBytes.count {
           if bytes[startIndex + indexOfByte] != searchBytes[indexOfByte] {
@@ -56,7 +57,7 @@ import CoreFoundation
           }
         }
         if match {
-          return NSRange(location: startIndex, length: searchBytes.count)
+          return NSRange(location: searchRange.location + startIndex, length: searchBytes.count)
         }
       }
       return NSRange(location: NSNotFound, length: NSNotFound)
