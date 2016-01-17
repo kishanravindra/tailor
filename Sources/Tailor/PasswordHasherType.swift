@@ -1,4 +1,7 @@
 import Foundation
+#if os(Linux)
+  import COpenSSL
+#endif
 
 /**
   This protocol describes a system for hashing passwords.
@@ -84,11 +87,29 @@ public protocol PasswordHasherType {
 }
 
 extension PasswordHasherType {
-  //FIXME
+  #if os(Linux)
+    public static func hashData(data: NSData, digest: UnsafePointer<EVP_MD>) -> NSData {
+      var context = EVP_MD_CTX()
+      let digestSize = Int(EVP_MD_size(digest))
+      EVP_MD_CTX_init(&context)
+      EVP_DigestInit_ex(&context, digest, nil)
+      EVP_DigestUpdate(&context, data.bytes, data.length)
+      let buffer = UnsafeMutablePointer<UInt8>(calloc(sizeof(CChar), digestSize))
+      var length = UInt32(0)
+      EVP_DigestFinal_ex(&context, buffer, &length)
+      print("Got length: \(length)")
+      EVP_MD_CTX_cleanup(&context)
+      let result = NSData(bytes: buffer, length: Int(length))
+      free(buffer)
+      return result
+    }
+  #endif
+
   public static func generateSalt() -> NSData {
-    var saltBytes = [UInt8](count: 16, repeatedValue: 0)
     #if os(Linux)
+      let saltBytes = RandomNumber.generateBytes(16)
     #else
+      var saltBytes = [UInt8](count: 16, repeatedValue: 0)
       SecRandomCopyBytes(kSecRandomDefault, saltBytes.count, &saltBytes)
     #endif
     return NSData(bytes: saltBytes)
@@ -96,10 +117,12 @@ extension PasswordHasherType {
   
   public static func isMatch(plainPassword: String, encryptedPassword: String) -> Bool {
     if let salt = self.extractSalt(encryptedPassword) {
-      return self.init(salt: salt).encrypt(plainPassword) == encryptedPassword
+      let reencryptedPassword = self.init(salt: salt).encrypt(plainPassword)
+      return reencryptedPassword == encryptedPassword
     }
     else {
       return false
     }
   }
 }
+

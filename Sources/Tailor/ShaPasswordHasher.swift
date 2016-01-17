@@ -1,15 +1,19 @@
 import Foundation
+#if os(Linux)
+  import COpenSSL
+#endif
 
 /**
   This class provides a Swift wrapper for hashing a password with SHA-512.
- 
-  FIXME
   */
 public struct ShaPasswordHasher: PasswordHasherType {
   /**
     The salt that we are applying to the password.
     */
   public let salt: NSData
+
+  /** The number of bytes in our salts. */
+  public static let saltLength = 16
   
   /**
     This method creates a password hasher with a predefined salt.
@@ -58,9 +62,15 @@ public struct ShaPasswordHasher: PasswordHasherType {
     */
   public func encrypt(input: String) -> String {
     let encodedSalt = salt.base64EncodedStringWithOptions([])
-    //let saltedInput = encodedSalt + input
-    //let inputBytes = NSData(bytes: saltedInput.utf8)
-    let hashBytes = [UInt8](count: 64, repeatedValue: 0)
+    let saltedInput = encodedSalt + input
+    let inputBytes = NSData(bytes: saltedInput.utf8)
+    let hashBytes = [UInt8](count: ShaPasswordHasher.saltLength, repeatedValue: 0)
+    #if os(Linux)
+      let data = ShaPasswordHasher.hashData(inputBytes, digest: EVP_sha512())
+      data.getBytes(UnsafeMutablePointer<Void>(hashBytes), length: hashBytes.count)
+    #else
+      CC_SHA512(inputBytes.bytes, UInt32(inputBytes.length), UnsafeMutablePointer<UInt8>(hashBytes))
+    #endif
     
     let encodedHash = NSData(bytes: hashBytes).base64EncodedStringWithOptions([])
     let countString = String(encodedSalt.characters.count)
@@ -95,8 +105,10 @@ public struct ShaPasswordHasher: PasswordHasherType {
       return nil
     }
     let encodedSalt = encryptedPassword.bridge().substringWithRange(NSMakeRange(2,saltLength))
-    let salt = NSData(base64EncodedString: encodedSalt, options: [])
-    
+    var salt = NSData(base64EncodedString: encodedSalt, options: [])
+    if salt?.length > ShaPasswordHasher.saltLength {
+      salt = salt?.subdataWithRange(NSMakeRange(0, ShaPasswordHasher.saltLength))
+    }
     return salt
   }
 }

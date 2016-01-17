@@ -11,5 +11,7 @@ XCTMain([
   TestCookie(),
   TestMemoryCacheStore(),
   TestNSData(),
+  TestRandomNumber(),
+  TestShaPasswordHasher(),
   TestTimestamp(),
 ])

@@ -67,35 +67,18 @@ public extension NSData {
     */
   public var md5Hash: String {
     #if os(Linux)
-      print("Getting md5 hash")
-      var context = EVP_MD_CTX()
-      let type = EVP_md5()
-      let digestSize = Int(EVP_MD_size(type))
-      EVP_MD_CTX_init(&context)
-      EVP_DigestInit_ex(&context, type, nil)
-      EVP_DigestUpdate(&context, self.bytes, self.length)
-      let buffer = UnsafeMutablePointer<UInt8>(calloc(sizeof(CChar), digestSize))
-      var length = UInt32(0)
-      EVP_DigestFinal_ex(&context, buffer, &length)
-      print("Got length: \(length)")
-      EVP_MD_CTX_cleanup(&context)
-      var result = ""
-      result.reserveCapacity(2 * Int(length))
-      for indexOfByte in 0..<Int(length) {
-        let byte = buffer[indexOfByte]
-        result.appendContentsOf(AesEncryptor.getHexString(byte))
-      }
-      free(buffer)
-      return result
+      let data = ShaPasswordHasher.hashData(self, digest: EVP_md5())
+      let buffer = [UInt8](count: data.length, repeatedValue: 0)
+      data.getBytes(UnsafeMutablePointer<Void>(buffer), length: buffer.count)
     #else
-      var buffer = [UInt8](count: CC_MD5_DIGEST_LENGTH, repeatedValue: 0)
+      let buffer = [UInt8](count: CC_MD5_DIGEST_LENGTH, repeatedValue: 0)
       CC_MD5(self.bytes, Int64(self.length), &buffer)
-      let output = NSMutableString(capacity: 2 * CC_MD5_DIGEST_LENGTH)
-      for byte in buffer {
-        output.appendFormat("%02x", byte)
-      }
-      return output as String
     #endif
+    let output = NSMutableString(capacity: 2 * CC_MD5_DIGEST_LENGTH)
+    for byte in buffer {
+      output.appendString(AesEncryptor.getHexString(byte))
+    }
+    return output.bridge()
   }
 }
 

@@ -7,6 +7,7 @@ import Glibc
 /**
   This class provides a high-level interface for doing AES encryption.
   FIXME: Audit this more thoroughly.
+  TODO: Look into switching to LibreSSL.
   */
 public final class AesEncryptor {
   /** The low-level key for the encryption. */
@@ -232,17 +233,7 @@ public final class AesEncryptor {
     */
   public class func generateKey() -> String {
     #if os(Linux)
-      if !AES_RANDOM_SEEDED {
-        AES_RANDOM_SEEDED = true
-        let seed = [UInt8](count: 32, repeatedValue: 0)
-        let filename = "/dev/urandom".bridge().cStringUsingEncoding(NSASCIIStringEncoding)
-        let file = open(UnsafePointer<CChar>(filename), O_RDONLY)
-        read(file, UnsafeMutablePointer<Void>(seed), seed.count)
-        close(file)
-        RAND_seed(seed, 0)
-      }
-      let bytes = [UInt8](count: 32, repeatedValue: 0)
-      RAND_bytes(UnsafeMutablePointer<UInt8>(bytes), Int32(bytes.count))
+      let bytes = RandomNumber.generateBytes(32)
       let key = bytes.map { getHexString($0) }.joinWithSeparator("")
       return key
     #else
