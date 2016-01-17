@@ -10,4 +10,6 @@ XCTMain([
   TestConnection(),
   TestCookie(),
   TestMemoryCacheStore(),
+  TestNSData(),
+  TestTimestamp(),
 ])

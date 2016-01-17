@@ -69,22 +69,22 @@ private var TIMESTAMP_FROZEN_TIME: Timestamp.EpochInterval? = nil
   while the app is running.
   */
 public func SystemCalendar() -> Calendar {
-  //FIXME
-  return GregorianCalendar()
-  /*
-  if SYSTEM_CALENDAR != nil {
+  #if os(Linux)
+    return GregorianCalendar()
+  #else
+    if SYSTEM_CALENDAR != nil {
+      return SYSTEM_CALENDAR
+    }
+    switch(NSCalendar.currentCalendar().calendarIdentifier) {
+    case NSCalendarIdentifierGregorian:
+      SYSTEM_CALENDAR = GregorianCalendar()
+    case NSCalendarIdentifierIslamicTabular:
+      SYSTEM_CALENDAR = IslamicCalendar()
+    default:
+      SYSTEM_CALENDAR = GregorianCalendar()
+    }
     return SYSTEM_CALENDAR
-  }
-  switch(NSCalendar.currentCalendar().calendarIdentifier) {
-  case NSCalendarIdentifierGregorian:
-    SYSTEM_CALENDAR = GregorianCalendar()
-  case NSCalendarIdentifierIslamicTabular:
-    SYSTEM_CALENDAR = IslamicCalendar()
-  default:
-    SYSTEM_CALENDAR = GregorianCalendar()
-  }
-  return SYSTEM_CALENDAR
-  */
+  #endif
 }
 
 private var SYSTEM_CALENDAR: Calendar!

@@ -3,7 +3,6 @@ import XCTest
 import TailorTesting
 import Foundation
 
-//FIXME: Add in commented-out tests
 final class TestConnection: XCTestCase, TailorTestable {
   var requestContents = ["GET / HTTP/1.1\r\nHeader: Value\r\nContent-Length: 12\r\n\r\nRequest Body"]
   var requestData: [NSData] { return requestContents.map { NSData(bytes: $0.utf8) } }
