@@ -37,6 +37,8 @@ extension TailorTestable {
   public func resetDatabase() {
     if !TAILOR_TESTABLE_DATABASE_RESET {
       Application.removeSharedDatabaseConnection()
+      /*
+      FIXME
       for task in Application.sharedApplication().registeredTasks() {
         if let seedTask = task as? SeedTaskType.Type {
           seedTask.loadSchema()
@@ -45,6 +47,7 @@ extension TailorTestable {
       }
       
       AlterationsTask.runTask()
+      */
       TAILOR_TESTABLE_DATABASE_RESET = true
     }
     Application.truncateTables()
