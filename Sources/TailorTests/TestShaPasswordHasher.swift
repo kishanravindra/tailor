@@ -4,7 +4,7 @@ import TailorTesting
 import Foundation
 
 struct TestShaPasswordHasher: XCTestCase, TailorTestable {
-  var allTests: [(String, Void->())] { return [
+  var allTests: [(String, () throws -> Void)] { return [
     ("testInitWithoutComponentsGeneratesRandomSalt", testInitWithoutComponentsGeneratesRandomSalt),
     ("testEncryptGeneratesTheSameValueForSameSalt", testEncryptGeneratesTheSameValueForSameSalt),
     ("testEncryptGeneratesTheSameValueForSameEncryptor", testEncryptGeneratesTheSameValueForSameEncryptor),
@@ -54,11 +54,11 @@ struct TestShaPasswordHasher: XCTestCase, TailorTestable {
   func testEncryptWithNonUtf8CompliantStringMatchsAnyOtherNonUtf8CompliantString() {
     let data1 = NSData(bytes: [0xD8, 0x00])
     let data2 = NSData(bytes: [0xD8, 0x00, 0x10])
-    guard let string1 = NSString(data: data1, encoding: NSUTF16BigEndianStringEncoding)?.bridge() else {
+    guard let string1 = NSString(data: data1, encoding: NSUTF16LittleEndianStringEncoding)?.bridge() else {
       XCTFail("Could not create non-UTF8 string")
       return
     }
-    guard let string2 = NSString(data: data2, encoding: NSUTF16BigEndianStringEncoding)?.bridge() else {
+    guard let string2 = NSString(data: data2, encoding: NSUTF16LittleEndianStringEncoding)?.bridge() else {
       XCTFail("Could not create non-UTF8 string")
       return
     }

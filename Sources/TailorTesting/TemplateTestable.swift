@@ -5,10 +5,10 @@ import Tailor
   */
 public protocol TemplateTestable: class, TailorTestable {
   /** The type of controller for the template that we are testing. */
-  typealias TestedControllerType: ControllerType
+  associatedtype TestedControllerType: ControllerType
   
   /** The type of template that we are testing. */
-  typealias TestedTemplateType: TemplateType
+  associatedtype TestedTemplateType: TemplateType
   
   /** The controller that we are testing. */
   var controller: TestedControllerType { get set }
@@ -164,13 +164,13 @@ extension TemplateTestable {
       else {
         var fullMessage = "Document \(xml) had no root element"
         if !message.isEmpty { fullMessage = "\(message) - " + fullMessage }
-        self.testFailure(fullMessage, expected: true, file: file, line: line)
+        XCTFail(fullMessage, file: file, line: line)
       }
     }
     catch {
       var fullMessage = "Document \(xml) was not a valid XML document"
       if !message.isEmpty { fullMessage = "\(message) - " + fullMessage }
-      self.testFailure(fullMessage, expected: true, file: file, line: line)
+      XCTFail(fullMessage, file: file, line: line)
     }
   }
   
@@ -198,13 +198,13 @@ extension TemplateTestable {
       else {
         var fullMessage = "\(xml) contained element \(child) matching \(elementName)(\(attributes))"
         if !message.isEmpty { fullMessage = "\(message) - \(fullMessage)" }
-        testFailure(fullMessage, expected: true, file: file, line: line)
+        XCTFail(fullMessage, file: file, line: line)
       }
     }
     else if containsElement {
       var fullMessage = "\(xml) did not contain an element matching \(elementName)(\(attributes))"
       if !message.isEmpty { fullMessage = "\(message) - \(fullMessage)" }
-      testFailure(fullMessage, expected: true, file: file, line: line)
+      XCTFail(fullMessage, file: file, line: line)
     }
   }
 }

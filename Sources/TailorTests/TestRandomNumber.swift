@@ -4,7 +4,7 @@ import TailorTesting
 import Foundation
 
 struct TestRandomNumber: XCTestCase, TailorTestable {
-  var allTests: [(String, Void->())] { return [
+  var allTests: [(String, () throws -> Void)] { return [
     ("testGenerateNumberGeneratesNumberInRange", testGenerateNumberGeneratesNumberInRange),
     ("testGenerateBytesGeneratesBufferOfLength", testGenerateBytesGeneratesBufferOfLength),
   ]}

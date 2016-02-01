@@ -11,7 +11,7 @@ import Foundation
   This has been deprecated in favor of the TailorTestable protocol.
   */
 @available(*, deprecated, message="Use TailorTestable instead") public class TailorTestCase: XCTestCase, TailorTestable {
-  public var allTests: [(String, () -> Void)] { return [] }
+  public var allTests: [(String, () throws -> Void)] { return [] }
   /**
     This method configures the application for testing.
 
@@ -99,10 +99,10 @@ import Foundation
   public func assert<T : Equatable>(lhs: T!, equals rhs: T, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     let message = (message.isEmpty ? message: " - " + message)
     if lhs == nil {
-      self.testFailure("Value was nil\(message)", expected: true, file: file, line: line)
+      XCTFail("Value was nil\(message)", file: file, line: line)
     }
     else if lhs != rhs {
-      self.testFailure("\(lhs) != \(rhs)\(message)", expected: true, file: file, line: line)
+      XCTFail("\(lhs) != \(rhs)\(message)", file: file, line: line)
     }
   }
   
@@ -124,7 +124,7 @@ import Foundation
   public func assert<T : Equatable>(lhs: T!, doesNotEqual rhs: T, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     let message = (message.isEmpty ? message: " - " + message)
     if lhs != nil && lhs == rhs {
-      self.testFailure("\(lhs) == \(rhs)\(message)", expected: true, file: file, line: line)
+      XCTFail("\(lhs) == \(rhs)\(message)", file: file, line: line)
     }
   }
   
@@ -144,7 +144,7 @@ import Foundation
   public func assert<T : Equatable>(lhs: [T], equals rhs: [T], message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     let message = (message.isEmpty ? message: " - " + message)
     if lhs != rhs {
-      self.testFailure("\(lhs) != \(rhs)\(message)", expected: true, file: file, line: line)
+      XCTFail("\(lhs) != \(rhs)\(message)", file: file, line: line)
     }
   }
   
@@ -164,7 +164,7 @@ import Foundation
   public func assert<K : Equatable, V: Equatable>(lhs: [K:V], equals rhs: [K:V], message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     if lhs != rhs {
       let message = (message.isEmpty ? message: " - " + message)
-      self.testFailure("\(lhs) != \(rhs)\(message)", expected: true, file: file, line: line)
+      XCTFail("\(lhs) != \(rhs)\(message)", file: file, line: line)
     }
   }
   
@@ -185,7 +185,7 @@ import Foundation
     let range = string.bridge().rangeOfString(substring)
     if range.location == NSNotFound {
       let message = (message.isEmpty ? message: " - " + message)
-      self.testFailure("\(string) does not contain \(substring)\(message)", expected: true, file: file, line: line)
+      XCTFail("\(string) does not contain \(substring)\(message)", file: file, line: line)
     }
   }
   
@@ -204,7 +204,7 @@ import Foundation
   public func assert(isNil value: Any?, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     if value != nil {
       let message = (message.isEmpty ? message: " - " + message)
-      self.testFailure("value was not nil\(message)", expected: true, file: file, line: line)
+      XCTFail("value was not nil\(message)", file: file, line: line)
     }
   }
   
@@ -223,7 +223,7 @@ import Foundation
   public func assert(isNotNil value: Any?, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     if value == nil {
       let message = (message.isEmpty ? message: " - " + message)
-      self.testFailure("value was nil\(message)", expected: true, file: file, line: line)
+      XCTFail("value was nil\(message)", file: file, line: line)
     }
   }
   /**
@@ -243,11 +243,11 @@ import Foundation
   public func assert(value: Double?, within range: Double, of correctValue: Double, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     let message = (message.isEmpty ? message: " - " + message)
     if value == nil {
-      self.testFailure("value was nil\(message)", expected: true, file: file, line: line)
+      XCTFail("value was nil\(message)", file: file, line: line)
     }
     else {
       if value! < correctValue - range || value! > correctValue + range {
-        self.testFailure("\(value!) is not within \(range) of \(correctValue)\(message)", expected: true, file: file, line: line)
+        XCTFail("\(value!) is not within \(range) of \(correctValue)\(message)", file: file, line: line)
       }
     }
   }
@@ -266,7 +266,7 @@ import Foundation
   public func assert(condition: Bool, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     if !condition {
       let message = (message.isEmpty ? message: " - " + message)
-      self.testFailure("Condition was false\(message)", expected: true, file: file, line: line)
+      XCTFail("Condition was false\(message)", file: file, line: line)
     }
   }
   
@@ -360,7 +360,7 @@ import Foundation
       if !message.isEmpty {
         failureMessage += " - \(message)"
       }
-      self.testFailure(failureMessage, expected: true, file: file, line: line)
+      XCTFail(failureMessage, file: file, line: line)
     }
   }
 }

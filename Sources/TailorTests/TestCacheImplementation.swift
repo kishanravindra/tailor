@@ -29,7 +29,7 @@ struct TestCacheImplementation: TailorTestable {
     }
   }
 
-  var allTests: [(String,()->Void)] { return [
+  var allTests: [(String, () throws -> Void)] { return [
     ("testFetchWithEmptyCacheReturnsResultFromGenerator", testFetchWithEmptyCacheReturnsResultFromGenerator),
     ("testFetchOnlyCallsGeneratorOnce", testFetchOnlyCallsGeneratorOnce),
     ("testFetchWithCacheHitReturnsCachedValue", testFetchWithCacheHitReturnsCachedValue),

@@ -6,7 +6,7 @@ import Foundation
 struct TestAesEncryptor: XCTestCase, TailorTestable {
   //MARK: - Encodings
   
-  var allTests: [(String, () -> Void)] { return [      
+  var allTests: [(String, () throws -> Void)] { return [      
       ("testGetHexStringWorksForSingleDigit", testGetHexStringWorksForSingleDigit),
       ("testGetHexStringWorksForMultipleDigits", testGetHexStringWorksForMultipleDigits),
       ("testGetHexStringWorksForMultipleUnpaddedDigits", testGetHexStringWorksForMultipleUnpaddedDigits),

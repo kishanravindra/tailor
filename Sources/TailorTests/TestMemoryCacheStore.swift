@@ -12,7 +12,7 @@ struct TestMemoryCacheStore: TailorTestable {
     store.write("key2", value: "value2")
   }
 
-  var allTests: [(String,()->Void)] { return [
+  var allTests: [(String, () throws -> Void)] { return [
     ("testCanWriteAndReadValues", testCanWriteAndReadValues),
     ("testReadWithFutureExpiryTimeReadsValue", testReadWithFutureExpiryTimeReadsValue),
     ("testReadWithPastExpiryTimeGetsNil", testReadWithPastExpiryTimeGetsNil),

@@ -62,7 +62,7 @@ public class ControllerTestCase : TailorTestCase {
   public func assertResponse(response: Response, redirectsTo path: String?, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     assert(response.responseCode, equals: .SeeOther, message: "gives a redirect response", file: file, line: line)
     if path == nil {
-      self.testFailure("Target path is nil - \(message)", expected: true, file: file, line: line)
+      XCTFail("Target path is nil - \(message)", file: file, line: line)
     }
     else {
       assert(response.headers["Location"], equals: path!, message: message, file:file, line:line)
@@ -85,7 +85,7 @@ public class ControllerTestCase : TailorTestCase {
   public func assertResponse(response: Response, contains substring: String, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     let body = response.bodyString
     if !body.contains(substring) {
-      self.testFailure("Assertion failed: \(body) does not contain \(substring) - \(message)", expected: true, file: file, line: line)
+      XCTFail("Assertion failed: \(body) does not contain \(substring) - \(message)", file: file, line: line)
     }
   }
   
@@ -155,7 +155,7 @@ public class ControllerTestCase : TailorTestCase {
       return route.controller == type && route.actionName == actionName
     }.first?.path.methodName ?? "GET"
     if path == nil {
-      testFailure("could not generate route for \(type.name)/\(actionName)", expected: true, file: file, line: line)
+      XCTFail("could not generate route for \(type.name)/\(actionName)", file: file, line: line)
       return
     }
     var request = Request(parameters: actionParams, sessionData: sessionData, path: path!, method: method, headers: headers)

@@ -12,7 +12,7 @@ final class TestConnection: XCTestCase, TailorTestable {
     requestContents = ["GET / HTTP/1.1\r\nHeader: Value\r\nContent-Length: 12\r\n\r\nRequest Body"]
   }
 
-  var allTests: [(String, () -> Void)] { return [ 
+  var allTests: [(String, () throws -> Void)] { return [ 
       ("testInitializerStartsListening", testInitializerStartsListening),
       ("testReadFromSocketCreatesRequestFromContents", testReadFromSocketCreatesRequestFromContents),
       ("testReadFromSocketCanHandleRequestThatExceedsBuffer", testReadFromSocketCanHandleRequestThatExceedsBuffer),

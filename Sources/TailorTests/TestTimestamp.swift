@@ -7,7 +7,7 @@ import Glibc
 #endif
 
 struct TestTimestamp: XCTestCase, TailorTestable {
-  var allTests: [(String, Void->())] { return [
+  var allTests: [(String, () throws -> Void)] { return [
     ("testInitializationWithEpochSecondsSetsLocalComponents", testInitializationWithEpochSecondsSetsLocalComponents),
     ("testInitializationWithEpochSecondsOfZeroGetsEpochTime", testInitializationWithEpochSecondsOfZeroGetsEpochTime),
     ("testInitializationWithNegativeSecondsSetsLocalComponents", testInitializationWithNegativeSecondsSetsLocalComponents),

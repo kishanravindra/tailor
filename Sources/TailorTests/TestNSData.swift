@@ -3,7 +3,7 @@ import TailorTesting
 import Foundation
 
 struct TestNSData: XCTestCase, TailorTestable {
-  var allTests: [(String, Void->())] { return [
+  var allTests: [(String, () throws -> Void)] { return [
     ("testInitializeSetsBytes", testInitializeSetsBytes),
     ("testComponentsSeparatedByStringGetsComponentsSpearatedByThatString", testComponentsSeparatedByStringGetsComponentsSpearatedByThatString),
     ("testComponentsSeparatedByStringWithLimitCombinesFinalComponents", testComponentsSeparatedByStringWithLimitCombinesFinalComponents),
@@ -58,8 +58,8 @@ struct TestNSData: XCTestCase, TailorTestable {
   func testComponentsWithNonUtf8CompliantSeparatorReturnsOneComponent() {
     let bytes : [UInt8] = [1,192,14,148,13,10,95,10,13,179,13,10,11,54,89]
     let data = NSData(bytes: bytes)
-    guard let separator = NSString(data: NSData(bytes: [0x0D, 0x0A, 0xD8, 0x00]), encoding: NSUTF16BigEndianStringEncoding)?.bridge() else {
-      assert(false, message: "Cannot create an invalid separator right now")
+    guard let separator = NSString(data: NSData(bytes: [0x0D, 0x0A, 0xD8, 0x00]), encoding: NSUTF16LittleEndianStringEncoding)?.bridge() else {
+      assert(false, message: "Cannot create an invalid separator")
       return
     }
     let components = data.componentsSeparatedByString(separator)

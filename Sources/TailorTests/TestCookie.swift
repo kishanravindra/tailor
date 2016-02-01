@@ -5,7 +5,7 @@ import TailorTesting
 struct TestCookie: TailorTestable {
   let cookie = Cookie(key: "testCookie", value: "27")
 
-  var allTests: [(String, Void->Void)] { return [
+  var allTests: [(String, () throws -> Void)] { return [
     ("testGetsHeaderStringForSimpleCookie", testGetsHeaderStringForSimpleCookie),
     ("testGetsHeaderStringForCookieWithExpirationDate", testGetsHeaderStringForCookieWithExpirationDate),
     ("testGetsHeaderStringForSecureCookie", testGetsHeaderStringForSecureCookie),

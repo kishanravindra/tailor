@@ -1,6 +1,7 @@
 #if os(Linux)
 import Foundation
 import Glibc
+import XCTest
 
 public final class XCTestExpectation {
   public var description: String
@@ -43,7 +44,7 @@ extension TailorTestable {
       let expectations = XC_TEST_CURRENT_EXPECTATIONS.filter { !$0.fulfilled }
       let description = expectations.map { $0.description }.joinWithSeparator(", ")
       let message = "Expectations not met: " + description
-      self.testFailure(message, expected: true, file: expectations[0].file, line: expectations[0].line)
+      XCTFail(message, file: expectations[0].file, line: expectations[0].line)
     }
     XC_TEST_CURRENT_EXPECTATIONS = []
   }

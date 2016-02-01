@@ -1,12 +1,13 @@
 import Tailor
 import Foundation
+import XCTest
 
 /**
   This protocol describes a test case for testing a controller.
   */
 public protocol ControllerTestable: class, TailorTestable {
   /** The type of controller that we are testing. */
-  typealias TestedControllerType: ControllerType
+  associatedtype TestedControllerType: ControllerType
   
   /**
     The parameters for the actions that we are testing.
@@ -102,7 +103,7 @@ extension ControllerTestable {
       return route.controller == TestedControllerType.self && route.actionName == actionName
     }.first?.path.methodName ?? "GET"
     if path == nil {
-      testFailure("could not generate route for \(TestedControllerType.name)/\(actionName)", expected: true, file: file, line: line)
+      XCTFail("could not generate route for \(TestedControllerType.name)/\(actionName)", file: file, line: line)
       return
     }
     var request = Request(parameters: actionParams, sessionData: sessionData, path: path!, method: method, headers: headers, cookies: cookies)
@@ -163,7 +164,7 @@ extension ControllerTestable {
   public func assert(response: Response, redirectsTo path: String?, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     assert(response.responseCode, equals: .SeeOther, message: "gives a redirect response", file: file, line: line)
     if path == nil {
-      self.testFailure("Target path is nil - \(message)", expected: true, file: file, line: line)
+      XCTFail("Target path is nil - \(message)", file: file, line: line)
     }
     else {
       assert(response.headers["Location"], equals: path!, message: message, file:file, line:line)
@@ -185,7 +186,7 @@ extension ControllerTestable {
   public func assert(response: Response, contains substring: String, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     let body = response.bodyString
     if !body.contains(substring) {
-      self.testFailure("Assertion failed: \(body) does not contain \(substring) - \(message)", expected: true, file: file, line: line)
+      XCTFail("Assertion failed: \(body) does not contain \(substring) - \(message)", file: file, line: line)
     }
   }
 }

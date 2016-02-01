@@ -111,7 +111,7 @@ public class TemplateTestCase: TailorTestCase {
       if !message.isEmpty {
         failureMessage += " - \(message)"
       }
-      self.testFailure(failureMessage, expected: true, file: file, line: line)
+      XCTFail(failureMessage, file: file, line: line)
     }
   }
 }

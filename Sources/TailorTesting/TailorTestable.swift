@@ -82,10 +82,10 @@ extension TailorTestable {
   public func assert<T : Equatable>(lhs: T!, equals rhs: T, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     let message = (message.isEmpty ? message: " - " + message)
     if lhs == nil {
-      self.testFailure("Value was nil\(message)", expected: true, file: file, line: line)
+      XCTFail("Value was nil\(message)", file: file, line: line)
     }
     else if lhs != rhs {
-      self.testFailure("\(lhs) != \(rhs)\(message)", expected: true, file: file, line: line)
+      XCTFail("\(lhs) != \(rhs)\(message)", file: file, line: line)
     }
   }
   
@@ -107,7 +107,7 @@ extension TailorTestable {
   public func assert<T : Equatable>(lhs: T!, doesNotEqual rhs: T, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     let message = (message.isEmpty ? message: " - " + message)
     if lhs != nil && lhs == rhs {
-      self.testFailure("\(lhs) == \(rhs)\(message)", expected: true, file: file, line: line)
+      XCTFail("\(lhs) == \(rhs)\(message)", file: file, line: line)
     }
   }
   
@@ -127,7 +127,7 @@ extension TailorTestable {
   public func assert<T : Equatable>(lhs: [T], equals rhs: [T], message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     let message = (message.isEmpty ? message: " - " + message)
     if lhs != rhs {
-      self.testFailure("\(lhs) != \(rhs)\(message)", expected: true, file: file, line: line)
+      XCTFail("\(lhs) != \(rhs)\(message)", file: file, line: line)
     }
   }
   
@@ -147,7 +147,7 @@ extension TailorTestable {
   public func assert<K : Equatable, V: Equatable>(lhs: [K:V], equals rhs: [K:V], message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     if lhs != rhs {
       let message = (message.isEmpty ? message: " - " + message)
-      self.testFailure("\(lhs) != \(rhs)\(message)", expected: true, file: file, line: line)
+      XCTFail("\(lhs) != \(rhs)\(message)", file: file, line: line)
     }
   }
   
@@ -169,7 +169,7 @@ extension TailorTestable {
     let range = string.bridge().rangeOfString(substring)
     if range.location == NSNotFound {
       let message = (message.isEmpty ? message: " - " + message)
-      self.testFailure("\(string) does not contain \(substring)\(message)", expected: true, file: file, line: line)
+      XCTFail("\(string) does not contain \(substring)\(message)", file: file, line: line)
     }
   }
   
@@ -190,7 +190,7 @@ extension TailorTestable {
       let range = string.bridge().rangeOfString(substring)
       if range.location != NSNotFound {
         let message = (message.isEmpty ? message: " - " + message)
-        self.testFailure("\(string) contains \(substring)\(message)", expected: true, file: file, line: line)
+        XCTFail("\(string) contains \(substring)\(message)", file: file, line: line)
       }
     }
   
@@ -209,7 +209,7 @@ extension TailorTestable {
   public func assert(isNil value: Any?, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     if value != nil {
       let message = (message.isEmpty ? message: " - " + message)
-      self.testFailure("value was not nil\(message)", expected: true, file: file, line: line)
+      XCTFail("value was not nil\(message)", file: file, line: line)
     }
   }
   
@@ -228,7 +228,7 @@ extension TailorTestable {
   public func assert(isNotNil value: Any?, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     if value == nil {
       let message = (message.isEmpty ? message: " - " + message)
-      self.testFailure("value was nil\(message)", expected: true, file: file, line: line)
+      XCTFail("value was nil\(message)", file: file, line: line)
     }
   }
   
@@ -250,11 +250,11 @@ extension TailorTestable {
   public func assert(value: Double?, within range: Double, of correctValue: Double, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     let message = (message.isEmpty ? message: " - " + message)
     if value == nil {
-      self.testFailure("value was nil\(message)", expected: true, file: file, line: line)
+      XCTFail("value was nil\(message)", file: file, line: line)
     }
     else {
       if value! < correctValue - range || value! > correctValue + range {
-        self.testFailure("\(value!) is not within \(range) of \(correctValue)\(message)", expected: true, file: file, line: line)
+        XCTFail("\(value!) is not within \(range) of \(correctValue)\(message)", file: file, line: line)
       }
     }
   }
@@ -279,12 +279,12 @@ extension TailorTestable {
       message = " - " + message
     }
     guard let regex = try? Tailor.NSRegularExpression(pattern: pattern, options: []) else {
-      self.testFailure("\(pattern) was not a valid pattern\(message)", expected: true, file: file, line: line)
+      XCTFail("\(pattern) was not a valid pattern\(message)", file: file, line: line)
       return
     }
     let matchCount = regex.numberOfMatchesInString(string, options: [], range: string.rangeOfSelf)
     if matchCount == 0 {
-      self.testFailure("\(string) did not match \(pattern)\(message)", expected: true, file: file, line: line)
+      XCTFail("\(string) did not match \(pattern)\(message)", file: file, line: line)
     }
   }
   
@@ -303,7 +303,7 @@ extension TailorTestable {
   public func assert(condition: Bool, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     if !condition {
       let message = (message.isEmpty ? message: " - " + message)
-      self.testFailure("Condition was false\(message)", expected: true, file: file, line: line)
+      XCTFail("Condition was false\(message)", file: file, line: line)
     }
   }
   
@@ -339,7 +339,7 @@ extension TailorTestable {
       if !message.isEmpty {
         failureMessage += " - \(message)"
       }
-      self.testFailure(failureMessage, expected: true, file: file, line: line)
+      XCTFail(failureMessage, file: file, line: line)
     }
   }
   
@@ -383,7 +383,7 @@ extension TailorTestable {
       if !message.isEmpty {
         failureMessage += " - \(message)"
       }
-      self.testFailure(failureMessage, expected: true, file: file, line: line)
+      XCTFail(failureMessage, file: file, line: line)
     }
   }
   
@@ -408,7 +408,7 @@ extension TailorTestable {
     }
     catch let e {
       let fullMessage = "Threw exception \(e)" +  (message.isEmpty ? "" : " - \(message)")
-      self.testFailure(fullMessage, expected: true, file: file, line: line)
+      XCTFail(fullMessage, file: file, line: line)
     }
   }
   
@@ -430,14 +430,14 @@ extension TailorTestable {
     do {
       try block()
       let fullMessage = "Did not throw exception" + (message.isEmpty ? "" : " - \(message)")
-      self.testFailure(fullMessage, expected: true, file: file, line: line)
+      XCTFail(fullMessage, file: file, line: line)
     }
     catch let thrown as ExceptionType {
       self.assert(thrown, equals: exception, message: message, file: file, line: line)
     }
     catch let e {
       let fullMessage = "Threw exception \(e)"  + (message.isEmpty ? "" : " - \(message)")
-      self.testFailure(fullMessage, expected: true, file: file, line: line)
+      XCTFail(fullMessage, file: file, line: line)
     }
   }
 }
