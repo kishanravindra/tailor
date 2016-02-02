@@ -28,3 +28,9 @@
 * Use of underscores in renderedTemplates in TemplateRenderingType.
 * Using the readEnumIndirect method instead of a dynamicType in persistable enum
   initializer.
+
+# Linux compatibility
+
+* Figure out standard way of handling paths for config files etc. in the
+  Application class
+* Add the callAction method back to ControllerTestable
