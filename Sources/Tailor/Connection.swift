@@ -309,6 +309,7 @@ public final class Connection {
     socketAddress.sin_family = UInt8(AF_INET)
     socketAddress.sin_port = CFSwapInt16(UInt16(port))
     #endif
+    socketAddress.sin_addr.s_addr = UInt32(address.0 | address.1 << 8 | address.2 << 16 | address.3 << 24)
     
     func socketAddressPointer(pointer: UnsafePointer<sockaddr_in>) -> UnsafePointer<sockaddr> {
       return UnsafePointer<sockaddr>(pointer)

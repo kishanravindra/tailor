@@ -34,11 +34,13 @@ extension CollectionType where Index.Distance == Int, Index: Comparable {
    */
   public func slices(size: Int) -> [Self.SubSequence] {
     let numberOfSlices = Int(ceil(Double(self.count) / Double(size)))
+    var start = self.startIndex
     return (0..<numberOfSlices).map {
       slice in
-      let start = startIndex.advancedBy(slice * size)
       let end = min(start.advancedBy(size), endIndex)
-      return self[start..<end]
+      let slice = self[start..<end]
+      start = end
+      return slice
     }
   }
 }

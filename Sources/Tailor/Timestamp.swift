@@ -177,16 +177,23 @@ public struct Timestamp: Equatable, Comparable, CustomStringConvertible, TimeInt
 
     Any component that is omitted will be filled in with the corresponding 
     value from this timestamp.
+   
+    If you provide a time zone to this method, it will interpret the date and
+    time as specifying a time in the new time zone, and adjust the epochSeconds
+    accordingly. If you want to keep the epochSeconds the same and recalculate
+    the date and time based on the new time zone, you should use `inTimeZone`
+    instead.
 
-    - parameter year:        The new year
-    - parameter month:       The new month
-    - parameter day:         The new day
-    - parameter hour:        The new hour
-    - parameter minute:      The new minute
-    - parameter second:      The new second
-    - parameter nanosecond:  The new nanosecond
+    - parameter year:         The new year
+    - parameter month:        The new month
+    - parameter day:          The new day
+    - parameter hour:         The new hour
+    - parameter minute:       The new minute
+    - parameter second:       The new second
+    - parameter nanosecond:   The new nanosecond
+    - parameter timeZone:     The new time zone
     */
-  public func change(year year: Int? = nil, month: Int? = nil, day: Int? = nil, hour: Int? = nil, minute: Int? = nil, second: Int? = nil, nanosecond: Double? = nil) -> Timestamp {
+  public func change(year year: Int? = nil, month: Int? = nil, day: Int? = nil, hour: Int? = nil, minute: Int? = nil, second: Int? = nil, nanosecond: Double? = nil, timeZone: TimeZone? = nil) -> Timestamp {
     return Timestamp(
       year: year ?? self.year,
       month: month ?? self.month,
@@ -195,7 +202,7 @@ public struct Timestamp: Equatable, Comparable, CustomStringConvertible, TimeInt
       minute: minute ?? self.minute,
       second: second ?? self.second,
       nanosecond: nanosecond ?? self.nanosecond,
-      timeZone: self.timeZone,
+      timeZone: timeZone ?? self.timeZone,
       calendar: self.calendar
     )
   }
