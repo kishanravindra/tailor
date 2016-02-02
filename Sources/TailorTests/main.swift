@@ -3,6 +3,9 @@ import TailorTesting
 import XCTest
 
 typealias NSRegularExpression=Tailor.NSRegularExpression
+
+prepareTestSuite()
+
 XCTMain([
   TestAesEncryptor(),
   TestApplication(),
@@ -14,4 +17,5 @@ XCTMain([
   TestRandomNumber(),
   TestShaPasswordHasher(),
   TestTimestamp(),
+  TestSerializableValue(),
 ])

@@ -6,3 +6,4 @@ build
 Packages
 .DS_STORE
 doc
+*.sqlite

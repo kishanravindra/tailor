@@ -403,17 +403,19 @@ extension SerializableValue {
    - parameter jsonObject:   The JSON object.
    */
   public init(jsonObject: AnyObject) throws {
-    if let s = jsonObject as? Swift.String {
-      self = String(s)
+    if let s = jsonObject as? NSString {
+      self = String(s.bridge())
     }
-    else if let d = jsonObject as? [Swift.String:AnyObject] {
+    else if let d = jsonObject as? NSDictionary {
       var mappedDictionary: [Swift.String: SerializableValue] = [:]
       for (key,value) in d {
-        mappedDictionary[key] = try SerializableValue(jsonObject: value)
+        if let stringKey = key as? NSString {
+          mappedDictionary[stringKey.bridge()] = try SerializableValue(jsonObject: value)
+        }
       }
       self = Dictionary(mappedDictionary)
     }
-    else if let a = jsonObject as? [AnyObject] {
+    else if let a = jsonObject as? NSArray {
       var mappedArray = [SerializableValue]()
       for value in a {
         try mappedArray.append(SerializableValue(jsonObject: value))
