@@ -18,7 +18,6 @@ public extension NSData {
     }
     self.init(bytes: buffer, length: length)
     free(buffer)
-    
   }
   
   /**
@@ -79,6 +78,23 @@ public extension NSData {
       output.appendString(AesEncryptor.getHexString(byte))
     }
     return output.bridge()
+  }
+}
+
+extension NSMutableData {
+  /**
+    This method adds bytes to an NSData object from a byte array.
+
+    - parameter bytes:   The array of bytes.
+    */
+  public func appendBytes<T: CollectionType where T.Generator.Element == UInt8, T.Index.Distance == Int>(bytes: T) {
+    let length = bytes.count
+    let buffer: UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(malloc(length))
+    for (index,byte) in bytes.enumerate() {
+      buffer[index] = byte
+    }
+    self.appendBytes(buffer, length: length)
+    free(buffer)
   }
 }
 

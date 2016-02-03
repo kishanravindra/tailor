@@ -325,18 +325,18 @@ extension SerializableValue {
    This is designed to be fed into the methods in NSJSONSerialization, though
    the return value may not be a valid JSON object by that class's rules.
    */
-  public var toFoundationJsonObject: AnyObject {
+  public var toFoundationJsonObject: Any {
     switch(self) {
     case let String(string):
-      return string.bridge()
+      return string
     case let Array(array):
-      return array.map { $0.toFoundationJsonObject }.bridge()
+      return array.map { $0.toFoundationJsonObject }
     case let Dictionary(dictionary):
-      var results : [NSString:AnyObject] = [:]
+      var results : [Swift.String:Any] = [:]
       for (key,value) in dictionary {
-        results[key.bridge()] = value.toFoundationJsonObject
+        results[key] = value.toFoundationJsonObject
       }
-      return results.bridge()
+      return results
     case Null:
       return NSNull()
     case let Integer(number):
@@ -346,11 +346,11 @@ extension SerializableValue {
     case let Boolean(boolean):
       return NSNumber(bool: boolean)
     case let Timestamp(timestamp):
-      return timestamp.format(TimeFormat.Database).bridge()
+      return timestamp.format(TimeFormat.Database)
     case let Time(time):
-      return time.description.bridge()
+      return time.description
     case let Date(date):
-      return date.description.bridge()
+      return date.description
     case let Data(data):
       return data
     }
@@ -367,7 +367,7 @@ extension SerializableValue {
     if !NSJSONSerialization.isValidJSONObject(object) {
       throw SerializationConversionError.NotValidJsonObject
     }
-    return try NSJSONSerialization.dataWithJSONObject(object, options: [])
+    return try NSJSONSerialization.dataWithJSONObjectForTailor(object, options: [])
   }
 
   
@@ -381,12 +381,8 @@ extension SerializableValue {
    - parameter jsonData:   The JSON data.
    */
   public init(jsonData: NSData) throws {
-    if let object = try NSJSONSerialization.JSONObjectWithData(jsonData, options: []) as? AnyObject {
-      try self.init(jsonObject: object)
-    }
-    else {
-      throw SerializationConversionError.NotValidJsonObject
-    }
+    let object = try NSJSONSerialization.JSONObjectWithData(jsonData, options: [])
+    try self.init(jsonObject: object)
   }
   
   /**
@@ -402,20 +398,18 @@ extension SerializableValue {
    
    - parameter jsonObject:   The JSON object.
    */
-  public init(jsonObject: AnyObject) throws {
-    if let s = jsonObject as? NSString {
-      self = String(s.bridge())
+  public init(jsonObject: Any) throws {
+    if let s = jsonObject as? Swift.String {
+      self = String(s)
     }
-    else if let d = jsonObject as? NSDictionary {
+    else if let d = jsonObject as? [Swift.String: Any] {
       var mappedDictionary: [Swift.String: SerializableValue] = [:]
       for (key,value) in d {
-        if let stringKey = key as? NSString {
-          mappedDictionary[stringKey.bridge()] = try SerializableValue(jsonObject: value)
-        }
+        mappedDictionary[key] = try SerializableValue(jsonObject: value)
       }
       self = Dictionary(mappedDictionary)
     }
-    else if let a = jsonObject as? NSArray {
+    else if let a = jsonObject as? [Any] {
       var mappedArray = [SerializableValue]()
       for value in a {
         try mappedArray.append(SerializableValue(jsonObject: value))

@@ -20,12 +20,13 @@ struct TestSerializableValue: XCTestCase, TailorTestable {
     // ("testFoundationJsonObjectForDateIsFormattedString", testFoundationJsonObjectForDateIsFormattedString),
     // ("testFoundationJsonObjectForTimeIsFormattedString", testFoundationJsonObjectForTimeIsFormattedString),
     ("testFoundationJsonObjectForDataIsData", testFoundationJsonObjectForDataIsData),
-    // ("testJsonDataForStringGetsThrowsException", testJsonDataForStringGetsThrowsException),
-    // ("testJsonDataForDictionaryOfStringsGetsData", testJsonDataForDictionaryOfStringsGetsData),
-    // ("testJsonDataForArrayOfStringsGetsData", testJsonDataForArrayOfStringsGetsData),
-    // ("testJsonDataForHeterogeneousDictionaryGetsData", testJsonDataForHeterogeneousDictionaryGetsData),
-    // ("testJsonDataForDictionaryWithNullGetsData", testJsonDataForDictionaryWithNullGetsData),
-    // ("testJsonDataForDictionaryWithNumbersGetsData", testJsonDataForDictionaryWithNumbersGetsData),
+    ("testJsonDataForStringThrowsException", testJsonDataForStringGetsThrowsException),
+    ("testJsonDataForDictionaryOfStringsGetsData", testJsonDataForDictionaryOfStringsGetsData),
+    ("testJsonDataForDictionaryWithEscapedStringGetsData", testJsonDataForDictionaryWithEscapedStringGetsData),
+    ("testJsonDataForArrayOfStringsGetsData", testJsonDataForArrayOfStringsGetsData),
+    ("testJsonDataForHeterogeneousDictionaryGetsData", testJsonDataForHeterogeneousDictionaryGetsData),
+    ("testJsonDataForDictionaryWithNullGetsData", testJsonDataForDictionaryWithNullGetsData),
+    ("testJsonDataForDictionaryWithNumbersGetsData", testJsonDataForDictionaryWithNumbersGetsData),
     ("testInitWithJsonStringBuildsString", testInitWithJsonStringBuildsString),
     ("testInitWithJsonDictionaryOfStringsBuildsDictionaryOfStrings", testInitWithJsonDictionaryOfStringsBuildsDictionaryOfStrings),
     ("testInitWithJsonArrayOfStringsBuildsArrayOfStrings", testInitWithJsonArrayOfStringsBuildsArrayOfStrings),
@@ -33,7 +34,7 @@ struct TestSerializableValue: XCTestCase, TailorTestable {
     ("testInitWithIntegerGetsNumber", testInitWithIntegerGetsNumber),
     ("testInitWithDoubleGetsNumber", testInitWithDoubleGetsNumber),
     ("testInitWithJsonObjectWithUnsupportedTypeThrowsException", testInitWithJsonObjectWithUnsupportedTypeThrowsException),
-    // ("testInitWithJsonDataForDictionaryCreatesDictionary", testInitWithJsonDataForDictionaryCreatesDictionary),
+    ("testInitWithJsonDataForDictionaryCreatesDictionary", testInitWithJsonDataForDictionaryCreatesDictionary),
     // ("testInitWithPlistWithValidPathGetsData", testInitWithPlistWithValidPathGetsData),
     ("testInitWithPlistWithInvalidPathThrowsException", testInitWithPlistWithInvalidPathThrowsException),
     ("testInitWithPlistWithInvalidPlistThrowsException", testInitWithPlistWithInvalidPlistThrowsException),
@@ -224,7 +225,7 @@ struct TestSerializableValue: XCTestCase, TailorTestable {
   ]
   func testFoundationJsonObjectForStringIsString() {
     let primitive = SerializableValue.String("Hello")
-    assert(primitive.toFoundationJsonObject as? NSString, equals: "Hello".bridge())
+    assert(primitive.toFoundationJsonObject as? String, equals: "Hello")
   }
   
   func testFoundationJsonObjectForArrayOfStringsIsArrayOfStrings() {
@@ -233,8 +234,10 @@ struct TestSerializableValue: XCTestCase, TailorTestable {
       SerializableValue.String("B")
       ])
     let object = primitive.toFoundationJsonObject
-    if let strings = object as? NSArray {
-      assert(strings, equals: ["A", "B"].bridge())
+    if let strings = object as? [Any] {
+      assert(strings.count, equals: 2)
+      assert(strings[0] as? String, equals: "A")
+      assert(strings[1] as? String, equals: "B")
     }
     else {
       assert(false, message: "Gets an array of strings")
@@ -248,8 +251,9 @@ struct TestSerializableValue: XCTestCase, TailorTestable {
       ])
     
     let object = primitive.toFoundationJsonObject
-    if let dictionary = object as? NSDictionary {
-      assert(dictionary, equals: ["key1": "value1", "key2": "value2"].bridge())
+    if let dictionary = object as? [String:Any] {
+      assert(dictionary["key1"] as? String, equals: "value1")
+      assert(dictionary["key2"] as? String, equals: "value2")
     }
     else {
       assert(false, message: "Gets a dictionary of strings")
@@ -265,11 +269,13 @@ struct TestSerializableValue: XCTestCase, TailorTestable {
         ])
       ])
     let object = primitive.toFoundationJsonObject
-    if let array = object as? NSArray {
+    if let array = object as? [Any] {
       assert(array.count, equals: 2)
-      assert(array[0] as? NSString, equals: "A".bridge())
-      if let innerArray = array[1] as? NSArray {
-        assert(innerArray, equals: ["B", "C"].bridge())
+      assert(array[0] as? String, equals: "A")
+      if let innerArray = array[1] as? [Any] {
+        assert(innerArray.count, equals: 2)
+        assert(innerArray[0] as? String, equals: "B")
+        assert(innerArray[1] as? String, equals: "C")
       }
       else {
         assert(false, message: "gets an inner array of strings")
@@ -293,16 +299,19 @@ struct TestSerializableValue: XCTestCase, TailorTestable {
         ])
       ])
     let object = primitive.toFoundationJsonObject
-    if let dictionary = object as? NSDictionary {
-      assert(dictionary["aKey1".bridge()] as? NSString, equals: "value1".bridge())
-      if let innerArray = dictionary["aKey2".bridge()] as? NSArray {
-        assert(innerArray, equals: ["value2", "value3"].bridge())
+    if let dictionary = object as? [String:Any] {
+      assert(dictionary["aKey1"] as? String, equals: "value1")
+      if let innerArray = dictionary["aKey2"] as? [Any] {
+        assert(innerArray.count, equals: 2)
+        assert(innerArray[0] as? String, equals: "value2")
+        assert(innerArray[1] as? String, equals: "value3")
       }
       else {
         assert(false, message: "gets an inner array")
       }
-      if let innerDictionary = dictionary["aKey3".bridge()] as? NSDictionary {
-        assert(innerDictionary, equals: ["bKey1": "value4", "bKey2": "value5"].bridge())
+      if let innerDictionary = dictionary["aKey3"] as? [String:Any] {
+        assert(innerDictionary["bKey1"] as? String, equals: "value4")
+        assert(innerDictionary["bKey2"] as? String, equals: "value5")
       }
       else {
         assert(false, message: "gets an inner dictionary")
@@ -341,7 +350,7 @@ struct TestSerializableValue: XCTestCase, TailorTestable {
     let timestamp = Timestamp.now()
     let value = SerializableValue.Timestamp(timestamp)
     let object = value.toFoundationJsonObject
-    assert(object as? NSString, equals: timestamp.format(TimeFormat.Database).bridge())
+    assert(object as? String, equals: timestamp.format(TimeFormat.Database))
   }
   
   func testFoundationJsonObjectForDateIsFormattedString() {
@@ -391,6 +400,21 @@ struct TestSerializableValue: XCTestCase, TailorTestable {
     }
   }
   
+  func testJsonDataForDictionaryWithEscapedStringGetsData() {
+    let primitive = SerializableValue.Dictionary([
+      "key\"1": SerializableValue.String("value1"),
+      "key2": SerializableValue.String("value\"2")
+      ])
+    let expectedData = NSData(bytes: "{\"key2\":\"value\\\"2\",\"key\\\"1\":\"value1\"}".utf8)
+    do {
+      let data = try primitive.jsonData()
+      assert(data, equals: expectedData)
+    }
+    catch {
+      assert(false, message: "should not throw exception")
+    }
+  }
+  
   func testJsonDataForArrayOfStringsGetsData() {
     let primitive = SerializableValue.Array([
       SerializableValue.String("value1"),
@@ -416,7 +440,7 @@ struct TestSerializableValue: XCTestCase, TailorTestable {
         ])
       ])
     
-    let expectedData = NSData(bytes: "{\"aKey2\":{\"bKey2\":\"value3\",\"bKey1\":\"value2\"},\"aKey1\":\"value1\"}".utf8)
+    let expectedData = NSData(bytes: "{\"aKey1\":\"value1\",\"aKey2\":{\"bKey1\":\"value2\",\"bKey2\":\"value3\"}}".utf8)
     do {
       let data = try primitive.jsonData()
       assert(data, equals: expectedData)
@@ -433,7 +457,7 @@ struct TestSerializableValue: XCTestCase, TailorTestable {
       "aKey2": SerializableValue.Null
       ])
     
-    let expectedData = NSData(bytes: "{\"aKey2\":null,\"aKey1\":\"value1\"}".utf8)
+    let expectedData = NSData(bytes: "{\"aKey1\":\"value1\",\"aKey2\":null}".utf8)
     do {
       let data = try primitive.jsonData()
       assert(data, equals: expectedData)
@@ -451,7 +475,7 @@ struct TestSerializableValue: XCTestCase, TailorTestable {
       "aKey3": SerializableValue.Double(3.14)
       ])
     
-    let expectedData = NSData(bytes: "{\"aKey2\":42,\"aKey1\":\"value1\",\"aKey3\":3.14}".utf8)
+    let expectedData = NSData(bytes: "{\"aKey1\":\"value1\",\"aKey3\":3.14,\"aKey2\":42}".utf8)
     do {
       let data = try primitive.jsonData()
       assert(data, equals: expectedData)
@@ -464,7 +488,7 @@ struct TestSerializableValue: XCTestCase, TailorTestable {
   //MARK: - Parsing from JSON
   
   func testInitWithJsonStringBuildsString() {
-    let object = "Hello".bridge()
+    let object = "Hello"
     do {
       let primitive = try SerializableValue(jsonObject: object)
       assert(primitive, equals: SerializableValue.String("Hello"))
@@ -475,10 +499,10 @@ struct TestSerializableValue: XCTestCase, TailorTestable {
   }
   
   func testInitWithJsonDictionaryOfStringsBuildsDictionaryOfStrings() {
-    let object = [
+    let object: [String: Any] = [
       "key1": "value1",
       "key2": "value2"
-    ].bridge()
+    ]
     do {
       let primitive = try SerializableValue(jsonObject: object)
       assert(primitive, equals: SerializableValue.Dictionary([
@@ -492,7 +516,7 @@ struct TestSerializableValue: XCTestCase, TailorTestable {
   }
   
   func testInitWithJsonArrayOfStringsBuildsArrayOfStrings() {
-    let object = ["value1", "value2"].bridge()
+    let object: [Any] = ["value1", "value2"]
     
     do {
       let primitive = try SerializableValue(jsonObject: object)

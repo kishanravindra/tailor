@@ -16,6 +16,6 @@ XCTMain([
   TestNSData(),
   TestRandomNumber(),
   TestShaPasswordHasher(),
-  TestTimestamp(),
   TestSerializableValue(),
+  TestTimestamp(),
 ])
