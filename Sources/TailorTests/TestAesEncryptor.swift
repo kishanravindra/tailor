@@ -15,6 +15,7 @@ struct TestAesEncryptor: XCTestCase, TailorTestable {
       ("testGetHexHandlesInvalidValues", testGetHexHandlesInvalidValues),
       ("testEncryptIsReversible", testEncryptIsReversible),
       ("testEncryptIsNotIdempotent", testEncryptIsNotIdempotent),
+      ("testEncryptWithLargeTextSize", testEncryptWithLargeTextSize),
       ("testInitializationWithEmptyKeyIsNil", testInitializationWithEmptyKeyIsNil),
       ("testGenerateKeyGetsHexString", testGenerateKeyGetsHexString),
   ]  }
@@ -77,6 +78,16 @@ struct TestAesEncryptor: XCTestCase, TailorTestable {
     print("Encrypted value is \(value1)")
     let value2 = encryptor.encrypt(inputData)
     assert(value1, doesNotEqual: value2, message: "gets different encrypted data each time")
+  }
+  
+  func testEncryptWithLargeTextSize() {
+    let inputText = "ARMA virumque cano, Troiae qui primus ab oris Italiam, fato profugus, Laviniaque venit litora, multum ille et terris iactatus et alto vi superum saevae memorem Iunonis ob iram; multa quoque et bello passus, dum conderet urbem, inferretque deos Latio, genus unde Latinum."
+    let inputData = NSData(bytes: inputText.utf8)
+    let encryptor = AesEncryptor(key: AesEncryptor.generateKey())!
+    let encryptedData = encryptor.encrypt(inputData)
+    let decryptedData = encryptor.decrypt(encryptedData)
+    let decryptedString = NSString(data: decryptedData, encoding: NSUTF8StringEncoding)?.bridge()
+    assert(decryptedString, equals: inputText, message: "gets original data back")
   }
   
   func testInitializationWithEmptyKeyIsNil() {
