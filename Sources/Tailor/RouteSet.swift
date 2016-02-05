@@ -609,7 +609,11 @@ public class RouteSet {
         if let contents = NSFileManager.defaultManager().contentsAtPath(fullPath) {
           //FIXME
           #if os(Linux)
-            mimeType = "text/plain"
+            switch(assetName.pathExtension) {
+              case "css": mimeType = "text/css"
+              case "js": mimeType = "application/js"
+              default: mimeType = "text/plain"
+            }
           #else
             if let uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (fullPath as NSString).pathExtension, nil)?.takeRetainedValue(),
               let type = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType)?.takeRetainedValue() {
