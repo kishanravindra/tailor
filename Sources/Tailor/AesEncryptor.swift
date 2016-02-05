@@ -175,9 +175,9 @@ public final class AesEncryptor {
     if encrypt {
       output.appendData(initVectorData)
     }
-
+    
     EVP_CipherUpdate(context, UnsafeMutablePointer<UInt8>(block), &currentBlockSize, UnsafeMutablePointer<UInt8>(buffer), Int32(bufferLength))
-    output.appendBytes(buffer, length: Int(currentBlockSize))
+    output.appendBytes(block, length: Int(currentBlockSize))
 
     EVP_CipherFinal_ex(context, UnsafeMutablePointer<UInt8>(block), &currentBlockSize)
     output.appendBytes(block, length: Int(currentBlockSize))

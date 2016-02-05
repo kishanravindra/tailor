@@ -47,12 +47,16 @@ public struct Session {
     let encryptedData = NSData(base64EncodedString: cookieString, options: []) ?? NSData()
     let decryptedData = encryptor?.decrypt(encryptedData) ?? NSData()
     
-    var cookieData: [String:String]
+    var cookieData = [String:String]()
     do {
-      cookieData = try NSJSONSerialization.JSONObjectWithData(decryptedData, options: []) as? [String:String] ?? [:]
+      let rawCookieData = try NSJSONSerialization.JSONObjectWithData(decryptedData, options: []) as? [String:Any] ?? [:]
+      for (key, value) in rawCookieData {
+        if let string = value as? String {
+          cookieData[key] = string
+        }
+      }
     }
     catch {
-      cookieData = [:]
     }
     let dateString = cookieData["expirationDate"] ?? ""
     
