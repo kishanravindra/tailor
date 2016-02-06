@@ -330,6 +330,7 @@ struct TestApplication : TailorTestable {
   
   //MARK: Getting Subclasses
   
+  @available(*, deprecated)
   func testCanRegisterCustomSubclasses() {
     class TestClassWithSubclasses {
       class func id() -> Int { return 1 }
@@ -348,28 +349,33 @@ struct TestApplication : TailorTestable {
     let ids = types.map { $0.id() }
     self.assert(ids.sort(), equals: [1, 2, 3], message: "registers all subclasses of the type given, including the type itself")
   }
-  
+
+  @available(*, deprecated)  
   func testRegisteredAlterationsGetsAlterations() {
     let alterations = application.registeredAlterations().map { $0.name }
     assert(alterations.contains("TailorTests.AlterationScriptTests.FirstAlteration"))
   }
-  
+
+  @available(*, deprecated)  
   func testRegisteredAlterationsWithNoAlterationsRegisteredGetsEmptyList() {
     application.clearRegisteredSubtypes()
     assert(application.registeredAlterations().isEmpty)
   }
-  
+
+  @available(*, deprecated)  
   func testRegisteredTasksGetsTasks() {
     let tasks = application.registeredTasks().map { $0.commandName }
     assert(tasks.contains("run_tests"))
   }
-  
+
+  @available(*, deprecated)  
   func testRegisteredTasksWithNoTasksRegisteredGetsEmptyList() {
     application.clearRegisteredSubtypes()
     let tasks = application.registeredTasks().map { $0.commandName }
     assert(tasks.isEmpty)
   }
-  
+
+  @available(*, deprecated)  
   func testRegisteredSubtypeListGetsSubtypes() {
     class TestClassOne {
       class func name() -> String {
@@ -383,7 +389,8 @@ struct TestApplication : TailorTestable {
     let names = application.registeredSubtypeList(TestClassOne.self).map { $0.name() }.sort()
     assert(names, equals: [TestClassOne.name(), TestClassTwo.name()])
   }
-  
+
+  @available(*, deprecated)  
   func testRegisteredSubtypeListWithNoTypesRegisteredGetsEmptyList() {
     class TestClassOne {
       class func name() -> String {

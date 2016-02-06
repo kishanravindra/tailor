@@ -50,7 +50,7 @@ public extension Application {
       Application.sharedDatabaseConnection().executeQuery("CREATE TABLE tailor_alterations ( id varchar(255) PRIMARY KEY )")
       previousAlterations = []
     }
-    var alterations = Application.sharedApplication().registeredAlterations()
+    var alterations = TypeInventory.shared.registeredAlterations
     alterations = alterations.filter {
       alteration in
       return previousAlterations.filter {

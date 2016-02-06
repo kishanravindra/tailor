@@ -7,20 +7,23 @@ let package = Package(
   ],
   targets: [
   	Target(name: "Tailor"),
-	Target(name: "TailorSqlite", dependencies: [
-		.Target(name: "Tailor")
-	]),
-	Target(name: "ScratchProject", dependencies: [
-		.Target(name: "Tailor"),
-		.Target(name: "TailorSqlite")
-	]),
-	Target(name: "TailorTesting", dependencies: [
-		.Target(name: "Tailor")
-	]),
-	Target(name: "TailorTests", dependencies: [
-		.Target(name: "Tailor"),
-		.Target(name: "TailorSqlite"),
-		.Target(name: "TailorTesting")
-	])
+  	Target(name: "TailorSqlite", dependencies: [
+  		.Target(name: "Tailor")
+  	]),
+    Target(name: "TailorUtils", dependencies: [
+      .Target(name: "Tailor")
+    ]),
+  	Target(name: "ScratchProject", dependencies: [
+  		.Target(name: "Tailor"),
+  		.Target(name: "TailorSqlite")
+  	]),
+  	Target(name: "TailorTesting", dependencies: [
+  		.Target(name: "Tailor")
+  	]),
+  	Target(name: "TailorTests", dependencies: [
+  		.Target(name: "Tailor"),
+  		.Target(name: "TailorSqlite"),
+  		.Target(name: "TailorTesting")
+  	]),
   ]
 )

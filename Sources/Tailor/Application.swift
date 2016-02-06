@@ -268,6 +268,7 @@ public final class Application {
   }
   
   /** The subclasses that we've registered for certain critical base classes. */
+  @available(*, deprecated)
   private var registeredSubtypes: [String:[Any.Type]] = [:]
   
   /**
@@ -299,10 +300,7 @@ public final class Application {
     running scripts.
     */
   public required init() {
-    self.registeredSubtypes["Tailor.TaskType"] = []
-    self.registerSubtypes(TaskType.self) { $0 is TaskType.Type }
-    self.registeredSubtypes["Tailor.TaskType"]!.append(Tailor.ExitTask.self)
-    self.registerSubtypes(AlterationScript.self) { $0 is AlterationScript.Type }
+    TypeInventory.shared.registerSubtypes(TaskType.self, subtypes: [ServerTask.self, AlterationsTask.self, ExitTask.self])
     
     if NSProcessInfo.processInfo().environment["TestBundleLocation"] != nil {
       self.command = "run_tests"
@@ -339,7 +337,7 @@ public final class Application {
   public func start() {
     NSLog("Starting application: %@, %@", command, String(flags))
     
-    for task in self.registeredTasks() {
+    for task in TypeInventory.shared.registeredTasks {
       if task.commandName == command {
         task.runTask()
         return
@@ -417,7 +415,7 @@ public final class Application {
   public func promptForCommand() -> String {
     print("Please provide a task by name, or from the following list")
     
-    let tasks = self.registeredTasks().sort {
+    let tasks = TypeInventory.shared.registeredTasks.sort {
       task1, task2 in
       task1.commandName.compare(task2.commandName) == NSComparisonResult.OrderedAscending
     }
@@ -451,7 +449,7 @@ public final class Application {
     var arguments = self.dynamicType.commandLineArguments()
     (self.command, self.flags) = self.dynamicType.parseArguments(arguments)
     
-    let tasks = self.registeredTasks()
+    let tasks = TypeInventory.shared.registeredTasks
     while (tasks.filter { $0.commandName == self.command }).isEmpty {
       let commandLine = self.promptForCommand()
       var inQuotes = false
@@ -475,11 +473,12 @@ public final class Application {
     to dynamically crawl.
     
     The registered subtype list will include the types passed in.
+
+    This is deprecated in favor of TypeInventory.
     
     - parameter types:   The types to get subtypes of.
-   
-    FIXME
     */
+  @available(*, deprecated, message="Use TypeInventory instead")
   private func registerSubtypes(parentType: Any.Type, matcher: (AnyClass->Bool)) {
     #if os(OSX)
     let classCount = objc_getClassList(nil, 0)
@@ -500,7 +499,10 @@ public final class Application {
   
   /**
     This method removes all types from our list of registered subtypes.
+
+    This is deprecated in favor of TypeInventory.
     */
+  @available(*, deprecated, message="Use TypeInventory instead")
   internal func clearRegisteredSubtypes() {
     self.registeredSubtypes = [:]
   }
@@ -515,10 +517,11 @@ public final class Application {
 
     The registered subclass list will include the types passed in.
 
+    This is deprecated in favor of TypeInventory.
+
     - parameter types:   The types to get subclasses of.
-   
-    FIXME
     */
+  @available(*, deprecated, message="Use TypeInventory instead")
   public func registerSubclasses(types: AnyClass...) {
     #if os(OSX)
     for type in types {
@@ -531,8 +534,11 @@ public final class Application {
   
   /**
     This method fetches types that conform to the AlterationScript protocol.
+
+    This is deprecated in favor of TypeInventory.
     - returns:  The types.
     */
+  @available(*, deprecated, message="Use TypeInventory instead")
   public func registeredAlterations() -> [AlterationScript.Type] {
     let description = String(reflecting: AlterationScript.self)
     let classes = self.registeredSubtypes[description] ?? []
@@ -541,8 +547,11 @@ public final class Application {
   
   /**
     This method fetches types that conform to the TaskType protocol.
+
+    This is deprecated in favor of TypeInventory.
     - returns: The types.
     */
+  @available(*, deprecated, message="Use TypeInventory instead")
   public func registeredTasks() -> [TaskType.Type] {
     let description = String(reflecting: TaskType.self)
     let classes = self.registeredSubtypes[description] ?? []
@@ -554,10 +563,13 @@ public final class Application {
     
     The type must have previously been passed in to registerSubtypes to load
     the list.
+
+    This is deprecated in favor of TypeInventory.
     
     - parameter type:   The type to get subclasses of.
     - returns:          The subclasses of the type.
   */
+  @available(*, deprecated, message="Use TypeInventory instead")
   public func registeredSubtypeList<ParentType>(type: ParentType.Type) -> [ParentType.Type] {
     let description = String(reflecting: ParentType.self)
     let classes = self.registeredSubtypes[description] ?? []

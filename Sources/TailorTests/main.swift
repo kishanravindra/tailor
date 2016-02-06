@@ -21,4 +21,5 @@ XCTMain([
   TestSeedTaskType(),
   TestSerializableValue(),
   TestTimestamp(),
+  TestTypeInventory(),
 ])
