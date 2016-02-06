@@ -26,6 +26,9 @@ public final class Application {
     /** The path to the application's resources. */
     public var resourcePath = "./Resources"
     
+    /** The name of the application's resources. */
+    public var projectName = "Application"
+    
     /**
       A function for fetching the localization for a given request.
     
@@ -619,7 +622,10 @@ public final class Application {
     Xcode already has in the build settings.
   
     If there is no value for that key in the info dictionary, this will be ".".
+    
+    This has been deprecated in favor of the resourcePath on the configuration.
     */
+  @available(*, deprecated, message="You should use the resourcePath on the configuration instead.")
   public static var projectPath: String {
     if let folder = bundleInfo("TailorProjectPath") {
       if NSFileManager.defaultManager().fileExistsAtPath(folder) {
@@ -634,7 +640,10 @@ public final class Application {
     bundle's info dictionary.
 
     If there is no value for that key, this will be "Application".
+    
+    This is deprecated in favor of the projectName on the configuration.
     */
+  @available(*, deprecated, message="Use the projectName on the configuration instead.")
   public static var projectName: String {
     return bundleInfo("CFBundleName") ?? "Application"
   }

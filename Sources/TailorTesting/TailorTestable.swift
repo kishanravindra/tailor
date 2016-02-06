@@ -135,6 +135,33 @@ extension TailorTestable {
   }
   
   /**
+    This method asserts that two arrays are equal.
+    
+    - parameter lhs:        The left-hand side of the equality comparison.
+    - parameter rhs:        The right-hand side of the equality comparison.
+    - parameter message:    The message to show if the assertion fails.
+    - parameter file:       The name of the file where the assertion is coming
+                            from. You should generally omit this, since it will
+                            be provided automatically.
+    - parameter line:       The line of the file where the assertion is coming
+                            from. You should generally omit this, since it will
+                            be provided automatically.
+    */
+  public func assert<T : Equatable>(lhs: [[T]], equals rhs: [[T]], message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+    let message = (message.isEmpty ? message: " - " + message)
+    if lhs.count != rhs.count {
+      XCTFail("\(lhs) != \(rhs)\(message)", file: file, line: line)
+      return
+    }
+    for index in 0..<lhs.count {
+      if lhs[index] != rhs[index] {
+        XCTFail("\(lhs) != \(rhs)\(message)", file: file, line: line)
+        return
+      }
+    }
+  }
+  
+  /**
     This method asserts that two dictionaries are equal.
     
     - parameter lhs:        The left-hand side of the equality comparison.

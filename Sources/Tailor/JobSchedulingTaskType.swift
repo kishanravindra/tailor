@@ -368,12 +368,12 @@ extension JobSchedulingTaskType {
   
   /** This method gets a comments that begins our section of the crontab. */
   public var cronHeaderLine: String {
-    return "# Begin crontab for " + Application.projectName
+    return "# Begin crontab for " + Application.configuration.projectName
   }
   
   /** This method gets a comments that ends our section of the crontab. */
   public var cronFooterLine: String {
-    return "# End crontab for " + Application.projectName
+    return "# End crontab for " + Application.configuration.projectName
   }
   
   /**

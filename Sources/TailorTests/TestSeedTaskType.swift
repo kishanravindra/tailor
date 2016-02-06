@@ -1,8 +1,33 @@
 import Tailor
 import TailorTesting
 import XCTest
+import Foundation
 
-class SeedTaskTypeTests: XCTestCase, TailorTestable {
+struct TestSeedTaskType: XCTestCase, TailorTestable {
+  // FIXME: Enable commented-out tests
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testSeedFolderIsPathInConfigInResourceFolder", testSeedFolderIsPathInConfigInResourceFolder),
+    ("testPathForFileGetsPathInSeedFolder", testPathForFileGetsPathInSeedFolder),
+    ("testPathForFileWithModelGetsPathToModelNameInSeedFolder", testPathForFileWithModelGetsPathToModelNameInSeedFolder),
+    ("testSaveSchemaSavesSchemaToFile", testSaveSchemaSavesSchemaToFile),
+    ("testSaveSchemaExcludesTablesInExcludedTableList", testSaveSchemaExcludesTablesInExcludedTableList),
+    ("testSaveModelSavesModelToFile", testSaveModelSavesModelToFile),
+    ("testSaveModelCreatesEmptyFilesForEmptyModel", testSaveModelCreatesEmptyFilesForEmptyModel),
+    ("testLoadSchemaDropsTablesThatAreNotInFile", testLoadSchemaDropsTablesThatAreNotInFile),
+    ("testLoadSchemaAddsTableFromFile", testLoadSchemaAddsTableFromFile),
+    ("testLoadSchemaWithShortRowDoesNotCreateTable", testLoadSchemaWithShortRowDoesNotCreateTable),
+    ("testLoadModelLoadsRecordsFromModel", testLoadModelLoadsRecordsFromModel),
+    ("testLoadModelWithEmptyFileDoesNotLoadAnyRecords", testLoadModelWithEmptyFileDoesNotLoadAnyRecords),
+    // ("testRunTaskWithNoArgumentsDoesNothing", testRunTaskWithNoArgumentsDoesNothing),
+    // ("testRunTaskWithLoadCommandLoadsSchema", testRunTaskWithLoadCommandLoadsSchema),
+    // ("testRunTaskWithLoadCommandLoadsModels", testRunTaskWithLoadCommandLoadsModels),
+    // ("testRunTaskWithLoadCommandLoadsAlterations", testRunTaskWithLoadCommandLoadsAlterations),
+    // ("testRunTaskWithSaveCommandSavesSchema", testRunTaskWithSaveCommandSavesSchema),
+    // ("testRunTaskWithSaveCommandSavesAlterations", testRunTaskWithSaveCommandSavesAlterations),
+    // ("testRunTaskWithSaveCommandSaveModels", testRunTaskWithSaveCommandSaveModels),
+    ("testCommandNameIsSeeds", testCommandNameIsSeeds),
+  ]}
+  
   final class SeedTask: SeedTaskType {
     static func saveModels() {
       saveModel(Hat.self)
@@ -14,8 +39,7 @@ class SeedTaskTypeTests: XCTestCase, TailorTestable {
     }
   }
   
-  override func setUp() {
-    super.setUp()
+  func setUp() {
     setUpTestCase()
     do {
       for file in ["tables", "hats", "shelfs"] {
@@ -23,14 +47,11 @@ class SeedTaskTypeTests: XCTestCase, TailorTestable {
       }
     }
     catch {}
+    CreateTestDatabaseAlteration.run()
   }
   
-  override func tearDown() {
-    let connection = Application.sharedDatabaseConnection()
-    for table in connection.tableNames() {
-      connection.executeQuery("DROP TABLE `\(table)`")
-    }
-    AlterationsTask.runTask()
+  func tearDown() {
+    CreateTestDatabaseAlteration.run()
     APPLICATION_ARGUMENTS = ("tailor.exit", [:])
     
     do {
@@ -42,19 +63,10 @@ class SeedTaskTypeTests: XCTestCase, TailorTestable {
       }
     }
     catch {}
-    super.tearDown()
   }
   
-  func testSeedFolderIsPathInConfigInProjectFolder() {
-    NSBundle.stubMethod("infoDictionary", result: ["TailorProjectPath": PROJECT_DIR, "CFBundleName": "MyApp"]) {
-      let folder = SeedTask.seedFolder
-      assert(folder, equals: PROJECT_DIR + "/MyApp/config/seeds")
-    }
-  }
-  
-  func testSeedFolderRemovesTestsFromProjectNameInPath() {
-    let folder = SeedTask.seedFolder
-    assert(folder, equals: Application.projectPath + "/Tailor/config/seeds")
+  func testSeedFolderIsPathInConfigInResourceFolder() {
+    assert(SeedTask.seedFolder, equals: Application.configuration.resourcePath + "/seeds")
   }
   
   func testPathForFileGetsPathInSeedFolder() {
@@ -77,9 +89,6 @@ class SeedTaskTypeTests: XCTestCase, TailorTestable {
     let rows = CsvParser.parse(data)
     assert(rows, equals: [
       ["table","sql"],
-      ["alteration_tests",
-        "CREATE TABLE `alteration_tests` (id integer primary key, `material` varchar(255), `colour` varchar(250))"
-      ],
       ["hat_types","CREATE TABLE `hat_types` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255))"],
       ["hats","CREATE TABLE `hats` ( `id` integer NOT NULL PRIMARY KEY, `color` varchar(255), `brim_size` integer, shelf_id integer, `created_at` timestamp, `updated_at` timestamp)"],
       ["shelfs","CREATE TABLE `shelfs` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255), `store_id` integer)"],
@@ -110,9 +119,6 @@ class SeedTaskTypeTests: XCTestCase, TailorTestable {
     let rows = CsvParser.parse(data)
     assert(rows, equals: [
       ["table","sql"],
-      ["alteration_tests",
-        "CREATE TABLE `alteration_tests` (id integer primary key, `material` varchar(255), `colour` varchar(250))"
-      ],
       ["hat_types","CREATE TABLE `hat_types` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255))"],
       ["hats","CREATE TABLE `hats` ( `id` integer NOT NULL PRIMARY KEY, `color` varchar(255), `brim_size` integer, shelf_id integer, `created_at` timestamp, `updated_at` timestamp)"],
       ["shelfs","CREATE TABLE `shelfs` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255), `store_id` integer)"],
@@ -218,7 +224,7 @@ class SeedTaskTypeTests: XCTestCase, TailorTestable {
   func testRunTaskWithNoArgumentsDoesNothing() {
     Hat(brimSize: 10, color: "red", shelfId: 1).save()!
     APPLICATION_ARGUMENTS = ("seeds", [:])
-    NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
+    NSThread.currentThread().threadDictionary.removeValueForKey("SHARED_APPLICATION")
     Application.start()
     assert(Hat.query.count(), equals: 1)
   }
@@ -233,7 +239,7 @@ class SeedTaskTypeTests: XCTestCase, TailorTestable {
     CsvParser.encode(tables).writeToFile(SeedTask.pathForFile("tables"), atomically: true)
     
     APPLICATION_ARGUMENTS = ("seeds", ["load": "1"])
-    NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
+    NSThread.currentThread().threadDictionary.removeValueForKey("SHARED_APPLICATION")
     Application.start()
     assert(Application.sharedDatabaseConnection().tableNames(), equals: ["hats", "shelfs", "tailor_alterations"])
   }
@@ -255,7 +261,7 @@ class SeedTaskTypeTests: XCTestCase, TailorTestable {
     CsvParser.encode(hats).writeToFile(SeedTask.pathForFile("hats"), atomically: true)
     
     APPLICATION_ARGUMENTS = ("seeds", ["load": "1"])
-    NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
+    NSThread.currentThread().threadDictionary.removeValueForKey("SHARED_APPLICATION")
     Application.start()
     assert(Hat.query.count(), equals: 2)
   }
@@ -277,7 +283,7 @@ class SeedTaskTypeTests: XCTestCase, TailorTestable {
     CsvParser.encode(alterations).writeToFile(SeedTask.pathForFile("tailor_alterations"), atomically: true)
     
     APPLICATION_ARGUMENTS = ("seeds", ["load": "1"])
-    NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
+    NSThread.currentThread().threadDictionary.removeValueForKey("SHARED_APPLICATION")
     Application.start()
     
     let alterationCount = Application.pendingAlterations().count
@@ -286,7 +292,7 @@ class SeedTaskTypeTests: XCTestCase, TailorTestable {
   
   func testRunTaskWithSaveCommandSavesSchema() {
     APPLICATION_ARGUMENTS = ("seeds", ["save": "1"])
-    NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
+    NSThread.currentThread().threadDictionary.removeValueForKey("SHARED_APPLICATION")
     Application.start()
     
     let tables = CsvParser(path: SeedTask.pathForFile("tables")).rows
@@ -307,7 +313,7 @@ class SeedTaskTypeTests: XCTestCase, TailorTestable {
   
   func testRunTaskWithSaveCommandSavesAlterations() {
     APPLICATION_ARGUMENTS = ("seeds", ["save": "1"])
-    NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
+    NSThread.currentThread().threadDictionary.removeValueForKey("SHARED_APPLICATION")
     Application.start()
     
     let alterations = CsvParser(path: SeedTask.pathForFile("tailor_alterations")).rows
@@ -319,7 +325,7 @@ class SeedTaskTypeTests: XCTestCase, TailorTestable {
     let hat2 = Hat(brimSize: 12, color: "brown").save()!
     
     APPLICATION_ARGUMENTS = ("seeds", ["save": "1"])
-    NSThread.currentThread().threadDictionary.removeObjectForKey("SHARED_APPLICATION")
+    NSThread.currentThread().threadDictionary.removeValueForKey("SHARED_APPLICATION")
     Application.start()
     
     let rows = CsvParser(path: SeedTask.pathForFile("hats")).rows

@@ -8,3 +8,4 @@ Packages
 doc
 *.sqlite
 TestResources/connection.txt
+TestResources/seeds

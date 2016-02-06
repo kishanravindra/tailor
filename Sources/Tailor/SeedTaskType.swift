@@ -57,11 +57,7 @@ extension SeedTaskType {
     The same project name will be used for your app target and your test target.
     */
   public static var seedFolder: String {
-    var projectName = Application.projectName
-    if projectName.hasSuffix("Tests") {
-      projectName = projectName.bridge().substringToIndex(projectName.characters.count - 5)
-    }
-    return Application.projectPath + "/" + projectName + "/config/seeds"
+    return Application.configuration.resourcePath + "/seeds"
   }
   
   /**

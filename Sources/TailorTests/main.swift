@@ -12,11 +12,13 @@ XCTMain([
   TestCacheImplementation(),
   TestConnection(),
   TestCookie(),
+  TestJobSchedulingTaskType(),
   TestMemoryCacheStore(),
   TestNSData(),
   TestRandomNumber(),
   TestRouteSet(),
   TestShaPasswordHasher(),
+  TestSeedTaskType(),
   TestSerializableValue(),
   TestTimestamp(),
 ])

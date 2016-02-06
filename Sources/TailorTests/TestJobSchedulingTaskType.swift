@@ -1,8 +1,46 @@
 @testable import Tailor
 import TailorTesting
 import XCTest
+import Foundation
 
-class JobSchedulingTaskTypeTests: XCTestCase, TailorTestable {
+struct TestJobSchedulingTaskType: XCTestCase, TailorTestable {
+  // FIXME: Enable commented-out tests
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testRunMethodAddsEntryToList", testRunMethodAddsEntryToList),
+    ("testRunMethodWithNoStartTimeUsesDefault", testRunMethodWithNoStartTimeUsesDefault),
+    ("testRunMethodWithNoFrequencyUsesDefault", testRunMethodWithNoFrequencyUsesDefault),
+    ("testRunMethodWithTaskTypeCreatesCommandFromTask", testRunMethodWithTaskTypeCreatesCommandFromTask),
+    ("testEveryMethodChangesDefaultFrequencyAndStartTimes", testEveryMethodChangesDefaultFrequencyAndStartTimes),
+    ("testEveryMethodWithNoStartTimeChangesDefaultFrequency", testEveryMethodWithNoStartTimeChangesDefaultFrequency),
+    ("testCronLineWithMinutesInStartTimePutsStartTimeInCronLine", testCronLineWithMinutesInStartTimePutsStartTimeInCronLine),
+    ("testCronLineWithMinutesInFrequencyPutsFrequencyInCronLine", testCronLineWithMinutesInFrequencyPutsFrequencyInCronLine),
+    ("testCronLineWithMinutesInFrequencyAndStartTimePutsMultipleStartTimesInCronLine", testCronLineWithMinutesInFrequencyAndStartTimePutsMultipleStartTimesInCronLine),
+    ("testCronLineWithNoMinutesInEitherFieldPutsZeroInCronLine", testCronLineWithNoMinutesInEitherFieldPutsZeroInCronLine),
+    ("testCronLineWithOneMinuteFrequencyPutsAsteriskInCronLine", testCronLineWithOneMinuteFrequencyPutsAsteriskInCronLine),
+    ("testCronLineWithOneHourFrequencyPutsAsteriskInCronLine", testCronLineWithOneHourFrequencyPutsAsteriskInCronLine),
+    ("testCronLineWithHoursInFrequencyPutsFrequencyInCronLine", testCronLineWithHoursInFrequencyPutsFrequencyInCronLine),
+    ("testCronLineWithHoursInStartTimePutsStartTimeInCronLine", testCronLineWithHoursInStartTimePutsStartTimeInCronLine),
+    ("testCronLineWithHoursInFrequencyAndStartTimePutsMultipleStartTimesInCronLine", testCronLineWithHoursInFrequencyAndStartTimePutsMultipleStartTimesInCronLine),
+    ("testCronLineWithNoHoursHasZeroInCronLine", testCronLineWithNoHoursHasZeroInCronLine),
+    ("testCronLineWithNoHoursWithMinutesHasAsteriskInCronLine", testCronLineWithNoHoursWithMinutesHasAsteriskInCronLine),
+    ("testCronLineEntriesFromDocumentationGenerateExpectedValues", testCronLineEntriesFromDocumentationGenerateExpectedValues),
+    ("testCronHeaderLineGetsHeaderLine", testCronHeaderLineGetsHeaderLine),
+    ("testCronFooterLineGetsFooterLine", testCronFooterLineGetsFooterLine),
+    ("testCrontabGeneratesCrontabForJobs", testCrontabGeneratesCrontabForJobs),
+    ("testWriteCrontabWritesCrontabForJobs", testWriteCrontabWritesCrontabForJobs),
+    ("testWriteCrontabWithExistingCrontabPutsNewContentAtEndOfCrontab", testWriteCrontabWithExistingCrontabPutsNewContentAtEndOfCrontab),
+    ("testWriteCrontabWithExistingCrontabWithTailorSectionReplacesJustTailorSection", testWriteCrontabWithExistingCrontabWithTailorSectionReplacesJustTailorSection),
+    ("testWriteCrontabWithEmptyExistingCrontabWithTailorSectionWritesJustTailorSection", testWriteCrontabWithEmptyExistingCrontabWithTailorSectionWritesJustTailorSection),
+    ("testClearCrontabWithExistingCrontabWithTailorSectionRemovesJustTailorSection", testClearCrontabWithExistingCrontabWithTailorSectionRemovesJustTailorSection),
+    //("testRunTaskWithWriteCommandWritesCrontab", testRunTaskWithWriteCommandWritesCrontab),
+    //("testRunTaskWithClearCommandClearsCrontab", testRunTaskWithClearCommandClearsCrontab),
+    //("testRunTaskWithInvalidCommandDoesNotStartProcess", testRunTaskWithInvalidCommandDoesNotStartProcess),
+    ("testEntriesWithSameInformationAreEqual", testEntriesWithSameInformationAreEqual),
+    ("testEntriesWithDifferentFrequenciesAreNotEqual", testEntriesWithDifferentFrequenciesAreNotEqual),
+    ("testEntriesWithDifferentStartTimesAreNotEqual", testEntriesWithDifferentStartTimesAreNotEqual),
+    ("testEntriesWithDifferentCommandsAreNotEqual", testEntriesWithDifferentCommandsAreNotEqual),
+  ]}
+  
   final class TestTask: JobSchedulingTaskType {
     var entries = [JobSchedulingEntry]()
     var defaultFrequency = 1.day
@@ -13,16 +51,14 @@ class JobSchedulingTaskTypeTests: XCTestCase, TailorTestable {
     }
   }
   
-  override func setUp() {
-    super.setUp()
+  func setUp() {
     setUpTestCase()
-    NSThread.currentThread().threadDictionary.removeAllObjects()
+    NSThread.currentThread().threadDictionary = [:]
   }
   
-  override func tearDown() {
+  func tearDown() {
     APPLICATION_ARGUMENTS = ("tailor.exit", [:])
-    NSThread.currentThread().threadDictionary.removeAllObjects()
-    super.tearDown()
+    NSThread.currentThread().threadDictionary = [:]
   }
   
   func testRunMethodAddsEntryToList() {
@@ -50,7 +86,7 @@ class JobSchedulingTaskTypeTests: XCTestCase, TailorTestable {
     let task = TestTask()
     task.entries = []
     task.run(AlterationsTask.self, with: ["foo": "bar", "baz": "bat"], every: 6.hours, at: 20.minutes)
-    assert(task.entries, equals: [JobSchedulingEntry(frequency: 6.hours, startTime: 20.minutes, command: " run_alterations baz=bat foo=bar")])
+    assert(task.entries, equals: [JobSchedulingEntry(frequency: 6.hours, startTime: 20.minutes, command: ".build/debug/TailorTests run_alterations baz=bat foo=bar")])
   }
   
   func testEveryMethodChangesDefaultFrequencyAndStartTimes() {
@@ -187,7 +223,7 @@ class JobSchedulingTaskTypeTests: XCTestCase, TailorTestable {
     }
     assert(process.launchPath, equals: "/usr/bin/crontab")
     assert(process.arguments, equals: ["/tmp/tailor_crons.txt"])
-    let writtenContents = NSString(data: NSData(contentsOfFile: "/tmp/tailor_crons.txt") ?? NSData(), encoding: NSUTF8StringEncoding)
+    let writtenContents = NSString(data: NSData(contentsOfFile: "/tmp/tailor_crons.txt") ?? NSData(), encoding: NSUTF8StringEncoding)?.bridge()
     assert(writtenContents, equals: crontab + "\n")
   }
   
@@ -215,7 +251,7 @@ class JobSchedulingTaskTypeTests: XCTestCase, TailorTestable {
     assert(process.arguments, equals: ["-l"])
     assert(process2.launchPath, equals: "/usr/bin/crontab")
     assert(process2.arguments, equals: ["/tmp/tailor_crons.txt"])
-    let writtenContents = NSString(data: NSData(contentsOfFile: "/tmp/tailor_crons.txt") ?? NSData(), encoding: NSUTF8StringEncoding)
+    let writtenContents = NSString(data: NSData(contentsOfFile: "/tmp/tailor_crons.txt") ?? NSData(), encoding: NSUTF8StringEncoding)?.bridge()
     assert(writtenContents, equals: existingCrontab + "\n" + crontab + "\n")
   }
   
@@ -243,7 +279,7 @@ class JobSchedulingTaskTypeTests: XCTestCase, TailorTestable {
     assert(process.arguments, equals: ["-l"])
     assert(process2.launchPath, equals: "/usr/bin/crontab")
     assert(process2.arguments, equals: ["/tmp/tailor_crons.txt"])
-    let writtenContents = NSString(data: NSData(contentsOfFile: "/tmp/tailor_crons.txt") ?? NSData(), encoding: NSUTF8StringEncoding)
+    let writtenContents = NSString(data: NSData(contentsOfFile: "/tmp/tailor_crons.txt") ?? NSData(), encoding: NSUTF8StringEncoding)?.bridge()
     assert(writtenContents, equals: resultCrontab + "\n")
   }
   
@@ -269,7 +305,7 @@ class JobSchedulingTaskTypeTests: XCTestCase, TailorTestable {
     assert(process.arguments, equals: ["-l"])
     assert(process2.launchPath, equals: "/usr/bin/crontab")
     assert(process2.arguments, equals: ["/tmp/tailor_crons.txt"])
-    let writtenContents = NSString(data: NSData(contentsOfFile: "/tmp/tailor_crons.txt") ?? NSData(), encoding: NSUTF8StringEncoding)
+    let writtenContents = NSString(data: NSData(contentsOfFile: "/tmp/tailor_crons.txt") ?? NSData(), encoding: NSUTF8StringEncoding)?.bridge()
     assert(writtenContents, equals: task.crontab + "\n")
   }
   
@@ -297,7 +333,7 @@ class JobSchedulingTaskTypeTests: XCTestCase, TailorTestable {
     assert(process.arguments, equals: ["-l"])
     assert(process2.launchPath, equals: "/usr/bin/crontab")
     assert(process2.arguments, equals: ["/tmp/tailor_crons.txt"])
-    let writtenContents = NSString(data: NSData(contentsOfFile: "/tmp/tailor_crons.txt") ?? NSData(), encoding: NSUTF8StringEncoding)
+    let writtenContents = NSString(data: NSData(contentsOfFile: "/tmp/tailor_crons.txt") ?? NSData(), encoding: NSUTF8StringEncoding)?.bridge()
     assert(writtenContents, equals: resultCrontab + "\n")
   }
   
@@ -317,7 +353,7 @@ class JobSchedulingTaskTypeTests: XCTestCase, TailorTestable {
     }
     assert(process.launchPath, equals: "/usr/bin/crontab")
     assert(process.arguments, equals: ["/tmp/tailor_crons.txt"])
-    let writtenContents = NSString(data: NSData(contentsOfFile: "/tmp/tailor_crons.txt") ?? NSData(), encoding: NSUTF8StringEncoding)
+    let writtenContents = NSString(data: NSData(contentsOfFile: "/tmp/tailor_crons.txt") ?? NSData(), encoding: NSUTF8StringEncoding)?.bridge()
     assert(writtenContents, equals: crontab + "\n")
   }
   
@@ -342,7 +378,7 @@ class JobSchedulingTaskTypeTests: XCTestCase, TailorTestable {
     assert(process.arguments, equals: ["-l"])
     assert(process2.launchPath, equals: "/usr/bin/crontab")
     assert(process2.arguments, equals: ["/tmp/tailor_crons.txt"])
-    let writtenContents = NSString(data: NSData(contentsOfFile: "/tmp/tailor_crons.txt") ?? NSData(), encoding: NSUTF8StringEncoding)
+    let writtenContents = NSString(data: NSData(contentsOfFile: "/tmp/tailor_crons.txt") ?? NSData(), encoding: NSUTF8StringEncoding)?.bridge()
     assert(writtenContents, equals: resultCrontab + "\n")
     
   }

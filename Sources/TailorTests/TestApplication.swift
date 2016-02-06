@@ -51,11 +51,6 @@ struct TestApplication : TailorTestable {
       // ("testRegisteredSubtypeListGetsSubtypes", testRegisteredSubtypeListGetsSubtypes),
       // ("testRegisteredSubtypeListWithNoTypesRegisteredGetsEmptyList", testRegisteredSubtypeListWithNoTypesRegisteredGetsEmptyList),
       ("testLocalizationWithNoSettingIsPropertyListLocalization", testLocalizationWithNoSettingIsPropertyListLocalization),
-      // ("testProjectPathReadsTailorProjectFolderSetting", testProjectPathReadsTailorProjectFolderSetting),
-      // ("testProjectPathWithNoSettingIsCurrentPath", testProjectPathWithNoSettingIsCurrentPath),
-      // ("testProjectPathWithNonExistantPathIsCurrentPath", testProjectPathWithNonExistantPathIsCurrentPath),
-      // ("testProjectNameReadsBundleName", testProjectNameReadsBundleName),
-      // ("testProjectNameWithNoBundleNameIsApplication", testProjectNameWithNoBundleNameIsApplication),
     ]
   }
 
@@ -409,32 +404,5 @@ struct TestApplication : TailorTestable {
     Application.configuration = Application.Configuration()
     let localization = Application.configuration.localization("en")
     assert(localization is PropertyListLocalization)
-  }
-  
-  func testProjectPathReadsTailorProjectFolderSetting() {
-    let PROJECT_DIR = "PROJECT_DIR"
-    assert(Application.projectPath, equals: PROJECT_DIR)
-  }
-  
-  func testProjectPathWithNoSettingIsCurrentPath() {
-    NSBundle.stubMethod("infoDictionary", result: NSDictionary()) {
-      assert(Application.projectPath, equals: ".")
-    }
-  }
-  
-  func testProjectPathWithNonExistantPathIsCurrentPath() {
-    NSBundle.stubMethod("infoDictionary", result: ["TailorProjectPath": "/badpath"].bridge()) {
-      assert(Application.projectPath, equals: ".")
-    }
-  }
-  
-  func testProjectNameReadsBundleName() {
-    assert(Application.projectName, equals: "TailorTests")
-  }
-  
-  func testProjectNameWithNoBundleNameIsApplication() {
-    NSBundle.stubMethod("infoDictionary", result: NSDictionary()) {
-      assert(Application.projectName, equals: "Application")
-    }
   }
 }
