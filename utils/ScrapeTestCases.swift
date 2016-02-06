@@ -28,6 +28,7 @@ func scrapeFile(filename: String) {
 		exit(1)
 	}
 
+	print("  var allTests: [(String, () throws -> Void)] { return [")
 	for line in fileContents.componentsSeparatedByString("\n") {
 		var line = line.bridge().stringByTrimmingCharactersInSet(.whitespaceAndNewlineCharacterSet())
 		if line.hasPrefix("func test") {
@@ -36,9 +37,10 @@ func scrapeFile(filename: String) {
 				let validRange = NSRange(location: 5, length: range.location - 5)
 				line = line.bridge().substringWithRange(validRange)
 			}
-			print("      (\"\(line)\", \(line)),")
+			print("    (\"\(line)\", \(line)),")
 		}
 	}
+	print("  ]}")
 }
 
 if Process.arguments.count < 2 {
