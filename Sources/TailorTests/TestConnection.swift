@@ -409,7 +409,7 @@ final class TestConnection: XCTestCase, TailorTestable {
   
   func testCanReadRequestWithFileDescriptors() {
     let fileContents = "GET / HTTP/1.1\r\nHeader: Value\r\nConnection: close\r\nContent-Length: 12\r\n\r\nRequest Body"
-    let path = Application.sharedApplication().rootPath() + "/connection.txt"
+    let path = Application.configuration.resourcePath + "/connection.txt"
     let expectation = expectationWithDescription("callback called")
     var responded = false
     let connection = Connection(fileDescriptor: -1) {
@@ -436,7 +436,7 @@ final class TestConnection: XCTestCase, TailorTestable {
   
   func testCanDetectClosedPipeInContinuationCallback() {
     let fileContents = "GET / HTTP/1.1\r\nHeader: Value\r\nConnection: close\r\nContent-Length: 12\r\n\r\nRequest Body"
-    let path = Application.sharedApplication().rootPath() + "/connection.txt"
+    let path = Application.configuration.resourcePath + "/connection.txt"
     let expectation = expectationWithDescription("callback called")
     let expectation2 = expectationWithDescription("continuation called 1")
     let expectation3 = expectationWithDescription("continuation called 2")

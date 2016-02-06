@@ -30,11 +30,10 @@ struct TestApplication : TailorTestable {
       ("testFlattenDictionaryIgnoresNonStringKeys", testFlattenDictionaryIgnoresNonStringKeys),
       ("testSetDefaultContentSetsValueInContent", testSetDefaultContentSetsValueInContent),
       ("testSetDefaultContentKeepsExistingValue", testSetDefaultContentKeepsExistingValue),
-      // ("testConfigurationFromFileGetsConfiguration", testConfigurationFromFileGetsConfiguration),
+      ("testConfigurationFromFileGetsConfiguration", testConfigurationFromFileGetsConfiguration),
       ("testConfigurationFromFileWithMissingFileGetsEmptyDictionary", testConfigurationFromFileWithMissingFileGetsEmptyDictionary),
       ("testConfigurationFromFileWithNonPlistFileGetsEmptyDictionary", testConfigurationFromFileWithNonPlistFileGetsEmptyDictionary),
       ("testConfigurationFromFileWithNonDictionaryFileGetsEmptyDictionary", testConfigurationFromFileWithNonDictionaryFileGetsEmptyDictionary),
-      // ("testConfigurationFromFileWithoutResourcePathGetsEmptyDictionary", testConfigurationFromFileWithoutResourcePathGetsEmptyDictionary),
       ("testSharedApplicationReusesApplication", testSharedApplicationReusesApplication),
       // ("testStartMethodRunsTaskFromCommand", testStartMethodRunsTaskFromCommand),
       // ("testClassStartMethodRunsTaskOnSharedApplication", testClassStartMethodRunsTaskOnSharedApplication),
@@ -242,14 +241,6 @@ struct TestApplication : TailorTestable {
   func testConfigurationFromFileWithNonDictionaryFileGetsEmptyDictionary() {
     let content = Application.Configuration.configurationFromFile("arrayPlist")
     assert(content.isEmpty)
-  }
-  
-  func testConfigurationFromFileWithoutResourcePathGetsEmptyDictionary() {
-    let path: NSString? = nil
-    NSBundle.stubMethod("resourcePath", result: path) {
-      let content = Application.Configuration.configurationFromFile("goodPlist")
-      assert(content.isEmpty)
-    }
   }
   
   func testSharedApplicationReusesApplication() {

@@ -15,6 +15,7 @@ XCTMain([
   TestMemoryCacheStore(),
   TestNSData(),
   TestRandomNumber(),
+  TestRouteSet(),
   TestShaPasswordHasher(),
   TestSerializableValue(),
   TestTimestamp(),

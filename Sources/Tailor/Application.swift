@@ -23,6 +23,9 @@ public final class Application {
     /** Whether we should log all the queries for debugging purposes. */
     public var logQueries: Bool = true
     
+    /** The path to the application's resources. */
+    public var resourcePath = "./Resources"
+    
     /**
       A function for fetching the localization for a given request.
     
@@ -92,7 +95,7 @@ public final class Application {
     /**
       The type that models users of the application.
 
-      This is used to fetch users from the session in controllerse.
+      This is used to fetch users from the session in controllers.
       */
     public var userType: UserType.Type? = nil
     
@@ -179,14 +182,7 @@ public final class Application {
                           found.
       */
     internal static func pathForConfigFile(name: String) -> String? {
-      for bundle in NSBundle.allBundles() {
-        guard let bundlePath = bundle.resourcePath else { continue }
-        let fullPath = bundlePath + "/\(name).plist"
-        if NSFileManager.defaultManager().fileExistsAtPath(fullPath) {
-          return fullPath
-        }
-      }
-      return nil
+      return Application.configuration.resourcePath + "/config/\(name).plist"
     }
     
     /**
@@ -207,8 +203,8 @@ public final class Application {
         let data = NSData(contentsOfFile: path) {
         do {
          let plist = try NSPropertyListSerialization.propertyListWithData(data, options: [.Immutable], format: nil)
-          if let dictionary = plist as? NSDictionary {
-            return flattenDictionary(dictionary)
+          if let dictionary = plist as? [String: Any] {
+            return flattenDictionary(dictionary.bridge())
           }
         }
         catch {
@@ -574,7 +570,10 @@ public final class Application {
   
     For application's that are loaded in test cases, this will use the resource
     path from the first XCTest bundle in the active bundle list.
+    
+    This has been deprecated in favor of the resourcePath from the configuration.
     */
+  @available(*, deprecated, message="You should use the resourcePath in the configuration instead")
   public func rootPath() -> String {
     var mainBundle = NSBundle.mainBundle()
     if mainBundle.bundlePath.hasPrefix("/Applications/Xcode") {

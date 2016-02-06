@@ -7,3 +7,4 @@ Packages
 .DS_STORE
 doc
 *.sqlite
+TestResources/connection.txt

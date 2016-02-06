@@ -536,7 +536,7 @@ public class RouteSet {
           callback(response)
         }
         catch let error {
-          NSLog("Error initializing controller: %@", String(error))
+          NSLog("Error initializing controller: \(error)")
           var response = Response()
           response.responseCode = .BadRequest
           callback(response)
@@ -583,8 +583,7 @@ public class RouteSet {
     
     The handlers for this will read the file contents for each file from the
     disk and serve it out as the response. The local paths for the assets will
-    be relative to the application's root path, which defaults to the directory
-    containing the executable.
+    be relative to the application's resource path.
   
     The assets will be given an ETag header with an MD5 hash of their contents.
     If the client provides that tag in a request, this will return a
@@ -603,7 +602,7 @@ public class RouteSet {
       self.addRoute(.Get(path)) {
         (request, callback) -> () in
         
-        let fullPath = Application.sharedApplication().rootPath() + "/\(localPath)"
+        let fullPath = Application.configuration.resourcePath + "/\(localPath)"
         
         let mimeType: String
         if let contents = NSFileManager.defaultManager().contentsAtPath(fullPath) {
