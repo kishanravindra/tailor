@@ -123,3 +123,12 @@ struct Store : Persistable {
     self.id = try values.read("id")
   }
 }
+
+
+class StubbedTestCase {
+  var failures = [(message: String, file: String, line: UInt)]()
+  
+  func XCTFail(message: String, file: StaticString, line: UInt) {
+    self.failures.append((message: message, file: String(file), line: line))
+  }
+}

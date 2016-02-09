@@ -117,7 +117,7 @@ public struct Validation: Equatable {
     - parameter block:    The block that will run the checks
     - returns:            The new validation with the errors added.
     */
-  public func validate(block: ()->[(String,String,[String:String])]) -> Validation {
+  public func validate(@noescape block: ()->[(String,String,[String:String])]) -> Validation {
     let newErrors = block().map {
       ValidationError(modelName: self.modelName, key: $0.0, message: $0.1, data: $0.2)
     }

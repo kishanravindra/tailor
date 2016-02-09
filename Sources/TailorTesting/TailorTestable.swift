@@ -21,9 +21,21 @@ public protocol TailorTestable: XCTestCase {
     This method initializes a new test case.
     */
   init()
+
+  /**
+    This method records a failure. 
+
+    The default implementation shells out to the XCTest version, but we can
+    also stub this out when testing our test cases.
+    */
+  func XCTFail(message: String, file: StaticString, line: UInt)
 }
 
 extension TailorTestable {
+  public func XCTFail(message: String, file: StaticString = __FILE__, line: UInt = __LINE__) {
+    XCTest.XCTFail(message, file: file, line: line)
+  }
+
   //MARK: - Set Up
   
   /**
@@ -422,6 +434,8 @@ extension TailorTestable {
   /**
     This method asserts that a block does not throw an exception.
 
+    FIXME: Include exceptions in the error message.
+
     - parameter message:            The message to show if the assertion fails.
     - parameter file:               The file that the assertion is coming from.
                                     You should generally omit this, since it
@@ -436,14 +450,16 @@ extension TailorTestable {
     do {
       try block()
     }
-    catch let e {
-      let fullMessage = "Threw exception \(e)" +  (message.isEmpty ? "" : " - \(message)")
+    catch {
+      let fullMessage = "Threw exception" +  (message.isEmpty ? "" : " - \(message)")
       XCTFail(fullMessage, file: file, line: line)
     }
   }
   
   /**
     This method asserts that a block throws a certain exception.
+
+    FIXME: Include exceptions in the error message.
    
     - parameter exception:          The exception that we are expecting to see.
     - parameter message:            The message to show if the assertion fails.
@@ -465,8 +481,8 @@ extension TailorTestable {
     catch let thrown as ExceptionType {
       self.assert(thrown, equals: exception, message: message, file: file, line: line)
     }
-    catch let e {
-      let fullMessage = "Threw exception \(e)"  + (message.isEmpty ? "" : " - \(message)")
+    catch {
+      let fullMessage = "Threw exception"  + (message.isEmpty ? "" : " - \(message)")
       XCTFail(fullMessage, file: file, line: line)
     }
   }

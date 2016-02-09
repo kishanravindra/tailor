@@ -42,4 +42,28 @@ public struct EmptyController: ControllerType {
       _ in
     }))
   }
+
+  /**
+    This type provides an empty template for testing purposes.
+    */
+  public struct EmptyTemplate: TemplateType {
+    /** The internal state of the template. */
+    public var state: TemplateState
+
+    /**
+      This initializer creates a template.
+
+      - parameter controller: The controller that is rendering the template.
+      */
+    public init(controller: EmptyController) {
+      self.state = TemplateState(controller)
+    }
+
+    /**
+      This method adds the body of the template.
+
+      This will do nothing, because the template is empty.
+      */
+    public mutating func body() {}
+  }
 }

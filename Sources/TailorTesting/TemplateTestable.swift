@@ -1,4 +1,6 @@
 import Tailor
+import XCTest
+import Foundation
 
 /**
   This protocol describes a test for a template.
@@ -68,7 +70,6 @@ extension TemplateTestable {
   }
 }
 
-#if os(OSX)
 extension TemplateTestable {
   /**
     This method asserts that an XML document contains an element.
@@ -103,8 +104,6 @@ extension TemplateTestable {
   public func assert(xml: String, doesNotContainElement elementName: String, attributes: [String:String] = [:], message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
     assert(xml, containsElement: false, elementName: elementName, attributes: attributes, message: message, file: file, line: line) { _ in }
   }
-  
-  
   
   /**
     This method asserts that an XML document contains an element.
@@ -239,5 +238,3 @@ extension NSXMLElement {
     return nil
   }
 }
-
-#endif

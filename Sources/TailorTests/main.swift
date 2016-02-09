@@ -20,6 +20,8 @@ XCTMain([
   TestShaPasswordHasher(),
   TestSeedTaskType(),
   TestSerializableValue(),
+  TestTailorTestable(),
+  TestTemplateTestable(),
   TestTimestamp(),
   TestTypeInventory(),
 ])

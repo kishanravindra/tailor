@@ -14,6 +14,7 @@ class CreateTestDatabaseAlteration: AlterationScript {
     connection.executeQuery("CREATE TABLE `shelfs` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255), `store_id` integer)")
     connection.executeQuery("CREATE TABLE `stores` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255))")
     connection.executeQuery("CREATE TABLE `users` ( `id` integer NOT NULL PRIMARY KEY, `email_address` varchar(255), `encrypted_password` varchar(255))")
+    connection.executeQuery("CREATE TABLE `tailor_alterations` ( `id` varchar(255) NOT NULL PRIMARY KEY)")
     connection.executeQuery("CREATE TABLE `tailor_translations` ( `id` integer NOT NULL PRIMARY KEY, `translation_key` varchar(255), `locale` varchar(255), `translated_text` varchar(255))")
     connection.executeQuery("CREATE TABLE `hat_types` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255))")
     connection.executeQuery("INSERT INTO hat_types VALUES (1,'feathered')")
