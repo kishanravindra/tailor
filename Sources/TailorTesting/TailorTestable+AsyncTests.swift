@@ -32,10 +32,11 @@ extension TailorTestable {
     return !XC_TEST_CURRENT_EXPECTATIONS.filter { !$0.fulfilled }.isEmpty
   }
 
-  public func waitForExpectationsWithTimeout(timeout: Int, handler: Optional<(NSError)->Void>) {
-    let startTime = time(nil)
+  public func waitForExpectationsWithTimeout(timeout: NSTimeInterval, handler: Optional<(NSError)->Void>) {
+    let startTime = Double(time(nil))
     while hasUnfulfilledExpectations {
-      if time(nil) - startTime > timeout {
+      let currentTime = Double(time(nil))
+      if currentTime - startTime > timeout {
         break
       }
       usleep(100000)

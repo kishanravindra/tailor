@@ -62,7 +62,7 @@ extension ControllerTestable {
       params[key] = paramList
     }
   }
-  #if DEPLOYMENT_RUNTIME_OBJC
+
   /**
     This method calls an action on the controller this test case is testing.
     
@@ -125,7 +125,6 @@ extension ControllerTestable {
     }
     waitForExpectationsWithTimeout(timeout, handler: nil)
   }
-  #endif
   
   /**
     This method gets the path to a controller route.
