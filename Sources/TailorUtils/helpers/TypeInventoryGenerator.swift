@@ -4,7 +4,7 @@ import Tailor
 /**
   This protocol provides commands for generating inventory files.
   */
-protocol TypeInventoryGenerator {
+protocol TypeInventoryGenerator: FileGenerator {
   /** The name of the type that we are getting subtypes for. */
   static var typeName: String { get }
 
@@ -32,7 +32,12 @@ extension TypeInventoryGenerator {
   static var functionName: String {
     return "register\(fileSuffix)s"
   }
+
   static var builtInTypes: [String] { return [] }
+
+  var fileNames: [String] {
+    return ["app/\(self.dynamicType.typeName)Inventory.swift"]
+  }
 
   /**
     This method gets the types for this inventory from the files in a directory.
@@ -44,7 +49,7 @@ extension TypeInventoryGenerator {
     - returns:                The types we found in the filenames in that
                               directory.
     */
-  static func typesFromDirectory(directory: String) -> [String] {
+  func typesFromDirectory(directory: String) -> [String] {
     var types = [String]()
     do {
       let fileManager = NSFileManager.defaultManager()
@@ -55,7 +60,7 @@ extension TypeInventoryGenerator {
         if isDirectory {
           types.appendContentsOf(typesFromDirectory(path))
         }
-        else if file.hasSuffix("\(fileSuffix).swift") {
+        else if file.hasSuffix("\(self.dynamicType.fileSuffix).swift") {
           types.append(file.substringToIndex(file.endIndex.advancedBy(-6)))
         }
       }
@@ -69,34 +74,27 @@ extension TypeInventoryGenerator {
 
     - parameter types:    The names of the types that we are putting in the
                           inventory.
-    - returns:            The file contents.
     */
-  static func fileContents(types: [String]) -> String {
-    var contents = "import Tailor\nfunc \(functionName)() {\n"
-    contents += "  TypeInventory.shared.registerSubtypes(\(typeName).self, subtypes: [\n"
-    contents += types.map { "    \($0).self" }.joinWithSeparator(",\n")
-    contents += "\n  ])\n}"
-    return contents
+  func generateContentsForTypes(types: [String]) -> Void {
+    output(
+      "import Tailor",
+      "extension Application.Configuration {",
+      "func \(self.dynamicType.functionName)() {",
+      "TypeInventory.shared.registerSubtypes(\(self.dynamicType.typeName).self, subtypes: ["
+    )
+    for type in types {
+      output("\(type).self,")
+    }
+    output(
+      "])",
+      "}",
+      "}"
+    )
   }
 
-  /**
-    This method generates our inventory file.
-    */
-  static func run() throws {
-    let target: String
-    if Process.arguments.count > 3 {
-      target = Process.arguments[3]
-    }
-    else {
-      let directories = try NSFileManager.defaultManager().contentsOfDirectoryAtPath("Sources")
-      target = directories.first ?? ""
-    }
+  func generateContentsForFile(path: String) -> Void {
     var types = typesFromDirectory("Sources/\(target)")
-    types.appendContentsOf(self.builtInTypes)
-    let contents = fileContents(types)
-    let fileData = NSData(bytes: contents.utf8)
-    let filename = "Sources/\(target)/\(typeName)Inventory.swift"
-    try fileData.writeToFile(filename, options: [])
-    print("Inventory saved to \(filename)")
+    types.appendContentsOf(self.dynamicType.builtInTypes)
+    self.generateContentsForTypes(types)
   }
 }
