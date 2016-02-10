@@ -67,10 +67,11 @@ final class TemplateGeneratorTask: FileGenerator {
     output(
       "@testable import \(target)",
       "import TailorTesting",
+      "import Tailor",
       "",
       "final class Test\(controller)\(name)Template: TemplateTestable {",
       "var controller = \(controller)Controller(state: ControllerState())",
-      "var template: \(controller)Controller.\(name)Template: {",
+      "var template: \(controller)Controller.\(name)Template {",
       "return .init(controller: controller)",
       "}",
       "",

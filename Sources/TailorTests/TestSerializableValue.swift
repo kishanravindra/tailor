@@ -17,8 +17,8 @@ struct TestSerializableValue: XCTestCase, TailorTestable {
     ("testFoundationJsonObjectForIntegerIsNsNumber", testFoundationJsonObjectForIntegerIsNsNumber),
     ("testFoundationJsonObjectForBooleanIsNsNumber", testFoundationJsonObjectForBooleanIsNsNumber),
     ("testFoundationJsonObjectForTimestampIsFormattedString", testFoundationJsonObjectForTimestampIsFormattedString),
-    // ("testFoundationJsonObjectForDateIsFormattedString", testFoundationJsonObjectForDateIsFormattedString),
-    // ("testFoundationJsonObjectForTimeIsFormattedString", testFoundationJsonObjectForTimeIsFormattedString),
+    ("testFoundationJsonObjectForDateIsFormattedString", testFoundationJsonObjectForDateIsFormattedString),
+    ("testFoundationJsonObjectForTimeIsFormattedString", testFoundationJsonObjectForTimeIsFormattedString),
     ("testFoundationJsonObjectForDataIsData", testFoundationJsonObjectForDataIsData),
     ("testJsonDataForStringThrowsException", testJsonDataForStringGetsThrowsException),
     ("testJsonDataForDictionaryOfStringsGetsData", testJsonDataForDictionaryOfStringsGetsData),
@@ -35,7 +35,7 @@ struct TestSerializableValue: XCTestCase, TailorTestable {
     ("testInitWithDoubleGetsNumber", testInitWithDoubleGetsNumber),
     ("testInitWithJsonObjectWithUnsupportedTypeThrowsException", testInitWithJsonObjectWithUnsupportedTypeThrowsException),
     ("testInitWithJsonDataForDictionaryCreatesDictionary", testInitWithJsonDataForDictionaryCreatesDictionary),
-    // ("testInitWithPlistWithValidPathGetsData", testInitWithPlistWithValidPathGetsData),
+    ("testInitWithPlistWithValidPathGetsData", testInitWithPlistWithValidPathGetsData),
     ("testInitWithPlistWithInvalidPathThrowsException", testInitWithPlistWithInvalidPathThrowsException),
     ("testInitWithPlistWithInvalidPlistThrowsException", testInitWithPlistWithInvalidPlistThrowsException),
     ("testReadStringWithStringGetsString", testReadStringWithStringGetsString),
@@ -142,21 +142,21 @@ struct TestSerializableValue: XCTestCase, TailorTestable {
     ("testDateValueWithTimeReturnsNil", testDateValueWithTimeReturnsNil),
     ("testDateValueWithValidStringReturnsDate", testDateValueWithValidStringReturnsDate),
     ("testDateValueWithInvalidStringReturnsNil", testDateValueWithInvalidStringReturnsNil),
-    // ("testDateValueWithDescriptionOfDateReturnsDate", testDateValueWithDescriptionOfDateReturnsDate),
+    ("testDateValueWithDescriptionOfDateReturnsDate", testDateValueWithDescriptionOfDateReturnsDate),
     ("testDateValueWithIntReturnsNil", testDateValueWithIntReturnsNil),
     ("testTimeValueWithTimeReturnsTime", testTimeValueWithTimeReturnsTime),
     ("testTimeValueWithTimestampReturnsTimeFromTimestamp", testTimeValueWithTimestampReturnsTimeFromTimestamp),
     ("testTimeValueWithDateReturnsNil", testTimeValueWithDateReturnsNil),
     ("testTimeValueWithStringReturnsNil", testTimeValueWithStringReturnsNil),
-    // ("testTimeValueWithDescriptionOfTimeGetsTime", testTimeValueWithDescriptionOfTimeGetsTime),
+    ("testTimeValueWithDescriptionOfTimeGetsTime", testTimeValueWithDescriptionOfTimeGetsTime),
     ("testDescriptionWithStringGetsString", testDescriptionWithStringGetsString),
     ("testDescriptionWithBooleanGetsTrueOrValue", testDescriptionWithBooleanGetsTrueOrValue),
     ("testDescriptionWithDataGetsDataDescription", testDescriptionWithDataGetsDataDescription),
     ("testDescriptionWithIntegerGetsIntegerAsString", testDescriptionWithIntegerGetsIntegerAsString),
     ("testDescriptionWithDoubleGetsDoubleAsString", testDescriptionWithDoubleGetsDoubleAsString),
     ("testDescriptionWithTimestampGetsFormattedDate", testDescriptionWithTimestampGetsFormattedDate),
-    // ("testDescriptionWithDateUsesDateDescription", testDescriptionWithDateUsesDateDescription),
-    // ("testDescriptionWithTimeUsesTimeDescription", testDescriptionWithTimeUsesTimeDescription),
+    ("testDescriptionWithDateUsesDateDescription", testDescriptionWithDateUsesDateDescription),
+    ("testDescriptionWithTimeUsesTimeDescription", testDescriptionWithTimeUsesTimeDescription),
     ("testDescriptionWithArrayGetsArrayDescription", testDescriptionWithArrayGetsArrayDescription),
     ("testDescriptionWithDictionaryGetsDictionaryDescription", testDescriptionWithDictionaryGetsDictionaryDescription),
     ("testDescriptionWithNullGetsNull", testDescriptionWithNullGetsNull),
@@ -600,8 +600,9 @@ struct TestSerializableValue: XCTestCase, TailorTestable {
   
   func testInitWithPlistWithValidPathGetsData() {
     do {
-      let path = "./config/goodPlist.plist"
+      let path = "./TestResources/config/goodPlist.plist"
       let data = try SerializableValue(plist: path)
+
       assert(data, equals: SerializableValue.Dictionary([
         "en": SerializableValue.Dictionary([
           "key1": SerializableValue.String("value1"),
@@ -611,14 +612,14 @@ struct TestSerializableValue: XCTestCase, TailorTestable {
           ])
         ]))
     }
-    catch {
-      assert(false, message: "should not throw exception")
+    catch let e {
+      assert(false, message: "Threw unexpected exception: \(e)")
     }
   }
   
   func testInitWithPlistWithInvalidPathThrowsException() {
     do {
-      let path = "./config/missingPath.plist"
+      let path = "TestResources/config/missingPath.plist"
       _ = try SerializableValue(plist: path)
       assert(false, message: "should throw an exception")
     }
@@ -632,7 +633,7 @@ struct TestSerializableValue: XCTestCase, TailorTestable {
   
   func testInitWithPlistWithInvalidPlistThrowsException() {
     do {
-      let path = "./config/invalidPlist.plist"
+      let path = "TestResources/config/invalidPlist.plist"
       _ = try SerializableValue(plist: path)
       assert(false, message: "should throw an exception")
     }

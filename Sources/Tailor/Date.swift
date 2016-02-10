@@ -33,7 +33,7 @@ public struct Date: Comparable, CustomStringConvertible, TimeIntervalArithmeticT
     This method gets a description of the date for debugging.
     */
   public var description: String {
-    return String(format: "%04i-%02i-%02i", year, month, day)
+    return TimeFormat.DatabaseDate.format(self)
   }
   
   /**

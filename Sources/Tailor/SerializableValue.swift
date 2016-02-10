@@ -446,12 +446,8 @@ extension SerializableValue {
       NSLog("Could not open file")
       throw SerializationConversionError.NotValidJsonObject
     }
-    if let contents = try NSPropertyListSerialization.propertyListWithData(data, options: [], format: nil) as? AnyObject {
-      try self.init(jsonObject: contents)
-    }
-    else {
-      throw SerializationConversionError.NotValidJsonObject
-    }
+    let contents = try NSPropertyListSerialization.propertyListWithData(data, options: [], format: nil)
+    try self.init(jsonObject: contents)
   }
 }
 

@@ -39,7 +39,7 @@ public struct Time: Comparable, CustomStringConvertible, TimeIntervalArithmeticT
     This method gets a description of the time for debugging.
     */
   public var description: String {
-    return String(format: "%02i:%02i:%02i ", hour, minute, second) + timeZone.name
+    return TimeFormat.FullTime.format(self)
   }
   
   /**
