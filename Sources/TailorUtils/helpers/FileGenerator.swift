@@ -31,6 +31,15 @@ protocol FileGenerator: TaskType {
 
   /** The current indentation level in the file we are generating. */
   var fileIndentation: Int { get set }
+
+  /**
+    This method generates the files.
+
+    We provide a default implementation that just calls the generateFiles
+    method, but you can provide your own implementation that does additional
+    work.
+    */
+  func generate()
 }
 
 extension FileGenerator {
@@ -87,9 +96,10 @@ extension FileGenerator {
     return fileContents
   }
 
-  /**
-    This method generates the files.
-    */
+  func generate() {
+    generateFiles()
+  }
+
   func generateFiles() {
     for name in fileNames {
       let filename = "Sources/\(target)/\(name)"
@@ -109,6 +119,6 @@ extension FileGenerator {
   }
 
   static func runTask() {
-    self.init().generateFiles()
+    self.init().generate()
   }
 }

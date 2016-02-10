@@ -7,6 +7,7 @@ extension Application.Configuration {
       ControllerGeneratorTask.self,
       ModelGeneratorTask.self,
       TaskInventoryGeneratorTask.self,
+      TemplateGeneratorTask.self,
     ])
   }
 }

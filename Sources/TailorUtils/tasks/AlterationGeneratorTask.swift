@@ -2,25 +2,36 @@ import Tailor
 
 /**
   This class provides a task for generating an alteration.
-
-  This takes the following flags:
-
-  - name:   The name of the alteration. This is required.
   */
 final class AlterationGeneratorTask: FileGenerator {
   static let commandName = "alteration"
+
+  /** The name of the alteration. */
+  let name: String
+
   var fileContents = ""
   var fileIndentation = 0
   
-  init() {
-    if name == "" {
+  /**
+    This initializer creates the task from the flags.
+
+    ### Flags:
+
+    - name:   The name of the alteration. This is required.
+    */
+  convenience init() {
+    let flags = Application.sharedApplication().flags
+    guard let name = flags["name"] else {
       fatalError("You must provide a name for the alteration (e.g. name=CreateMyTable)")
     }
+    self.init(name: name)
   }
 
-  /** The name of the alteration. */
-  var name: String {
-    return flags["name"] ?? ""
+  /**
+    This initializer creates an alteration by name.
+    */
+  init(name: String) {
+    self.name = name
   }
 
   var fileNames: [String] {
@@ -41,8 +52,8 @@ final class AlterationGeneratorTask: FileGenerator {
     )
   }
 
-  static func runTask() {
-    self.init().generateFiles()
+  func generate() {
+    generateFiles()
     AlterationInventoryGeneratorTask.runTask()
   }
 }

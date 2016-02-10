@@ -22,13 +22,13 @@ final class ControllerGeneratorTask: FileGenerator {
     let actions: [String]
 
     if let flagString = flags["actions"] {
-      actions = flagString.componentsSeparatedByString(",")
+      actions = flagString.componentsSeparatedByString(",").map { $0.camelCase(capitalize: false) }
     }
     else {
       actions = []
     } 
 
-    self.init(name: name, actions: actions)
+    self.init(name: name.camelCase(capitalize: true), actions: actions)
   }
 
   init(name: String, actions: [String]) {
@@ -74,6 +74,7 @@ final class ControllerGeneratorTask: FileGenerator {
     for action in actions {
       output(
         "func \(action)() {",
+        "respondWith(\(action.capitalizeInitial)Template(controller: self))",
         "}",
         ""
       )
@@ -103,6 +104,13 @@ final class ControllerGeneratorTask: FileGenerator {
       case self.fileNames[0]: generateControllerFile()
       case self.fileNames[1]: generateTestFile()
       default: return
+    }
+  }
+
+  func generate() {
+    self.generateFiles()
+    for action in actions {
+      TemplateGeneratorTask(name: action.capitalizeInitial, controller: name).generate()
     }
   }
 }
