@@ -170,6 +170,12 @@ public struct Request: HttpMessageType, Equatable {
 
   /** Whether this message only contains a body */
   public let bodyOnly = false
+
+  /** The domain that the request is being made to. */
+  public var domain: String
+
+  /** Whether the request should be made using a secure connection. */
+  public var secure: Bool = true
   
   /**
     The request parameters.
@@ -244,6 +250,7 @@ public struct Request: HttpMessageType, Equatable {
     else {
       self.path = self.fullPath
     }
+    self.domain = headers["Host"] ?? ""
 
     self.session = Session(cookieString: cookies["_session"] ?? "", clientAddress: clientAddress)
     self.parseRequestParameters()
@@ -408,10 +415,14 @@ public struct Request: HttpMessageType, Equatable {
     - parameter method:           The HTTP method
     - parameter clientAddress:    The client's remote IP address.
     - parameter headers:          Additional headers to put in the request.
+    - parameter domain:           The domain that we are making the request to.
     - parameter path:             The path that the request should go to.
+    - parameter secure:           Whether we should use a secure (HTTPS)
+                                  connection to make the request.
     */
-  public init(clientAddress: String = "0.0.0.0", method: String = "GET", parameters: [String: String] = [:], sessionData: [String: String] = [:], cookies: [String:String] = [:], headers: [String:String] = [:], path: String = "/") {
+  public init(clientAddress: String = "0.0.0.0", method: String = "GET", parameters: [String: String] = [:], sessionData: [String: String] = [:], cookies: [String:String] = [:], headers: [String:String] = [:], domain: String = "", path: String = "/", secure: Bool = true) {
     var path = path
+    let bodyData: NSData
     
     var queryString = ""
     
@@ -427,36 +438,51 @@ public struct Request: HttpMessageType, Equatable {
     
     if method == "GET" {
       path += "?" + queryString
+      bodyData = NSData()
     }
+    else {
+      bodyData = NSData(bytes: queryString.utf8)
+    }
+    
+    var headers = headers
+    headers["Content-Type"] = "application/x-www-form-urlencoded"
+    headers["Host"] = domain
 
-    
-    var lines = [
-      "\(method) \(path) HTTP/1.1"
-    ]
-    
-    lines.append("Content-Type: application/x-www-form-urlencoded")
+    var cookieJar = CookieJar()
     
     if !sessionData.isEmpty {
-      var session = Request(clientAddress: clientAddress, data: NSData()).session
+      var session = Session(cookieString: "", clientAddress: clientAddress)
       for (key, value) in sessionData {
         session[key] = value
       }
-      lines.append("Cookie: _session=\(session.cookieString())")
+      cookieJar["_session"] = session.cookieString()
     }
     for (key,value) in cookies {
-      lines.append("Cookie: \(key)=\(value)")
+      cookieJar[key] = value
     }
-    for (key,value) in headers {
-      lines.append("\(key): \(value)")
-    }
-    
-    lines.append("")
-    if method != "GET" {
-      lines.append(queryString)
-    }
-    let stringData = lines.reduce("") { buffer, element in buffer.isEmpty ? element : buffer + "\r\n" + element }
-    let data = NSData(bytes: stringData.utf8)
-    self.init(clientAddress: clientAddress, data: data)
+
+    self.init(statusLine: "\(method) \(path) HTTP/1.1", headers: headers, cookies: cookieJar, bodyData: bodyData)
+    self.clientAddress = clientAddress
+    self.secure = secure
+  }
+
+  //MARK: - Sending Requests
+
+  /**
+    This method sends the request to the server asynchronously.
+
+    - parameter callback:   The callback to invoke when the response is ready.
+    */
+  public func send(callback: Connection.ResponseCallback) {
+    Connection.sendRequest(self, callback: callback)
+  }
+
+  /**
+    This method sends the request to the server synchronously.
+    - returns:    The response from the server.
+    */
+  public func send() -> Response {
+    return Connection.sendRequest(self)
   }
 }
 

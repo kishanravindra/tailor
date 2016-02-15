@@ -32,6 +32,7 @@ final class TestConnection: XCTestCase, TailorTestable {
       ("testCanReadRequestWithFileDescriptors", testCanReadRequestWithFileDescriptors),
       ("testCanDetectClosedPipeInContinuationCallback", testCanDetectClosedPipeInContinuationCallback),
       ("testSendRequestCanMakeHttpRequestToRealDomain", testSendRequestCanMakeHttpRequestToRealDomain),
+      ("testSendRequestCanMakeSynchronousHttpRequestToRealDomain", testSendRequestCanMakeSynchronousHttpRequestToRealDomain),
   ] }
   //MARK: - Reading from Socket
   
@@ -480,9 +481,9 @@ final class TestConnection: XCTestCase, TailorTestable {
   }
 
   func testSendRequestCanMakeHttpRequestToRealDomain() {
-    let request = Request(path: "/", headers: ["Host": "tailorframe.work", "Accept-Charset": "utf-8"])
+    let request = Request(domain: "tailorframe.work", path: "/", secure: false, headers: ["Accept-Charset": "utf-8"])
     let expectation = expectationWithDescription("callback called")
-    Connection.sendRequest(request, toDomain: "tailorframe.work") {
+    Connection.sendRequest(request) {
       response in
       expectation.fulfill()
       self.assert(response.responseCode.code, equals: 301)
@@ -490,5 +491,13 @@ final class TestConnection: XCTestCase, TailorTestable {
       self.assert(response.bodyText, contains: "301 Moved Permanently")
     }
     waitForExpectationsWithTimeout(5, handler: nil)
+  }
+
+  func testSendRequestCanMakeSynchronousHttpRequestToRealDomain() {
+    let request = Request(domain: "tailorframe.work", path: "/", secure: false, headers: ["Accept-Charset": "utf-8"])
+    var response = Connection.sendRequest(request)
+    self.assert(response.responseCode.code, equals: 301)
+    self.assert(response.headers["Location"], equals: "https://tailorframe.work/?")
+    self.assert(response.bodyText, contains: "301 Moved Permanently")
   }
 }

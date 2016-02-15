@@ -4,7 +4,7 @@ import TailorTesting
 import Foundation
 
 final class TestRequest: XCTestCase, TailorTestable {
-  var requestString = "GET /test/path HTTP/1.1\r\nX-Custom-Field: header value\r\nReferer: searchtheweb.com\r\nCookie: key1=value1; key2=value2\r\nCookie: key3=value3\r\n\r\nRequest Body"
+  var requestString = ""
   let clientAddress = "1.2.3.4"
   
   var request : Request { get { return Request(clientAddress: clientAddress, data: requestData) } }
@@ -15,6 +15,7 @@ final class TestRequest: XCTestCase, TailorTestable {
     ("testInitializationSetsClientAddressOnRequest", testInitializationSetsClientAddressOnRequest),
     ("testInitializationSetsMethod", testInitializationSetsMethod),
     ("testInitializationSetsPath", testInitializationSetsPath),
+    ("testInitializationSetsDomain", testInitializationSetsDomain),
     ("testInitializationSetsHttpVersion", testInitializationSetsHttpVersion),
     ("testInitializationRemovesQueryStringFromPath", testInitializationRemovesQueryStringFromPath),
     ("testInitializationSetsRequestParameters", testInitializationSetsRequestParameters),
@@ -25,8 +26,10 @@ final class TestRequest: XCTestCase, TailorTestable {
     ("testParseRequestParametersGetsParametersFromMultipartForm", testParseRequestParametersGetsParametersFromMultipartForm),
     ("testParseRequestWithMultipartFormWithBoundariesGetsEmptyParameters", testParseRequestWithMultipartFormWithBoundariesGetsEmptyParameters),
     ("testParseRequestParametersGetsFileFromMultipartForm", testParseRequestParametersGetsFileFromMultipartForm),
+    ("testSendRequestCanSendRequestAsynchronously", testSendRequestCanSendRequestAsynchronously),
+    ("testSendRequestCanSendRequestSynchronously", testSendRequestCanSendRequestSynchronously),
     ("testParameterDictionarySubscriptWithStringArrayGetsValue", testParameterDictionarySubscriptWithStringArrayGetsValue),
-    ("testParameterDictionarySubscriptWithStringArrayWithMissingValueGetsEmptyArray", testParameterDictionarySubscriptWithStringArrayWithMissingValueGetsEmptyArray),
+    ("testParameterDictionarySubscriptWithStringArrayWithMissingValueGetsEmptyArray",testParameterDictionarySubscriptWithStringArrayWithMissingValueGetsEmptyArray),
     ("testParameterDictionarySubscriptWithStringArrayCanSetValue", testParameterDictionarySubscriptWithStringArrayCanSetValue),
     ("testParameterDictionarySubscriptWithStringGetsValue", testParameterDictionarySubscriptWithStringGetsValue),
     ("testParameterDictionarySubscriptWithStringWithMissingValueGetsEmptyString", testParameterDictionarySubscriptWithStringWithMissingValueGetsEmptyString),
@@ -100,7 +103,7 @@ final class TestRequest: XCTestCase, TailorTestable {
   func setUp() {
     setUpTestCase()
     Application.configuration.localization = { PropertyListLocalization(locale: $0) }
-    requestString = "GET /test/path HTTP/1.1\r\nX-Custom-Field: header value\r\nReferer: searchtheweb.com\r\nCookie: key1=value1; key2=value2\r\nCookie: key3=value3\r\n\r\nRequest Body"
+    requestString = "GET /test/path HTTP/1.1\r\nX-Custom-Field: header value\r\nHost: tailorframe.work\r\nReferer: searchtheweb.com\r\nCookie: key1=value1; key2=value2\r\nCookie: key3=value3\r\n\r\nRequest Body"
   }
   
   //MARK: - Initialization
@@ -118,10 +121,15 @@ final class TestRequest: XCTestCase, TailorTestable {
   }
   
   func testInitializationSetsPath() {
-    print("Request data is \(requestData)")
     assert(request.path, equals: "/test/path", message: "sets path based on header")
     requestString = ""
     assert(request.path, equals: "/", message: "sets path to root for empty request")
+  }
+
+  func testInitializationSetsDomain() {
+    assert(request.domain, equals: "tailorframe.work")
+    requestString = "GET /test/path HTTP/1.1\r\nX-Custom-Field: header value\r\nReferer: searchtheweb.com\r\nCookie: key1=value1; key2=value2\r\nCookie: key3=value3\r\n\r\nRequest Body"
+    assert(request.domain, equals: "", message: "sets domain to an empty string without the Host headers")
   }
   
   func testInitializationSetsHttpVersion() {
@@ -208,6 +216,27 @@ final class TestRequest: XCTestCase, TailorTestable {
     else {
       XCTFail("sets param2")
     }
+  }
+
+  func testSendRequestCanSendRequestAsynchronously() {
+    let request = Request(domain: "tailorframe.work", path: "/", secure: false, headers: ["Accept-Charset": "utf-8"])
+    let expectation = expectationWithDescription("callback called")
+    request.send {
+      response in
+      expectation.fulfill()
+      self.assert(response.responseCode.code, equals: 301)
+      self.assert(response.headers["Location"], equals: "https://tailorframe.work/?")
+      self.assert(response.bodyText, contains: "301 Moved Permanently")
+    }
+    waitForExpectationsWithTimeout(5, handler: nil)
+  }
+
+  func testSendRequestCanSendRequestSynchronously() {
+    let request = Request(domain: "tailorframe.work", path: "/", secure: false, headers: ["Accept-Charset": "utf-8"])
+    var response = request.send()
+    self.assert(response.responseCode.code, equals: 301)
+    self.assert(response.headers["Location"], equals: "https://tailorframe.work/?")
+    self.assert(response.bodyText, contains: "301 Moved Permanently")
   }
   
   @available(*, deprecated) func testRequestParametersGetsParametersFromDictionary() {
@@ -451,8 +480,10 @@ final class TestRequest: XCTestCase, TailorTestable {
   
   func testInitializerCanInitializeRequestInfo() {
     let params = ["key1": "value1", "key2": "value2_value3"]
-    let request = Request(clientAddress: "127.0.0.1", method: "POST", parameters: params, path: "/home")
+    let request = Request(clientAddress: "127.0.0.1", method: "POST", parameters: params, domain: "mysite.com", path: "/home", secure: false)
+    assert(request.domain, equals: "mysite.com")
     assert(request.fullPath, equals: "/home")
+    assert(!request.secure)
     assert(request.bodyText, equals: "key1=value1&key2=value2_value3")
     assert(request.params, equals: Request.ParameterDictionary(params), message: "sets request parameters")
     assert(request.method, equals: "POST", message: "sets method")

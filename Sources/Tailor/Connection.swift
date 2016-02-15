@@ -232,6 +232,7 @@ public final class Connection {
     self.readMessageFromSocket(connectionDescriptor) {
       (request: Request) in
       var request = request
+      request.secure = false
       request.clientAddress = clientAddressString
       startTime = Timestamp.now()
       
@@ -352,21 +353,52 @@ public final class Connection {
     TODO: Cleaning up connections once the response is received.
 
     - parameter request:    The request to send.
-    - parameter domain:     The domain to send the request to.
     - parameter callback:   The callback to invoke when we have a response.
     */
-  public static func sendRequest(request: Request, toDomain domain: String, callback: Connection.ResponseCallback) {
+  public static func sendRequest(request: Request, callback: Connection.ResponseCallback) {
     do {
-      let connection = try connectToServer(domain, callback: callback)
+      let connection = try connectToServer(request.domain, callback: callback)
       Connection.write(connection.socketDescriptor, data: request.data)
       connection.spawnThread(ConnectionReadResponseInThread, descriptor: 0)
     }
     catch {
-      NSLog("Error connecting to host: \(domain)")
+      NSLog("Error connecting to host: \(request.domain)")
       var response = Response()
       response.responseCode = Response.Code(500, "Server Not Reachable")
       callback(response)
     }
+  }
+
+  /**
+    This method makes a request to another service.
+
+    This will send the request and wait for the response synchronously.
+
+    TODO: Supporting HTTPS
+    TODO: Cleaning up connections once the response is received.
+
+    - parameter request:    The request to send.
+    - returns:              The response.
+    */
+  public static func sendRequest(request: Request) -> Response {
+    var response = Response()
+    response.responseCode = Response.Code(500, "Server Not Reachable")
+
+    do {
+      let connection = try connectToServer(request.domain) {
+        _ in
+      }
+      Connection.write(connection.socketDescriptor, data: request.data)
+
+      connection.readMessageFromSocket(connection.socketDescriptor) {
+        _response in
+        response = _response
+      }
+    }
+    catch {
+      NSLog("Error connecting to host: \(request.domain)")
+    }
+    return response
   }
   
   /**
