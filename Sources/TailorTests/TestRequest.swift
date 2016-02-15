@@ -225,7 +225,7 @@ final class TestRequest: XCTestCase, TailorTestable {
       response in
       expectation.fulfill()
       self.assert(response.responseCode.code, equals: 301)
-      self.assert(response.headers["Location"], equals: "https://tailorframe.work/?")
+      self.assert(response.headers["Location"], equals: "https://tailorframe.work/")
       self.assert(response.bodyText, contains: "301 Moved Permanently")
     }
     waitForExpectationsWithTimeout(5, handler: nil)
@@ -235,7 +235,7 @@ final class TestRequest: XCTestCase, TailorTestable {
     let request = Request(domain: "tailorframe.work", path: "/", secure: false, headers: ["Accept-Charset": "utf-8"])
     var response = request.send()
     self.assert(response.responseCode.code, equals: 301)
-    self.assert(response.headers["Location"], equals: "https://tailorframe.work/?")
+    self.assert(response.headers["Location"], equals: "https://tailorframe.work/")
     self.assert(response.bodyText, contains: "301 Moved Permanently")
   }
   

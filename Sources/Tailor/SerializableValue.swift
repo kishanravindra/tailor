@@ -419,13 +419,11 @@ extension SerializableValue {
     else if jsonObject is NSNull {
       self = Null
     }
-    else if let n = jsonObject as? NSNumber {
-      if Swift.Double(n.integerValue) == n.doubleValue {
-        self = Integer(n.integerValue)
-      }
-      else {
-        self = Double(n.doubleValue)
-      }
+    else if let n = jsonObject as? Swift.Int {
+      self = Integer(n)
+    }
+    else if let n = jsonObject as? Swift.Double {
+      self = Double(n)
     }
     else {
       throw SerializationParsingError.UnsupportedType(jsonObject.dynamicType)

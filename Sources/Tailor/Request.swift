@@ -132,7 +132,9 @@ public struct Request: HttpMessageType, Equatable {
   public var clientAddress: String = "0.0.0.0"
 
   /** The status line from the message. */
-  public let statusLine: String
+  public var statusLine: String {
+    return "\(method) \(fullPath) HTTP/\(version)"
+  }
   
   /** The HTTP method. */
   public let method: String
@@ -226,7 +228,6 @@ public struct Request: HttpMessageType, Equatable {
     - parameter bodyData:     The body data.
     */
   public init(statusLine: String, headers: [String: String], cookies: CookieJar, bodyData: NSData) {
-    self.statusLine = statusLine
     self.headers = headers
     self.cookies = cookies
     self.bodyData = bodyData
@@ -437,7 +438,9 @@ public struct Request: HttpMessageType, Equatable {
     }
     
     if method == "GET" {
-      path += "?" + queryString
+      if !queryString.isEmpty {
+        path += "?" + queryString
+      }
       bodyData = NSData()
     }
     else {
@@ -445,6 +448,7 @@ public struct Request: HttpMessageType, Equatable {
     }
     
     var headers = headers
+    headers["User-Agent"] = "Tailor Application"
     headers["Content-Type"] = "application/x-www-form-urlencoded"
     headers["Host"] = domain
 

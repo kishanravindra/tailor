@@ -542,7 +542,7 @@ struct TestSerializableValue: XCTestCase, TailorTestable {
   }
   
   func testInitWithIntegerGetsNumber() {
-    let object = NSNumber(integer: 823)
+    let object = 823
     do {
       let primitive = try SerializableValue(jsonObject: object)
       assert(primitive, equals: SerializableValue.Integer(823))
@@ -553,7 +553,7 @@ struct TestSerializableValue: XCTestCase, TailorTestable {
   }
   
   func testInitWithDoubleGetsNumber() {
-    let object = NSNumber(double: 61.4)
+    let object = 61.4
     do {
       let primitive = try SerializableValue(jsonObject: object)
       assert(primitive, equals: SerializableValue.Double(61.4))

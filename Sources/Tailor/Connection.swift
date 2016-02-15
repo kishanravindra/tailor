@@ -1,4 +1,5 @@
 import Foundation
+import COpenSSL
 #if os(Linux)
   import Glibc
 #endif
@@ -24,6 +25,9 @@ public final class Connection {
   
   /** A callback to the code to provide the response, if this is an outbound connection. */
   let responseHandler: ResponseCallback?
+
+  /** The SSL connection that we are using to communicate with the other party. */
+  var sslConnection: UnsafeMutablePointer<SSL> = nil
   
   /**
     This type provides errors that are thrown by connections.
@@ -134,16 +138,21 @@ public final class Connection {
   }
 
   /**
-    This method reads an HTTP message from a 
+    This method reads an HTTP message from a connection.
+
+    This reads the message synchronously.
+
+    - parameter connectionDescriptor:   The file descriptor we are reading from.
+    - parameter callback:               The callback to invoke with the message.
     */
-  internal func readMessageFromSocket<MessageType: HttpMessageType>(connectionDescriptor: Int32, callback: (MessageType)->Void) {
+  private func readMessageFromSocket<MessageType: HttpMessageType>(connectionDescriptor: Int32, @noescape callback: (MessageType)->Void) {
     let data = NSMutableData()
     let bufferLength = 1024
     var buffer = [UInt8](count: Int(bufferLength), repeatedValue: 0)
     var message = MessageType(data: NSData())
     
     while true {
-      let length = Connection.read(connectionDescriptor, buffer: &buffer, maxLength: bufferLength)
+      let length = Connection.read(connectionDescriptor, sslConnection: sslConnection, buffer: &buffer, maxLength: bufferLength)
       if length < 0 || length > Int(bufferLength) {
         Connection.close(connectionDescriptor)
         return
@@ -154,7 +163,7 @@ public final class Connection {
         if message.headers["Expect"] == "100-continue", let request = message as? Request {
           var response = Response()
           response.responseCode = RouteSet.shared().canHandleRequest(request) ? .Continue : .NotFound
-          Connection.write(connectionDescriptor, data: response.data)
+          self.writeMessage(response, toSocket: connectionDescriptor)
         }
         if let headerLength = Int(message.headers["Content-Length"] ?? "") {
           if message.bodyData.length > headerLength {
@@ -185,6 +194,39 @@ public final class Connection {
       }
     }
     callback(message)
+  }
+
+  /**
+    This method writes a message to a connection.
+
+    If the connection has an SSL connection associated to it, this will write to
+    that instead of writing to the file descriptor.
+
+    - parameter message:                The message that we are writing.
+    - parameter connectionDescriptor:   The file descriptor we are writing to.
+    - returns:                          The number of bytes we wrote.
+    */
+  private func writeMessage(message: HttpMessageType, toSocket connectionDescriptor: Int32) -> Int {
+    return Connection.write(connectionDescriptor, sslConnection: sslConnection, data: message.data)  
+  }
+
+  /**
+    This method closes the connection.
+
+    This will shutdown the socket and the associated SSL connection, and will
+    remove it from the connection pool.
+
+    After this is done the connection cannot be re-opened and cannot receive
+    any further requests.
+    */
+  private func close() {
+    if sslConnection != nil {
+      SSL_shutdown(sslConnection)
+      SSL_free(sslConnection)
+    }
+    shutdown(socketDescriptor, Int32(SHUT_RDWR))
+    Connection.close(socketDescriptor)
+    CONNECTION_POOL.removeValueForKey(socketDescriptor)
   }
   
   /**
@@ -229,6 +271,7 @@ public final class Connection {
     var size = UInt32(sizeof(sockaddr))
     Connection.getpeername(connectionDescriptor, address: &clientAddress, addressLength: &size)
     let clientAddressString = "\(clientAddress.sa_data.2).\(clientAddress.sa_data.3).\(clientAddress.sa_data.4).\(clientAddress.sa_data.5)"
+    let sslConnection = self.sslConnection
     self.readMessageFromSocket(connectionDescriptor) {
       (request: Request) in
       var request = request
@@ -240,17 +283,17 @@ public final class Connection {
         response in
         
         let responseData = response.data
-        
         if response.chunked && response.bodyOnly {
           let length = [responseData.length] as [CVarArgType]
           withVaList(length) {
             let length = NSString(format: "%x", arguments: $0)
             let lengthData = NSData(bytes: "\(length)\r\n".utf8)
-            Connection.write(connectionDescriptor, data: lengthData)
+            Connection.write(connectionDescriptor, sslConnection: sslConnection, data: lengthData)
           }
         }
         
-        let bytesWritten = Connection.write(connectionDescriptor, data: responseData)
+
+        let bytesWritten = self.writeMessage(response, toSocket: connectionDescriptor)
         
         if(bytesWritten == -1) {
           response.continuationCallback?(false)
@@ -258,7 +301,7 @@ public final class Connection {
         }
         
         if response.chunked && response.bodyOnly {
-          Connection.write(connectionDescriptor, data: NSData(bytes: "\r\n".utf8))
+          Connection.write(connectionDescriptor, sslConnection: sslConnection, data: NSData(bytes: "\r\n".utf8))
         }
         
         response.continuationCallback?(true)
@@ -296,7 +339,7 @@ public final class Connection {
     - returns:    The socket file descriptor.
     - throws:     An `Error` if we cannot open a socket.
     */
-  internal static func createSocket() throws -> Int32 {
+  private static func createSocket() throws -> Int32 {
     #if os(Linux)
       let socketDescriptor = socket(PF_INET, Int32(SOCK_STREAM.rawValue), Int32(IPPROTO_TCP))
     #else
@@ -315,14 +358,13 @@ public final class Connection {
   /**
     This method opens a connection to another server.
 
-    TODO: Supporting HTTPS
-
     - parameter domain:     The domain that we are connecting to.
+    - parameter port:       The port to connect on.
     - parameter callback:   The callback that the connection should invoke it
                             has a response.
     - returns:              The connection.
     */
-  internal static func connectToServer(domain: String, callback: ResponseCallback) throws -> Connection {
+  private static func connectToServer(domain: String, port: Int, callback: ResponseCallback) throws -> Connection {
     var addressPointer = UnsafeMutablePointer<addrinfo>(nil)
     _ = getaddrinfo(domain, nil, nil, &addressPointer)
     while addressPointer != nil {
@@ -331,7 +373,7 @@ public final class Connection {
         let socketDescriptor = try createSocket()
         
         let ipv4Address = UnsafeMutablePointer<sockaddr_in>(address.ai_addr)
-        ipv4Address.memory.sin_port = 80 << 8
+        ipv4Address.memory.sin_port = UInt16(((port & 0xFF) << 8) | ((port >> 8) & 0xFF))
         
         if connect(socketDescriptor, address.ai_addr, address.ai_addrlen) == -1 {
           throw Error.CouldNotConnectToServer(ipv4Address.memory.sin_addr.s_addr)
@@ -344,21 +386,55 @@ public final class Connection {
   }
 
   /**
+    This method gets the shared SSL context for outbound connections.
+    */
+  private static var sslContext: UnsafeMutablePointer<SSL_CTX> {
+    if SSL_CONTEXT == nil {
+      SSL_library_init()
+      let method = SSLv23_method()
+      SSL_CONTEXT = SSL_CTX_new(method)
+    }
+    return SSL_CONTEXT
+  }
+
+  /**
+    This method opens an SSL connection for a connection.
+
+    This will set it as the `sslConnection` field on the connection.
+
+    - parameter connection:   The connection that we should tie the SSL
+                              connection to.
+    */
+  private static func openSSLConnection(connection: Connection) {
+    let sslConnection = SSL_new(sslContext)
+    SSL_set_fd(sslConnection, connection.socketDescriptor)
+    SSL_connect(sslConnection)
+    connection.sslConnection = sslConnection
+  }
+
+  /**
     This method makes a request to another service.
 
     This will open the connection and send the request synchronously, and then
     spawn a new thread to wait for the response.
 
-    TODO: Supporting HTTPS
-    TODO: Cleaning up connections once the response is received.
-
     - parameter request:    The request to send.
     - parameter callback:   The callback to invoke when we have a response.
     */
   public static func sendRequest(request: Request, callback: Connection.ResponseCallback) {
+    var _connection: Connection? = nil
     do {
-      let connection = try connectToServer(request.domain, callback: callback)
-      Connection.write(connection.socketDescriptor, data: request.data)
+      let port = request.secure ? 443 : 80
+      let connection = try connectToServer(request.domain, port: port) {
+        response in
+        callback(response)
+        _connection?.close()
+      }
+      _connection = connection
+      if request.secure {
+        openSSLConnection(connection)
+      }
+      connection.writeMessage(request, toSocket: connection.socketDescriptor)
       connection.spawnThread(ConnectionReadResponseInThread, descriptor: 0)
     }
     catch {
@@ -374,9 +450,6 @@ public final class Connection {
 
     This will send the request and wait for the response synchronously.
 
-    TODO: Supporting HTTPS
-    TODO: Cleaning up connections once the response is received.
-
     - parameter request:    The request to send.
     - returns:              The response.
     */
@@ -385,15 +458,20 @@ public final class Connection {
     response.responseCode = Response.Code(500, "Server Not Reachable")
 
     do {
-      let connection = try connectToServer(request.domain) {
+      let port = request.secure ? 443 : 80
+      let connection = try connectToServer(request.domain, port: port) {
         _ in
       }
-      Connection.write(connection.socketDescriptor, data: request.data)
+      if request.secure {
+        openSSLConnection(connection)
+      }
+      connection.writeMessage(request, toSocket: connection.socketDescriptor)
 
       connection.readMessageFromSocket(connection.socketDescriptor) {
         _response in
         response = _response
       }
+      connection.close()
     }
     catch {
       NSLog("Error connecting to host: \(request.domain)")
@@ -622,12 +700,13 @@ public final class Connection {
   /**
     This method reads data from a connection.
 
-    - parameter connection:   The connection handle that we are reading from.
-    - parameter buffer:       The buffer that we are reading into.
-    - parameter maxLength:    The maximum size of the buffer.
-    - returns:                The number of bytes that we actually read.
+    - parameter connection:       The connection handle that we are reading from.
+    - parameter sslConnection:    The SSL connection to read from.
+    - parameter buffer:           The buffer that we are reading into.
+    - parameter maxLength:        The maximum size of the buffer.
+    - returns:                    The number of bytes that we actually read.
     */
-  internal static func read(connection: Int32, buffer: UnsafeMutablePointer<Void>, maxLength: Int) -> Int {
+  private static func read(connection: Int32, sslConnection: UnsafeMutablePointer<SSL>, buffer: UnsafeMutablePointer<Void>, maxLength: Int) -> Int {
     if stubbing {
       readConnections.append(connection)
       if stubbedData.isEmpty { return -1 }
@@ -644,6 +723,9 @@ public final class Connection {
         return length
       }
     }
+    else if sslConnection != nil {
+      return Int(SSL_read(sslConnection, buffer, Int32(maxLength)))
+    }
     else {
       #if os(Linux)
         return Glibc.read(connection, buffer, maxLength)
@@ -658,7 +740,7 @@ public final class Connection {
 
     - parameter connection:   The connection to close.
     */
-  internal static func close(connection: Int32) {
+  private static func close(connection: Int32) {
     if stubbing {
       closedConnections.append(connection)
     }
@@ -674,14 +756,18 @@ public final class Connection {
   /**
     This method writes data to a connection.
 
-    - parameter connection:   The connection to write to.
-    - parameter data:         The data to write to the connection.
-    - returns:                The number of bytes we wrote.
+    - parameter connection:       The file descriptor to write to.
+    - parameter sslConnection:    The SSL connection to write to.
+    - parameter data:             The data to write to the connection.
+    - returns:                    The number of bytes we wrote.
     */
-  internal static func write(connection: Int32, data: NSData) -> Int {
+  private static func write(connection: Int32, sslConnection: UnsafeMutablePointer<SSL>, data: NSData) -> Int {
     if stubbing {
       outputData.appendData(data)
       return data.length
+    }
+    else if sslConnection != nil {
+      return Int(SSL_write(sslConnection, data.bytes, Int32(data.length)))
     }
     else {
       #if os(Linux)
@@ -780,3 +866,5 @@ func ConnectionReadResponseInThread(pointer: UnsafeMutablePointer<Void>) -> Unsa
   return nil 
 }
 #endif
+
+private var SSL_CONTEXT: UnsafeMutablePointer<SSL_CTX> = nil
