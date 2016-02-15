@@ -1,18 +1,106 @@
 import XCTest
 import Tailor
 import TailorTesting
+import Foundation
 
-class RequestTests: XCTestCase, TailorTestable {
+final class TestRequest: XCTestCase, TailorTestable {
   var requestString = "GET /test/path HTTP/1.1\r\nX-Custom-Field: header value\r\nReferer: searchtheweb.com\r\nCookie: key1=value1; key2=value2\r\nCookie: key3=value3\r\n\r\nRequest Body"
   let clientAddress = "1.2.3.4"
   
   var request : Request { get { return Request(clientAddress: clientAddress, data: requestData) } }
   var requestData : NSData { get { return NSData(bytes: requestString.utf8) } }
   
-  override func setUp() {
-    super.setUp()
+  //FIXME: Re-enable commented out tests
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testInitializationSetsClientAddressOnRequest", testInitializationSetsClientAddressOnRequest),
+    ("testInitializationSetsMethod", testInitializationSetsMethod),
+    ("testInitializationSetsPath", testInitializationSetsPath),
+    ("testInitializationSetsHttpVersion", testInitializationSetsHttpVersion),
+    ("testInitializationRemovesQueryStringFromPath", testInitializationRemovesQueryStringFromPath),
+    ("testInitializationSetsRequestParameters", testInitializationSetsRequestParameters),
+    ("testParseRequestParametersGetsParametersFromQueryString", testParseRequestParametersGetsParametersFromQueryString),
+    ("testParseRequestParametersCanParseMultipleValuesForParameter", testParseRequestParametersCanParseMultipleValuesForParameter),
+    ("testParseRequestParametersGetsParametersFromPostRequest", testParseRequestParametersGetsParametersFromPostRequest),
+    ("testParseRequestParametersGetsParametersFromPostRequestWithCharsetInContentType", testParseRequestParametersGetsParametersFromPostRequestWithCharsetInContentType),
+    ("testParseRequestParametersGetsParametersFromMultipartForm", testParseRequestParametersGetsParametersFromMultipartForm),
+    ("testParseRequestWithMultipartFormWithBoundariesGetsEmptyParameters", testParseRequestWithMultipartFormWithBoundariesGetsEmptyParameters),
+    ("testParseRequestParametersGetsFileFromMultipartForm", testParseRequestParametersGetsFileFromMultipartForm),
+    ("testParameterDictionarySubscriptWithStringArrayGetsValue", testParameterDictionarySubscriptWithStringArrayGetsValue),
+    ("testParameterDictionarySubscriptWithStringArrayWithMissingValueGetsEmptyArray", testParameterDictionarySubscriptWithStringArrayWithMissingValueGetsEmptyArray),
+    ("testParameterDictionarySubscriptWithStringArrayCanSetValue", testParameterDictionarySubscriptWithStringArrayCanSetValue),
+    ("testParameterDictionarySubscriptWithStringGetsValue", testParameterDictionarySubscriptWithStringGetsValue),
+    ("testParameterDictionarySubscriptWithStringWithMissingValueGetsEmptyString", testParameterDictionarySubscriptWithStringWithMissingValueGetsEmptyString),
+    ("testParameterDictionarySubscriptWithStringWithMultipleValuesGetsFirstValue", testParameterDictionarySubscriptWithStringWithMultipleValuesGetsFirstValue),
+    ("testParameterDictionarySubscriptWithStringCanSetValue", testParameterDictionarySubscriptWithStringCanSetValue),
+    ("testParameterDictionarySubscriptWithNullableStringGetsValue", testParameterDictionarySubscriptWithNullableStringGetsValue),
+    ("testParameterDictionarySubscriptWithNullableStringWithMissingValueIsNil", testParameterDictionarySubscriptWithNullableStringWithMissingValueIsNil),
+    ("testParameterDictionarySubscriptWithNullableStringWithMultipleValuesIsFirstValue", testParameterDictionarySubscriptWithNullableStringWithMultipleValuesIsFirstValue),
+    ("testParameterDictionarySubscriptWithNullableStringCanSetValue", testParameterDictionarySubscriptWithNullableStringCanSetValue),
+    ("testParameterDictionarySubscriptCanTriggerGuardStatements", testParameterDictionarySubscriptCanTriggerGuardStatements),
+    ("testParameterDictionarySubscriptWithIntegerGetsValue", testParameterDictionarySubscriptWithIntegerGetsValue),
+    ("testParameterDictionarySubscriptWithIntegerWithMissingValueGetsZero", testParameterDictionarySubscriptWithIntegerWithMissingValueGetsZero),
+    ("testParameterDictionarySubscriptWithIntegerWithNonIntegerValueGetsZero", testParameterDictionarySubscriptWithIntegerWithNonIntegerValueGetsZero),
+    ("testParameterDictionarySubscriptWithNullableIntegerGetsValue", testParameterDictionarySubscriptWithNullableIntegerGetsValue),
+    ("testParameterDictionarySubscriptWithNullableIntegerWithMissingValueGetsNil", testParameterDictionarySubscriptWithNullableIntegerWithMissingValueGetsNil),
+    ("testParameterDictionarySubscriptWithNullableIntegerWithNonIntegerValueGetsZero", testParameterDictionarySubscriptWithNullableIntegerWithNonIntegerValueGetsZero),
+    ("testParameterDictionarySubscriptWithIntegerCanSetValue", testParameterDictionarySubscriptWithIntegerCanSetValue),
+    ("testParameterDictionaryCanAppendValueToList", testParameterDictionaryCanAppendValueToList),
+    ("testParameterDictionarySubscriptWithNullableIntegerCanSetValue", testParameterDictionarySubscriptWithNullableIntegerCanSetValue),
+    ("testExtractWithPatternGetsPiecesOfLine", testExtractWithPatternGetsPiecesOfLine),
+    ("testExtractWithPatternGetsEmptyListForNoMatch", testExtractWithPatternGetsEmptyListForNoMatch),
+    ("testExtractWithPatternWithInvalidPatternReturnsEmptyArray", testExtractWithPatternWithInvalidPatternReturnsEmptyArray),
+    ("testDecodeQueryStringGetsParameters", testDecodeQueryStringGetsParameters),
+    ("testDecodeQueryStringGetsEmptyStringWithoutEqualSign", testDecodeQueryStringGetsEmptyStringWithoutEqualSign),
+    //("testDecodeQueryStringLeavesBadEscapeValueUnescaped", testDecodeQueryStringLeavesBadEscapeValueUnescaped),
+    ("testDecodeQueryStringCanGetMultipleValuesForParameter", testDecodeQueryStringCanGetMultipleValuesForParameter),
+    ("testParseTimeCanParseRfc822Format", testParseTimeCanParseRfc822Format),
+    ("testParseTimeCanParseRfc850Format", testParseTimeCanParseRfc850Format),
+    ("testParseTimeCanParsePosixFormat", testParseTimeCanParsePosixFormat),
+    ("testInitializerCanInitializeRequestInfo", testInitializerCanInitializeRequestInfo),
+    ("testInitializerSanitizesReservedCharactersInParameters", testInitializerSanitizesReservedCharactersInParameters),
+    ("testInitializerWithGetRequestPutsQueryStringInPath", testInitializerWithGetRequestPutsQueryStringInPath),
+    ("testInitializerCanInitializeSessionInfo", testInitializerCanInitializeSessionInfo),
+    ("testInitializerCanInitializeCookieInfo", testInitializerCanInitializeCookieInfo),
+    //("testInitializeWithNonUtf8ParameterTranslatesToEmptyString", testInitializeWithNonUtf8ParameterTranslatesToEmptyString),
+    ("testRequestsAreEqualWithSameData", testRequestsAreEqualWithSameData),
+    ("testRequestsAreUnequalWithDifferentData", testRequestsAreUnequalWithDifferentData),
+    ("testParameterDictionariesAreEqualWithSameDictionaries", testParameterDictionariesAreEqualWithSameDictionaries),
+    ("testParameterDictionariesAreUnequalWithDifferentDictionaries", testParameterDictionariesAreUnequalWithDifferentDictionaries),
+    ("testContentPreferenceOptionFromHeaderWithSimpleOptionSetsTypeAndQuality", testContentPreferenceOptionFromHeaderWithSimpleOptionSetsTypeAndQuality),
+    ("testContentPreferenceOptionFromHeaderWithQualitySetsQuality", testContentPreferenceOptionFromHeaderWithQualitySetsQuality),
+    ("testContentPreferenceOptionFromHeaderWithBadQualityFieldSetsQualityToZero", testContentPreferenceOptionFromHeaderWithBadQualityFieldSetsQualityToZero),
+    ("testContentPreferenceOptionFromHeaderWithFlagsSetsFlags", testContentPreferenceOptionFromHeaderWithFlagsSetsFlags),
+    ("testContentPreferenceOptionWithSubtypeSetsSubtype", testContentPreferenceOptionWithSubtypeSetsSubtype),
+    ("testContentPreferenceOptionFromHeaderTrimsSpaces", testContentPreferenceOptionFromHeaderTrimsSpaces),
+    ("testContentPreferenceOptionMatchesCompleteMatch", testContentPreferenceOptionMatchesCompleteMatch),
+    ("testContentPreferenceOptionDoesNotMatchDifferentSubtype", testContentPreferenceOptionDoesNotMatchDifferentSubtype),
+    ("testContentPreferenceOptionMatchLevelWithWildcardSubtypeIsMatch", testContentPreferenceOptionMatchLevelWithWildcardSubtypeIsMatch),
+    ("testContentPreferenceOptionMatchLevelWithFullWildcardIsMatch", testContentPreferenceOptionMatchLevelWithFullWildcardIsMatch),
+    ("testContentPreferenceOptionWithNoSubtypeWithMatchIsMatch", testContentPreferenceOptionWithNoSubtypeWithMatchIsMatch),
+    ("testContentPreferenceOptionWithNoSubtypeWithWildcardIsMatch", testContentPreferenceOptionWithNoSubtypeWithWildcardIsMatch),
+    ("testContentPreferenceOptionWithNoSubtypeWithMismatchIsNotMatch", testContentPreferenceOptionWithNoSubtypeWithMismatchIsNotMatch),
+    ("testContentPreferenceOptionWithAllFlagsMatchingIsMatch", testContentPreferenceOptionWithAllFlagsMatchingIsMatch),
+    ("testContentPreferenceOptionWithFlagsMissingIsNotMatch", testContentPreferenceOptionWithFlagsMissingIsNotMatch),
+    ("testContentPreferenceOptionWithWrongFlagValueIsNotMatch", testContentPreferenceOptionWithWrongFlagValueIsNotMatch),
+    ("testContentPreferenceOptionWithExtraFlagValueIsMatch", testContentPreferenceOptionWithExtraFlagValueIsMatch),
+    ("testContentPreferenceOptionWithSameInformationAreEqual", testContentPreferenceOptionWithSameInformationAreEqual),
+    ("testContentPreferenceOptionWithDifferentTypesAreNotEqual", testContentPreferenceOptionWithDifferentTypesAreNotEqual),
+    ("testContentPreferenceOptionWithDifferentSubtypesAreNotEqual", testContentPreferenceOptionWithDifferentSubtypesAreNotEqual),
+    ("testContentPreferenceOptionWithDifferentFlagsAreNotEqual", testContentPreferenceOptionWithDifferentFlagsAreNotEqual),
+    ("testContentPreferenceOptionWithDifferentQualitiesAreNotEqual", testContentPreferenceOptionWithDifferentQualitiesAreNotEqual),
+    ("testContentPreferenceFromHeaderParsesOptions", testContentPreferenceFromHeaderParsesOptions),
+    ("testContentPreferenceFromHeaderPutsHighQualityOptionsBeforeLowQualityOptions", testContentPreferenceFromHeaderPutsHighQualityOptionsBeforeLowQualityOptions),
+    ("testContentPreferenceBestMatchWithOneValueWithAcceptableValueReturnsValue", testContentPreferenceBestMatchWithOneValueWithAcceptableValueReturnsValue),
+    ("testContentPreferenceBestMatchWithMultipleValuesReturnsValueWithHighestMatch", testContentPreferenceBestMatchWithMultipleValuesReturnsValueWithHighestMatch),
+    ("testContentPreferenceBestMatchWithNoMatchReturnsNil", testContentPreferenceBestMatchWithNoMatchReturnsNil),
+    ("testContentPreferencesWithSameOptionsAreEqual", testContentPreferencesWithSameOptionsAreEqual),
+    ("testContentPreferencesWithDifferentOptionsAreNotEqual", testContentPreferencesWithDifferentOptionsAreNotEqual),
+  ]}
+
+  func setUp() {
     setUpTestCase()
     Application.configuration.localization = { PropertyListLocalization(locale: $0) }
+    requestString = "GET /test/path HTTP/1.1\r\nX-Custom-Field: header value\r\nReferer: searchtheweb.com\r\nCookie: key1=value1; key2=value2\r\nCookie: key3=value3\r\n\r\nRequest Body"
   }
   
   //MARK: - Initialization
@@ -30,6 +118,7 @@ class RequestTests: XCTestCase, TailorTestable {
   }
   
   func testInitializationSetsPath() {
+    print("Request data is \(requestData)")
     assert(request.path, equals: "/test/path", message: "sets path based on header")
     requestString = ""
     assert(request.path, equals: "/", message: "sets path to root for empty request")
@@ -49,46 +138,9 @@ class RequestTests: XCTestCase, TailorTestable {
     assert(request.fullPath, equals: "/test/path?count=5", message: "leaves query string in full path")
   }
   
-  func testInitializationSetsHeaders() {
-    let headers = request.headers
-    assert(headers["X-Custom-Field"], equals: "header value", message: "sets X-Custom-Field header to correct value")
-    assert(headers["Referer"], equals: "searchtheweb.com", message: "sets Referer header to correct value")
-  }
-  
-  func testInitializationSetsCookies() {
-    let cookies = request.cookies
-    
-    assert(cookies["key1"], equals: "value1", message: "sets cookie for key1")
-    assert(cookies["key2"], equals: "value2", message: "sets cookie for key2")
-    assert(cookies["key3"], equals: "value3", message: "sets cookie for key3")
-  }
-  
   func testInitializationSetsRequestParameters() {
     requestString = requestString.stringByReplacingOccurrencesOfString("/test/path", withString: "/test/path?count=5")
     assert(request.params["count"], equals: "5", message: "sets request parameter to correct value")
-  }
-  
-  func testInitializationWithBadlyEncodedDataSetsEmptyHeaders() {
-    let request = Request(clientAddress: clientAddress, data: NSData(bytes: [0xD8,0]))
-    assert(request.headers.isEmpty)
-  }
-  
-  func testInitializationRemovesLeadingWhiteSpaceFromHeaderValues() {
-    requestString = requestString.stringByReplacingOccurrencesOfString("header value", withString: " \theader value 2 ")
-    let value = request.headers["X-Custom-Field"]
-    assert(value, equals: "header value 2 ")
-  }
-  
-  func testInitializationWithContinuationLineKeepsValueTogether() {
-    requestString = requestString.stringByReplacingOccurrencesOfString("header value", withString: "header\r\n    value 2")
-    let value = request.headers["X-Custom-Field"]
-    assert(value, equals: "header value 2")
-  }
-  
-  func testInitializationWithContinuationLineInCookieKeepsValueTogether() {
-    requestString = requestString.stringByReplacingOccurrencesOfString("key3=value3", withString: "key3=value3\r\n + value4")
-    let value = request.cookies["key3"]
-    assert(value, equals: "value3 + value4")
   }
   
   //MARK: - Body Parsing
@@ -104,39 +156,32 @@ class RequestTests: XCTestCase, TailorTestable {
   }
   
   func testParseRequestParametersGetsParametersFromQueryString() {
-    requestString = requestString.stringByReplacingOccurrencesOfString("/test/path", withString: "/test/path?count=5&id=6")
+    requestString = "GET /test/path?count=5&id=6 HTTP/1.1\r\nX-Custom-Field: header value\r\nReferer: searchtheweb.com\r\nCookie: key1=value1; key2=value2\r\nCookie: key3=value3\r\n\r\nRequest Body"
     assert(request.params["count"], equals: "5", message: "sets count parameter")
     assert(request.params["id"], equals: "6", message: "sets id parameter")
   }
   
   func testParseRequestParametersCanParseMultipleValuesForParameter() {
-    requestString = requestString.stringByReplacingOccurrencesOfString("/test/path", withString: "/test/path?count=5&ids[]=6&ids[]=7")
+    requestString = "GET /test/path?count=5&ids[]=6&ids[]=7 HTTP/1.1\r\nX-Custom-Field: header value\r\nReferer: searchtheweb.com\r\nCookie: key1=value1; key2=value2\r\nCookie: key3=value3\r\n\r\nRequest Body"
     assert(request.params["count"], equals: "5", message: "sets count parameter")
     assert(request.params["ids[]"], equals: ["6","7"], message: "sets id parameters")
   }
   
   func testParseRequestParametersGetsParametersFromPostRequest() {
-    requestString = requestString.stringByReplacingOccurrencesOfString("GET", withString: "POST")
-    requestString = requestString.stringByReplacingOccurrencesOfString("X-Custom-Field: header value", withString: "Content-Type: application/x-www-form-urlencoded")
-    requestString = requestString.stringByReplacingOccurrencesOfString("Request Body", withString: "count=5&id=6")
+    requestString = "POST /test/path HTTP/1.1\r\nContent-Type: application/x-www-form-urlencoded\r\nReferer: searchtheweb.com\r\nCookie: key1=value1; key2=value2\r\nCookie: key3=value3\r\n\r\ncount=5&id=6"
     assert(request.params["count"], equals: "5", message: "sets count parameter")
     assert(request.params["id"], equals: "6", message: "sets id parameter")
   }
   
   func testParseRequestParametersGetsParametersFromPostRequestWithCharsetInContentType() {
-    requestString = requestString.stringByReplacingOccurrencesOfString("GET", withString: "POST")
-    requestString = requestString.stringByReplacingOccurrencesOfString("X-Custom-Field: header value", withString: "Content-Type: application/x-www-form-urlencoded charset=\"UTF8\"")
-    requestString = requestString.stringByReplacingOccurrencesOfString("Request Body", withString: "count=5&id=6")
+    requestString = "POST /test/path HTTP/1.1\r\nContent-Type: application/x-www-form-urlencoded charset=\"UTF8\"\r\nReferer: searchtheweb.com\r\nCookie: key1=value1; key2=value2\r\nCookie: key3=value3\r\n\r\ncount=5&id=6"
     assert(request.params["count"], equals: "5", message: "sets count parameter")
     assert(request.params["id"], equals: "6", message: "sets id parameter")
   }
-
   
   func testParseRequestParametersGetsParametersFromMultipartForm() {
     let boundary = "----TestFormBoundaryK7Slx2O95dkvjQ14"
-    requestString = requestString.stringByReplacingOccurrencesOfString("GET", withString: "POST")
-    requestString = requestString.stringByReplacingOccurrencesOfString("X-Custom-Field: header value", withString: "Content-Type: multipart/form-data; boundary=\(boundary)")
-    requestString = requestString.stringByReplacingOccurrencesOfString("Request Body", withString: "--\(boundary)\r\nContent-Disposition: form-data; name=\"param1\"\r\n\r\nvalue1\r\n--\(boundary)\r\nContent-Disposition: form-data; name=\"param2\"\r\n\r\nvalue2\r\n--\(boundary)--")
+    requestString = "POST /test/path HTTP/1.1\r\nContent-Type: multipart/form-data; boundary=\(boundary)\r\nReferer: searchtheweb.com\r\nCookie: key1=value1; key2=value2\r\nCookie: key3=value3\r\n\r\n--\(boundary)\r\nContent-Disposition: form-data; name=\"param1\"\r\n\r\nvalue1\r\n--\(boundary)\r\nContent-Disposition: form-data; name=\"param2\"\r\n\r\nvalue2\r\n--\(boundary)--"
     let params = request.params
 
     assert(params["param1"], equals: "value1", message: "sets param1")
@@ -145,17 +190,13 @@ class RequestTests: XCTestCase, TailorTestable {
   
   func testParseRequestWithMultipartFormWithBoundariesGetsEmptyParameters() {
     let boundary = "----TestFormBoundaryK7Slx2O95dkvjQ14"
-    requestString = requestString.stringByReplacingOccurrencesOfString("GET", withString: "POST")
-    requestString = requestString.stringByReplacingOccurrencesOfString("X-Custom-Field: header value", withString: "Content-Type: multipart/form-data")
-    requestString = requestString.stringByReplacingOccurrencesOfString("Request Body", withString: "--\(boundary)\r\nContent-Disposition: form-data; name=\"param1\"\r\n\r\nvalue1\r\n--\(boundary)\r\nContent-Disposition: form-data; name=\"param2\"\r\n\r\nvalue2\r\n--\(boundary)--")
+    requestString = "POST /test/path HTTP/1.1\r\nContent-Type: multipart/form-data\r\nReferer: searchtheweb.com\r\nCookie: key1=value1; key2=value2\r\nCookie: key3=value3\r\n\r\n--\(boundary)\r\nContent-Disposition: form-data; name=\"param1\"\r\n\r\nvalue1\r\n--\(boundary)\r\nContent-Disposition: form-data; name=\"param2\"\r\n\r\nvalue2\r\n--\(boundary)--"
     assert(request.params.raw.isEmpty)
   }
   
   func testParseRequestParametersGetsFileFromMultipartForm() {
     let boundary = "----TestFormBoundaryK7Slx2O95dkvjQ14"
-    requestString = requestString.stringByReplacingOccurrencesOfString("GET", withString: "POST")
-    requestString = requestString.stringByReplacingOccurrencesOfString("X-Custom-Field: header value", withString: "Content-Type: multipart/form-data; boundary=\(boundary)")
-    requestString = requestString.stringByReplacingOccurrencesOfString("Request Body", withString: "--\(boundary)\r\nContent-Disposition: form-data; name=\"param1\"\r\n\r\nvalue1\r\n--\(boundary)\r\nContent-Disposition: form-data; name=\"param2\"; filename=\"record.log\"\r\nContent-Type: text/plain\r\n\r\nthis is a log\r\n--\(boundary)--")
+    requestString = "POST /test/path HTTP/1.1\r\nContent-Type: multipart/form-data; boundary=\(boundary)\r\nReferer: searchtheweb.com\r\nCookie: key1=value1; key2=value2\r\nCookie: key3=value3\r\n\r\n--\(boundary)\r\nContent-Disposition: form-data; name=\"param1\"\r\n\r\nvalue1\r\n--\(boundary)\r\nContent-Disposition: form-data; name=\"param2\"; filename=\"record.log\"\r\nContent-Type: text/plain\r\n\r\nthis is a log\r\n--\(boundary)--"
     assert(request.params["param1"], equals: "value1", message: "sets param1")
     
     if let file = request.uploadedFiles["param2"] {
@@ -457,7 +498,7 @@ class RequestTests: XCTestCase, TailorTestable {
   
   func testInitializeWithNonUtf8ParameterTranslatesToEmptyString() {
     let data = NSData(bytes: [0xD8, 0x00])
-    let badString = NSString(data: data, encoding: NSUTF16BigEndianStringEncoding)! as String
+    let badString = NSString(data: data, encoding: NSUTF16BigEndianStringEncoding)!.bridge()
     let request = Request(parameters: ["key": badString])
     assert(request.params.raw["key"] ?? [], equals: [""])
   }
@@ -687,7 +728,7 @@ class RequestTests: XCTestCase, TailorTestable {
     assert(preference1, equals: preference2)
   }
   
-  func testConetnPreferencesWithDifferentOptionsAreNotEqual() {
+  func testContentPreferencesWithDifferentOptionsAreNotEqual() {
     let preference1 = Request.ContentPreference(options: [
       .init(type: "application", subtype: "xml"),
       .init(type: "application", subtype: "html"),
@@ -700,6 +741,5 @@ class RequestTests: XCTestCase, TailorTestable {
       .init(type: "application", subtype: "json")
       ])
     assert(preference1, doesNotEqual: preference2)
-    
   }
 }

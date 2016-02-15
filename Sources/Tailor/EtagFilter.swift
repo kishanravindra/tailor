@@ -42,7 +42,7 @@ public struct EtagFilter: RequestFilterType, Equatable {
   public func postProcess(request: Request, response: Response, callback: Connection.ResponseCallback) {
     var response = response
     if response.responseCode == .Ok {
-      let tag = response.body.md5Hash
+      let tag = response.bodyData.md5Hash
       response.headers["ETag"] = tag
       if request.headers["If-None-Match"] == tag {
         response.responseCode = .NotModified

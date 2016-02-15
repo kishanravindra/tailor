@@ -1,18 +1,34 @@
 import XCTest
 import Tailor
 import TailorTesting
+import Foundation
 
-class ResponseTests: XCTestCase, TailorTestable {
+final class TestResponse: TailorTestable {
   var response = Response()
   
   var responseLines: [String] { get {
     let responseString = NSString(data: response.data, encoding: NSUTF8StringEncoding)
     return responseString!.componentsSeparatedByString("\r\n") as [String]
   }}
-  
-  override func setUp() {
-    super.setUp()
+
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testResponseCodeForGenericResponsesUsesCodeParameter", testResponseCodeForGenericResponsesUsesCodeParameter),
+    ("testResponseCodeForSpecificResponsesUsesCode", testResponseCodeForSpecificResponsesUsesCode),
+    ("testResponseCodeNameForGenericResponsesUsesNameParameter", testResponseCodeNameForGenericResponsesUsesNameParameter),
+    ("testResponseCodeNameForSpecificResponsesUsesDescription", testResponseCodeNameForSpecificResponsesUsesDescription),
+    ("testResponsesAreEqualWithSameInformation", testResponsesAreEqualWithSameInformation),
+    ("testResponsesAreUnequalWithDifferentCodes", testResponsesAreUnequalWithDifferentCodes),
+    ("testResponsesAreUnequalWithDifferentHeaders", testResponsesAreUnequalWithDifferentHeaders),
+    ("testResponsesAreUnequalDifferentBodyData", testResponsesAreUnequalDifferentBodyData),
+    ("testResponsesAreUnequalWithDifferentCookies", testResponsesAreUnequalWithDifferentCookies),
+    ("testResponsesAreEqualWithSameCodeAndName", testResponsesAreEqualWithSameCodeAndName),
+    ("testResponsesAreNotEqualWithDifferent", testResponsesAreNotEqualWithDifferent),
+    ("testResponsesAreEqualWithDifferentName", testResponsesAreEqualWithDifferentName),
+  ]}
+
+  func setUp() {
     setUpTestCase()
+    response = Response()
   }
   
   func setUpFullResponse() {
@@ -120,110 +136,6 @@ class ResponseTests: XCTestCase, TailorTestable {
     assert(Response.Code.ServiceUnavailable.description, equals: "Service Unavailable")
     assert(Response.Code.GatewayTimeout.description, equals: "Gateway Timeout")
     assert(Response.Code.HttpVersionNotSupported.description, equals: "HTTP Version Not Supported")
-  }
-  
-  //MARK: - Response Data
-  
-  func testAppendStringAppendsToBody() {
-    response.appendString("Test")
-    response.appendString("String")
-    let data = NSData(bytes: "TestString".utf8)
-    assert(response.body, equals: data, message: "sets the body data to the combined strings")
-  }
-  
-  func testAppendDataAppendsToBody() {
-    let bytes = [1,2,3,4]
-    let data = NSData(bytes: bytes, length: bytes.count)
-    response.appendData(data)
-    assert(response.body, equals: data, message: "sets the body data to the data given")
-  }
-  
-  func testResponseDataContainsHTTPCode() {
-    setUpFullResponse()
-    assert(responseLines[0], equals: "HTTP/1.1 200 OK", message: "response has HTTP intro line")
-  }
-  
-  func testResponseDataContainsCustomHeaders() {
-    setUpFullResponse()
-    assert(responseLines.contains("X-Custom-Header: header value"), message: "has a custom header in the headers")
-  }
-  
-  func testResponseDataContainsDefaultHeaders() {
-    setUpFullResponse()
-    
-    assert(responseLines.contains("Content-Length: 24"), message: "has the body length as the content length header")
-    assert(responseLines.contains("Content-Type: text/html; charset=UTF-8"))
-    let date = Timestamp.now().inTimeZone("GMT").format(TimeFormat.Rfc822)
-    assert(responseLines.contains("Date: \(date)"), message: "has the current time as the date header")
-  }
-  
-  func testResponseDataForResponseWithUndefinedLengthHasNoLengthHeader() {
-    setUpFullResponse()
-    response.hasDefinedLength = false
-    setUpFullResponse()
-    
-    assert(!responseLines.contains("Content-Length: 24"), message: "has no content length header")
-    assert(responseLines.contains("Content-Type: text/html; charset=UTF-8"))
-  }
-  
-  func tesetResponseDataForResponseWithBodyOnlyContainsOnlyTheBody() {
-    setUpFullResponse()
-    response.bodyOnly = true
-    assert(responseLines, equals: ["You are being redirected"])
-  }
-  
-  func testResponseDataAllowsSpecialHeadersToOverrideDefaults() {
-    setUpFullResponse()
-    response.headers["Content-Length"] = "A"
-    response.headers["Content-Type"] = "B"
-    response.headers["Date"] = "C"
-    
-    assert(responseLines.contains("Content-Length: A"))
-    assert(responseLines.contains("Content-Type: B"))
-    assert(responseLines.contains("Date: C"))
-    assert(!responseLines.contains("Content-Length: 24"), message: "does not have the default content length")
-    assert(!responseLines.contains("Content-Type: text/html; charset=UTF-8"), message: "does not have the default content type")
-    let date = Timestamp.now().inTimeZone("GMT").format(TimeFormat.Rfc822)
-    assert(!responseLines.contains("Date: \(date)"), message: "does not have the current time as the date header")
-  }
-  
-  func testResponseDataContainsCookieHeaders() {
-    setUpFullResponse()
-    assert(responseLines.contains("Set-Cookie: key2=value4; Path=/"), message: "has a cookie header for a changed cookie")
-    assert(responseLines.contains("Set-Cookie: key3=value3; Path=/"), message: "has a cookie header for a new cookie")
-  }
-  
-  func testResponseDataContainsBody() {
-    setUpFullResponse()
-    assert(responseLines.contains("You are being redirected"))
-  }
-  
-  func testResponseBodyStringContainsBody() {
-    setUpFullResponse()
-    response.appendString(". Test")
-    response.appendString("Body")
-    let string = response.bodyString
-    assert(string, equals: "You are being redirected. TestBody", message: "has the full body")
-  }
-  
-  func testResponseBodyStringWithNonUTF8DataIsEmptyString() {
-    setUpFullResponse()
-    response.appendData(NSData(bytes: [0xD8, 0x00]))
-    let string = response.bodyString
-    assert(string, equals: "")
-  }
-  
-  func testCopyDoesNotShareChanges() {
-    let response2 = response
-    response.appendString("Hello")
-    assert(response2.bodyString, equals: "")
-  }
-  
-  func testClearBodyClearsBody() {
-    setUpFullResponse()
-    response.appendString("Body")
-    response.clearBody()
-    assert(response.body.length, equals: 0)
   }
   
   //MARK: - Comparisons

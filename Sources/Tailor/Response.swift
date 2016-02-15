@@ -3,7 +3,7 @@ import Foundation
 /**
   This type represents a response to a request.
   */
-public struct Response: Equatable {
+public struct Response: HttpMessageType, Equatable {
   /**
     This type represents a response code in a response.
     
@@ -266,6 +266,11 @@ public struct Response: Equatable {
     public static let HttpVersionNotSupported = Code(505, "HTTP Version Not Supported")
   }
   
+  /** The HTTP status line. */
+  public var statusLine: String {
+    return "HTTP/1.1 \(responseCode.code) \(responseCode.description)"
+  }
+
   /**
     The HTTP response code.
     */
@@ -274,32 +279,17 @@ public struct Response: Equatable {
   /** The response headers. */
   public var headers: [String:String] = [:]
   
-  /** The data for the response body. */
-  private var _bodyData = NSMutableData()
-  
-  /** The data for the response body, when we need to read it. */
-  private var bodyDataForReading: NSData { return _bodyData }
-  
-  /**
-    The data for the response body, when we need to write it.
-
-    This checks to make sure that we have the only copy of the body data. If we
-    are sharing it with another instance, we have to make a copy.
-    */
-  private var bodyDataForWriting: NSMutableData {
-    mutating get {
-      if !isUniquelyReferencedNonObjC(&_bodyData) {
-        _bodyData = NSMutableData(data: _bodyData)
-      }
-      return _bodyData
-    }
-  }
-  
   /** The cookies that should be updated with this response. */
   public var cookies = CookieJar()
+
+  /** The data in the body of the message. */
+  public var bodyData = NSData()
   
   /** The templates that were rendered to produce this response. */
   public var renderedTemplates: [TemplateType] = []
+
+  /** Whether this message type sets cookies rather than reading them. */
+  public let setsCookies = true
   
   /**
     Whether this response has a defined length that will be sent all at once.
@@ -356,69 +346,46 @@ public struct Response: Equatable {
   public init() {
     
   }
+
+  /**
+    This initializer creates a response from the HTTP message components.
+    */
+  public init(statusLine: String, headers: [String:String], cookies: CookieJar, bodyData: NSData) {
+    let statusComponents = statusLine.componentsSeparatedByString(" ")
+    if statusComponents.count > 2 {
+      if let code = Int(statusComponents[1]) {
+        self.responseCode = Code(code, statusComponents[2])
+      }
+      else {
+        self.responseCode = Code(500, "Invalid response format")
+      }
+    }
+    else {
+      self.responseCode = Code(500, "Invalid response format")
+    }
+    self.headers = headers
+    self.cookies = cookies
+    self.bodyData = bodyData
+  }
   
   //MARK: - Response Data
-  
-  /**
-    This method appends a string to the response.
 
-    - parameter string:  The string to add
-    */
-  public mutating func appendString(string: String) {
-    self.appendData(NSData(bytes: string.utf8))
-  }
-  
   /**
-    This method appends raw data to the response.
+    A copy of the body data.
 
-    - parameter data:  The data to add.
+    This has been deprecated in favor of bodyData.
     */
-  public mutating func appendData(data: NSData) {
-    bodyDataForWriting.appendData(data)
-  }
+  @available(*, deprecated, message="Use bodyData instead")
+  public var body: NSData { return self.bodyData }
   
   /**
-    This method removes the data from the response.
+    The string version of the response body.
+
+    This has been deprecated in favor of bodyText.
     */
-  public mutating func clearBody() {
-    bodyDataForWriting.setData(NSData())
-  }
-  
-  /** A copy of the body data. */
-  public var body: NSData { return NSData(data: self.bodyDataForReading) }
-  
-  /** The full HTTP response data. */
-  public var data : NSData { get {
-    if bodyOnly { return self.body }
-    let data = NSMutableData()
-    
-    func add(string: String) {
-      data.appendData(NSData(bytes: string.utf8))
-    }
-    
-    add("HTTP/1.1 \(responseCode.code) \(responseCode.description)\r\n")
-    
-    var headers = self.headers
-    
-    if hasDefinedLength {
-      headers["Content-Length"] = headers["Content-Length"] ?? String(bodyDataForReading.length)
-    }
-    headers["Content-Type"] = headers["Content-Type"] ?? "text/html; charset=UTF-8"
-    headers["Date"] = headers["Date"] ?? Timestamp.now().inTimeZone("GMT").format(TimeFormat.Rfc822)
-    
-    for key in headers.keys.sort() {
-      guard let value = headers[key] else { continue }
-      add("\(key): \(value)\r\n")
-    }
-    add(cookies.headerStringForChanges)
-    add("\r\n")
-    data.appendData(bodyDataForReading)
-    return data
-  } }
-  
-  /** The string version of the response body. */
+  @available(*, deprecated, message="Use bodyText instead")
   public var bodyString: String { get {
-    return NSString(data: self.bodyDataForReading, encoding: NSUTF8StringEncoding)?.bridge() ?? ""
+    return self.bodyText
   } }
 }
 
@@ -436,7 +403,7 @@ public struct Response: Equatable {
 public func ==(lhs: Response, rhs: Response) -> Bool {
   return lhs.responseCode == rhs.responseCode &&
     lhs.headers == rhs.headers &&
-    lhs.bodyDataForReading == rhs.bodyDataForReading &&
+    lhs.bodyData == rhs.bodyData &&
     lhs.cookies == rhs.cookies
 }
 

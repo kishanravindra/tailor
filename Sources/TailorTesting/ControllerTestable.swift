@@ -183,7 +183,7 @@ extension ControllerTestable {
                                 provided automatically.
     */
   public func assert(response: Response, contains substring: String, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
-    let body = response.bodyString
+    let body = response.bodyText
     if !body.contains(substring) {
       XCTFail("Assertion failed: \(body) does not contain \(substring) - \(message)", file: file, line: line)
     }

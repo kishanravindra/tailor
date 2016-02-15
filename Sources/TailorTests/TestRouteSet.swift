@@ -485,7 +485,7 @@ final class TestRouteSet: XCTestCase, TailorTestable {
     let route = getLatestRoute()
     route?.handler(createTestRequest()) {
       response in
-      self.assert(response.bodyString, equals: "Yo dawg\r\nTest Controller: index\r\nBye")
+      self.assert(response.bodyText, equals: "Yo dawg\r\nTest Controller: index\r\nBye")
     }
   }
   
@@ -506,7 +506,7 @@ final class TestRouteSet: XCTestCase, TailorTestable {
     let route = getLatestRoute()
     route?.handler(createTestRequest()) {
       response in
-      self.assert(response.bodyString, equals: "")
+      self.assert(response.bodyText, equals: "")
     }
   }
   
@@ -524,7 +524,7 @@ final class TestRouteSet: XCTestCase, TailorTestable {
     let route = getLatestRoute()
     route?.handler(createTestRequest()) {
       response in
-      self.assert(response.bodyString, equals: "Success")
+      self.assert(response.bodyText, equals: "Success")
     }
   }
   
@@ -576,7 +576,7 @@ final class TestRouteSet: XCTestCase, TailorTestable {
     let route = getLatestRoute()
     route?.handler(createTestRequest()) {
       response in
-      self.assert(response.bodyString, equals: "Yo\r\nMy 1\r\nTest Controller: index\r\nDawg")
+      self.assert(response.bodyText, equals: "Yo\r\nMy 1\r\nTest Controller: index\r\nDawg")
     }
   }
   
@@ -593,11 +593,11 @@ final class TestRouteSet: XCTestCase, TailorTestable {
     }
     self.routeSet.routes[0].handler(createTestRequest()) {
       response in
-      self.assert(response.bodyString, equals: "Yo dawg\r\nYo friend\r\nTest Controller: index\r\nBye\r\nBye")
+      self.assert(response.bodyText, equals: "Yo dawg\r\nYo friend\r\nTest Controller: index\r\nBye\r\nBye")
     }
     self.routeSet.routes[1].handler(createTestRequest()) {
       response in
-      self.assert(response.bodyString, equals: "Yo dawg\r\nTest Controller: index\r\nBye")
+      self.assert(response.bodyText, equals: "Yo dawg\r\nTest Controller: index\r\nBye")
     }
     
   }
@@ -613,7 +613,7 @@ final class TestRouteSet: XCTestCase, TailorTestable {
       let location = response.headers["location"]
       self.assert(location, equals: "/route2", message: "sets location header to the second path")
       
-      let bodyString = response.bodyString
+      let bodyString = response.bodyText
       self.assert(bodyString, equals: "You are being redirected", message: "sets request body to a redirect message")
     }
   }
@@ -642,7 +642,7 @@ final class TestRouteSet: XCTestCase, TailorTestable {
     route?.handler(createTestRequest()) {
       response in
       expectation.fulfill()
-      let body = response.bodyString
+      let body = response.bodyText
       self.assert(body, equals: "Test Controller: index", message: "calls controller's respond method")
     }
     waitForExpectationsWithTimeout(0, handler: nil)
@@ -654,7 +654,7 @@ final class TestRouteSet: XCTestCase, TailorTestable {
       response in
       self.assert(response.responseCode, equals: .Ok)
       let path = Application.configuration.resourcePath + "/assets/TestConfig.plist"
-      self.assert(response.body, equals: NSData(contentsOfFile: path)!)
+      self.assert(response.bodyData, equals: NSData(contentsOfFile: path)!)
       self.assert(response.headers["ETag"], equals: "15C015629C24476B6068C780485716B5")
       self.assert(response.headers["Content-Type"], equals: "text/plain", message: "has a default mime type of text/plain")
     }
@@ -670,7 +670,7 @@ final class TestRouteSet: XCTestCase, TailorTestable {
       response in
       self.assert(response.responseCode, equals: .NotModified)
       self.assert(response.headers["ETag"], equals: "15C015629C24476B6068C780485716B5")
-      self.assert(response.body.length, equals: 0)
+      self.assert(response.bodyData.length, equals: 0)
     }
   }
   
@@ -680,7 +680,7 @@ final class TestRouteSet: XCTestCase, TailorTestable {
       response in
       self.assert(response.responseCode, equals: .Ok)
       let path = Application.configuration.resourcePath + "/assets/TestConfig.plist"
-      self.assert(response.body, equals: NSData(contentsOfFile: path)!)
+      self.assert(response.bodyData, equals: NSData(contentsOfFile: path)!)
       self.assert(response.headers["ETag"], equals: "15C015629C24476B6068C780485716B5")
     }
   }
@@ -728,12 +728,12 @@ final class TestRouteSet: XCTestCase, TailorTestable {
     routeSet.handleRequest(Request(path: "/tests")) {
       response in
       expectation1.fulfill()
-      self.assert(response.bodyString, equals: "Test Controller: index")
+      self.assert(response.bodyText, equals: "Test Controller: index")
     }
     routeSet.handleRequest(Request(path: "/tests/4")) {
       response in
       expectation2.fulfill()
-      self.assert(response.bodyString, equals: "Test Controller: show 4")
+      self.assert(response.bodyText, equals: "Test Controller: show 4")
     }
     waitForExpectationsWithTimeout(0, handler: nil)
   }
@@ -763,21 +763,21 @@ final class TestRouteSet: XCTestCase, TailorTestable {
     routeSet.handleRequest(createTestRequest("/hats")) {
       response in
       expectation1.fulfill()
-      let body = response.bodyString
+      let body = response.bodyText
       self.assert(body, equals: "Request 1", message: "calls appropriate request")
     }
     
     routeSet.handleRequest(createTestRequest("/hats/3")) {
       response in
       expectation2.fulfill()
-      let body = response.bodyString
+      let body = response.bodyText
       self.assert(body, equals: "Request 2: 3", message: "calls appropriate request")
     }
     
     routeSet.handleRequest(createTestRequest("/bad/path")) {
       response in
       expectation3.fulfill()
-      let body = response.bodyString
+      let body = response.bodyText
       self.assert(response.responseCode, equals: .NotFound, message: "gives 404 response")
       self.assert(body, equals: "File Not Found", message: "gives error response")
 
@@ -827,7 +827,7 @@ final class TestRouteSet: XCTestCase, TailorTestable {
     routeSet.handleRequest(createTestRequest("/hat%73")) {
       response in
       expectation.fulfill()
-      let body = response.bodyString
+      let body = response.bodyText
       self.assert(body, equals: "Request 1", message: "calls appropriate request")
     }
     /* FIXME:
@@ -867,7 +867,7 @@ final class TestRouteSet: XCTestCase, TailorTestable {
     routeSet.handleRequest(createTestRequest("/test?foo=bar")) {
       response in
       self.assert(response.responseCode, equals: .PreconditionFailed)
-      self.assert(response.bodyString, equals: "Name parameter is required")
+      self.assert(response.bodyText, equals: "Name parameter is required")
     }
   }
   
@@ -894,7 +894,7 @@ final class TestRouteSet: XCTestCase, TailorTestable {
     routeSet.handleRequest(createTestRequest("/test?foo=bar")) {
       response in
       self.assert(response.responseCode, equals: .BadRequest)
-      self.assert(response.bodyString, equals: "")
+      self.assert(response.bodyText, equals: "")
     }
   }
   

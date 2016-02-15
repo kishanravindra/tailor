@@ -3,7 +3,7 @@ import Foundation
 /**
   This type represents a request from the client.
   */
-public struct Request: Equatable {
+public struct Request: HttpMessageType, Equatable {
   /**
     This type represents a dictionary of request parameters.
 
@@ -129,10 +129,10 @@ public struct Request: Equatable {
   }
   
   /** The client's IP address. */
-  public let clientAddress: String
-  
-  /** The full request data. */
-  public let data: NSData
+  public var clientAddress: String = "0.0.0.0"
+
+  /** The status line from the message. */
+  public let statusLine: String
   
   /** The HTTP method. */
   public let method: String
@@ -150,10 +150,26 @@ public struct Request: Equatable {
   public var headers: [String: String]
   
   /** The full request data. */
-  public var body: NSData
+  @available(*, deprecated, message="Use bodyData instead")
+  public var body: NSData {
+    get { return bodyData }
+    set { self.bodyData = newValue }
+  }
+
+  /** The body data. */
+  public var bodyData: NSData
   
   /** The request parameters. */
   public var params = ParameterDictionary()
+
+  /** Whether this message type sets cookies */
+  public let setsCookies = false
+
+  /** Whether this message has a pre-defined length. */
+  public let hasDefinedLength = true
+
+  /** Whether this message only contains a body */
+  public let bodyOnly = false
   
   /**
     The request parameters.
@@ -185,29 +201,31 @@ public struct Request: Equatable {
   public var cookies: CookieJar
   
   /**
-    This method initializes a request.
+    This initializer creates a request.
 
     - parameter clientAddress:   The client's IP address.
     - parameter data:            The full request data.
     */
   public init(clientAddress: String, data: NSData) {
+    self.init(data: data)
     self.clientAddress = clientAddress
-    self.data = data
-    
-    let headerAndBody = data.componentsSeparatedByString("\r\n\r\n", limit: 2)
-    let headerData = headerAndBody[0]
-    if headerAndBody.count > 1 {
-      self.body = headerAndBody[1]
-    }
-    else {
-      self.body = NSData()
-    }
-    
-    let headerString = NSString(data: headerData, encoding: NSUTF8StringEncoding) ?? ""
-    
-    var lines = headerString.componentsSeparatedByString("\r\n") as [String]
-    let introMatches = Request.extractWithPattern(lines[0], pattern: "^([\\S]*) ([\\S]*) HTTP/([\\d.]*)$")
-    
+  }
+
+  /**
+    This initializer creates a request from the message components.
+
+    - parameter statusLine:   The HTTP status line.
+    - parameter headers:      The headers
+    - parameter cookies:      The cookies
+    - parameter bodyData:     The body data.
+    */
+  public init(statusLine: String, headers: [String: String], cookies: CookieJar, bodyData: NSData) {
+    self.statusLine = statusLine
+    self.headers = headers
+    self.cookies = cookies
+    self.bodyData = bodyData
+
+    let introMatches = Request.extractWithPattern(statusLine, pattern: "^([\\S]*) ([\\S]*) HTTP/([\\d.]*)$")
     if introMatches.isEmpty {
       self.method = "GET"
       self.version = "1.1"
@@ -217,7 +235,6 @@ public struct Request: Equatable {
       self.method = introMatches[0]
       self.version = introMatches[2]
       self.fullPath = introMatches[1]
-      lines.removeAtIndex(0)
     }
     
     let queryStringLocation = self.fullPath.bridge().rangeOfString("?", options: NSStringCompareOptions.BackwardsSearch)
@@ -227,60 +244,12 @@ public struct Request: Equatable {
     else {
       self.path = self.fullPath
     }
-    
-    var headers : [String:String] = [:]
-    var cookieHeaders = [String]()
-    var cookies = CookieJar()
-    var lastHeaderKey: String? = nil
-    var lastWasCookie = false
-    for index in 0..<lines.count {
-      let line = lines[index]
-      if line.isEmpty {
-        continue
-      }
-      let continuationMatch = Request.extractWithPattern(line, pattern: "^[ \t]+(.*)$")
-      if !continuationMatch.isEmpty {
-        guard let key = lastHeaderKey else { continue }
-        if lastWasCookie && cookieHeaders.count > 0 {
-          cookieHeaders[cookieHeaders.endIndex.predecessor()] += " " + continuationMatch[0]
-        }
-        else {
-          guard let value = headers[key] else { continue }
-          headers[key] = value + " " + continuationMatch[0]
-        }
-      }
-      let headerMatch = Request.extractWithPattern(line, pattern: "^([\\w-]*):[ \t]*(.*)$")
-      
-      if !headerMatch.isEmpty {
-        if headerMatch[0] == "Cookie" {
-          cookieHeaders.append(headerMatch[1])
-          lastHeaderKey = headerMatch[1]
-          lastWasCookie = true
-        }
-        else {
-          headers[headerMatch[0]] = headerMatch[1]
-          lastHeaderKey = headerMatch[0]
-          lastWasCookie = false
-        }
-      }
-    }
-    self.headers = headers
-    
-    for header in cookieHeaders {
-      cookies.addHeaderString(header)
-    }
-    
-    self.cookies = cookies
+
     self.session = Session(cookieString: cookies["_session"] ?? "", clientAddress: clientAddress)
     self.parseRequestParameters()
   }
   
   //MARK: - Body Parsing
-  
-  /** The text of the request body. */
-  public var bodyText : String { get {
-    return NSString(data: self.body, encoding: NSUTF8StringEncoding)?.bridge() ?? ""
-  } }
   
   /**
     This method extracts the request parameters from the query string and the
@@ -318,12 +287,12 @@ public struct Request: Equatable {
     guard boundaryComponents.count > 1 else { return }
     
     let boundary = boundaryComponents[1]
-    let components = self.body.componentsSeparatedByString("--\(boundary)")
+    let components = self.bodyData.componentsSeparatedByString("--\(boundary)")
     for component in components {
       if component.length <= 4 {
         continue
       }
-      let trimmedData = component.subdataWithRange(NSRange(location: 2, length: component.length - 4))
+      let trimmedData = component.subdataWithRange(NSRange(location: 0, length: component.length - 2))
       let subRequest = Request(clientAddress: self.clientAddress, data: trimmedData)
       
       var parameterName : String? = nil
@@ -341,11 +310,11 @@ public struct Request: Equatable {
       if let contentType = subRequest.headers["Content-Type"] {
         self.uploadedFiles[name] = [
           "contentType": contentType,
-          "data": subRequest.body
+          "data": subRequest.bodyData
         ]
       }
       else {
-        self.params[name] = NSString(data: subRequest.body, encoding: NSUTF8StringEncoding)?.bridge()
+        self.params[name] = NSString(data: subRequest.bodyData, encoding: NSUTF8StringEncoding)?.bridge()
       }
     }
   }
