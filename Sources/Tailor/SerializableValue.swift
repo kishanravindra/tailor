@@ -425,6 +425,9 @@ extension SerializableValue {
     else if let n = jsonObject as? Swift.Double {
       self = Double(n)
     }
+    else if let b = jsonObject as? Bool {
+      self = Boolean(b)
+    }
     else {
       throw SerializationParsingError.UnsupportedType(jsonObject.dynamicType)
     }

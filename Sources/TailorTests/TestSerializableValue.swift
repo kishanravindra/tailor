@@ -33,6 +33,7 @@ struct TestSerializableValue: XCTestCase, TailorTestable {
     ("testInitWithNsNullGetsNull", testInitWithNsNullGetsNull),
     ("testInitWithIntegerGetsNumber", testInitWithIntegerGetsNumber),
     ("testInitWithDoubleGetsNumber", testInitWithDoubleGetsNumber),
+    ("testInitWithBooleanGetsBoolean", testInitWithBooleanGetsBoolean),
     ("testInitWithJsonObjectWithUnsupportedTypeThrowsException", testInitWithJsonObjectWithUnsupportedTypeThrowsException),
     ("testInitWithJsonDataForDictionaryCreatesDictionary", testInitWithJsonDataForDictionaryCreatesDictionary),
     ("testInitWithPlistWithValidPathGetsData", testInitWithPlistWithValidPathGetsData),
@@ -557,6 +558,17 @@ struct TestSerializableValue: XCTestCase, TailorTestable {
     do {
       let primitive = try SerializableValue(jsonObject: object)
       assert(primitive, equals: SerializableValue.Double(61.4))
+    }
+    catch {
+      assert(false, message: "should not throw exception")
+    }
+  }
+
+  func testInitWithBooleanGetsBoolean() {
+    let object = false
+    do {
+      let primitive = try SerializableValue(jsonObject: object)
+      assert(primitive, equals: SerializableValue.Boolean(false))
     }
     catch {
       assert(false, message: "should not throw exception")
