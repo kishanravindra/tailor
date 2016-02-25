@@ -1,6 +1,7 @@
 import XCTest
 import Tailor
 
+#if os(OSX)
 /**
   This class provides helper methods for a test suite for testing a controller.
 
@@ -59,7 +60,7 @@ public class ControllerTestCase : TailorTestCase {
                               should generally omit this, since it will be
                               provided automatically.
     */
-  public func assertResponse(response: Response, redirectsTo path: String?, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+  public func assertResponse(response: Response, redirectsTo path: String?, message: String = "", file: StaticString = #file, line: UInt = #line) {
     assert(response.responseCode, equals: .SeeOther, message: "gives a redirect response", file: file, line: line)
     if path == nil {
       XCTFail("Target path is nil - \(message)", file: file, line: line)
@@ -82,7 +83,7 @@ public class ControllerTestCase : TailorTestCase {
                                 should generally omit this, since it will be
                                 provided automatically.
     */
-  public func assertResponse(response: Response, contains substring: String, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+  public func assertResponse(response: Response, contains substring: String, message: String = "", file: StaticString = #file, line: UInt = #line) {
     let body = response.bodyString
     if !body.contains(substring) {
       XCTFail("Assertion failed: \(body) does not contain \(substring) - \(message)", file: file, line: line)
@@ -137,7 +138,7 @@ public class ControllerTestCase : TailorTestCase {
     - parameter callback:     A callback that will perform checks on the
                               response.
     */
-  public func callAction(actionName: String, headers: [String:String] = [:], file: StaticString = __FILE__, line: UInt = __LINE__, callback: Response -> Void) {
+  public func callAction(actionName: String, headers: [String:String] = [:], file: StaticString = #file, line: UInt = #line, callback: Response -> Void) {
     var actionParams = params[actionName] ?? [:]
     var sessionData = [String:String]()
     let csrfKey = AesEncryptor.generateKey()
@@ -173,3 +174,4 @@ public class ControllerTestCase : TailorTestCase {
   }
   #endif
 }
+#endif

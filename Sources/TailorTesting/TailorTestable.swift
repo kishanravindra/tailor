@@ -32,7 +32,7 @@ public protocol TailorTestable: XCTestCase {
 }
 
 extension TailorTestable {
-  public func XCTFail(message: String, file: StaticString = __FILE__, line: UInt = __LINE__) {
+  public func XCTFail(message: String, file: StaticString = #file, line: UInt = #line) {
     XCTest.XCTFail(message, file: file, line: line)
   }
 
@@ -94,7 +94,7 @@ extension TailorTestable {
                             from. You should generally omit this, since it will
                             be provided automatically.
     */
-  public func assert<T : Equatable>(lhs: T!, equals rhs: T, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+  public func assert<T : Equatable>(lhs: T!, equals rhs: T, message: String = "", file: StaticString = #file, line: UInt = #line) {
     let message = (message.isEmpty ? message: " - " + message)
     if lhs == nil {
       XCTFail("Value was nil\(message)", file: file, line: line)
@@ -119,7 +119,7 @@ extension TailorTestable {
                             from. You should generally omit this, since it will
                             be provided automatically.
     */
-  public func assert<T : Equatable>(lhs: T!, doesNotEqual rhs: T, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+  public func assert<T : Equatable>(lhs: T!, doesNotEqual rhs: T, message: String = "", file: StaticString = #file, line: UInt = #line) {
     let message = (message.isEmpty ? message: " - " + message)
     if lhs != nil && lhs == rhs {
       XCTFail("\(lhs) == \(rhs)\(message)", file: file, line: line)
@@ -139,7 +139,7 @@ extension TailorTestable {
                             from. You should generally omit this, since it will
                             be provided automatically.
     */
-  public func assert<T : Equatable>(lhs: [T], equals rhs: [T], message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+  public func assert<T : Equatable>(lhs: [T], equals rhs: [T], message: String = "", file: StaticString = #file, line: UInt = #line) {
     let message = (message.isEmpty ? message: " - " + message)
     if lhs != rhs {
       XCTFail("\(lhs) != \(rhs)\(message)", file: file, line: line)
@@ -159,7 +159,7 @@ extension TailorTestable {
                             from. You should generally omit this, since it will
                             be provided automatically.
     */
-  public func assert<T : Equatable>(lhs: [[T]], equals rhs: [[T]], message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+  public func assert<T : Equatable>(lhs: [[T]], equals rhs: [[T]], message: String = "", file: StaticString = #file, line: UInt = #line) {
     let message = (message.isEmpty ? message: " - " + message)
     if lhs.count != rhs.count {
       XCTFail("\(lhs) != \(rhs)\(message)", file: file, line: line)
@@ -186,7 +186,7 @@ extension TailorTestable {
                             from. You should generally omit this, since it will
                             be provided automatically.
   */
-  public func assert<K : Equatable, V: Equatable>(lhs: [K:V], equals rhs: [K:V], message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+  public func assert<K : Equatable, V: Equatable>(lhs: [K:V], equals rhs: [K:V], message: String = "", file: StaticString = #file, line: UInt = #line) {
     if lhs != rhs {
       let message = (message.isEmpty ? message: " - " + message)
       XCTFail("\(lhs) != \(rhs)\(message)", file: file, line: line)
@@ -207,7 +207,7 @@ extension TailorTestable {
                               from. You should generally omit this, since it
                               will be provided automatically.
     */
-  public func assert(string: String, contains substring: String, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+  public func assert(string: String, contains substring: String, message: String = "", file: StaticString = #file, line: UInt = #line) {
     let range = string.bridge().rangeOfString(substring)
     if range.location == NSNotFound {
       let message = (message.isEmpty ? message: " - " + message)
@@ -228,7 +228,7 @@ extension TailorTestable {
                               from. You should generally omit this, since it
                               will be provided automatically.
     */
-    public func assert(string: String, doesNotContain substring: String, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+    public func assert(string: String, doesNotContain substring: String, message: String = "", file: StaticString = #file, line: UInt = #line) {
       let range = string.bridge().rangeOfString(substring)
       if range.location != NSNotFound {
         let message = (message.isEmpty ? message: " - " + message)
@@ -248,7 +248,7 @@ extension TailorTestable {
                               from. You should generally omit this, since it
                               will be provided automatically.
     */
-  public func assert(isNil value: Any?, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+  public func assert(isNil value: Any?, message: String = "", file: StaticString = #file, line: UInt = #line) {
     if value != nil {
       let message = (message.isEmpty ? message: " - " + message)
       XCTFail("value was not nil\(message)", file: file, line: line)
@@ -267,7 +267,7 @@ extension TailorTestable {
                               from. You should generally omit this, since it
                               will be provided automatically.
   */
-  public func assert(isNotNil value: Any?, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+  public func assert(isNotNil value: Any?, message: String = "", file: StaticString = #file, line: UInt = #line) {
     if value == nil {
       let message = (message.isEmpty ? message: " - " + message)
       XCTFail("value was nil\(message)", file: file, line: line)
@@ -289,7 +289,7 @@ extension TailorTestable {
                                 coming from. You should generally omit this,
                                 since it will be provided automatically.
     */
-  public func assert(value: Double?, within range: Double, of correctValue: Double, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+  public func assert(value: Double?, within range: Double, of correctValue: Double, message: String = "", file: StaticString = #file, line: UInt = #line) {
     let message = (message.isEmpty ? message: " - " + message)
     if value == nil {
       XCTFail("value was nil\(message)", file: file, line: line)
@@ -315,7 +315,7 @@ extension TailorTestable {
                                 since it will be provided automatically.
   */
 
-  public func assert(string: String, matches pattern: String, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+  public func assert(string: String, matches pattern: String, message: String = "", file: StaticString = #file, line: UInt = #line) {
     var message = message
     if !message.isEmpty {
       message = " - " + message
@@ -342,7 +342,7 @@ extension TailorTestable {
                               from. You should generally omit this, since it
                               will be provided automatically.
     */
-  public func assert(condition: Bool, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+  public func assert(condition: Bool, message: String = "", file: StaticString = #file, line: UInt = #line) {
     if !condition {
       let message = (message.isEmpty ? message: " - " + message)
       XCTFail("Condition was false\(message)", file: file, line: line)
@@ -368,7 +368,7 @@ extension TailorTestable {
     - parameter templateChecker:    A block that can perform additional checks
                                     on the template.
     */
-  public func assert<SpecificType: TemplateType>(renderer: TemplateRenderingType, renderedTemplate: SpecificType.Type, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__, @noescape _ templateChecker: (SpecificType)->() = {_ in}) {
+  public func assert<SpecificType: TemplateType>(renderer: TemplateRenderingType, renderedTemplate: SpecificType.Type, message: String = "", file: StaticString = #file, line: UInt = #line, @noescape _ templateChecker: (SpecificType)->() = {_ in}) {
     var found = false
     for template in renderer._renderedTemplates {
       if let castTemplate = template as? SpecificType {
@@ -410,7 +410,7 @@ extension TailorTestable {
     - parameter templateChecker:    A block that determines if the template is
                                     the one we are looking for.
     */
-  public func assert<SpecificType: TemplateType>(renderer: TemplateRenderingType, renderedMatchingTemplate templateType: SpecificType.Type, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__, _ templateChecker: (SpecificType)->(Bool)) {
+  public func assert<SpecificType: TemplateType>(renderer: TemplateRenderingType, renderedMatchingTemplate templateType: SpecificType.Type, message: String = "", file: StaticString = #file, line: UInt = #line, _ templateChecker: (SpecificType)->(Bool)) {
     var found = false
     for otherTemplate in renderer._renderedTemplates {
       if let castTemplate = otherTemplate as? SpecificType {
@@ -446,7 +446,7 @@ extension TailorTestable {
     - parameter block:              The block that we are checking for
                                     exceptions.
     */
-  public func assertNoExceptions(message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__, @noescape block: Void throws -> Void) {
+  public func assertNoExceptions(message: String = "", file: StaticString = #file, line: UInt = #line, @noescape block: Void throws -> Void) {
     do {
       try block()
     }
@@ -472,7 +472,7 @@ extension TailorTestable {
     - parameter block:              The block that we are checking for
                                     exceptions.
    */
-  public func assertThrows<ExceptionType: ErrorType where ExceptionType: Equatable>(exception: ExceptionType, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__, @noescape block: Void throws -> Void) {
+  public func assertThrows<ExceptionType: ErrorType where ExceptionType: Equatable>(exception: ExceptionType, message: String = "", file: StaticString = #file, line: UInt = #line, @noescape block: Void throws -> Void) {
     do {
       try block()
       let fullMessage = "Did not throw exception" + (message.isEmpty ? "" : " - \(message)")

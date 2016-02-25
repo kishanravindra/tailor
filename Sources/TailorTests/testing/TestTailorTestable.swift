@@ -95,8 +95,8 @@ final class TestTailorTestable : XCTestCase {
     XCTAssertEqual(testCase.failures.count, 1)
     if let failure = testCase.failures.first {
       XCTAssertEqual(failure.message, "1 != 2 - Test Message")
-      XCTAssertEqual(failure.file, __FILE__)
-      XCTAssertEqual(failure.line, __LINE__ - 5)
+      XCTAssertEqual(failure.file, #file)
+      XCTAssertEqual(failure.line, #line - 5)
     }
   }
   
@@ -132,8 +132,8 @@ final class TestTailorTestable : XCTestCase {
     XCTAssertEqual(testCase.failures.count, 1)
     if let failure = testCase.failures.first {
       XCTAssertEqual(failure.message, "Threw exception - Test Message")
-      XCTAssertEqual(failure.file, __FILE__)
-      XCTAssertEqual(failure.line, __LINE__ - 7)
+      XCTAssertEqual(failure.file, #file)
+      XCTAssertEqual(failure.line, #line - 7)
     }
   }
   
@@ -154,8 +154,8 @@ final class TestTailorTestable : XCTestCase {
     XCTAssertEqual(testCase.failures.count, 1)
     if let failure = testCase.failures.first {
       XCTAssertEqual(failure.message, "Did not throw exception - Throws Good")
-      XCTAssertEqual(failure.file, __FILE__)
-      XCTAssertEqual(failure.line, __LINE__ - 7)
+      XCTAssertEqual(failure.file, #file)
+      XCTAssertEqual(failure.line, #line - 7)
     }
   }
   
@@ -176,8 +176,8 @@ final class TestTailorTestable : XCTestCase {
     XCTAssertEqual(testCase.failures.count, 1)
     if let failure = testCase.failures.first {
       XCTAssertEqual(failure.message, "Exception2 != Exception1 - Throws Good")
-      XCTAssertEqual(failure.file, __FILE__)
-      XCTAssertEqual(failure.line, __LINE__ - 7)
+      XCTAssertEqual(failure.file, #file)
+      XCTAssertEqual(failure.line, #line - 7)
     }
   }
   
@@ -198,8 +198,8 @@ final class TestTailorTestable : XCTestCase {
     XCTAssertEqual(testCase.failures.count, 1)
     if let failure = testCase.failures.first {
       XCTAssertEqual(failure.message, "Threw exception Error Domain=test.tailorframe.work Code=101 \"(null)\" - Throws Good")
-      XCTAssertEqual(failure.file, __FILE__)
-      XCTAssertEqual(failure.line, __LINE__ - 7)
+      XCTAssertEqual(failure.file, #file)
+      XCTAssertEqual(failure.line, #line - 7)
     }
   }
   

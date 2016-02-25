@@ -9,7 +9,7 @@ class CalendarTests: XCTestCase, TailorTestable {
     setUpTestCase()
   }
   
-  func checkTimestamps(timestamps: [Double], foundationCalendar: NSCalendar, calendar: Calendar, zoneName: String, file: String = __FILE__, line: UInt = __LINE__) {
+  func checkTimestamps(timestamps: [Double], foundationCalendar: NSCalendar, calendar: Calendar, zoneName: String, file: String = #file, line: UInt = #line) {
     let foundationCalendar = foundationCalendar
     foundationCalendar.timeZone = NSTimeZone(name: zoneName)!
     let timeZone = TimeZone(name: zoneName)
@@ -38,7 +38,7 @@ class CalendarTests: XCTestCase, TailorTestable {
     }
   }
   
-  func checkLocalDates(dates: [(Int,Int,Int,Int,Int,Int)], foundationCalendar: NSCalendar, calendar: Calendar, zoneName: String, file: String = __FILE__, line: UInt = __LINE__) {
+  func checkLocalDates(dates: [(Int,Int,Int,Int,Int,Int)], foundationCalendar: NSCalendar, calendar: Calendar, zoneName: String, file: String = #file, line: UInt = #line) {
     
     let foundationCalendar = foundationCalendar
     foundationCalendar.timeZone = NSTimeZone(name: zoneName)!

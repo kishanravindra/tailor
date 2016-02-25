@@ -2,6 +2,7 @@ import Tailor
 import XCTest
 import Foundation
 
+#if os(OSX)
 /**
   This class provides a test case for a Tailor application.
 
@@ -96,7 +97,7 @@ import Foundation
                             from. You should generally omit this, since it will
                             be provided automatically.
     */
-  public func assert<T : Equatable>(lhs: T!, equals rhs: T, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+  public func assert<T : Equatable>(lhs: T!, equals rhs: T, message: String = "", file: StaticString = #file, line: UInt = #line) {
     let message = (message.isEmpty ? message: " - " + message)
     if lhs == nil {
       XCTFail("Value was nil\(message)", file: file, line: line)
@@ -121,7 +122,7 @@ import Foundation
                             from. You should generally omit this, since it will
                             be provided automatically.
     */
-  public func assert<T : Equatable>(lhs: T!, doesNotEqual rhs: T, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+  public func assert<T : Equatable>(lhs: T!, doesNotEqual rhs: T, message: String = "", file: StaticString = #file, line: UInt = #line) {
     let message = (message.isEmpty ? message: " - " + message)
     if lhs != nil && lhs == rhs {
       XCTFail("\(lhs) == \(rhs)\(message)", file: file, line: line)
@@ -141,7 +142,7 @@ import Foundation
                       You should generally omit this, since it will be provided
                       automatically.
   */
-  public func assert<T : Equatable>(lhs: [T], equals rhs: [T], message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+  public func assert<T : Equatable>(lhs: [T], equals rhs: [T], message: String = "", file: StaticString = #file, line: UInt = #line) {
     let message = (message.isEmpty ? message: " - " + message)
     if lhs != rhs {
       XCTFail("\(lhs) != \(rhs)\(message)", file: file, line: line)
@@ -161,7 +162,7 @@ import Foundation
                       You should generally omit this, since it will be provided
                       automatically.
   */
-  public func assert<K : Equatable, V: Equatable>(lhs: [K:V], equals rhs: [K:V], message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+  public func assert<K : Equatable, V: Equatable>(lhs: [K:V], equals rhs: [K:V], message: String = "", file: StaticString = #file, line: UInt = #line) {
     if lhs != rhs {
       let message = (message.isEmpty ? message: " - " + message)
       XCTFail("\(lhs) != \(rhs)\(message)", file: file, line: line)
@@ -181,7 +182,7 @@ import Foundation
                         You should generally omit this, since it will be
                         provided automatically.
     */
-  public func assert(string: String, contains substring: String, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+  public func assert(string: String, contains substring: String, message: String = "", file: StaticString = #file, line: UInt = #line) {
     let range = string.bridge().rangeOfString(substring)
     if range.location == NSNotFound {
       let message = (message.isEmpty ? message: " - " + message)
@@ -201,7 +202,7 @@ import Foundation
                         You should generally omit this, since it will be
                         provided automatically.
     */
-  public func assert(isNil value: Any?, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+  public func assert(isNil value: Any?, message: String = "", file: StaticString = #file, line: UInt = #line) {
     if value != nil {
       let message = (message.isEmpty ? message: " - " + message)
       XCTFail("value was not nil\(message)", file: file, line: line)
@@ -220,7 +221,7 @@ import Foundation
                         You should generally omit this, since it will be
                         provided automatically.
   */
-  public func assert(isNotNil value: Any?, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+  public func assert(isNotNil value: Any?, message: String = "", file: StaticString = #file, line: UInt = #line) {
     if value == nil {
       let message = (message.isEmpty ? message: " - " + message)
       XCTFail("value was nil\(message)", file: file, line: line)
@@ -240,7 +241,7 @@ import Foundation
                           from. You should generally omit this, since it will be
                           provided automatically.
   */
-  public func assert(value: Double?, within range: Double, of correctValue: Double, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+  public func assert(value: Double?, within range: Double, of correctValue: Double, message: String = "", file: StaticString = #file, line: UInt = #line) {
     let message = (message.isEmpty ? message: " - " + message)
     if value == nil {
       XCTFail("value was nil\(message)", file: file, line: line)
@@ -263,7 +264,7 @@ import Foundation
                         from. You should generally omit this, since it will be
                         provided automatically.
     */
-  public func assert(condition: Bool, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+  public func assert(condition: Bool, message: String = "", file: StaticString = #file, line: UInt = #line) {
     if !condition {
       let message = (message.isEmpty ? message: " - " + message)
       XCTFail("Condition was false\(message)", file: file, line: line)
@@ -286,7 +287,7 @@ import Foundation
     - parameter templateChecker:    A block that can perform additional checks
                                     on the template.
     */
-  public func assert<SpecificType: TemplateType>(response: Response, renderedTemplate: SpecificType.Type, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__, @noescape _ templateChecker: (SpecificType)->() = {_ in}) {
+  public func assert<SpecificType: TemplateType>(response: Response, renderedTemplate: SpecificType.Type, message: String = "", file: StaticString = #file, line: UInt = #line, @noescape _ templateChecker: (SpecificType)->() = {_ in}) {
     self.assert(response.renderedTemplates, renderedTemplate: renderedTemplate, message: message, file: file, line: line, templateChecker)
   }
   
@@ -306,7 +307,7 @@ import Foundation
     - parameter templateChecker:    A block that can perform additional checks
                                     on the template.
   */
-  public func assert<SpecificType: TemplateType>(email: Email, renderedTemplate: SpecificType.Type, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__, @noescape _ templateChecker: (SpecificType)->() = {_ in}) {
+  public func assert<SpecificType: TemplateType>(email: Email, renderedTemplate: SpecificType.Type, message: String = "", file: StaticString = #file, line: UInt = #line, @noescape _ templateChecker: (SpecificType)->() = {_ in}) {
     self.assert(email.renderedTemplates, renderedTemplate: renderedTemplate, message: message, file: file, line: line, templateChecker)
   }
   
@@ -326,7 +327,7 @@ import Foundation
     - parameter templateChecker:    A block that can perform additional checks
                                     on the template.
   */
-  public func assert<SpecificType: TemplateType>(template: TemplateType, renderedTemplate: SpecificType.Type, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__, @noescape _ templateChecker: (SpecificType)->() = {_ in}) {
+  public func assert<SpecificType: TemplateType>(template: TemplateType, renderedTemplate: SpecificType.Type, message: String = "", file: StaticString = #file, line: UInt = #line, @noescape _ templateChecker: (SpecificType)->() = {_ in}) {
     self.assert(template.state.renderedTemplates, renderedTemplate: renderedTemplate, message: message, file: file, line: line, templateChecker)
   }
   
@@ -347,7 +348,7 @@ import Foundation
     - parameter templateChecker:    A block that can perform additional checks
                                     on the template.
     */
-  private func assert<SpecificType: TemplateType>(templates: [TemplateType], renderedTemplate: SpecificType.Type, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__, @noescape _ templateChecker: (SpecificType)->() = {_ in}) {
+  private func assert<SpecificType: TemplateType>(templates: [TemplateType], renderedTemplate: SpecificType.Type, message: String = "", file: StaticString = #file, line: UInt = #line, @noescape _ templateChecker: (SpecificType)->() = {_ in}) {
     var found = false
     for template in templates {
       if let castTemplate = template as? SpecificType {
@@ -366,3 +367,4 @@ import Foundation
 }
 
 private var TAILOR_TEST_CASE_DATABASE_RESET = false
+#endif

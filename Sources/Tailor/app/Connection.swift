@@ -62,20 +62,6 @@ public final class Connection {
   #endif
   
   /**
-    This method creates a new connection.
-
-    This has been deprecated in favor of `init(fileDescriptor:requestHandler:)`.
-
-    - parameter fileDescriptor:     The file descriptor for the socket that we
-                                    are using for the connection.
-    - parameter handler:            A callback that will handle the request.
-    */
-  @available(*, deprecated, message="Use the version with a requestHandler parameter instead")
-  public convenience init(fileDescriptor: Int32, handler: RequestHandler) {
-    self.init(fileDescriptor: fileDescriptor, requestHandler: handler)
-  }
-
-  /**
     This method creates a new connection for listening to incoming requests.
 
     - parameter fileDescriptor:     The file descriptor for the socket that we

@@ -40,8 +40,8 @@ final class TestTemplateTestable : XCTestCase {
     XCTAssertEqual(testCase.failures.count, 1)
     guard testCase.failures.count > 0 else { return }
     XCTAssertEqual(testCase.failures[0].message, "<html><body>\(xml)</body></html> did not contain an element matching form([\"action\": \"/test/path\"])")
-    XCTAssertEqual(testCase.failures[0].file, __FILE__)
-    XCTAssertEqual(testCase.failures[0].line, __LINE__ - 5)
+    XCTAssertEqual(testCase.failures[0].file, #file)
+    XCTAssertEqual(testCase.failures[0].line, #line - 5)
   }
 
   func testAssertXmlContainsElementWithNonMatchingAttributeRegistersFailure() {
@@ -50,8 +50,8 @@ final class TestTemplateTestable : XCTestCase {
     XCTAssertEqual(testCase.failures.count, 1)
     guard testCase.failures.count == 1 else { return }
     XCTAssertEqual(testCase.failures[0].message, "<html><body>\(xml)</body></html> did not contain an element matching form([\"action\": \"/test/path\"])")
-    XCTAssertEqual(testCase.failures[0].file, __FILE__)
-    XCTAssertEqual(testCase.failures[0].line, __LINE__ - 5)
+    XCTAssertEqual(testCase.failures[0].file, #file)
+    XCTAssertEqual(testCase.failures[0].line, #line - 5)
   }
 
   func testAssertXmlDoesNotContainsElementWithoutMatchingElementDoesNotRegisterFailure() {
@@ -65,7 +65,7 @@ final class TestTemplateTestable : XCTestCase {
     testCase.assert(xml, containsElement: "form", attributes: ["action": "/test/path"])
     guard testCase.failures.count == 1 else { return }
     XCTAssertEqual(testCase.failures[0].message, "<html><body>\(xml)</body></html> did not contain an element matching form([\"action\": \"/test/path\"])")
-    XCTAssertEqual(testCase.failures[0].file, __FILE__)
-    XCTAssertEqual(testCase.failures[0].line, __LINE__ - 5)
+    XCTAssertEqual(testCase.failures[0].file, #file)
+    XCTAssertEqual(testCase.failures[0].line, #line - 5)
   }
 }

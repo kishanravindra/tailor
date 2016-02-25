@@ -84,7 +84,7 @@ extension TemplateTestable {
                                 should generally omit this.
     - parameter contents:       A block to run additional checks on the element.
     */
-  public func assert(xml: String, containsElement elementName: String, attributes: [String:String] = [:], message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__, @noescape contents: (NSXMLElement)->Void = {_ in}) {
+  public func assert(xml: String, containsElement elementName: String, attributes: [String:String] = [:], message: String = "", file: StaticString = #file, line: UInt = #line, @noescape contents: (NSXMLElement)->Void = {_ in}) {
     assert(xml, containsElement: true, elementName: elementName, attributes: attributes, message: message, file: file, line: line, contents: contents)
   }
   
@@ -101,7 +101,7 @@ extension TemplateTestable {
     - parameter line:           The line that the assertion came from. You
                                 should generally omit this.
     */
-  public func assert(xml: String, doesNotContainElement elementName: String, attributes: [String:String] = [:], message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+  public func assert(xml: String, doesNotContainElement elementName: String, attributes: [String:String] = [:], message: String = "", file: StaticString = #file, line: UInt = #line) {
     assert(xml, containsElement: false, elementName: elementName, attributes: attributes, message: message, file: file, line: line) { _ in }
   }
   
@@ -118,7 +118,7 @@ extension TemplateTestable {
                                 should generally omit this.
     - parameter contents:       A block to run additional checks on the element.
     */
-  public func assert(xml: NSXMLElement, containsElement elementName: String, attributes: [String:String] = [:], message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__, @noescape contents: (NSXMLElement)->Void = {_ in}) {
+  public func assert(xml: NSXMLElement, containsElement elementName: String, attributes: [String:String] = [:], message: String = "", file: StaticString = #file, line: UInt = #line, @noescape contents: (NSXMLElement)->Void = {_ in}) {
     assert(xml, containsElement: true, elementName: elementName, attributes: attributes, message: message, file: file, line: line, contents: contents)
   }
   
@@ -134,7 +134,7 @@ extension TemplateTestable {
     - parameter line:           The line that the assertion came from. You
                                 should generally omit this.
   */
-  public func assert(xml: NSXMLElement, doesNotContainElement elementName: String, attributes: [String:String] = [:], message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+  public func assert(xml: NSXMLElement, doesNotContainElement elementName: String, attributes: [String:String] = [:], message: String = "", file: StaticString = #file, line: UInt = #line) {
     assert(xml, containsElement: false, elementName: elementName, attributes: attributes, message: message, file: file, line: line) { _ in }
   }
   

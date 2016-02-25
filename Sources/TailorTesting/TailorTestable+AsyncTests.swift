@@ -22,7 +22,7 @@ public final class XCTestExpectation {
 }
 
 extension TailorTestable {
-  public func expectationWithDescription(description: String, file: StaticString = __FILE__, line: UInt = __LINE__) -> XCTestExpectation {
+  public func expectationWithDescription(description: String, file: StaticString = #file, line: UInt = #line) -> XCTestExpectation {
     let expectation = XCTestExpectation(description: description, file: file, line: line)
     XC_TEST_CURRENT_EXPECTATIONS.append(expectation)
     return expectation

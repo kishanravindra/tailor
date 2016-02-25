@@ -79,7 +79,7 @@ extension ControllerTestable {
     - parameter callback:     A callback that will perform checks on the
                               response.
     */
-  public func callAction(actionName: String, headers: [String:String] = [:], sessionData: [String:String] = [:], cookies: [String:String] = [:], timeoutIn timeout: NSTimeInterval = 0.01, file: StaticString = __FILE__, line: UInt = __LINE__, callback: Response -> Void) {
+  public func callAction(actionName: String, headers: [String:String] = [:], sessionData: [String:String] = [:], cookies: [String:String] = [:], timeoutIn timeout: NSTimeInterval = 0.01, file: StaticString = #file, line: UInt = #line, callback: Response -> Void) {
     var sessionData = sessionData
     var actionParams = params[actionName] ?? [:]
     let csrfKey = AesEncryptor.generateKey()
@@ -160,7 +160,7 @@ extension ControllerTestable {
                               should generally omit this, since it will be
                               provided automatically.
     */
-  public func assert(response: Response, redirectsTo path: String?, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+  public func assert(response: Response, redirectsTo path: String?, message: String = "", file: StaticString = #file, line: UInt = #line) {
     assert(response.responseCode, equals: .SeeOther, message: "gives a redirect response", file: file, line: line)
     if path == nil {
       XCTFail("Target path is nil - \(message)", file: file, line: line)
@@ -182,7 +182,7 @@ extension ControllerTestable {
                                 should generally omit this, since it will be
                                 provided automatically.
     */
-  public func assert(response: Response, contains substring: String, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__) {
+  public func assert(response: Response, contains substring: String, message: String = "", file: StaticString = #file, line: UInt = #line) {
     let body = response.bodyText
     if !body.contains(substring) {
       XCTFail("Assertion failed: \(body) does not contain \(substring) - \(message)", file: file, line: line)

@@ -152,6 +152,6 @@ import CoreFoundation
   }
 #endif
 
-@noreturn internal func NSUnimplemented(fn: String = __FUNCTION__, file: StaticString = __FILE__, line: UInt = __LINE__) {
+@noreturn internal func NSUnimplemented(fn: String = #function, file: StaticString = #file, line: UInt = #line) {
   fatalError("\(fn) is not yet implemented", file: file, line: line)
 }

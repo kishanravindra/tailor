@@ -1,6 +1,7 @@
 import Tailor
 import XCTest
 
+#if os(OSX)
 /**
   This class provides helpers for building a test suite around a template.
 
@@ -71,7 +72,7 @@ public class TemplateTestCase: TailorTestCase {
     - parameter templateChecker:  A block that can perform additional checks on
                                   the template.
     */
-  public func assertRenderedTemplate<SpecificType: TemplateType>(templateType: SpecificType.Type, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__, _ templateChecker: (SpecificType)->() = {_ in}) {
+  public func assertRenderedTemplate<SpecificType: TemplateType>(templateType: SpecificType.Type, message: String = "", file: StaticString = #file, line: UInt = #line, _ templateChecker: (SpecificType)->() = {_ in}) {
     self.assert(template, renderedTemplate: templateType, message: message, file: file, line: line, templateChecker)
   }
   
@@ -96,7 +97,7 @@ public class TemplateTestCase: TailorTestCase {
     - parameter templateChecker:    A block that determines if the template is
                                     the one we are looking for.
   */
-  public func assertRenderedTemplate<SpecificType: TemplateType>(templateType: SpecificType.Type, message: String = "", file: StaticString = __FILE__, line: UInt = __LINE__, _ templateChecker: (SpecificType)->(Bool)) {
+  public func assertRenderedTemplate<SpecificType: TemplateType>(templateType: SpecificType.Type, message: String = "", file: StaticString = #file, line: UInt = #line, _ templateChecker: (SpecificType)->(Bool)) {
     var found = false
     for otherTemplate in template.state.renderedTemplates {
       if let castTemplate = otherTemplate as? SpecificType {
@@ -115,3 +116,4 @@ public class TemplateTestCase: TailorTestCase {
     }
   }
 }
+#endif
