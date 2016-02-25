@@ -5,6 +5,7 @@ extension Application.Configuration {
       AlterationGeneratorTask.self,
       AlterationInventoryGeneratorTask.self,
       ControllerGeneratorTask.self,
+      InventoryGeneratorTask.self,
       ModelGeneratorTask.self,
       TaskInventoryGeneratorTask.self,
       TemplateGeneratorTask.self,

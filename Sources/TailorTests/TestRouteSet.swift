@@ -60,6 +60,7 @@ final class TestRouteSet: XCTestCase, TailorTestable {
     ("testWithoutFilterRemovesFilterFromChain", testWithoutFilterRemovesFilterFromChain),
     ("testAddRedirectCreatesRedirectResponse", testAddRedirectCreatesRedirectResponse),
     ("testAddRouteCreatesRoute", testAddRouteCreatesRoute),
+    ("testAddRouteWithRouteAddsRouteToList", testAddRouteWithRouteAddsRouteToList),
     ("testAddRouteWithControllerBuildsHandlerForController", testAddRouteWithControllerBuildsHandlerForController),
     ("testStaticAssetsGeneratesRoutesToAssets", testStaticAssetsGeneratesRoutesToAssets),
     ("testStaticAssetWithMatchingEtagGenerates304Response", testStaticAssetWithMatchingEtagGenerates304Response),
@@ -624,6 +625,22 @@ final class TestRouteSet: XCTestCase, TailorTestable {
       request, callback in
       expectation.fulfill()
       }, description: "test route")
+    let route = self.getLatestRoute()
+    assert(route?.path, equals: .Get("/path"), message: "sets path")
+    assert(route?.description, equals: "test route", message: "sets description")
+    route?.handler(createTestRequest()) {
+      response in
+    }
+    waitForExpectationsWithTimeout(0, handler: nil)
+  }
+
+  func testAddRouteWithRouteAddsRouteToList() {
+    let expectation = expectationWithDescription("handler called")
+    let _route = RouteSet.Route(path: .Get("/path"), handler: {
+      request, callback in
+      expectation.fulfill()
+      }, description: "test route")
+    routeSet.addRoute(_route)
     let route = self.getLatestRoute()
     assert(route?.path, equals: .Get("/path"), message: "sets path")
     assert(route?.description, equals: "test route", message: "sets description")

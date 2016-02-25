@@ -364,6 +364,15 @@ public class RouteSet {
       responseHandler(response)
     }, description: "Redirect")
   }
+
+  /**
+    This method adds a route.
+
+    - parameter route:    The route we are adding.
+    */
+  public func addRoute(route: Route) {
+    self.routes.append(route)
+  }
   
   /**
     This method adds a route with a block.

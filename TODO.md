@@ -2,6 +2,7 @@
 
 * Memcache support
 * More testing of TailorTestable and company
+* Fix localization prefixes for actions with multi-word names
 
 # Modeling
 

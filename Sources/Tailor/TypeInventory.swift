@@ -12,7 +12,7 @@
   */
 public struct TypeInventory {
   /** A dictionary mapping the name of a type to its subtypes. */
-  private var typeMapping = [String:[Any.Type]]()
+  public private(set) var typeMapping = [String:[Any.Type]]()
 
   /**
     This method initializes an empty type inventory.
