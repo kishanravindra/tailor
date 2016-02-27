@@ -2,7 +2,7 @@ import Tailor
 import TailorTesting
 import XCTest
 
-class UserTypeTests: XCTestCase, TailorTestable {
+final class TestUserType: XCTestCase, TailorTestable {
   struct TrackableUser: TrackableUserType {
     let id: UInt
     var emailAddress: String = ""
@@ -63,8 +63,22 @@ class UserTypeTests: XCTestCase, TailorTestable {
   }
   
   var user = TestUser()
-  override func setUp() {
-    super.setUp()
+  
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testSettingPasswordEncryptsPassword", testSettingPasswordEncryptsPassword),
+    ("testHasPasswordIsTrueForMatchingPassword", testHasPasswordIsTrueForMatchingPassword),
+    ("testHasPasswordIsFalseForNonMatchingPassword", testHasPasswordIsFalseForNonMatchingPassword),
+    ("testAuthenticateReturnsUserWithMatchingEmailAndPassword", testAuthenticateReturnsUserWithMatchingEmailAndPassword),
+    ("testAuthenticateWithInvalidEmailAddressThrowsError", testAuthenticateWithInvalidEmailAddressThrowsError),
+    ("testAuthenticateWithIncorrectPasswordThrowsError", testAuthenticateWithIncorrectPasswordThrowsError),
+    ("testAuthenticateWithLockableUserWithCorrectPasswordResetsLockCount", testAuthenticateWithLockableUserWithCorrectPasswordResetsLockCount),
+    ("testAuthenticateWithLockableUserWithIncorrectPasswordIncrementsLockCount", testAuthenticateWithLockableUserWithIncorrectPasswordIncrementsLockCount),
+    ("testAuthenticateWithLockedOutUserThrowsError", testAuthenticateWithLockedOutUserThrowsError),
+    ("testLockedOutIsTrueWithFailedLoginCountAtThreshold", testLockedOutIsTrueWithFailedLoginCountAtThreshold),
+    ("testLockedOutIsFalseithFailedLoginCountBelowThreshold", testLockedOutIsFalseithFailedLoginCountBelowThreshold),
+  ]}
+  
+  func setUp() {
     setUpTestCase()
     user = TestUser()
     user.emailAddress = "test@test.com"
@@ -134,7 +148,7 @@ class UserTypeTests: XCTestCase, TailorTestable {
     catch {
     }
     assert(Query<LockableUser>().first()?.failedLogins, equals: 0)
-    resetDatabase()
+    CreateTestDatabaseAlteration.run()
   }
   
   func testAuthenticateWithLockableUserWithIncorrectPasswordIncrementsLockCount() {
@@ -146,7 +160,7 @@ class UserTypeTests: XCTestCase, TailorTestable {
     catch {
     }
     assert(Query<LockableUser>().first()?.failedLogins, equals: 1)
-    resetDatabase()
+    CreateTestDatabaseAlteration.run()
   }
   
   func testAuthenticateWithLockedOutUserThrowsError() {
@@ -165,7 +179,7 @@ class UserTypeTests: XCTestCase, TailorTestable {
     catch {
       assert(false, message: "threw unexpected exception")
     }
-    resetDatabase()
+    CreateTestDatabaseAlteration.run()
   }
   
   func testLockedOutIsTrueWithFailedLoginCountAtThreshold() {
@@ -174,7 +188,7 @@ class UserTypeTests: XCTestCase, TailorTestable {
     var user = LockableUser()
     user.failedLogins = 5
     assert(user.lockedOut)
-    resetDatabase()
+    CreateTestDatabaseAlteration.run()
   }
   
   func testLockedOutIsFalseithFailedLoginCountBelowThreshold() {
@@ -183,6 +197,6 @@ class UserTypeTests: XCTestCase, TailorTestable {
     var user = LockableUser()
     user.failedLogins = 4
     assert(!user.lockedOut)
-    resetDatabase()
+    CreateTestDatabaseAlteration.run()
   }
 }

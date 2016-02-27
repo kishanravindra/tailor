@@ -14,9 +14,11 @@ extension TailorTestable {
     Application.configuration.databaseDriver = { return SqliteConnection(path: "testing.sqlite") }
     Application.configuration.sessionEncryptionKey = "0FC7ECA7AADAD635DCC13A494F9A2EA8D8DAE366382CDB3620190F6F20817124"
     Application.configuration.resourcePath = "./TestResources"
-    //Application.configuration.userType = TestUser.self
+    Application.configuration.userType = TestUser.self
     Application.configuration.projectName = "TailorTests"
     Application.configuration.localization = { PropertyListLocalization(locale: $0) }
+    Application.configuration.logQueries = false
+    resetDatabase()
 	}
 }
 extension NSObject {
@@ -124,6 +126,30 @@ struct Store : Persistable {
   }
 }
 
+struct TestUser: UserType, Equatable {
+  let id: UInt
+  var emailAddress: String = ""
+  var encryptedPassword: String = ""
+  
+  init() {
+    id = 0
+    emailAddress = "test@test.com"
+    encryptedPassword = "Foo"
+  }
+  
+  init(deserialize values: SerializableValue) throws {
+    self.id = try values.read("id")
+    self.emailAddress = try values.read("email_address")
+    self.encryptedPassword = try values.read("encrypted_password")
+  }
+  
+  func valuesToPersist() -> [String : SerializationEncodable?] {
+    return ["email_address": emailAddress, "encrypted_password": encryptedPassword]
+  }
+  
+  static let tableName = "users"
+  static let query = Query<TestUser>()
+}
 
 class StubbedTestCase {
   var failures = [(message: String, file: String, line: UInt)]()

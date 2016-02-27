@@ -1,13 +1,22 @@
 import Tailor
 import TailorTesting
 import XCTest
+import Foundation
 
-class EtagFilterTests: XCTestCase, TailorTestable {
+struct TestEtagFilter: XCTestCase, TailorTestable {
   let bodyText = "Hello"
   let tag = NSData(bytes: "Hello".utf8).md5Hash
   
-  override func setUp() {
-    super.setUp()
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testPreProcessDoesNotModifyResponse", testPreProcessDoesNotModifyResponse),
+    ("testPostProcessWithNoEtagSendsResponseUnmodified", testPostProcessWithNoEtagSendsResponseUnmodified),
+    ("testPostProcessWithIncorrectEtagSendsResponseWithEtag", testPostProcessWithIncorrectEtagSendsResponseWithEtag),
+    ("testPostProcessWithMatchingEtagSendsNotModifiedResponse", testPostProcessWithMatchingEtagSendsNotModifiedResponse),
+    ("testPostProcessWithNon200RequestDoesNotSetEtag", testPostProcessWithNon200RequestDoesNotSetEtag),
+    ("testEtagFiltersAreEqual", testEtagFiltersAreEqual),
+  ]}
+
+  func setUp() {
     setUpTestCase()
   }
   
@@ -20,7 +29,7 @@ class EtagFilterTests: XCTestCase, TailorTestable {
     filter.preProcess(request, response: response) {
       request, response, stop in
       expectation.fulfill()
-      self.assert(response.bodyString, equals: "hello")
+      self.assert(response.bodyText, equals: "hello")
       self.assert(!stop)
     }
     waitForExpectationsWithTimeout(0, handler: nil)
@@ -38,7 +47,7 @@ class EtagFilterTests: XCTestCase, TailorTestable {
       expectation.fulfill()
       self.assert(response.responseCode, equals: .Ok)
       self.assert(response.headers["ETag"], equals: self.tag)
-      self.assert(response.bodyString, equals: self.bodyText)
+      self.assert(response.bodyText, equals: self.bodyText)
     }
     waitForExpectationsWithTimeout(0, handler: nil)
   }
@@ -55,7 +64,7 @@ class EtagFilterTests: XCTestCase, TailorTestable {
       expectation.fulfill()
       self.assert(response.responseCode, equals: .Ok)
       self.assert(response.headers["ETag"], equals: self.tag)
-      self.assert(response.bodyString, equals: self.bodyText)
+      self.assert(response.bodyText, equals: self.bodyText)
     }
     waitForExpectationsWithTimeout(0, handler: nil)
   }
@@ -72,7 +81,7 @@ class EtagFilterTests: XCTestCase, TailorTestable {
       expectation.fulfill()
       self.assert(response.responseCode, equals: .NotModified)
       self.assert(response.headers["ETag"], equals: self.tag)
-      self.assert(response.body.length, equals: 0)
+      self.assert(response.bodyData.length, equals: 0)
     }
     waitForExpectationsWithTimeout(0, handler: nil)
   }
@@ -89,7 +98,7 @@ class EtagFilterTests: XCTestCase, TailorTestable {
       expectation.fulfill()
       self.assert(response.responseCode, equals: .Created)
       self.assert(isNil: response.headers["ETag"])
-      self.assert(response.bodyString, equals: self.bodyText)
+      self.assert(response.bodyText, equals: self.bodyText)
     }
     waitForExpectationsWithTimeout(0, handler: nil)
   }

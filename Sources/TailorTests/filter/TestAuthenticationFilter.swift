@@ -2,11 +2,23 @@ import Tailor
 import TailorTesting
 import XCTest
 
-class AuthenticationFilterTests: XCTestCase, TailorTestable {
+struct TestAuthenticationFilter: XCTestCase, TailorTestable {
   let filter = AuthenticationFilter("/sessions/new")
+
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testFetchUserWithValidUserIdReturnsUser", testFetchUserWithValidUserIdReturnsUser),
+    ("testFetchUserWithInvalidUserIdRedirectsToSignInUrl", testFetchUserWithInvalidUserIdRedirectsToSignInUrl),
+    ("testFetchUserWithNoUserIdRedirectsToSignInUrl", testFetchUserWithNoUserIdRedirectsToSignInUrl),
+    ("testPreProcessWithValidUserIdDoesNotChangeResponse", testPreProcessWithValidUserIdDoesNotChangeResponse),
+    ("testPreProcessWithInvalidUserIdRedirectsToSignInUrl", testPreProcessWithInvalidUserIdRedirectsToSignInUrl),
+    ("testPreProcessWithNoUserIdRedirectsToSignInUrl", testPreProcessWithNoUserIdRedirectsToSignInUrl),
+    ("testPreProcessWithNoUserTypeRedirectsToSignInUrl", testPreProcessWithNoUserTypeRedirectsToSignInUrl),
+    ("testPostProcessDoesNotChangeResponse", testPostProcessDoesNotChangeResponse),
+    ("testFiltersWithSameUrlAreEqual", testFiltersWithSameUrlAreEqual),
+    ("testFiltersWithDifferentUrlsAreNotEqual", testFiltersWithDifferentUrlsAreNotEqual),
+  ]}
   
-  override func setUp() {
-    super.setUp()
+  func setUp() {
     setUpTestCase()
     Application.configuration.userType = TestUser.self
     TestUser().save()
@@ -73,7 +85,7 @@ class AuthenticationFilterTests: XCTestCase, TailorTestable {
       expectation.fulfill()
       self.assert(response.responseCode, equals: .SeeOther)
       self.assert(response.headers["Location"], equals: "/sessions/new")
-      self.assert(response.bodyString, equals: "<html><body>You are being <a href=\"/sessions/new\">redirected</a>.")
+      self.assert(response.bodyText, equals: "<html><body>You are being <a href=\"/sessions/new\">redirected</a>.")
       self.assert(response.session["_redirectPath"], equals: "/test/path", message: "puts the original path in the session")
       self.assert(stop)
     }
@@ -89,7 +101,7 @@ class AuthenticationFilterTests: XCTestCase, TailorTestable {
       expectation.fulfill()
       self.assert(response.responseCode, equals: .SeeOther)
       self.assert(response.headers["Location"], equals: "/sessions/new")
-      self.assert(response.bodyString, equals: "<html><body>You are being <a href=\"/sessions/new\">redirected</a>.")
+      self.assert(response.bodyText, equals: "<html><body>You are being <a href=\"/sessions/new\">redirected</a>.")
       self.assert(stop)
     }
     waitForExpectationsWithTimeout(0, handler: nil)
@@ -105,7 +117,7 @@ class AuthenticationFilterTests: XCTestCase, TailorTestable {
       expectation.fulfill()
       self.assert(response.responseCode, equals: .SeeOther)
       self.assert(response.headers["Location"], equals: "/sessions/new")
-      self.assert(response.bodyString, equals: "<html><body>You are being <a href=\"/sessions/new\">redirected</a>.")
+      self.assert(response.bodyText, equals: "<html><body>You are being <a href=\"/sessions/new\">redirected</a>.")
       self.assert(stop)
     }
     waitForExpectationsWithTimeout(0, handler: nil)
@@ -119,7 +131,7 @@ class AuthenticationFilterTests: XCTestCase, TailorTestable {
     filter.postProcess(request, response: response) {
       response in
       expectation.fulfill()
-      self.assert(response.bodyString, equals: "Hello")
+      self.assert(response.bodyText, equals: "Hello")
     }
     waitForExpectationsWithTimeout(0, handler: nil)
   }

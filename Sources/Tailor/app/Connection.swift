@@ -591,6 +591,7 @@ public final class Connection {
     }
     #else
     NSRunLoop.currentRunLoop().run()
+    return true
     #endif
   }
   

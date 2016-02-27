@@ -2,12 +2,28 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class CookieJarTests: XCTestCase, TailorTestable {
+final class TestCookieJar: XCTestCase, TailorTestable {
   var cookieJar = CookieJar()
+
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testSetCookieCreatesNewCookie", testSetCookieCreatesNewCookie),
+    ("testSetCookieUpdatesExistingCookie", testSetCookieUpdatesExistingCookie),
+    ("testAddHeaderStringCreatesCookies", testAddHeaderStringCreatesCookies),
+    ("testSubscriptGetsCookieValue", testSubscriptGetsCookieValue),
+    ("testSubscriptSetsCookieValue", testSubscriptSetsCookieValue),
+    ("testSubscriptWithNilSetsBlankValue", testSubscriptWithNilSetsBlankValue),
+    ("testCookieDictionaryGetsHashOfValues", testCookieDictionaryGetsHashOfValues),
+    ("testCopyDoesNotShareChanges", testCopyDoesNotShareChanges),
+    ("testHeaderStringWithOneChangeHasNewline", testHeaderStringWithOneChangeHasNewline),
+    ("testHeaderStringWithNoChangeIsEmpty", testHeaderStringWithNoChangeIsEmpty),
+    ("testCookieJarsAreEqualWithSameCookies", testCookieJarsAreEqualWithSameCookies),
+    ("testCookieJarsAreUnequalWithDifferentCookieValues", testCookieJarsAreUnequalWithDifferentCookieValues),
+    ("testCookieJarsAreEqualWithSameCookiesInDifferentOrder", testCookieJarsAreEqualWithSameCookiesInDifferentOrder),
+  ]}
   
-  override func setUp() {
-    super.setUp()
+  func setUp() {
     setUpTestCase()
+    cookieJar = CookieJar()
   }
   
   //MARK: - Modifying Cookies

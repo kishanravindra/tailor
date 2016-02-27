@@ -1,10 +1,10 @@
 import XCTest
-@testable import Tailor
+import Tailor
 import TailorTesting
 
-struct TestCookie: TailorTestable {
-  let cookie = Cookie(key: "testCookie", value: "27")
-
+final class TestCookie: XCTestCase, TailorTestable {
+  var cookie = Cookie(key: "testCookie", value: "27")
+  
   var allTests: [(String, () throws -> Void)] { return [
     ("testGetsHeaderStringForSimpleCookie", testGetsHeaderStringForSimpleCookie),
     ("testGetsHeaderStringForCookieWithExpirationDate", testGetsHeaderStringForCookieWithExpirationDate),
@@ -22,32 +22,34 @@ struct TestCookie: TailorTestable {
     ("testCookiesAreUnequalWithDifferentSecureOnlyFlag", testCookiesAreUnequalWithDifferentSecureOnlyFlag),
   ]}
 
+  func setUp() {
+    setUpTestCase()
+    cookie = Cookie(key: "testCookie", value: "27")
+  }
+  
   //MARK: - Header String
   
   func testGetsHeaderStringForSimpleCookie() {
     assert(cookie.headerString, equals: "testCookie=27; Path=/", message: "has the cookie's key, value, and path")
   }
-
+  
   func testGetsHeaderStringForCookieWithExpirationDate() {
-    var cookie = self.cookie
     cookie.expiresAt = 1600.seconds.fromNow
     cookie.maxAge = 120
     let dateDescription = cookie.expiresAt!.inTimeZone(TimeZone(name: "GMT")).format(TimeFormat.Cookie)
     assert(cookie.headerString, equals: "testCookie=27; Path=/; Expires=" + dateDescription + "; Max-Age=120", message: "has the cookie's expiration date and age")
   }
   
-  func testGetsHeaderStringForSecureCookie() { 
-    var cookie = self.cookie
+  func testGetsHeaderStringForSecureCookie() {
     cookie.secureOnly = true
     assert(cookie.headerString, equals: "testCookie=27; Path=/; Secure", message: "has cookie with secure flag")
   }
   
   func testGetsHeaderStringForHttpOnlyCookie() {
-    var cookie = self.cookie
     cookie.httpOnly = true
     assert(cookie.headerString, equals: "testCookie=27; Path=/; HttpOnly", message: "has cookie with HTTP-only flag")
   }
-
+  
   //MARK: - Equatable
   
   func testCookiesAreEqualWithSameKeyAndValue() {
@@ -66,7 +68,6 @@ struct TestCookie: TailorTestable {
   }
   
   func testCookiesAreUnequalWithDifferentChangedFlag() {
-    var cookie = self.cookie
     var cookie2 = Cookie(key: "testCookie", value: "27")
     cookie2.changed = true
     assert(cookie, doesNotEqual: cookie2)
@@ -75,7 +76,6 @@ struct TestCookie: TailorTestable {
   }
   
   func testCookiesAreUnequalWithDifferentDomain() {
-    var cookie = self.cookie
     var cookie2 = Cookie(key: "testCookie", value: "27")
     cookie2.domain = "tailorframe.work"
     assert(cookie, doesNotEqual: cookie2)
@@ -84,7 +84,6 @@ struct TestCookie: TailorTestable {
   }
   
   func testCookiesAreUnequalWithDifferentExpiryTime() {
-    var cookie = self.cookie
     var cookie2 = Cookie(key: "testCookie", value: "27")
     let timestamp = 30.minutes.fromNow
     cookie2.expiresAt = timestamp
@@ -94,7 +93,6 @@ struct TestCookie: TailorTestable {
   }
   
   func testCookiesAreUnequalWithDifferentHttpOnlyFlag() {
-    var cookie = self.cookie
     var cookie2 = Cookie(key: "testCookie", value: "27")
     cookie2.httpOnly = true
     assert(cookie, doesNotEqual: cookie2)
@@ -103,7 +101,6 @@ struct TestCookie: TailorTestable {
   }
   
   func testCookiesAreUnequalWithDifferentMaxAge() {
-    var cookie = self.cookie
     var cookie2 = Cookie(key: "testCookie", value: "27")
     cookie2.maxAge = 3600
     assert(cookie, doesNotEqual: cookie2)
@@ -112,7 +109,6 @@ struct TestCookie: TailorTestable {
   }
   
   func testCookiesAreUnequalWithDifferentPath() {
-    var cookie = self.cookie
     var cookie2 = Cookie(key: "testCookie", value: "27")
     cookie2.path = "/hello"
     assert(cookie, doesNotEqual: cookie2)
@@ -121,7 +117,6 @@ struct TestCookie: TailorTestable {
   }
   
   func testCookiesAreUnequalWithDifferentSecureOnlyFlag() {
-    var cookie = self.cookie
     var cookie2 = Cookie(key: "testCookie", value: "27")
     cookie2.secureOnly = true
     assert(cookie, doesNotEqual: cookie2)

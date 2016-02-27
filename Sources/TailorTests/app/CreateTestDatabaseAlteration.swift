@@ -7,7 +7,7 @@ class CreateTestDatabaseAlteration: AlterationScript {
   static func run() {
     let connection = Application.sharedDatabaseConnection()
     
-    for tableName in ["hats", "shelfs", "stores", "users", "hat_types", "tailor_translations"] {
+    for tableName in ["hats", "shelfs", "stores", "users", "hat_types", "tailor_alterations", "tailor_translations"] {
       connection.executeQuery("DROP TABLE IF EXISTS \(tableName)")
     }
     connection.executeQuery("CREATE TABLE `hats` ( `id` integer NOT NULL PRIMARY KEY, `color` varchar(255), `brim_size` integer, shelf_id integer, `created_at` timestamp, `updated_at` timestamp)")

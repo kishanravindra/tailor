@@ -75,7 +75,6 @@ struct TestAesEncryptor: XCTestCase, TailorTestable {
     let encryptor = AesEncryptor(key: AesEncryptor.generateKey())!
     let inputData = NSData(bytes: "test data".utf8)
     let value1 = encryptor.encrypt(inputData)
-    print("Encrypted value is \(value1)")
     let value2 = encryptor.encrypt(inputData)
     assert(value1, doesNotEqual: value2, message: "gets different encrypted data each time")
   }

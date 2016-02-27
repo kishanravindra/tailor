@@ -2,11 +2,21 @@ import Tailor
 import TailorTesting
 import XCTest
 
-class CsrfFilterTests: XCTestCase, TailorTestable {
+struct TestCsrfFilter: XCTestCase, TailorTestable {
   let filter = CsrfFilter()
   
-  override func setUp() {
-    super.setUp()
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testPreProcessWithNoCsrfKeyPutsOneInSession", testPreProcessWithNoCsrfKeyPutsOneInSession),
+    ("testPreProcessWithCsrfKeyLeavesItInSession", testPreProcessWithCsrfKeyLeavesItInSession),
+    ("testPreProcessWithNoCsrfKeyInParametersWithGetRequestAllowsRequestToContinue", testPreProcessWithNoCsrfKeyInParametersWithGetRequestAllowsRequestToContinue),
+    ("testPreProcessWithNoCsrfKeyInParametersWithPostRequestHaltsRequest", testPreProcessWithNoCsrfKeyInParametersWithPostRequestHaltsRequest),
+    ("testPreProcessWithIncorrectCsrfKeyInParametersWithPostRequestHaltsRequest", testPreProcessWithIncorrectCsrfKeyInParametersWithPostRequestHaltsRequest),
+    ("testPreProcessWithCorrectCsrfKeyInParametersWithPostRequestContinuesWithRequest", testPreProcessWithCorrectCsrfKeyInParametersWithPostRequestContinuesWithRequest),
+    ("testPostProcessDoesNotModifyResponse", testPostProcessDoesNotModifyResponse),
+    ("testCsrfFiltersAreEqual", testCsrfFiltersAreEqual),
+  ]}
+
+  func setUp() {
     setUpTestCase()
   }
   
@@ -57,7 +67,7 @@ class CsrfFilterTests: XCTestCase, TailorTestable {
       expectation.fulfill()
       self.assert(stop)
       self.assert(response.responseCode, equals: .Forbidden)
-      self.assert(response.bodyString, equals: "That action cannot be completed because of a security restriction.")
+      self.assert(response.bodyText, equals: "That action cannot be completed because of a security restriction.")
     }
     
     waitForExpectationsWithTimeout(0, handler: nil)
@@ -71,7 +81,7 @@ class CsrfFilterTests: XCTestCase, TailorTestable {
       expectation.fulfill()
       self.assert(stop)
       self.assert(response.responseCode, equals: .Forbidden)
-      self.assert(response.bodyString, equals: "That action cannot be completed because of a security restriction.")
+      self.assert(response.bodyText, equals: "That action cannot be completed because of a security restriction.")
     }
     
     waitForExpectationsWithTimeout(0, handler: nil)
@@ -96,7 +106,7 @@ class CsrfFilterTests: XCTestCase, TailorTestable {
     response.appendString("Hi")
     filter.postProcess(request, response: response) {
       newResponse in
-      self.assert(newResponse.body, equals: response.body)
+      self.assert(newResponse.bodyData, equals: response.bodyData)
     }
   }
   

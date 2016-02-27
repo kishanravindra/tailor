@@ -1,8 +1,9 @@
 import XCTest
 import Tailor
 import TailorTesting
+import Foundation
 
-class ControllerTypeTests: XCTestCase, TailorTestable {
+final class TestControllerType: XCTestCase, TailorTestable {
   struct TestController : ControllerType {
     static var name: String {
       return "TailorTests.TestController"
@@ -59,11 +60,66 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
   var controller: ControllerType!
   var routeSet = RouteSet()
   
-  override func setUp() {
-    super.setUp()
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testInitializeSetsUserFromIdInSession", testInitializeSetsUserFromIdInSession),
+    ("testInitializerSetsUserToNilWithBadId", testInitializerSetsUserToNilWithBadId),
+    ("testInitializerSetsUserToNilWithNoId", testInitializerSetsUserToNilWithNoId),
+    ("testInitializeStateWithAllFieldsSetsAllFields", testInitializeStateWithAllFieldsSetsAllFields),
+    ("testInitializerSetsLocaleFromConfigurationSettings", testInitializerSetsLocaleFromConfigurationSettings),
+    ("testRespondWithRendersTemplateInLayout", testRespondWithRendersTemplateInLayout),
+    ("testRespondWithAddsTemplateToList", testRespondWithAddsTemplateToList),
+    ("testRespondWithResponseAndSessionCallsCallbackWithResponse", testRespondWithResponseAndSessionCallsCallbackWithResponse),
+    ("testRespondWithResponseAndSessionSetsSessionInfoOnResponse", testRespondWithResponseAndSessionSetsSessionInfoOnResponse),
+    ("testRespondWithResponseAndNoSessionSetsRequestSessionInfoOnResponse", testRespondWithResponseAndNoSessionSetsRequestSessionInfoOnResponse),
+    ("testRedirectToGeneratesRedirectResponse", testRedirectToGeneratesRedirectResponse),
+    ("testRedirectToWithSessionGeneratesRedirectResponse", testRedirectToWithSessionGeneratesRedirectResponse),
+    ("testRedirectToWithFlashPutsFlashMessagesInSession", testRedirectToWithFlashPutsFlashMessagesInSession),
+    ("testPathForCanGetFullyQualifiedRoute", testPathForCanGetFullyQualifiedRoute),
+    ("testPathForCanGetPathForSameAction", testPathForCanGetPathForSameAction),
+    ("testPathForWithParametersInPathReusesParameters", testPathForWithParametersInPathReusesParameters),
+    ("testPathForCanGetUrlWithDomain", testPathForCanGetUrlWithDomain),
+    ("testPathForGetsNilForInvalidCombination", testPathForGetsNilForInvalidCombination),
+    ("testPathForOnControllerTypeGetsPathForThatController", testPathForOnControllerTypeGetsPathForThatController),
+    ("testRedirectToWithControllerTypeGeneratesRedirectResponse", testRedirectToWithControllerTypeGeneratesRedirectResponse),
+    ("testRedirectToWithoutControllerTypeGeneratesRedirectToCurrentController", testRedirectToWithoutControllerTypeGeneratesRedirectToCurrentController),
+    ("testRedirectToWithControllerTypeWithSessionGeneratesRedirectResponse", testRedirectToWithControllerTypeWithSessionGeneratesRedirectResponse),
+    ("testRedirectToWithControllerTypeWithBadRouteGeneratesRedirectToRootPath", testRedirectToWithControllerTypeWithBadRouteGeneratesRedirectToRootPath),
+    ("testRespondWithJsonGeneratesJsonResponse", testRespondWithJsonGeneratesJsonResponse),
+    ("testRespondWithJsonWithStringGives500Response", testRespondWithJsonWithStringGives500Response),
+    ("testRender404Gives404Response", testRender404Gives404Response),
+    ("testRenderStreamWritesStreamDataToConnection", testRenderStreamWritesStreamDataToConnection),
+    ("testRenderStreamFeedsContinuationDataToCallback", testRenderStreamFeedsContinuationDataToCallback),
+    ("testRenderStreamWithPolledDataSendsDataToConnection", testRenderStreamWithPolledDataSendsDataToConnection),
+    ("testDefaultLayoutIsEmptyLayout", testDefaultLayoutIsEmptyLayout),
+    ("testSignInSetsCurrentUserAndStoresIdInSession", testSignInSetsCurrentUserAndStoresIdInSession),
+    ("testSignInWithNewUserSetsUserIdToZero", testSignInWithNewUserSetsUserIdToZero),
+    ("testSignOutClearsUserIdIdInSession", testSignOutClearsUserIdIdInSession),
+    ("testSignInWithEmailAndPasswordSignsIn", testSignInWithEmailAndPasswordSignsIn),
+    ("testSignInWithInvalidPasswordThrowsException", testSignInWithInvalidPasswordThrowsException),
+    ("testSignInWithTrackableUserSetsTrackingInformation", testSignInWithTrackableUserSetsTrackingInformation),
+    ("testCacheWithModificationTimeWithFreshTimestampReturnsNotModifiedResponse", testCacheWithModificationTimeWithFreshTimestampReturnsNotModifiedResponse),
+    ("testCacheWithModificationTimeWithStaleTimestampReturnsFullResponse", testCacheWithModificationTimeWithStaleTimestampReturnsFullResponse),
+    ("testCacheWithModificationTimeWithNoTimestampReturnsFullResponse", testCacheWithModificationTimeWithNoTimestampReturnsFullResponse),
+    ("testCacheWithModificationTimeWithNon200ResponseDoesNotSetModificationTime", testCacheWithModificationTimeWithNon200ResponseDoesNotSetModificationTime),
+    ("testFetchRecordWithValidIdFetchesRecord", testFetchRecordWithValidIdFetchesRecord),
+    ("testFetchRecordWithInvalidIdThrowsException", testFetchRecordWithInvalidIdThrowsException),
+    ("testFetchRecordWithNoIdGivesFallback", testFetchRecordWithNoIdGivesFallback),
+    ("testFetchRecordWithNoIdOrFallbackThrowsException", testFetchRecordWithNoIdOrFallbackThrowsException),
+    ("testFetchRecordCanFetchRecordWithDifferentParameterName", testFetchRecordCanFetchRecordWithDifferentParameterName),
+    ("testLocalizationPrefixGetsUnderscoredControllerNameAndAction", testLocalizationPrefixGetsUnderscoredControllerNameAndAction),
+    ("testLocalizeWithNoLocaleUsesLocalization", testLocalizeWithNoLocaleUsesLocalization),
+    ("testLocalizeWithInterpolationsAddsInterpolationsToText", testLocalizeWithInterpolationsAddsInterpolationsToText),
+    ("testLocalizeWithDotPrependsPrefix", testLocalizeWithDotPrependsPrefix),
+    ("testLocalizeWithLocaleSwitchesToThatLanguage", testLocalizeWithLocaleSwitchesToThatLanguage),
+    ("testResourceNotFoundErrorGeneratesError", testResourceNotFoundErrorGeneratesError),
+    ("testRedirectErrorGeneratesError", testRedirectErrorGeneratesError),
+    ("testRedirectErrorWithNilParametersFillsInDefaults", testRedirectErrorWithNilParametersFillsInDefaults),
+  ]}
+  
+  func setUp() {
     setUpTestCase()
     Application.configuration.localization = { PropertyListLocalization(locale: $0) }
-    
+
     var user = TestUser()
     user.emailAddress = "test@test.com"
     user.password = "test"
@@ -84,15 +140,14 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
       }
     ))
   }
-  
-  override func tearDown() {
+
+  func tearDown() {
     RouteSet.load { routes in }
-    super.tearDown()
   }
   
   func testInitializeSetsUserFromIdInSession() {
-    SeedTaskTypeTests.SeedTask.saveSchema()
-    SeedTaskTypeTests.SeedTask.saveTable("tailor_alterations")
+    TestSeedTaskType.SeedTask.saveSchema()
+    TestSeedTaskType.SeedTask.saveTable("tailor_alterations")
     controller = TestController(state: ControllerState(
       request: Request(sessionData: ["userId": String(user.id)]),
       response: Response(),
@@ -182,7 +237,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     self.callback = {
       response in
       expectation.fulfill()
-      let body = response.bodyString
+      let body = response.bodyText
       self.assert(body, equals: "<html><body><p>Nesting</p></body></html>", message: "sets body")
     }
     
@@ -230,7 +285,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     self.callback = {
       response2 in
       expectation.fulfill()
-      self.assert(response2.body, equals: response.body)
+      self.assert(response2.bodyData, equals: response.bodyData)
     }
     controller.respondWith(response, session: session)
     self.waitForExpectationsWithTimeout(0, handler: nil)
@@ -376,7 +431,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
       expectation.fulfill()
       self.assert(response.responseCode, equals: .SeeOther, message: "gives a 303 response")
       self.assert(response.headers, equals: ["Location": "/route2"], message: "has a location header")
-      self.assert(response.bodyString, equals: "<html><body>You are being <a href=\"/route2\">redirected</a>.</body></html>")
+      self.assert(response.bodyText, equals: "<html><body>You are being <a href=\"/route2\">redirected</a>.</body></html>")
     }
     self.controller.redirectTo(SecondTestController.self, actionName: "index")
     waitForExpectationsWithTimeout(0.01, handler: nil)
@@ -434,7 +489,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
         expectation.fulfill()
         self.assert(response.responseCode, equals: .Created, message: "gives a success response")
         self.assert(response.headers, equals: ["Content-Type": "application/json"])
-        self.assert(response.body, equals: data)
+        self.assert(response.bodyData, equals: data)
       }
       self.controller.respondWith(json: hat.serialize, responseCode: .Created)
       waitForExpectationsWithTimeout(0.01, handler: nil)
@@ -478,13 +533,13 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
       case 0:
         expectation1.fulfill()
         self.assert(response.headers["Test"], equals: "value")
-        self.assert(response.body.length, equals: 0)
+        self.assert(response.bodyData.length, equals: 0)
       case 1:
         expectation2.fulfill()
-        self.assert(response.bodyString, equals: "Hello")
+        self.assert(response.bodyText, equals: "Hello")
       case 2:
         expectation3.fulfill()
-        self.assert(response.bodyString, equals: "Goodbye")
+        self.assert(response.bodyText, equals: "Goodbye")
       default:
         self.assert(false, message: "Received too many responses")
       }
@@ -542,15 +597,15 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
       case 1:
         expectation1.fulfill()
         self.assert(response.headers["Test"], equals: "value")
-        self.assert(response.body.length, equals: 0)
+        self.assert(response.bodyData.length, equals: 0)
         response.continuationCallback?(true)
       case 2:
         expectation2.fulfill()
-        self.assert(response.bodyString, equals: "1")
+        self.assert(response.bodyText, equals: "1")
         response.continuationCallback?(true)
       case 3:
         expectation3.fulfill()
-        self.assert(response.bodyString, equals: "2")
+        self.assert(response.bodyText, equals: "2")
         response.continuationCallback?(false)
       default:
         self.assert(false, message: "Received too many responses")
@@ -579,7 +634,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     self.callback = {
       response in
       expectation.fulfill()
-      self.assert(response.bodyString, equals: "Hello")
+      self.assert(response.bodyText, equals: "Hello")
     }
     
     
@@ -651,14 +706,14 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
   }
   
   func testSignInWithTrackableUserSetsTrackingInformation() {
-    Application.configuration.userType = UserTypeTests.TrackableUser.self
+    Application.configuration.userType = TestUserType.TrackableUser.self
     
     let connection = Application.sharedDatabaseConnection()
     connection.executeQuery("ALTER TABLE `users` ADD COLUMN `last_sign_in_ip` varchar(255)")
     connection.executeQuery("ALTER TABLE `users` ADD COLUMN `last_sign_in_time` timestamp")
     do {
       _ = try controller.signIn("test@test.com", password: "test")
-      let user = Query<UserTypeTests.TrackableUser>().first()
+      let user = Query<TestUserType.TrackableUser>().first()
       assert(user?.lastSignInIp, equals: controller.request.clientAddress)
       assert(user?.lastSignInTime, equals: Timestamp.now().change(nanosecond: 0))
     }
@@ -685,7 +740,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
         expectation.fulfill()
         self.assert(response.responseCode, equals: .NotModified)
         self.assert(response.headers["Last-Modified"], equals: timestamp.inTimeZone("GMT").format(TimeFormat.Rfc822))
-        self.assert(response.body.length, equals: 0)
+        self.assert(response.bodyData.length, equals: 0)
       }
     ))
     
@@ -711,7 +766,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
         expectation.fulfill()
         self.assert(response.responseCode, equals: .Ok)
         self.assert(response.headers["Last-Modified"], equals: timestamp.inTimeZone("GMT").format(TimeFormat.Rfc822))
-        self.assert(response.body, equals: data)
+        self.assert(response.bodyData, equals: data)
       }
     ))
     
@@ -736,7 +791,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
         expectation.fulfill()
         self.assert(response.responseCode, equals: .Ok)
         self.assert(response.headers["Last-Modified"], equals: timestamp.inTimeZone("GMT").format(TimeFormat.Rfc822))
-        self.assert(response.body, equals: data)
+        self.assert(response.bodyData, equals: data)
       }
     ))
     
@@ -762,7 +817,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
         expectation.fulfill()
         self.assert(response.responseCode, equals: .Created)
         self.assert(isNil: response.headers["Last-Modified"])
-        self.assert(response.body, equals: data)
+        self.assert(response.bodyData, equals: data)
       }
     ))
     
@@ -871,7 +926,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     switch(error) {
     case let ControllerError.UnprocessableRequest(response):
       assert(response.responseCode, equals: .NotFound)
-      assert(response.bodyString, equals: "Thing not found")
+      assert(response.bodyText, equals: "Thing not found")
     }
   }
   
@@ -918,7 +973,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     TestController.callAction("runTest", TestController.index, Request(parameters: ["test1": "value1"])) {
       response, controller in
       expectation.fulfill()
-      self.assert(response.bodyString, equals: "Test Response", message: "gets test response")
+      self.assert(response.bodyText, equals: "Test Response", message: "gets test response")
     }
     
     waitForExpectationsWithTimeout(0.1, handler: nil)
@@ -929,7 +984,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     TestController.callAction("index", TestController.indexAction) {
       response, _ in
       expectation.fulfill()
-      self.assert(response.bodyString, equals: "Index Action", message: "gets body from action")
+      self.assert(response.bodyText, equals: "Index Action", message: "gets body from action")
     }
     waitForExpectationsWithTimeout(0.01, handler: nil)
   }
@@ -953,7 +1008,7 @@ class ControllerTypeTests: XCTestCase, TailorTestable {
     TestController.callAction("runTest", TestController.index, parameters: ["test1": "value1"]) {
       response, controller in
       expectation.fulfill()
-      self.assert(response.bodyString, equals: "Test Response", message: "gets test response")
+      self.assert(response.bodyText, equals: "Test Response", message: "gets test response")
     }
     
     waitForExpectationsWithTimeout(0.01, handler: nil)
