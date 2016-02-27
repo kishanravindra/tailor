@@ -206,6 +206,38 @@ struct TopHat: Persistable {
   }
 }
 
+final class TestableDatabaseConnection : DatabaseDriver {
+  var timeZone: TimeZone
+  var queries = [(String,[SerializableValue])]()
+  var response : [DatabaseRow] = []
+  static var connectionCount = 0
+  
+  init(config: [String : String]) {
+    timeZone = TimeZone.systemTimeZone()
+    TestableDatabaseConnection.connectionCount += 1
+  }
+  func executeQuery(query: String, parameters bindParameters: [SerializableValue]) -> [DatabaseRow] {
+    NSLog("Executing %@", query)
+    queries.append((query, bindParameters))
+    let temporaryResponse = response
+    response = []
+    return temporaryResponse
+  }
+  
+  class func withTestConnection(@noescape block: (TestableDatabaseConnection)->()) {
+    let dictionary = NSThread.currentThread().threadDictionary
+    let oldConnection: AnyObject? = dictionary["databaseConnection"]
+    let newConnection = TestableDatabaseConnection(config: [:])
+    dictionary["databaseConnection"] = newConnection
+    block(newConnection)
+    dictionary["databaseConnection"] = oldConnection
+  }
+  
+  func tables() -> [String:String] {
+    return [:]
+  }
+}
+
 
 
 class StubbedTestCase {

@@ -2,60 +2,66 @@ import XCTest
 import Tailor
 import TailorTesting
 import TailorSqlite
+import Foundation
+import Glibc
 
-class DatabaseDriverTests: XCTestCase, TailorTestable {
-  override func setUp() {
-    super.setUp()
+struct TestDatabaseDriver: XCTestCase, TailorTestable {
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testSharedConnectionOpensWithDriverFromConfiguration", testSharedConnectionOpensWithDriverFromConfiguration),
+    ("testSharedConnectionReusesConnectionInSameThread", testSharedConnectionReusesConnectionInSameThread),
+    ("testSharedConnectionOpensSeparateConnectionInNewThread", testSharedConnectionOpensSeparateConnectionInNewThread),
+    ("testExecuteQueryWithVariadicArgumentsConvertsToData", testExecuteQueryWithVariadicArgumentsConvertsToData),
+    ("testExecuteQueryWithStringArgumentsConvertsToData", testExecuteQueryWithStringArgumentsConvertsToData),
+    ("testSanitizeColumnNameRemovesSpecialCharacters", testSanitizeColumnNameRemovesSpecialCharacters),
+    ("testTransactionExecutesTransactionQueries", testTransactionExecutesTransactionQueries),
+  ]}
+
+  func setUp() {
     setUpTestCase()
+  }
+  
+  func tearDown() {
+    Application.removeSharedDatabaseConnection()
   }
   
   //MARK: - Initialization
   
-  override func tearDown() {
-    
-    Application.removeSharedDatabaseConnection()
-    super.tearDown()
-  }
-  
   func testSharedConnectionOpensWithDriverFromConfiguration() {
-    TestConnection.connectionCount = 0
-    Application.configuration.databaseDriver = { return TestConnection(config: [:]) }
+    StubbedDatabaseConnection.connectionCount = 0
+    Application.configuration.databaseDriver = { return StubbedDatabaseConnection(config: [:]) }
     
     Application.removeSharedDatabaseConnection()
-    assert(NSStringFromClass(Application.sharedDatabaseConnection().dynamicType), equals: NSStringFromClass(TestConnection.self), message: "has a test connection as the shared connection")
-    assert(TestConnection.connectionCount, equals: 1, message: "increments the connection count")
+    assert(NSStringFromClass(Application.sharedDatabaseConnection().dynamicType), equals: NSStringFromClass(StubbedDatabaseConnection.self), message: "has a test connection as the shared connection")
+    assert(StubbedDatabaseConnection.connectionCount, equals: 1, message: "increments the connection count")
   }
   
   func testSharedConnectionReusesConnectionInSameThread() {
-    TestConnection.connectionCount = 0
-    Application.configuration.databaseDriver = { return TestConnection(config: [:]) }
+    StubbedDatabaseConnection.connectionCount = 0
+    Application.configuration.databaseDriver = { return StubbedDatabaseConnection(config: [:]) }
     
     Application.removeSharedDatabaseConnection()
     Application.sharedDatabaseConnection()
-    assert(TestConnection.connectionCount, equals: 1, message: "increments the connection count")
+    assert(StubbedDatabaseConnection.connectionCount, equals: 1, message: "increments the connection count")
     Application.sharedDatabaseConnection()
-    assert(TestConnection.connectionCount, equals: 1, message: "does not increment the connection count on a subsequent call")
+    assert(StubbedDatabaseConnection.connectionCount, equals: 1, message: "does not increment the connection count on a subsequent call")
   }
   
   func testSharedConnectionOpensSeparateConnectionInNewThread() {
-    TestConnection.connectionCount = 0
-    Application.configuration.databaseDriver = { return TestConnection(config: [:]) }
+    StubbedDatabaseConnection.connectionCount = 0
+    Application.configuration.databaseDriver = { return StubbedDatabaseConnection(config: [:]) }
     
     Application.removeSharedDatabaseConnection()
     Application.sharedDatabaseConnection()
-    let expectation = expectationWithDescription("executes block in thread")
-    dispatch_async(dispatch_queue_create(nil, DISPATCH_QUEUE_CONCURRENT)) {
-      expectation.fulfill()
-      Application.sharedDatabaseConnection()
-      self.assert(TestConnection.connectionCount, equals: 2, message: "creates two connections")
-    }
+    var expectation = expectationWithDescription("executes block in thread")
+    var thread = pthread_t()
+    pthread_create(&thread, nil, TestDatabaseDriverCheckOpenConnectionInNewThread, &expectation)
     waitForExpectationsWithTimeout(0.1, handler: nil)
   }
-  
+
   //MARK: - Queries
   
   func testExecuteQueryWithVariadicArgumentsConvertsToData() {
-    TestConnection.withTestConnection {
+    StubbedDatabaseConnection.withTestConnection {
       connection in
       connection.executeQuery("SELECT * FROM hats WHERE color=? AND brimSize=?", "red", "10")
       if connection.queries.count > 0 {
@@ -78,7 +84,7 @@ class DatabaseDriverTests: XCTestCase, TailorTestable {
   }
   
   func testExecuteQueryWithStringArgumentsConvertsToData() {
-    TestConnection.withTestConnection {
+    StubbedDatabaseConnection.withTestConnection {
       connection in
       connection.executeQuery("SELECT * FROM hats WHERE color=? AND brim_size=?", parameterValues: ["red", "10"])
       if connection.queries.count > 0 {
@@ -106,7 +112,7 @@ class DatabaseDriverTests: XCTestCase, TailorTestable {
   }
   
   func testTransactionExecutesTransactionQueries() {
-    TestConnection.withTestConnection {
+    StubbedDatabaseConnection.withTestConnection {
       connection in
       connection.transaction {
         connection.executeQuery("UPDATE hats SET brim_size=10 WHERE id=5")
@@ -124,3 +130,13 @@ class DatabaseDriverTests: XCTestCase, TailorTestable {
     }
   }
 }
+
+func TestDatabaseDriverCheckOpenConnectionInNewThread(pointer: UnsafeMutablePointer<Void>) -> UnsafeMutablePointer<Void> {
+  let expectationPointer = UnsafeMutablePointer<XCTestExpectation>(pointer)
+  let expectation = expectationPointer.memory
+  expectation.fulfill()
+  Application.sharedDatabaseConnection()
+  XCTAssertEqual(StubbedDatabaseConnection.connectionCount, 2,"creates two connections")
+  return nil
+}
+

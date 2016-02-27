@@ -1,10 +1,23 @@
 @testable import Tailor
 import TailorTesting
 import XCTest
+import Foundation
 
-class NSRegularExpressionTests : XCTestCase, TailorTestable {
-  override func setUp() {
-    super.setUp()
+struct TestNSRegularExpression : XCTestCase, TailorTestable {
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testCanCreateExpressionWithStartAnchor", testCanCreateExpressionWithStartAnchor),
+    ("testCanCreateExpressionWithEndAnchor", testCanCreateExpressionWithEndAnchor),
+    ("testCanCreateExpressionWithOptionalCharacter", testCanCreateExpressionWithOptionalCharacter),
+    ("testCanCreateExpressionWithWildcard", testCanCreateExpressionWithWildcard),
+    ("testCanCreateExpressionWithMetaclassWithRange", testCanCreateExpressionWithMetaclassWithRange),
+    ("testCanCreateExpressionWithMetaclassWithDashAtEnd", testCanCreateExpressionWithMetaclassWithDashAtEnd),
+    ("testCanCaptureSubgroups", testCanCaptureSubgroups),
+    ("testCanCaptureNestedSubgroups", testCanCaptureNestedSubgroups),
+    ("testCanCaptureSubgroupsWithRepetition", testCanCaptureSubgroupsWithRepetition),
+    ("testMatchingHeaderLine", testMatchingHeaderLine),
+  ]}
+
+  func setUp() {
     setUpTestCase()
   }
   

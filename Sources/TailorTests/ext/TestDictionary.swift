@@ -1,10 +1,17 @@
 import XCTest
 import Tailor
 import TailorTesting
+import Foundation
 
-class DictionaryTests: XCTestCase, TailorTestable {
-  override func setUp() {
-    super.setUp()
+struct TestDictionary: XCTestCase, TailorTestable {
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testMergeContainsValues", testMergeContainsValues),
+    ("testMapCreatesDictionaryWithKeysMappedToNewValues", testMapCreatesDictionaryWithKeysMappedToNewValues),
+    ("testMapWithThrowableWithNoExceptionCreatesDictionary", testMapWithThrowableWithNoExceptionCreatesDictionary),
+    ("testMapWithThrowableWithExceptionRethrowsException", testMapWithThrowableWithExceptionRethrowsException),
+  ]}
+
+  func setUp() {
     setUpTestCase()
   }
   

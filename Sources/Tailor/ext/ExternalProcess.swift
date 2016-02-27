@@ -64,7 +64,7 @@ internal struct ExternalProcess: Equatable {
       task.terminationHandler = {
         (task: NSTask) -> Void in
         //FIXME
-        //self.callback(Int(task.terminationStatus), self.output.fileHandleForReading.availableData)
+        self.callback(Int(task.terminationStatus), NSData()) //self.output.fileHandleForReading.availableData)
       }
       task.launch()
     }
@@ -149,6 +149,7 @@ internal struct ExternalProcess: Equatable {
     */
   internal static func stopStubbing() {
     EXTERNAL_PROCESS_STUB_MODE = false
+    EXTERNAL_PROCESS_STUBS = []
   }
   
   /**

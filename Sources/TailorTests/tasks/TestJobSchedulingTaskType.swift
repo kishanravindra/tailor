@@ -216,7 +216,6 @@ struct TestJobSchedulingTaskType: XCTestCase, TailorTestable {
     ExternalProcess.startStubbing()
     ExternalProcess.stubResult = (0, NSData())
     task.writeCrontab()
-    ExternalProcess.stopStubbing()
     guard let process = ExternalProcess.stubs.last else {
       assert(false, message: "did not start any processes")
       return
@@ -225,6 +224,7 @@ struct TestJobSchedulingTaskType: XCTestCase, TailorTestable {
     assert(process.arguments, equals: ["/tmp/tailor_crons.txt"])
     let writtenContents = NSString(data: NSData(contentsOfFile: "/tmp/tailor_crons.txt") ?? NSData(), encoding: NSUTF8StringEncoding)?.bridge()
     assert(writtenContents, equals: crontab + "\n")
+    ExternalProcess.stopStubbing()
   }
   
   func testWriteCrontabWithExistingCrontabPutsNewContentAtEndOfCrontab() {
@@ -238,7 +238,6 @@ struct TestJobSchedulingTaskType: XCTestCase, TailorTestable {
     ExternalProcess.startStubbing()
     ExternalProcess.stubResult = (0, NSData(bytes: existingCrontab.utf8))
     task.writeCrontab()
-    ExternalProcess.stopStubbing()
     guard let process = ExternalProcess.stubs.first else {
       assert(false, message: "did not start any processes")
       return
@@ -253,6 +252,7 @@ struct TestJobSchedulingTaskType: XCTestCase, TailorTestable {
     assert(process2.arguments, equals: ["/tmp/tailor_crons.txt"])
     let writtenContents = NSString(data: NSData(contentsOfFile: "/tmp/tailor_crons.txt") ?? NSData(), encoding: NSUTF8StringEncoding)?.bridge()
     assert(writtenContents, equals: existingCrontab + "\n" + crontab + "\n")
+    ExternalProcess.stopStubbing()
   }
   
   func testWriteCrontabWithExistingCrontabWithTailorSectionReplacesJustTailorSection() {
@@ -266,7 +266,6 @@ struct TestJobSchedulingTaskType: XCTestCase, TailorTestable {
     ExternalProcess.startStubbing()
     ExternalProcess.stubResult = (0, NSData(bytes: existingCrontab.utf8))
     task.writeCrontab()
-    ExternalProcess.stopStubbing()
     guard let process = ExternalProcess.stubs.first else {
       assert(false, message: "did not start any processes")
       return
@@ -281,6 +280,7 @@ struct TestJobSchedulingTaskType: XCTestCase, TailorTestable {
     assert(process2.arguments, equals: ["/tmp/tailor_crons.txt"])
     let writtenContents = NSString(data: NSData(contentsOfFile: "/tmp/tailor_crons.txt") ?? NSData(), encoding: NSUTF8StringEncoding)?.bridge()
     assert(writtenContents, equals: resultCrontab + "\n")
+    ExternalProcess.stopStubbing()
   }
   
   func testWriteCrontabWithEmptyExistingCrontabWithTailorSectionWritesJustTailorSection() {
@@ -292,7 +292,6 @@ struct TestJobSchedulingTaskType: XCTestCase, TailorTestable {
     ExternalProcess.startStubbing()
     ExternalProcess.stubResult = (0, NSData(bytes: "crontab: no crontab for tailor".utf8))
     task.writeCrontab()
-    ExternalProcess.stopStubbing()
     guard let process = ExternalProcess.stubs.first else {
       assert(false, message: "did not start any processes")
       return
@@ -307,6 +306,7 @@ struct TestJobSchedulingTaskType: XCTestCase, TailorTestable {
     assert(process2.arguments, equals: ["/tmp/tailor_crons.txt"])
     let writtenContents = NSString(data: NSData(contentsOfFile: "/tmp/tailor_crons.txt") ?? NSData(), encoding: NSUTF8StringEncoding)?.bridge()
     assert(writtenContents, equals: task.crontab + "\n")
+    ExternalProcess.stopStubbing()
   }
   
   func testClearCrontabWithExistingCrontabWithTailorSectionRemovesJustTailorSection() {
@@ -320,7 +320,6 @@ struct TestJobSchedulingTaskType: XCTestCase, TailorTestable {
     ExternalProcess.startStubbing()
     ExternalProcess.stubResult = (0, NSData(bytes: existingCrontab.utf8))
     task.clearCrontab()
-    ExternalProcess.stopStubbing()
     guard let process = ExternalProcess.stubs.first else {
       assert(false, message: "did not start any processes")
       return
@@ -335,6 +334,7 @@ struct TestJobSchedulingTaskType: XCTestCase, TailorTestable {
     assert(process2.arguments, equals: ["/tmp/tailor_crons.txt"])
     let writtenContents = NSString(data: NSData(contentsOfFile: "/tmp/tailor_crons.txt") ?? NSData(), encoding: NSUTF8StringEncoding)?.bridge()
     assert(writtenContents, equals: resultCrontab + "\n")
+    ExternalProcess.stopStubbing()
   }
   
   //MARK: - Tasks
@@ -346,7 +346,6 @@ struct TestJobSchedulingTaskType: XCTestCase, TailorTestable {
     APPLICATION_ARGUMENTS = ("scheduled_jobs", ["write": "1"])
     
     TestTask.runTask()
-    ExternalProcess.stopStubbing()
     guard let process = ExternalProcess.stubs.last else {
       assert(false, message: "did not start any processes")
       return
@@ -355,6 +354,7 @@ struct TestJobSchedulingTaskType: XCTestCase, TailorTestable {
     assert(process.arguments, equals: ["/tmp/tailor_crons.txt"])
     let writtenContents = NSString(data: NSData(contentsOfFile: "/tmp/tailor_crons.txt") ?? NSData(), encoding: NSUTF8StringEncoding)?.bridge()
     assert(writtenContents, equals: crontab + "\n")
+    ExternalProcess.stopStubbing()
   }
   
   func testRunTaskWithClearCommandClearsCrontab() {
@@ -389,8 +389,8 @@ struct TestJobSchedulingTaskType: XCTestCase, TailorTestable {
     
     APPLICATION_ARGUMENTS = ("scheduled_jobs", ["foo": "1"])
     TestTask.runTask()
-    ExternalProcess.stopStubbing()
     assert(ExternalProcess.stubs.isEmpty)
+    ExternalProcess.stopStubbing()
     
   }
 

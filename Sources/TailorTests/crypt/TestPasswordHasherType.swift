@@ -1,10 +1,17 @@
 import XCTest
 import Tailor
 import TailorTesting
+import Foundation
 
-class PasswordHasherTypeTests: XCTestCase, TailorTestable {
-  override func setUp() {
-    super.setUp()
+struct TestPasswordHasherType: XCTestCase, TailorTestable {
+  
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testGenerateSaltGenerates16Digits", testGenerateSaltGenerates16Digits),
+    ("testIsMatchWithMatchingStringsReturnsTrue", testIsMatchWithMatchingStringsReturnsTrue),
+    ("testIsMatchWithNonMatchingStringsReturnsFalse", testIsMatchWithNonMatchingStringsReturnsFalse),
+  ]}
+
+  func setUp() {
     setUpTestCase()
   }
   

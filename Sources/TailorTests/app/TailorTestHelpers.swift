@@ -158,3 +158,50 @@ class StubbedTestCase {
     self.failures.append((message: message, file: String(file), line: line))
   }
 }
+
+final class StubbedDatabaseConnection : DatabaseDriver {
+  var timeZone: TimeZone
+  var queries = [(String,[SerializableValue])]()
+  var response : [DatabaseRow] = []
+  static var connectionCount = 0
+  
+  init(config: [String : String]) {
+    timeZone = TimeZone.systemTimeZone()
+    StubbedDatabaseConnection.connectionCount += 1
+  }
+  func executeQuery(query: String, parameters bindParameters: [SerializableValue]) -> [DatabaseRow] {
+    NSLog("Executing %@", query)
+    queries.append((query, bindParameters))
+    let temporaryResponse = response
+    response = []
+    return temporaryResponse
+  }
+  
+  class func withTestConnection(@noescape block: (StubbedDatabaseConnection)->()) {
+    var dictionary = NSThread.currentThread().threadDictionary
+    let oldConnection: AnyObject? = dictionary["databaseConnection"]
+    let newConnection = StubbedDatabaseConnection(config: [:])
+    dictionary["databaseConnection"] = newConnection
+    block(newConnection)
+    dictionary["databaseConnection"] = oldConnection
+    NSThread.currentThread().threadDictionary = dictionary
+  }
+  
+  func tables() -> [String:String] {
+    return [:]
+  }
+}
+
+enum Color: String, StringPersistableEnum {
+  case Red
+  case DarkBlue
+  
+  static var cases = [Color.Red, Color.DarkBlue]
+}
+
+enum HatType: String, TablePersistableEnum {
+  case Feathered
+  case WideBrim
+  
+  static var cases = [HatType.Feathered, HatType.WideBrim]
+}

@@ -2,11 +2,65 @@ import XCTest
 import Tailor
 import TailorTesting
 import TailorSqlite
+import Foundation
 
+struct TestDatabaseRow: XCTestCase, TailorTestable {
+  @available(*, deprecated)
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testRowInitializationWithConvertibleValuesWrapsValues", testRowInitializationWithConvertibleValuesWrapsValues),
+    ("testRowInitializationWithErrorSetsError", testRowInitializationWithErrorSetsError),
+    ("testReadWithStringValueCanReadStringValue", testReadWithStringValueCanReadStringValue),
+    ("testReadWithStringValueThrowsExceptionOnIntegerValue", testReadWithStringValueThrowsExceptionOnIntegerValue),
+    ("testReadWithStringValueThrowsExceptionOnTimestampValue", testReadWithStringValueThrowsExceptionOnTimestampValue),
+    ("testReadWithStringValueThrowsExceptionForMissingValue", testReadWithStringValueThrowsExceptionForMissingValue),
+    ("testReadWithIntegerValueCanReadIntegerValue", testReadWithIntegerValueCanReadIntegerValue),
+    ("testReadWithIntegerValueThrowsExceptionForStringValue", testReadWithIntegerValueThrowsExceptionForStringValue),
+    ("testReadWithUnsignedIntegerValueCanReadIntegerValue", testReadWithUnsignedIntegerValueCanReadIntegerValue),
+    ("testReadWithUnsignedIntegerValueThrowsExceptionForStringValue", testReadWithUnsignedIntegerValueThrowsExceptionForStringValue),
+    ("testReadWithTimestampValueCanReadTimestampValue", testReadWithTimestampValueCanReadTimestampValue),
+    ("testReadWithTimestampValueCanReadStringWithValidTimestamp", testReadWithTimestampValueCanReadStringWithValidTimestamp),
+    ("testReadWithTimestampValueThrowsExceptionForIntegerValue", testReadWithTimestampValueThrowsExceptionForIntegerValue),
+    ("testReadWithTimestampValueThrowsExceptionForStringValue", testReadWithTimestampValueThrowsExceptionForStringValue),
+    ("testReadWithDateValueCanReadDateValue", testReadWithDateValueCanReadDateValue),
+    ("testReadWithDateValueThrowsExceptionForIntegerValue", testReadWithDateValueThrowsExceptionForIntegerValue),
+    ("testReadWithTimeValueCanReadTimeValue", testReadWithTimeValueCanReadTimeValue),
+    ("testReadWithTimeValueThrowsExceptionForIntegerValue", testReadWithTimeValueThrowsExceptionForIntegerValue),
+    ("testReadWithBoolValueCanReadBoolValue", testReadWithBoolValueCanReadBoolValue),
+    ("testReadWithBoolValueCanReadIntegerValue", testReadWithBoolValueCanReadIntegerValue),
+    ("testReadWithBooleanValueThrowsExceptionForStringValue", testReadWithBooleanValueThrowsExceptionForStringValue),
+    ("testReadWithDataValueCanReadDataValue", testReadWithDataValueCanReadDataValue),
+    ("testReadWithDataValueThrowsExceptionForIntegerValue", testReadWithDataValueThrowsExceptionForIntegerValue),
+    ("testReadWithDoubleValueCanReadDoubleValue", testReadWithDoubleValueCanReadDoubleValue),
+    ("testReadWithOptionalValueCanReadRealValue", testReadWithOptionalValueCanReadRealValue),
+    ("testReadWithOptionalValueReturnsNilForMissingValue", testReadWithOptionalValueReturnsNilForMissingValue),
+    ("testReadWithOptionalValueReturnsNilForNullValue", testReadWithOptionalValueReturnsNilForNullValue),
+    ("testReadWithOptionalValueReturnsNilForEmptyStringValue", testReadWithOptionalValueReturnsNilForEmptyStringValue),
+    ("testReadWithOptionalValueThrowsExceptionForWrongType", testReadWithOptionalValueThrowsExceptionForWrongType),
+    ("testReadWithUnsupportedTypeThrowsException", testReadWithUnsupportedTypeThrowsException),
+    ("testReadWithPersistableTypeWithOptionalWithMissingIdIsNil", testReadWithPersistableTypeWithOptionalWithMissingIdIsNil),
+    ("testReadWithPersistableTypeWithOptionalWithValidIdReturnsRecord", testReadWithPersistableTypeWithOptionalWithValidIdReturnsRecord),
+    ("testReadWithPersistableTypeWithOptionalWithInvalidIdReturnsNil", testReadWithPersistableTypeWithOptionalWithInvalidIdReturnsNil),
+    ("testReadWithPersistableTypeWithOptionalWithStringIdThrowsException", testReadWithPersistableTypeWithOptionalWithStringIdThrowsException),
+    ("testReadWithPersistableTypeWithValidIdReturnsRecord", testReadWithPersistableTypeWithValidIdReturnsRecord),
+    ("testReadWithPersistableTypeWithInvalidIdThrowsException", testReadWithPersistableTypeWithInvalidIdThrowsException),
+    ("testReadWithPersistableTypeWithStringIdThrowsException", testReadWithPersistableTypeWithStringIdThrowsException),
+    ("testReadEnumWithIdWithOptionalWithValidIdGivesValue", testReadEnumWithIdWithOptionalWithValidIdGivesValue),
+    ("testReadEnumWithIdWithOptionalWithBadIdReturnsNil", testReadEnumWithIdWithOptionalWithBadIdReturnsNil),
+    ("testReadEnumWithIdWithOptionalWithNoValueReturnsNil", testReadEnumWithIdWithOptionalWithNoValueReturnsNil),
+    ("testReadEnumWithIdWithOptionalWithStringValueThrowsException", testReadEnumWithIdWithOptionalWithStringValueThrowsException),
+    ("testReadEnumWithIdWithValidValueGivesValue", testReadEnumWithIdWithValidValueGivesValue),
+    ("testReadEnumWithIdWithBadIdThrowsException", testReadEnumWithIdWithBadIdThrowsException),
+    ("testReadEnumWithIdWithStringValueThrowsException", testReadEnumWithIdWithStringValueThrowsException),
+    ("testReadEnumWithNameWithOptionalWithValidValueGivesValue", testReadEnumWithNameWithOptionalWithValidValueGivesValue),
+    ("testReadEnumWithNameWithOptionalWithBadNameReturnsNil", testReadEnumWithNameWithOptionalWithBadNameReturnsNil),
+    ("testReadEnumWithNameWithOptionalWithMissingValueReturnsNil", testReadEnumWithNameWithOptionalWithMissingValueReturnsNil),
+    ("testReadEnumWithNameWithOptionalWithIntegerValueThrowsException", testReadEnumWithNameWithOptionalWithIntegerValueThrowsException),
+    ("testReadEnumWithNameWithValidValueGivesValue", testReadEnumWithNameWithValidValueGivesValue),
+    ("testReadEnumWithNameWithBadNameThrowsException", testReadEnumWithNameWithBadNameThrowsException),
+    ("testReadEnumWithNameWithIntegerValueThrowsException", testReadEnumWithNameWithIntegerValueThrowsException),
+  ]}
 
-class DatabaseRowTests: XCTestCase, TailorTestable {
-  override func setUp() {
-    super.setUp()
+  func setUp() {
     setUpTestCase()
     Application.sharedDatabaseConnection().executeQuery("DROP TABLE IF EXISTS hat_types")
     Application.sharedDatabaseConnection().executeQuery("CREATE TABLE hat_types (id integer PRIMARY KEY, name string)")
@@ -541,12 +595,11 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
   
   @available(*, deprecated)
   func testReadEnumWithIdWithOptionalWithValidIdGivesValue() {
-    typealias HatType = PersistableEnumTests.HatType
-    let color1 = PersistableEnumTests.HatType.Feathered
-    _ = PersistableEnumTests.HatType.WideBrim
+    let color1 = HatType.Feathered
+    _ = HatType.WideBrim
     let row = DatabaseRow(data: ["key1": color1.id.serialize])
     do {
-      let value = try row.readEnum(id: "key1") as PersistableEnumTests.HatType?
+      let value = try row.readEnum(id: "key1") as HatType?
       assert(value, equals: .Feathered)
     }
     catch {
@@ -556,12 +609,11 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
   
   @available(*, deprecated)
   func testReadEnumWithIdWithOptionalWithBadIdReturnsNil() {
-    typealias HatType = PersistableEnumTests.HatType
-    _ = PersistableEnumTests.HatType.Feathered
-    let color2 = PersistableEnumTests.HatType.WideBrim
+    _ = HatType.Feathered
+    let color2 = HatType.WideBrim
     let row = DatabaseRow(data: ["key1": (color2.id + 1).serialize])
     do {
-      let value = try row.readEnum(id: "key1") as PersistableEnumTests.HatType?
+      let value = try row.readEnum(id: "key1") as HatType?
       assert(isNil: value)
     }
     catch {
@@ -571,12 +623,11 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
   
   @available(*, deprecated)
   func testReadEnumWithIdWithOptionalWithNoValueReturnsNil() {
-    typealias HatType = PersistableEnumTests.HatType
-    let color1 = PersistableEnumTests.HatType.Feathered
-    _ = PersistableEnumTests.HatType.WideBrim
+    let color1 = HatType.Feathered
+    _ = HatType.WideBrim
     let row = DatabaseRow(data: ["key2": color1.id.serialize])
     do {
-      let value = try row.readEnum(id: "key1") as PersistableEnumTests.HatType?
+      let value = try row.readEnum(id: "key1") as HatType?
       assert(isNil: value)
     }
     catch {
@@ -587,11 +638,10 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
   
   @available(*, deprecated)
   func testReadEnumWithIdWithOptionalWithStringValueThrowsException() {
-    typealias HatType = PersistableEnumTests.HatType
-    _ = PersistableEnumTests.HatType.Feathered
+    _ = HatType.Feathered
     let row = DatabaseRow(data: ["key1": "foo".serialize])
     do {
-      _ = try row.readEnum(id: "key1") as PersistableEnumTests.HatType?
+      _ = try row.readEnum(id: "key1") as HatType?
       assert(false, message: "should throw exception")
     }
     catch let DatabaseError.FieldType(name, actualType, desiredType) {
@@ -606,12 +656,11 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
   
   @available(*, deprecated)
   func testReadEnumWithIdWithValidValueGivesValue() {
-    typealias HatType = PersistableEnumTests.HatType
-    let color1 = PersistableEnumTests.HatType.Feathered
-    _ = PersistableEnumTests.HatType.WideBrim
+    let color1 = HatType.Feathered
+    _ = HatType.WideBrim
     let row = DatabaseRow(data: ["key1": color1.id.serialize])
     do {
-      let value = try row.readEnum(id: "key1") as PersistableEnumTests.HatType
+      let value = try row.readEnum(id: "key1") as HatType
       assert(value, equals: .Feathered)
     }
     catch {
@@ -621,12 +670,11 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
   
   @available(*, deprecated)
   func testReadEnumWithIdWithBadIdThrowsException() {
-    typealias HatType = PersistableEnumTests.HatType
-    _ = PersistableEnumTests.HatType.Feathered
-    let color2 = PersistableEnumTests.HatType.WideBrim
+    _ = HatType.Feathered
+    let color2 = HatType.WideBrim
     let row = DatabaseRow(data: ["key1": (color2.id + 1).serialize])
     do {
-      _ = try row.readEnum(id: "key1") as PersistableEnumTests.HatType
+      _ = try row.readEnum(id: "key1") as HatType
       assert(false, message: "should throw exception")
     }
     catch let DatabaseError.MissingField(name) {
@@ -639,11 +687,10 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
   
   @available(*, deprecated)
   func testReadEnumWithIdWithStringValueThrowsException() {
-    typealias HatType = PersistableEnumTests.HatType
-    _ = PersistableEnumTests.HatType.Feathered
+    _ = HatType.Feathered
     let row = DatabaseRow(data: ["key1": "foo".serialize])
     do {
-      _ = try row.readEnum(id: "key1") as PersistableEnumTests.HatType?
+      _ = try row.readEnum(id: "key1") as HatType?
       assert(false, message: "should throw exception")
     }
     catch let DatabaseError.FieldType(name, actualType, desiredType) {
@@ -658,12 +705,11 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
   
   @available(*, deprecated)
   func testReadEnumWithNameWithOptionalWithValidValueGivesValue() {
-    typealias HatType = PersistableEnumTests.HatType
-    _ = PersistableEnumTests.HatType.Feathered
-    _ = PersistableEnumTests.HatType.WideBrim
+    _ = HatType.Feathered
+    _ = HatType.WideBrim
     let row = DatabaseRow(data: ["key1": "feathered".serialize])
     do {
-      let value = try row.readEnum(name: "key1") as PersistableEnumTests.HatType?
+      let value = try row.readEnum(name: "key1") as HatType?
       assert(value, equals: .Feathered)
     }
     catch {
@@ -673,12 +719,11 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
   
   @available(*, deprecated)
   func testReadEnumWithNameWithOptionalWithBadNameReturnsNil() {
-    typealias HatType = PersistableEnumTests.HatType
-    _ = PersistableEnumTests.HatType.Feathered
-    _ = PersistableEnumTests.HatType.WideBrim
+    _ = HatType.Feathered
+    _ = HatType.WideBrim
     let row = DatabaseRow(data: ["key1": "bad_value".serialize])
     do {
-      let value = try row.readEnum(name: "key1") as PersistableEnumTests.HatType?
+      let value = try row.readEnum(name: "key1") as HatType?
       assert(isNil: value)
     }
     catch {
@@ -688,12 +733,11 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
   
   @available(*, deprecated)
   func testReadEnumWithNameWithOptionalWithMissingValueReturnsNil() {
-    typealias HatType = PersistableEnumTests.HatType
-    _ = PersistableEnumTests.HatType.Feathered
-    _ = PersistableEnumTests.HatType.WideBrim
+    _ = HatType.Feathered
+    _ = HatType.WideBrim
     let row = DatabaseRow(data: ["key2": "feathered".serialize])
     do {
-      let value = try row.readEnum(name: "key1") as PersistableEnumTests.HatType?
+      let value = try row.readEnum(name: "key1") as HatType?
       assert(isNil: value)
     }
     catch {
@@ -703,11 +747,10 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
   
   @available(*, deprecated)
   func testReadEnumWithNameWithOptionalWithIntegerValueThrowsException() {
-    typealias HatType = PersistableEnumTests.HatType
-    _ = PersistableEnumTests.HatType.Feathered
+    _ = HatType.Feathered
     let row = DatabaseRow(data: ["key1": 1.serialize])
     do {
-      _ = try row.readEnum(name: "key1") as PersistableEnumTests.HatType?
+      _ = try row.readEnum(name: "key1") as HatType?
       assert(false, message: "should throw exception")
     }
     catch let DatabaseError.FieldType(name, actualType, desiredType) {
@@ -722,12 +765,11 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
   
   @available(*, deprecated)
   func testReadEnumWithNameWithValidValueGivesValue() {
-    typealias HatType = PersistableEnumTests.HatType
-    _ = PersistableEnumTests.HatType.Feathered
-    _ = PersistableEnumTests.HatType.WideBrim
+    _ = HatType.Feathered
+    _ = HatType.WideBrim
     let row = DatabaseRow(data: ["key1": "feathered".serialize])
     do {
-      let value = try row.readEnum(name: "key1") as PersistableEnumTests.HatType
+      let value = try row.readEnum(name: "key1") as HatType
       assert(value, equals: .Feathered)
     }
     catch {
@@ -737,12 +779,11 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
   
   @available(*, deprecated)
   func testReadEnumWithNameWithBadNameThrowsException() {
-    typealias HatType = PersistableEnumTests.HatType
-    _ = PersistableEnumTests.HatType.Feathered
-    _ = PersistableEnumTests.HatType.WideBrim
+    _ = HatType.Feathered
+    _ = HatType.WideBrim
     let row = DatabaseRow(data: ["key1": "bad_name".serialize])
     do {
-      _ = try row.readEnum(name: "key1") as PersistableEnumTests.HatType
+      _ = try row.readEnum(name: "key1") as HatType
       assert(false, message: "should throw exception")
     }
     catch let DatabaseError.MissingField(name) {
@@ -755,11 +796,10 @@ class DatabaseRowTests: XCTestCase, TailorTestable {
   
   @available(*, deprecated)
   func testReadEnumWithNameWithIntegerValueThrowsException() {
-    typealias HatType = PersistableEnumTests.HatType
-    _ = PersistableEnumTests.HatType.Feathered
+    _ = HatType.Feathered
     let row = DatabaseRow(data: ["key1": 1.serialize])
     do {
-      _ = try row.readEnum(name: "key1") as PersistableEnumTests.HatType?
+      _ = try row.readEnum(name: "key1") as HatType?
       assert(false, message: "should throw exception")
     }
     catch let DatabaseError.FieldType(name, actualType, desiredType) {

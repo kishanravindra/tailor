@@ -3,9 +3,13 @@ import Tailor
 import TailorTesting
 import XCTest
 
-class CollectionTypeTests : XCTestCase, TailorTestable {
-  override func setUp() {
-    super.setUp()
+struct TestCollectionType : XCTestCase, TailorTestable {
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testUniqueGetsUniqueElements", testUniqueGetsUniqueElements),
+    ("testSlicesDividesListIntoSlices", testSlicesDividesListIntoSlices),
+  ]}
+
+  func setUp() {
     setUpTestCase()
   }
   
