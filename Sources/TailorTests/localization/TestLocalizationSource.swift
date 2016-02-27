@@ -2,7 +2,19 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class LocalizationSourceTests: XCTestCase, TailorTestable {
+struct TestLocalizationSource: XCTestCase, TailorTestable {
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testFallbackLocalesWithGlobalEnglishIsEmpty", testFallbackLocalesWithGlobalEnglishIsEmpty),
+    ("testFallbackLocalesWithLocalEnglishHasGlobalEnglish", testFallbackLocalesWithLocalEnglishHasGlobalEnglish),
+    ("testFallbackLocalesWithLocalSpanishHasSpanishAndEnglish", testFallbackLocalesWithLocalSpanishHasSpanishAndEnglish),
+    ("testFallbackLocalesWithGlobalSpanishHasEnglish", testFallbackLocalesWithGlobalSpanishHasEnglish),
+    ("testFallbackLocalesWithMultiplePartsHasAllAncestors", testFallbackLocalesWithMultiplePartsHasAllAncestors),
+    ("testFetchWithSpecificTranslationUsesTranslation", testFetchWithSpecificTranslationUsesTranslation),
+    ("testFetchWithMissingTranslationUsesFirstFallback", testFetchWithMissingTranslationUsesFirstFallback),
+    ("testFetchWithMissingTranslationsContinuesTryingFallbacks", testFetchWithMissingTranslationsContinuesTryingFallbacks),
+    ("testFetchWithInterpolationPutsValueInTranslation", testFetchWithInterpolationPutsValueInTranslation),
+  ]}
+  
   final class TestLocalization: LocalizationSource {
     let locale: String
     
@@ -33,8 +45,7 @@ class LocalizationSourceTests: XCTestCase, TailorTestable {
     static var availableLocales: [String] { return [] }
   }
   
-  override func setUp() {
-    super.setUp()
+  func setUp() {
     setUpTestCase()
   }
   

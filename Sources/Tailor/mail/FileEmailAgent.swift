@@ -28,25 +28,21 @@ public struct FileEmailAgent: EmailAgent {
     */
   public func deliver(email: Email, callback: Email.ResultHandler) {
     let data = email.fullMessage
-    guard let stream = NSOutputStream(toFileAtPath: self.path, append: true) else {
+    
+    if !NSFileManager.defaultManager().fileExistsAtPath(self.path) {
+      guard NSFileManager.defaultManager().createFileAtPath(self.path, contents: nil, attributes: nil) else {
+        callback(success: false, code: 1, message: "Error opening email file")
+        return
+      }
+    }
+    guard let handle = NSFileHandle(forUpdatingAtPath: self.path) else {
       callback(success: false, code: 1, message: "Error opening email file")
       return
     }
-    var bytesWritten = 0
-    let buffer = UnsafePointer<UInt8>(data.bytes)
-    stream.open()
-    while bytesWritten < data.length {
-      let newBytes = stream.write(buffer, maxLength: data.length - bytesWritten)
-      if newBytes == -1 {
-        callback(success: false, code: 1, message: "Error writing to email file")
-        return
-      }
-      bytesWritten += newBytes
-      buffer.advancedBy(bytesWritten)
-    }
-    var closingBytes: [UInt8] = [13, 10]
-    stream.write(&closingBytes, maxLength: 2)
-    stream.close()
+    handle.seekToEndOfFile()
+    handle.writeData(data)
+    handle.writeData(NSData(bytes: [13, 10]))
+    handle.closeFile()
     callback(success: true, code: 0, message: "")
   }
 }

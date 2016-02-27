@@ -1,10 +1,20 @@
 @testable import Tailor
 import TailorTesting
 import XCTest
+import Foundation
 
-class SmptEmailAgentTests: XCTestCase, TailorTestable {
-  override func setUp() {
-    super.setUp()
+struct TestSmtpEmailAgent: XCTestCase, TailorTestable {
+  //FIXME: Re-enable disabled tests
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testInitializeWithAllFieldsSetsFields", testInitializeWithAllFieldsSetsFields),
+    //("testDeliverWithSingleRecipientCallsCurl", testDeliverWithSingleRecipientCallsCurl),
+    //("testDeliverWithMultipleRecipientCallsCurlMultipleTimes", testDeliverWithMultipleRecipientCallsCurlMultipleTimes),
+    ("testDeliverWithSuccessfulResponseGivesSuccessfulResponse", testDeliverWithSuccessfulResponseGivesSuccessfulResponse),
+    ("testDeliverWithUnsuccessfulResponseGivesUnsuccessfulResponse", testDeliverWithUnsuccessfulResponseGivesUnsuccessfulResponse),
+    ("testDeliverWithNonAsciiResponseGivesEmptyStringForResponse", testDeliverWithNonAsciiResponseGivesEmptyStringForResponse),
+  ]}
+
+  func setUp() {
     setUpTestCase()
     ExternalProcess.startStubbing()
   }

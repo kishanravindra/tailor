@@ -2,9 +2,14 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class PropertyListLocalizationTests: XCTestCase, TailorTestable {
-  override func setUp() {
-    super.setUp()
+struct TestPropertyListLocalization: XCTestCase, TailorTestable {
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testFetchInLocaleGetsValueFromConfiguration", testFetchInLocaleGetsValueFromConfiguration),
+    ("testFetchGetsNilValueForMissingKey", testFetchGetsNilValueForMissingKey),
+    ("testAvailableLocalesGetsKeysFromStaticContent", testAvailableLocalesGetsKeysFromStaticContent),
+  ]}
+
+  func setUp() {
     setUpTestCase()
     Application.configuration.staticContent[ "en.localization_test"] = "Hello"
     Application.configuration.staticContent[ "es.localization_test"] = "Hola"

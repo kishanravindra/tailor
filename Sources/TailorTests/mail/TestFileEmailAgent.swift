@@ -1,10 +1,19 @@
 import Tailor
 import TailorTesting
 import XCTest
+import Foundation
 
-class FileEmailAgentTests: XCTestCase, TailorTestable {
-  override func setUp() {
-    super.setUp()
+struct TestFileEmailAgent: XCTestCase, TailorTestable {
+  //FIXME: Re-enable disabled tests
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testInitializationWithFullConfigSetsFields", testInitializationWithFullConfigSetsFields),
+    ("testInitializationWithoutPathSetsDefaultPath", testInitializationWithoutPathSetsDefaultPath),
+    ("testDeliverWithValidPathStoresContentsInFile", testDeliverWithValidPathStoresContentsInFile),
+    ("testDeliverAppendsMultipleMessagesToOneFile", testDeliverAppendsMultipleMessagesToOneFile),
+    ("testDeliverWithInvalidPathCallsCallbackWithError", testDeliverWithInvalidPathCallsCallbackWithError),
+  ]}
+
+  func setUp() {
     setUpTestCase()
   }
   
@@ -79,7 +88,7 @@ class FileEmailAgentTests: XCTestCase, TailorTestable {
   }
   
   func testDeliverWithInvalidPathCallsCallbackWithError() {
-    let agent = FileEmailAgent(path: "/rootfile")
+    let agent = FileEmailAgent(path: "/bad/path")
     let email1 = Email(from: "test1@tailorframe.work", to: "test2@tailorframe.work", subject: "Exciting Offer", body: "<h1>Hi!</h1><p>I have an exciting offer for you</p>")
     let expectation = expectationWithDescription("callback called")
     agent.deliver(email1) {
@@ -87,7 +96,7 @@ class FileEmailAgentTests: XCTestCase, TailorTestable {
       expectation.fulfill()
       XCTAssertFalse(success)
       XCTAssertEqual(code, 1)
-      XCTAssertEqual(message, "Error writing to email file")
+      XCTAssertEqual(message, "Error opening email file")
     }
     waitForExpectationsWithTimeout(0.1, handler: nil)
   }

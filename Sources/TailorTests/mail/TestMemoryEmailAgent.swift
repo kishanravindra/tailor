@@ -2,9 +2,13 @@ import Tailor
 import TailorTesting
 import XCTest
 
-class MemoryEmailAgentTests: XCTestCase, TailorTestable {
-  override func setUp() {
-    super.setUp()
+struct TestMemoryEmailAgent: XCTestCase, TailorTestable {
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testDeliverAddsEmailToDeliveries", testDeliverAddsEmailToDeliveries),
+    ("testDeliverAppendsEmails", testDeliverAppendsEmails),
+  ]}
+
+  func setUp() {
     setUpTestCase()
   }
   

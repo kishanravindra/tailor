@@ -1,8 +1,9 @@
 @testable import Tailor
 import TailorTesting
 import XCTest
+import Foundation
 
-class EmailTests: XCTestCase, TailorTestable {
+struct TestEmail: XCTestCase, TailorTestable {
   struct TestTemplate: TemplateType {
     var state: TemplateState
     
@@ -18,8 +19,49 @@ class EmailTests: XCTestCase, TailorTestable {
     }
   }
   
-  override func setUp() {
-    super.setUp()
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testInitializeSetsFields", testInitializeSetsFields),
+    ("testInitializeWithSingleRecipientSetsRecipients", testInitializeWithSingleRecipientSetsRecipients),
+    ("testInitializeWithRecipientListAndSingleRecipientSetsAllRecipients", testInitializeWithRecipientListAndSingleRecipientSetsAllRecipients),
+    ("testInitializeWithEmptyRecipientListSetsNoRecipients", testInitializeWithEmptyRecipientListSetsNoRecipients),
+    ("testInitializeWithTemplateUsesTemplateBody", testInitializeWithTemplateUsesTemplateBody),
+    ("testInitializeWithTemplateSetsTemplateOnEmail", testInitializeWithTemplateSetsTemplateOnEmail),
+    ("testAllRecipientsIncludesRecipientsCcsAndBccs", testAllRecipientsIncludesRecipientsCcsAndBccs),
+    ("testInitializeAttachmentSetsFields", testInitializeAttachmentSetsFields),
+    ("testFullMessageContainsHeadersAndBody", testFullMessageContainsHeadersAndBody),
+    ("testFullMessageIncludesCcHeader", testFullMessageIncludesCcHeader),
+    ("testFullMessageDoesNotIncludesBccHeader", testFullMessageDoesNotIncludesBccHeader),
+    ("testFullMessageEncodesNonAsciiCharactersInBody", testFullMessageEncodesNonAsciiCharactersInBody),
+    ("testFullMessageEncodesSpecialCharactersInSubject", testFullMessageEncodesSpecialCharactersInSubject),
+    ("testFullMessageEncodesAndWrapsLongSubject", testFullMessageEncodesAndWrapsLongSubject),
+    ("testFullMessageWithAttachmentsHasMultipartBody", testFullMessageWithAttachmentsHasMultipartBody),
+    ("testFullMessageSupportsLongAttachmentNames", testFullMessageSupportsLongAttachmentNames),
+    ("testEncodeEncodesNonAsciiCharacters", testEncodeEncodesNonAsciiCharacters),
+    ("testEncodeEncodesEqualsSign", testEncodeEncodesEqualsSign),
+    ("testEncodeEncodesLineBreakWithCarriageReturnAndLineFeed", testEncodeEncodesLineBreakWithCarriageReturnAndLineFeed),
+    ("testEncodeEncodesCarriageReturnAndLineFeedWithCarriageReturnAndLineFeed", testEncodeEncodesCarriageReturnAndLineFeedWithCarriageReturnAndLineFeed),
+    ("testEncodeEscapesSpaceBeforeLineBreak", testEncodeEscapesSpaceBeforeLineBreak),
+    ("testEncodeWrapsAt76Characters", testEncodeWrapsAt76Characters),
+    ("testEncodeWrapsEarlyToAvoidBreakingEscape", testEncodeWrapsEarlyToAvoidBreakingEscape),
+    ("testEncodeWithLineBreakerUsesThatToSeparateLines", testEncodeWithLineBreakerUsesThatToSeparateLines),
+    ("testEncodeWithLineBreakerWithoutProperCharactersMakesOneGiantLine", testEncodeWithLineBreakerWithoutProperCharactersMakesOneGiantLine),
+    ("testEncodeWithInitialLineLengthCutsOffFirstLineEarly", testEncodeWithInitialLineLengthCutsOffFirstLineEarly),
+    ("testEncodeWithSpecialEscapesEncodesThoseCharactersToo", testEncodeWithSpecialEscapesEncodesThoseCharactersToo),
+    ("testDeliverDeliversEmailWithSharedAgent", testDeliverDeliversEmailWithSharedAgent),
+    ("testDeliverWithNoCallbackLogsError", testDeliverWithNoCallbackLogsError),
+    ("testDeliverGivesCallbackToEmailAgent", testDeliverGivesCallbackToEmailAgent),
+    ("testEmailsWithSameInformationAreEqual", testEmailsWithSameInformationAreEqual),
+    ("testEmailsWithDifferentSendersAreNotEqual", testEmailsWithDifferentSendersAreNotEqual),
+    ("testEmailsWithDifferentRecipientsAreNotEqual", testEmailsWithDifferentRecipientsAreNotEqual),
+    ("testEmailsWithDifferentSubjectsAreNotEqual", testEmailsWithDifferentSubjectsAreNotEqual),
+    ("testEmailsWithDifferentContentsAreNotEqual", testEmailsWithDifferentContentsAreNotEqual),
+    ("testEmailAttachmentsWithSameInformationAreEqual", testEmailAttachmentsWithSameInformationAreEqual),
+    ("testEmailAttachmentsWithDifferentTypesAreNotEqual", testEmailAttachmentsWithDifferentTypesAreNotEqual),
+    ("testEmailAttachmentsWithDifferentFilenamesAreNotEqual", testEmailAttachmentsWithDifferentFilenamesAreNotEqual),
+    ("testEmailAttachmentsWithDifferentDataAreNotEqual", testEmailAttachmentsWithDifferentDataAreNotEqual),
+  ]}
+
+  func setUp() {
     setUpTestCase()
   }
   
@@ -88,7 +130,7 @@ class EmailTests: XCTestCase, TailorTestable {
     let email = Email(from: "test1@johnbrownlee.com", recipients: ["test2@johnbrownlee.com","test3@johnbrownlee.com"], subject: "Yo", body: "Yo dawg")
     let date = Timestamp.now().format(TimeFormat.Rfc2822)
     let messageData = email.fullMessage
-    let message = NSString(data: messageData, encoding: NSASCIIStringEncoding) as? String ?? ""
+    let message = NSString(data: messageData, encoding: NSASCIIStringEncoding)?.bridge() ?? ""
     assert(message, equals:
       "From: test1@johnbrownlee.com\r\n" +
         "To: test2@johnbrownlee.com,test3@johnbrownlee.com\r\n" +
@@ -105,7 +147,7 @@ class EmailTests: XCTestCase, TailorTestable {
     let email = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com",ccs: ["test3@johnbrownlee.com", "test4@johnbrownlee.com"], subject: "Yo", body: "Yo dawg")
     
     let messageData = email.fullMessage
-    let message = NSString(data: messageData, encoding: NSASCIIStringEncoding) as? String ?? ""
+    let message = NSString(data: messageData, encoding: NSASCIIStringEncoding)?.bridge() ?? ""
     assert(message, contains: "CC: test3@johnbrownlee.com,test4@johnbrownlee.com\r\n")
   }
   
@@ -113,26 +155,26 @@ class EmailTests: XCTestCase, TailorTestable {
     let email = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com", bccs: ["test3@johnbrownlee.com", "test4@johnbrownlee.com"], subject: "Yo", body: "Yo dawg")
     
     let messageData = email.fullMessage
-    let message = NSString(data: messageData, encoding: NSASCIIStringEncoding) as? String ?? ""
+    let message = NSString(data: messageData, encoding: NSASCIIStringEncoding)?.bridge() ?? ""
     assert(!message.contains("test3@johnbrownlee.com"))
     assert(!message.contains("test4@johnbrownlee.com"))
   }
   
   func testFullMessageEncodesNonAsciiCharactersInBody() {
     let email = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com", subject: "Yo", body: "Olé All")
-    let message = NSString(data: email.fullMessage, encoding: NSASCIIStringEncoding) as! String
+    let message = NSString(data: email.fullMessage, encoding: NSASCIIStringEncoding)!.bridge()
     assert(message, contains: "Ol=C3=A9 All")
   }
   
   func testFullMessageEncodesSpecialCharactersInSubject() {
     let email = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com", subject: "Olé\n Friends?", body: "Yo")
-    let message = NSString(data: email.fullMessage, encoding: NSASCIIStringEncoding) as! String
+    let message = NSString(data: email.fullMessage, encoding: NSASCIIStringEncoding)!.bridge()
     assert(message, contains: "Subject: =?UTF-8?Q?Ol=C3=A9=0A=20Friends=3F?=")
   }
   
   func testFullMessageEncodesAndWrapsLongSubject() {
     let email = Email(from: "test1@johnbrownlee.com", to: "test2@johnbrownlee.com", subject: "Urgent Action Required On This Limited-Time Opportunity For You asd;lkjfasd;fkljasdasdfkjsadfkjlasdf asdlkfjasldkfjlaksjdfkljasdfkljas adfsl;kjasdfl;kjadsfl;kjasdfkl;jasd;fkljasdf;lkjasdfl;kjasdf;lkjasdf;lkjasdfkl;jasdfkl;jasdfkl;jasdf", body: "Yo")
-    let message = NSString(data: email.fullMessage, encoding: NSASCIIStringEncoding) as! String
+    let message = NSString(data: email.fullMessage, encoding: NSASCIIStringEncoding)!.bridge()
     
     assert(message, contains: "Subject: =?UTF-8?Q?Urgent=20Action=20Required=20On=20This=20Limited-Time?=\r\n =?UTF-8?Q?=20Opportunity=20For=20You=20asd;lkjfasd;fkljasdasdfkjsadfkjlas?=\r\n =?UTF-8?Q?df=20asdlkfjasldkfjlaksjdfkljasdfkljas=20adfsl;kjasdfl;kjadsfl;?=\r\n =?UTF-8?Q?kjasdfkl;jasd;fkljasdf;lkjasdfl;kjasdf;lkjasdf;lkjasdfkl;jasdfk?=\r\n =?UTF-8?Q?l;jasdfkl;jasdf?=")
   }
@@ -143,10 +185,9 @@ class EmailTests: XCTestCase, TailorTestable {
     )
     let date = Timestamp.now().format(TimeFormat.Rfc2822)
     let messageData = email.fullMessage
-    let message = NSString(data: messageData, encoding: NSASCIIStringEncoding) as? String ?? ""
-    let strippedMessage = message.stringByReplacingOccurrencesOfString("\r", withString: "")
+    let message = NSString(data: messageData, encoding: NSASCIIStringEncoding)?.bridge() ?? ""
     let regex = try! NSRegularExpression(pattern: "boundary=\"([A-Z0-9a-z]*)\"", options: [.DotMatchesLineSeparators])
-    let matches = regex.matchesInString(strippedMessage, options: [], range: NSMakeRange(0, strippedMessage.characters.count))
+    let matches = regex.matchesInString(message, options: [], range: NSMakeRange(0, message.characters.count))
     if matches.count == 0 {
       assert(false, message: "Did not contain boundary")
       return
@@ -156,9 +197,9 @@ class EmailTests: XCTestCase, TailorTestable {
       return
     }
     let range = matches[0].rangeAtIndex(1)
-    let start = strippedMessage.startIndex.advancedBy(range.location)
+    let start = message.startIndex.advancedBy(range.location)
     let end = start.advancedBy(range.length)
-    let boundary = strippedMessage.substringWithRange(start..<end)
+    let boundary = message.substringWithRange(start..<end)
     assert(message, equals:
       "From: test1@johnbrownlee.com\r\n" +
         "To: test2@johnbrownlee.com,test3@johnbrownlee.com\r\n" +
@@ -185,7 +226,7 @@ class EmailTests: XCTestCase, TailorTestable {
       attachments: [Email.Attachment(type: "application/pdf", filename: "My Long Filename 1234 Version 1.pdf", data: NSData(bytes: [1,2,3,4,5,6,7,8,9,10]))]
     )
     let messageData = email.fullMessage
-    let message = NSString(data: messageData, encoding: NSASCIIStringEncoding) as? String ?? ""
+    let message = NSString(data: messageData, encoding: NSASCIIStringEncoding)?.bridge() ?? ""
     assert(message, contains: "Content-Disposition: attachment; filename=\"My Long Filename 1234 Version 1.pdf\"")
   }
   

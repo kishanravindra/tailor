@@ -1,10 +1,19 @@
 @testable import Tailor
 import TailorTesting
 import XCTest
+import Foundation
 
-class SendmailEmailAgentTests: XCTestCase, TailorTestable {
-  override func setUp() {
-    super.setUp()
+struct TestSendmailEmailAgent: XCTestCase, TailorTestable {
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testSendmailAgentSendsSmtpCommandsToTask", testSendmailAgentSendsSmtpCommandsToTask),
+    ("testSendmailAgentSendsSeparateEmailsForMultipleRecipients", testSendmailAgentSendsSeparateEmailsForMultipleRecipients),
+    ("testSendmailAgentCallsWithOkResponseGivesSuccessfulResult", testSendmailAgentCallsWithOkResponseGivesSuccessfulResult),
+    ("testSendmailAgentCallsWithOkResponseWithStrayNewlineGivesSuccessfulResult", testSendmailAgentCallsWithOkResponseWithStrayNewlineGivesSuccessfulResult),
+    ("testSendmailAgentCallsWithErrorResponseGivesUnsuccessfulResult", testSendmailAgentCallsWithErrorResponseGivesUnsuccessfulResult),
+    ("testSendmailAgentWithNonUtf8ResponseHasEmptyMessage", testSendmailAgentWithNonUtf8ResponseHasEmptyMessage),
+  ]}
+
+  func setUp() {
     setUpTestCase()
     ExternalProcess.startStubbing()
   }
