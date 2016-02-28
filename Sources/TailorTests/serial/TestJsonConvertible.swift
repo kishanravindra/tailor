@@ -1,14 +1,33 @@
 import Tailor
 import TailorTesting
 import XCTest
+import Foundation
 
-@available(*, deprecated)
-class JsonConvertibleTests: XCTestCase, TailorTestable {
-  override func setUp() {
-    super.setUp()
+struct TestJsonConvertible: XCTestCase, TailorTestable {
+  @available(*, deprecated)
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testStringCanInitializeFromJsonPrimitive", testStringCanInitializeFromJsonPrimitive),
+    ("testStringInitializedWithJsonArrayThrowsException", testStringInitializedWithJsonArrayThrowsException),
+    ("testStringConvertsToJsonAsJsonPrimitive", testStringConvertsToJsonAsJsonPrimitive),
+    ("testIntegerCanInitializeFromJsonPrimitive", testIntegerCanInitializeFromJsonPrimitive),
+    ("testIntegerInitializedWithJsonArrayThrowsException", testIntegerInitializedWithJsonArrayThrowsException),
+    ("testIntConvertsToJsonAsJsonPrimitive", testIntConvertsToJsonAsJsonPrimitive),
+    ("testBooleanCanInitializeFromJsonPrimitive", testBooleanCanInitializeFromJsonPrimitive),
+    ("testBooleanInitializedWithJsonArrayThrowsException", testBooleanInitializedWithJsonArrayThrowsException),
+    ("testBooleanConvertsToJsonAsJsonPrimitive", testBooleanConvertsToJsonAsJsonPrimitive),
+    ("testPrimitiveConvertsToJsonAsItself", testPrimitiveConvertsToJsonAsItself),
+    ("testPrimitiveInitializesWithJsonByCopying", testPrimitiveInitializesWithJsonByCopying),
+    ("testArrayOfConvertiblesConvertsToJsonAsArrayOfPrimitives", testArrayOfConvertiblesConvertsToJsonAsArrayOfPrimitives),
+    ("testDictionaryOfConvertiblesProvidesJsonWithDictionaryValues", testDictionaryOfConvertiblesProvidesJsonWithDictionaryValues),
+    ("testDictionaryOfConvertiblesProvidesJsonDataWithDictionaryValues", testDictionaryOfConvertiblesProvidesJsonDataWithDictionaryValues),
+    ("testDictionaryConvertibleProvidesJsonImplementation", testDictionaryConvertibleProvidesJsonImplementation),
+  ]}
+
+  func setUp() {
     setUpTestCase()
   }
-  
+
+  @available(*, deprecated)  
   func testStringCanInitializeFromJsonPrimitive() {
     let primitive = JsonPrimitive.String("Hello")
     do {
@@ -20,6 +39,7 @@ class JsonConvertibleTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testStringInitializedWithJsonArrayThrowsException() {
     let primitive = JsonPrimitive.Array([
       .String("A"),
@@ -39,11 +59,13 @@ class JsonConvertibleTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testStringConvertsToJsonAsJsonPrimitive() {
     let string = "Test"
     assert(string.toJson(), equals: .String("Test"))
   }
   
+  @available(*, deprecated)
   func testIntegerCanInitializeFromJsonPrimitive() {
     let primitive = JsonPrimitive.Integer(5)
     do {
@@ -55,6 +77,7 @@ class JsonConvertibleTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testIntegerInitializedWithJsonArrayThrowsException() {
     let primitive = JsonPrimitive.Array([
       .String("A"),
@@ -74,11 +97,13 @@ class JsonConvertibleTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testIntConvertsToJsonAsJsonPrimitive() {
     let int = 19
     assert(int.toJson(), equals: .Integer(19))
   }
   
+  @available(*, deprecated)
   func testBooleanCanInitializeFromJsonPrimitive() {
     let primitive1 = JsonPrimitive.Integer(5)
     let primitive2 = JsonPrimitive.Integer(1)
@@ -96,6 +121,7 @@ class JsonConvertibleTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testBooleanInitializedWithJsonArrayThrowsException() {
     let primitive = JsonPrimitive.Array([
       .String("A"),
@@ -115,22 +141,26 @@ class JsonConvertibleTests: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testBooleanConvertsToJsonAsJsonPrimitive() {
     assert(true.toJson(), equals: .Boolean(true))
     assert(false.toJson(), equals: .Boolean(false))
   }
   
+  @available(*, deprecated)
   func testPrimitiveConvertsToJsonAsItself() {
     let primitive = JsonPrimitive.Integer(19)
     assert(primitive.toJson(), equals: primitive)
   }
   
+  @available(*, deprecated)
   func testPrimitiveInitializesWithJsonByCopying() {
     let primitive = JsonPrimitive.Integer(19)
     let primitive2 = JsonPrimitive(json: primitive)
     assert(primitive, equals: primitive2)
   }
   
+  @available(*, deprecated)
   func testArrayOfConvertiblesConvertsToJsonAsArrayOfPrimitives() {
     let array = ["A", "B", "C"]
     let converted = array.toJson()
@@ -141,6 +171,7 @@ class JsonConvertibleTests: XCTestCase, TailorTestable {
     ]))
   }
   
+  @available(*, deprecated)
   func testDictionaryOfConvertiblesProvidesJsonWithDictionaryValues() {
     let value = ["key1": "A", "key2": "B"]
     let primitive = value.toJson()
@@ -151,6 +182,7 @@ class JsonConvertibleTests: XCTestCase, TailorTestable {
     )
   }
   
+  @available(*, deprecated)
   func testDictionaryOfConvertiblesProvidesJsonDataWithDictionaryValues() {
     let value = ["key1": "A", "key2": "B"]
     let data = value.toJsonData()
@@ -158,6 +190,7 @@ class JsonConvertibleTests: XCTestCase, TailorTestable {
     assert(data, equals: NSData(bytes: expectedString.utf8))
   }
   
+  @available(*, deprecated)
   func testDictionaryConvertibleProvidesJsonImplementation() {
     struct MyStruct: JsonDictionaryConvertible {
       let key1: String

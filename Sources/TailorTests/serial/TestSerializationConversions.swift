@@ -1,10 +1,62 @@
 import Tailor
 import TailorTesting
 import XCTest
+import Foundation
 
-class SerializationConversionsTests: XCTestCase, TailorTestable {
-  override func setUp() {
-    super.setUp()
+struct TestSerializationConversions: XCTestCase, TailorTestable {
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testStringCanInitializeFromSerializableValue", testStringCanInitializeFromSerializableValue),
+    ("testStringInitializedWithSerializedArrayThrowsException", testStringInitializedWithSerializedArrayThrowsException),
+    ("testStringConvertsToSerializableValue", testStringConvertsToSerializableValue),
+    ("testIntegerCanInitializeFromSerializableValue", testIntegerCanInitializeFromSerializableValue),
+    ("testIntegerCanInitializeFromSerializedDouble", testIntegerCanInitializeFromSerializedDouble),
+    ("testIntegerCanInitializeFromSerializedStringWithInteger", testIntegerCanInitializeFromSerializedStringWithInteger),
+    ("testIntegerInitializedWithBadStringThrowsException", testIntegerInitializedWithBadStringThrowsException),
+    ("testIntegerInitializedWithSerializedArrayThrowsException", testIntegerInitializedWithSerializedArrayThrowsException),
+    ("testIntSerializesAsSerializableValue", testIntSerializesAsSerializableValue),
+    ("testDoubleCanInitializeFromSerializableValue", testDoubleCanInitializeFromSerializableValue),
+    ("testDoubleCanInitializeFromSerializedInteger", testDoubleCanInitializeFromSerializedInteger),
+    ("testDoubleCanInitializeFromSerializedStringWithDouble", testDoubleCanInitializeFromSerializedStringWithDouble),
+    ("testDoubleInitializedWithBadStringThrowsException", testDoubleInitializedWithBadStringThrowsException),
+    ("testDoubleInitializedWithSerializedArrayThrowsException", testDoubleInitializedWithSerializedArrayThrowsException),
+    ("testDoubleSerializesAsSerializableValue", testDoubleSerializesAsSerializableValue),
+    ("testUnsignedIntegerCanInitializeFromInteger", testUnsignedIntegerCanInitializeFromInteger),
+    ("testUnsignedIntegerInitializedWithBadStringThrowsException", testUnsignedIntegerInitializedWithBadStringThrowsException),
+    ("testUnsignedIntegerSerializesAsIntegerValue", testUnsignedIntegerSerializesAsIntegerValue),
+    ("testBooleanCanInitializeFromSerializableValue", testBooleanCanInitializeFromSerializableValue),
+    ("testBooleanInitializedWithIntegerComparesIntegerToOne", testBooleanInitializedWithIntegerComparesIntegerToOne),
+    ("testBooleanInitializedWithStringComparesStringToTrue", testBooleanInitializedWithStringComparesStringToTrue),
+    ("testBooleanInitializedWithBadStringThrowsException", testBooleanInitializedWithBadStringThrowsException),
+    ("testBooleanInitializedWithSerializedArrayThrowsException", testBooleanInitializedWithSerializedArrayThrowsException),
+    ("testBooleanSerializesAsSerializableValue", testBooleanSerializesAsSerializableValue),
+    ("testTimestampInitializedWithTimestampReturnsValue", testTimestampInitializedWithTimestampReturnsValue),
+    ("testTimestampInitializedWithPartialStringThrowsException", testTimestampInitializedWithPartialStringThrowsException),
+    ("testTimestampInitializedWithFullTimestampStringReturnsTimestamp", testTimestampInitializedWithFullTimestampStringReturnsTimestamp),
+    ("testTimestampInitializedWithDescriptionOfTimestampReturnsTimestamp", testTimestampInitializedWithDescriptionOfTimestampReturnsTimestamp),
+    ("testTimestampInitializedWithIntegerThrowsException", testTimestampInitializedWithIntegerThrowsException),
+    ("testTimestampSerializesAsTimestamp", testTimestampSerializesAsTimestamp),
+    ("testFoundationDateSerializesAsTimestamp", testFoundationDateSerializesAsTimestamp),
+    ("testDateInitializedWithDateReturnsDate", testDateInitializedWithDateReturnsDate),
+    ("testDateInitializedWithTimestampReturnsDateFromTimestamp", testDateInitializedWithTimestampReturnsDateFromTimestamp),
+    ("testDateInitializedWithTimeThrowsException", testDateInitializedWithTimeThrowsException),
+    ("testDateInitializedWithValidStringReturnsDate", testDateInitializedWithValidStringReturnsDate),
+    ("testDateInitializedWithInvalidStringReturnsNil", testDateInitializedWithInvalidStringReturnsNil),
+    ("testDateInitializedWithDescriptionOfDateReturnsDate", testDateInitializedWithDescriptionOfDateReturnsDate),
+    ("testDateInitializedWithIntReturnsNil", testDateInitializedWithIntReturnsNil),
+    ("testDateSerializesAsDateValue", testDateSerializesAsDateValue),
+    ("testTimeInitializedWithTimeReturnsTime", testTimeInitializedWithTimeReturnsTime),
+    ("testTimeInitializedWithTimestampReturnsTimeFromTimestamp", testTimeInitializedWithTimestampReturnsTimeFromTimestamp),
+    ("testTimeInitializedWithDateThrowsException", testTimeInitializedWithDateThrowsException),
+    ("testTimeInitializedWithStringThrowsExceptions", testTimeInitializedWithStringThrowsExceptions),
+    ("testTimeInitializedWithDescriptionOfTimeGetsTime", testTimeInitializedWithDescriptionOfTimeGetsTime),
+    ("testTimeSerializesAsTime", testTimeSerializesAsTime),
+    ("testSerializableValueSerializesAsItself", testSerializableValueSerializesAsItself),
+    ("testSerializableValueInitializesWithSerializableValueByCopying", testSerializableValueInitializesWithSerializableValueByCopying),
+    ("testArrayOfConvertiblesSerializesAsArrayOfPrimitives", testArrayOfConvertiblesSerializesAsArrayOfPrimitives),
+    ("testDictionaryOfConvertiblesSerializesWithDictionaryValues", testDictionaryOfConvertiblesSerializesWithDictionaryValues),
+  ]}
+
+  func setUp() {
     setUpTestCase()
   }
   

@@ -2,9 +2,43 @@ import XCTest
 @testable import Tailor
 import TailorTesting
 
-class PersistableTests: XCTestCase, TailorTestable {
-  override func setUp() {
-    super.setUp()
+struct TestPersistable: XCTestCase, TailorTestable {
+
+  @available(*, deprecated)
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testRecordsWithSameIdAreEqual", testRecordsWithSameIdAreEqual),
+    ("testRecordsWithSameIdAreUnequal", testRecordsWithSameIdAreUnequal),
+    ("testForeignKeyNameIsModelNamePlusId", testForeignKeyNameIsModelNamePlusId),
+    ("testToManyFetchesRecordsByForeignKey", testToManyFetchesRecordsByForeignKey),
+    ("testToManyWithSpecificForeignKeyUsesThatForeignKey", testToManyWithSpecificForeignKeyUsesThatForeignKey),
+    ("testToManyThroughFetchesManyRecordsByForeignKey", testToManyThroughFetchesManyRecordsByForeignKey),
+    ("testToManyThroughFetchesOneRecordByForeignKey", testToManyThroughFetchesOneRecordByForeignKey),
+    ("testToManyThroughCanRespectExistingJoinClause", testToManyThroughCanRespectExistingJoinClause),
+    ("testSaveSetsTimestampsForNewRecord", testSaveSetsTimestampsForNewRecord),
+    ("testSaveSetsTimestampsForUpdatedRecord", testSaveSetsTimestampsForUpdatedRecord),
+    ("testSaveInsertsNewRecord", testSaveInsertsNewRecord),
+    ("testSaveUpdatesExistingRecord", testSaveUpdatesExistingRecord),
+    ("testSaveInsertConstructsInsertQuery", testSaveInsertConstructsInsertQuery),
+    ("testSaveInsertSetsId", testSaveInsertSetsId),
+    ("testSaveInsertWithIdReturnsRecordWithId", testSaveInsertWithIdReturnsRecordWithId),
+    ("testSaveInsertWithErrorReturnsNil", testSaveInsertWithErrorReturnsNil),
+    ("testSaveInsertCreatesSparseInsertQuery", testSaveInsertCreatesSparseInsertQuery),
+    ("testSaveInsertCanSaveRecordWithNoFieldsTwo", testSaveInsertCanSaveRecordWithNoFieldsTwo),
+    ("testSaveUpdateCreatesUpdateQuery", testSaveUpdateCreatesUpdateQuery),
+    ("testSaveUpdateCanCreateUpdateQueryWithNull", testSaveUpdateCanCreateUpdateQueryWithNull),
+    ("testSaveUpdateWithDatabaseErrorReturnsNil", testSaveUpdateWithDatabaseErrorReturnsNil),
+    ("testDestroyExecutesDeleteQuery", testDestroyExecutesDeleteQuery),
+    ("testBuildWithNoErrorBuildsRecord", testBuildWithNoErrorBuildsRecord),
+    ("testBuildWithGeneralErrorIsNil", testBuildWithGeneralErrorIsNil),
+    ("testBuildWithMissingFieldReturnsNil", testBuildWithMissingFieldReturnsNil),
+    ("testBuildWithWrongFieldTypeReturnsNil", testBuildWithWrongFieldTypeReturnsNil),
+    ("testTableNameIsPluralModelName", testTableNameIsPluralModelName),
+    ("testToJsonCreatesJsonDictionaryBasedOnDataMapping", testToJsonCreatesJsonDictionaryBasedOnDataMapping),
+    ("testSerializeCreatesSerializedDictionaryBasedOnDataMapping", testSerializeCreatesSerializedDictionaryBasedOnDataMapping),
+    ("testCanFetchResultsFromQueryOnClass", testCanFetchResultsFromQueryOnClass),
+  ]}
+
+  func setUp() {
     setUpTestCase()
   }
   
@@ -135,7 +169,7 @@ class PersistableTests: XCTestCase, TailorTestable {
   }
   
   func testSaveInsertConstructsInsertQuery() {
-    TestConnection.withTestConnection {
+    StubbedDatabaseConnection.withTestConnection {
       connection in
       let store = Store(name: "Little Shop")
       connection.response = [DatabaseRow(rawData: ["id": 2])]
@@ -151,17 +185,17 @@ class PersistableTests: XCTestCase, TailorTestable {
   }
   
   func testSaveInsertSetsId() {
-    TestConnection.withTestConnection {
+    StubbedDatabaseConnection.withTestConnection {
       connection in
       var store = Store(name: "Little Shop")
       connection.response = [DatabaseRow(rawData: ["id": 2])]
       store = store.save() ?? store
-      self.assert(store.id, equals: NSNumber(int: 2), message: "sets the id based on the database response")
+      self.assert(store.id, equals: 2, message: "sets the id based on the database response")
     }
   }
   
   func testSaveInsertWithIdReturnsRecordWithId() {
-    TestConnection.withTestConnection {
+    StubbedDatabaseConnection.withTestConnection {
       connection in
       let store = Store(name: "Little Shop")
       connection.response = [DatabaseRow(rawData: ["id": 2])]
@@ -171,7 +205,7 @@ class PersistableTests: XCTestCase, TailorTestable {
   }
   
   func testSaveInsertWithErrorReturnsNil() {
-    TestConnection.withTestConnection {
+    StubbedDatabaseConnection.withTestConnection {
       connection in
       let store = Store(name: "Little Shop")
       connection.response = [DatabaseRow(error: "Lost Connection")]
@@ -181,7 +215,7 @@ class PersistableTests: XCTestCase, TailorTestable {
   }
   
   func testSaveInsertCreatesSparseInsertQuery() {
-    TestConnection.withTestConnection {
+    StubbedDatabaseConnection.withTestConnection {
       connection in
       self.assert(connection.queries.count, equals: 0)
       connection.response = [DatabaseRow(rawData: ["id": 2])]
@@ -230,7 +264,7 @@ class PersistableTests: XCTestCase, TailorTestable {
       }
       static let tableName = "hats"
     }
-    TestConnection.withTestConnection {
+    StubbedDatabaseConnection.withTestConnection {
       connection in
       self.assert(connection.queries.count, equals: 0)
       let hat = TestHat()
@@ -251,7 +285,7 @@ class PersistableTests: XCTestCase, TailorTestable {
   func testSaveUpdateCreatesUpdateQuery() {
     var shelf = Shelf(name: "Top Shelf", storeId: 1)
     shelf = shelf.save() ?? shelf
-    TestConnection.withTestConnection {
+    StubbedDatabaseConnection.withTestConnection {
       connection in
       shelf.name = "Bottom Shelf"
       shelf.storeId = 2
@@ -274,7 +308,7 @@ class PersistableTests: XCTestCase, TailorTestable {
   func testSaveUpdateCanCreateUpdateQueryWithNull() {
     var shelf = Shelf(name: "Top Shelf", storeId: 1)
     shelf = shelf.save() ?? shelf
-    TestConnection.withTestConnection {
+    StubbedDatabaseConnection.withTestConnection {
       connection in
       shelf.name = nil
       shelf = shelf.save() ?? shelf
@@ -294,7 +328,7 @@ class PersistableTests: XCTestCase, TailorTestable {
   
   func testSaveUpdateWithDatabaseErrorReturnsNil() {
     var shelf = Shelf(name: "Top Shelf", storeId: 1).save()!
-    TestConnection.withTestConnection {
+    StubbedDatabaseConnection.withTestConnection {
       connection in
       shelf.name = nil
       connection.response = [DatabaseRow(error: "Connection Error")]
@@ -305,7 +339,7 @@ class PersistableTests: XCTestCase, TailorTestable {
   
   func testDestroyExecutesDeleteQuery() {
     let shelf = Shelf(name: "Shelf").save()!
-    TestConnection.withTestConnection {
+    StubbedDatabaseConnection.withTestConnection {
       connection in
       shelf.destroy()
       self.assert(connection.queries.count, equals: 1, message: "executes one query")

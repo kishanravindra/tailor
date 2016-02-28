@@ -1,11 +1,83 @@
 import Tailor
 import TailorTesting
 import XCTest
+import Foundation
 
 @available(*, deprecated)
-class JsonPrimitiveTests: XCTestCase, TailorTestable {
-  override func setUp() {
-    super.setUp()
+struct TestJsonPrimitive: XCTestCase, TailorTestable {
+
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testFoundationJsonObjectForStringIsString", testFoundationJsonObjectForStringIsString),
+    ("testFoundationJsonObjectForArrayOfStringsIsArrayOfStrings", testFoundationJsonObjectForArrayOfStringsIsArrayOfStrings),
+    ("testFoundationJsonObjectForDictionaryOfStringsIsDictionaryOfStrings", testFoundationJsonObjectForDictionaryOfStringsIsDictionaryOfStrings),
+    ("testFoundationJsonObjectForHeterogeneousArrayMapsInnerArray", testFoundationJsonObjectForHeterogeneousArrayMapsInnerArray),
+    ("testFoundationJsonObjectForHeterogeneousDictionaryMapsInnerDictionary", testFoundationJsonObjectForHeterogeneousDictionaryMapsInnerDictionary),
+    ("testFoundationJsonObjectForNullIsNsNull", testFoundationJsonObjectForNullIsNsNull),
+    ("testFoundationJsonObjectForNumberIsNsNumber", testFoundationJsonObjectForNumberIsNsNumber),
+    ("testJsonDataForStringGetsThrowsException", testJsonDataForStringGetsThrowsException),
+    ("testJsonDataForDictionaryOfStringsGetsData", testJsonDataForDictionaryOfStringsGetsData),
+    ("testJsonDataForArrayOfStringsGetsData", testJsonDataForArrayOfStringsGetsData),
+    ("testJsonDataForHeterogeneousDictionaryGetsData", testJsonDataForHeterogeneousDictionaryGetsData),
+    ("testJsonDataForDictionaryWithNullGetsData", testJsonDataForDictionaryWithNullGetsData),
+    ("testJsonDataForDictionaryWithNumbersGetsData", testJsonDataForDictionaryWithNumbersGetsData),
+    ("testInitWithJsonStringBuildsString", testInitWithJsonStringBuildsString),
+    ("testInitWithJsonDictionaryOfStringsBuildsDictionaryOfStrings", testInitWithJsonDictionaryOfStringsBuildsDictionaryOfStrings),
+    ("testInitWithJsonArrayOfStringsBuildsArrayOfStrings", testInitWithJsonArrayOfStringsBuildsArrayOfStrings),
+    ("testInitWithNsNullGetsNull", testInitWithNsNullGetsNull),
+    ("testInitWithIntegerGetsNumber", testInitWithIntegerGetsNumber),
+    ("testInitWithDoubleGetsNumber", testInitWithDoubleGetsNumber),
+    ("testInitWithJsonObjectWithUnsupportedTypeThrowsException", testInitWithJsonObjectWithUnsupportedTypeThrowsException),
+    ("testInitWithJsonDataForDictionaryCreatesDictionary", testInitWithJsonDataForDictionaryCreatesDictionary),
+    ("testInitWithPlistWithValidPathGetsData", testInitWithPlistWithValidPathGetsData),
+    ("testInitWithPlistWithInvalidPathThrowsException", testInitWithPlistWithInvalidPathThrowsException),
+    ("testInitWithPlistWithInvalidPlistThrowsException", testInitWithPlistWithInvalidPlistThrowsException),
+    ("testReadStringWithStringGetsString", testReadStringWithStringGetsString),
+    ("testReadStringWithArrayThrowsException", testReadStringWithArrayThrowsException),
+    ("testReadArrayWithArrayGetsArray", testReadArrayWithArrayGetsArray),
+    ("testReadArrayWithDictionaryThrowsError", testReadArrayWithDictionaryThrowsError),
+    ("testReadDictionaryWithDictionaryGetsDictionary", testReadDictionaryWithDictionaryGetsDictionary),
+    ("testReadDictionaryWithNullThrowsError", testReadDictionaryWithNullThrowsError),
+    ("testReadIntWithIntGetsInt", testReadIntWithIntGetsInt),
+    ("testReadIntWithDoubleGetsDouble", testReadIntWithDoubleGetsDouble),
+    ("testReadDoubleWithDoubleGetsDouble", testReadDoubleWithDoubleGetsDouble),
+    ("testReadDoubleWithIntGetsInt", testReadDoubleWithIntGetsInt),
+    ("testReadStringValueWithStringGetsString", testReadStringValueWithStringGetsString),
+    ("testReadStringValueWithArrayThrowsException", testReadStringValueWithArrayThrowsException),
+    ("testReadArrayValueWithArrayGetsArray", testReadArrayValueWithArrayGetsArray),
+    ("testReadArrayValueWithDictionaryThrowsException", testReadArrayValueWithDictionaryThrowsException),
+    ("testReadDictionaryValueWithDictionaryReturnsDictionary", testReadDictionaryValueWithDictionaryReturnsDictionary),
+    ("testReadIntValueWithIntGetsInt", testReadIntValueWithIntGetsInt),
+    ("testReadIntValueWithArrayThrowsException", testReadIntValueWithArrayThrowsException),
+    ("testReadDictionaryValueWithStringThrowsException", testReadDictionaryValueWithStringThrowsException),
+    ("testReadValueWithNonDictionaryPrimitiveThrowsException", testReadValueWithNonDictionaryPrimitiveThrowsException),
+    ("testReadValueWithMissingKeyThrowsException", testReadValueWithMissingKeyThrowsException),
+    ("testReadValueWithJsonPrimitiveGetsPrimitive", testReadValueWithJsonPrimitiveGetsPrimitive),
+    ("testReadValueWithJsonPrimitiveWithMissingKeyThrowsException", testReadValueWithJsonPrimitiveWithMissingKeyThrowsException),
+    ("testReadIntoConvertiblePopulatesValues", testReadIntoConvertiblePopulatesValues),
+    ("testReadIntoConvertibleWithErrorAddsOuterKeyToError", testReadIntoConvertibleWithErrorAddsOuterKeyToError),
+    ("testStringsWithSameContentsAreEqual", testStringsWithSameContentsAreEqual),
+    ("testStringsWithDifferentContentsAreNotEqual", testStringsWithDifferentContentsAreNotEqual),
+    ("testStringDoesNotEqualDictionary", testStringDoesNotEqualDictionary),
+    ("testDictionaryWithSameContentsAreEqual", testDictionaryWithSameContentsAreEqual),
+    ("testDictionaryWithDifferentKeysAreNotEqual", testDictionaryWithDifferentKeysAreNotEqual),
+    ("testDictionaryWithDifferentValuesAreNotEqual", testDictionaryWithDifferentValuesAreNotEqual),
+    ("testDictionaryDoesNotEqualArray", testDictionaryDoesNotEqualArray),
+    ("testArrayWithSameContentsAreEqual", testArrayWithSameContentsAreEqual),
+    ("testArrayWithDifferentContentsAreNotEqual", testArrayWithDifferentContentsAreNotEqual),
+    ("testArrayDoesNotEqualString", testArrayDoesNotEqualString),
+    ("testNullEqualsOtherNull", testNullEqualsOtherNull),
+    ("testNullDoesNotEqualString", testNullDoesNotEqualString),
+    ("testNumberWithSameContentsAreEqual", testNumberWithSameContentsAreEqual),
+    ("testNumbersWithDifferentContentsAreNotEqual", testNumbersWithDifferentContentsAreNotEqual),
+    ("testNumberDoesNotEqualDictionary", testNumberDoesNotEqualDictionary),
+    ("testDescriptionForStringIsString", testDescriptionForStringIsString),
+    ("testDescriptionForNumberIsNumber", testDescriptionForNumberIsNumber),
+    ("testDescriptionForArrayIsArrayDescription", testDescriptionForArrayIsArrayDescription),
+    ("testDescriptionForDictionaryIsDictionaryDescription", testDescriptionForDictionaryIsDictionaryDescription),
+    ("testDescriptionForNullIsNull", testDescriptionForNullIsNull),
+  ]}
+
+  func setUp() {
     setUpTestCase()
   }
   
@@ -35,7 +107,8 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
       JsonPrimitive.String("B")
     ])
     let object = primitive.toFoundationJsonObject
-    if let strings = object as? [String] {
+    if let array = object as? [Any] {
+      let strings = array.flatMap { $0 as? String }
       assert(strings, equals: ["A", "B"])
     }
     else {
@@ -50,8 +123,10 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
     ])
     
     let object = primitive.toFoundationJsonObject
-    if let dictionary = object as? [String:String] {
-      assert(dictionary, equals: ["key1": "value1", "key2": "value2"])
+
+    if let dictionary = object as? [String:Any] {
+      assert(dictionary["key1"] as? String, equals: "value1")
+      assert(dictionary["key2"] as? String, equals: "value2")
     }
     else {
       assert(false, message: "Gets a dictionary of strings")
@@ -67,11 +142,13 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
       ])
     ])
     let object = primitive.toFoundationJsonObject
-    if let array = object as? [AnyObject] {
+    if let array = object as? [Any] {
       assert(array.count, equals: 2)
       assert(array[0] as? String, equals: "A")
-      if let innerArray = array[1] as? [String] {
-        assert(innerArray, equals: ["B", "C"])
+      if let innerArray = array[1] as? [Any] {
+        assert(innerArray.count, equals: 2)
+        assert(innerArray[0] as? String, equals: "B")
+        assert(innerArray[1] as? String, equals: "C")
       }
       else {
         assert(false, message: "gets an inner array of strings")
@@ -95,16 +172,19 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
       ])
     ])
     let object = primitive.toFoundationJsonObject
-    if let dictionary = object as? [String:AnyObject] {
+    if let dictionary = object as? [String:Any] {
       assert(dictionary["aKey1"] as? String, equals: "value1")
-      if let innerArray = dictionary["aKey2"] as? [String] {
-        assert(innerArray, equals: ["value2", "value3"])
+      if let innerArray = dictionary["aKey2"] as? [Any] {
+        assert(innerArray.count, equals: 2)
+        assert(innerArray[0] as? String, equals: "value2")
+        assert(innerArray[1] as? String, equals: "value3")
       }
       else {
         assert(false, message: "gets an inner array")
       }
-      if let innerDictionary = dictionary["aKey3"] as? [String:String] {
-        assert(innerDictionary, equals: ["bKey1": "value4", "bKey2": "value5"])
+      if let innerDictionary = dictionary["aKey3"] as? [String:Any] {
+        assert(innerDictionary["bKey1"] as? String, equals: "value4")
+        assert(innerDictionary["bKey2"] as? String, equals: "value5")
       }
       else {
         assert(false, message: "gets an inner dictionary")
@@ -178,7 +258,7 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
         ])
       ])
 
-    let expectedData = NSData(bytes: "{\"aKey2\":{\"bKey2\":\"value3\",\"bKey1\":\"value2\"},\"aKey1\":\"value1\"}".utf8)
+    let expectedData = NSData(bytes: "{\"aKey1\":\"value1\",\"aKey2\":{\"bKey1\":\"value2\",\"bKey2\":\"value3\"}}".utf8)
     do {
       let data = try primitive.jsonData()
       assert(data, equals: expectedData)
@@ -195,7 +275,7 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
       "aKey2": JsonPrimitive.Null
       ])
     
-    let expectedData = NSData(bytes: "{\"aKey2\":null,\"aKey1\":\"value1\"}".utf8)
+    let expectedData = NSData(bytes: "{\"aKey1\":\"value1\",\"aKey2\":null}".utf8)
     do {
       let data = try primitive.jsonData()
       assert(data, equals: expectedData)
@@ -213,7 +293,7 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
       "aKey3": JsonPrimitive.Double(3.14)
       ])
     
-    let expectedData = NSData(bytes: "{\"aKey2\":42,\"aKey1\":\"value1\",\"aKey3\":3.14}".utf8)
+    let expectedData = NSData(bytes: "{\"aKey1\":\"value1\",\"aKey3\":3.14,\"aKey2\":42}".utf8)
     do {
       let data = try primitive.jsonData()
       assert(data, equals: expectedData)
@@ -237,7 +317,7 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
   }
   
   func testInitWithJsonDictionaryOfStringsBuildsDictionaryOfStrings() {
-    let object = [
+    let object: [String: Any] = [
       "key1": "value1",
       "key2": "value2"
     ]
@@ -254,7 +334,7 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
   }
   
   func testInitWithJsonArrayOfStringsBuildsArrayOfStrings() {
-    let object = ["value1", "value2"]
+    let object: [Any] = ["value1", "value2"]
     
     do {
       let primitive = try JsonPrimitive(jsonObject: object)
@@ -337,7 +417,7 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
   
   func testInitWithPlistWithValidPathGetsData() {
     do {
-      let path = Application.sharedApplication().rootPath() + "/goodPlist.plist"
+      let path = Application.configuration.resourcePath + "/config/goodPlist.plist"
       let data = try JsonPrimitive(plist: path)
       assert(data, equals: JsonPrimitive.Dictionary([
         "en": JsonPrimitive.Dictionary([
@@ -355,7 +435,7 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
   
   func testInitWithPlistWithInvalidPathThrowsException() {
     do {
-      let path = Application.sharedApplication().rootPath() + "/missingPath.plist"
+      let path = Application.configuration.resourcePath + "/config/missingPath.plist"
       _ = try JsonPrimitive(plist: path)
       assert(false, message: "should throw an exception")
     }
@@ -369,7 +449,7 @@ class JsonPrimitiveTests: XCTestCase, TailorTestable {
   
   func testInitWithPlistWithInvalidPlistThrowsException() {
     do {
-      let path = Application.sharedApplication().rootPath() + "/invalidPlist.plist"
+      let path = Application.configuration.resourcePath + "/config/invalidPlist.plist"
       _ = try JsonPrimitive(plist: path)
       assert(false, message: "should throw an exception")
     }

@@ -2,10 +2,15 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class AlterationScriptTests: XCTestCase, TailorTestable {
-  override func setUp() {
-    super.setUp()
+struct TestAlterationScript: XCTestCase, TailorTestable {
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testDescriptionGetsClassName", testDescriptionGetsClassName),
+    ("testPendingAlterationsFindsAlterationsThatAreNotInTable", testPendingAlterationsFindsAlterationsThatAreNotInTable),
+  ]}
+
+  func setUp() {
     setUpTestCase()
+    TypeInventory.shared.registerSubtypes(AlterationScript.self, subtypes: [FirstAlteration.self, SecondAlteration.self, ThirdAlteration.self])
   }
   
   class FirstAlteration: AlterationScript {
@@ -29,14 +34,13 @@ class AlterationScriptTests: XCTestCase, TailorTestable {
     }
   }
   
-  override func tearDown() {
+  func tearDown() {
     Application.sharedDatabaseConnection().executeQuery("DROP TABLE IF EXISTS alteration_tests")
     Application.sharedDatabaseConnection().executeQuery("DELETE FROM tailor_alterations WHERE id IN ('1','2','3')")
-    super.tearDown()
   }
 
   func testDescriptionGetsClassName() {
-    assert(FirstAlteration.name, equals: "TailorTests.AlterationScriptTests.FirstAlteration", message: "gets class name")
+    assert(FirstAlteration.name, equals: "TailorTests.TestAlterationScript.FirstAlteration", message: "gets class name")
   }
   
   func testPendingAlterationsFindsAlterationsThatAreNotInTable() {

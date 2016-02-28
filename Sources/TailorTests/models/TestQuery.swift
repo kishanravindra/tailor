@@ -2,9 +2,64 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class QueryTests: XCTestCase, TailorTestable {
-  override func setUp() {
-    super.setUp()
+struct TestQuery: XCTestCase, TailorTestable {
+  
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testInitializationWithNoParametersHasDefaultClauses", testInitializationWithNoParametersHasDefaultClauses),
+    ("testInitializationWithCopyFromCopiesAllFields", testInitializationWithCopyFromCopiesAllFields),
+    ("testFilterWithNoClauseSetsClause", testFilterWithNoClauseSetsClause),
+    ("testFilterWithExistingClauseCombinesClauses", testFilterWithExistingClauseCombinesClauses),
+    ("testFilterWithEmptyClauseReturnsOriginalQuery", testFilterWithEmptyClauseReturnsOriginalQuery),
+    ("testFilterWithConditionsCombinesClauses", testFilterWithConditionsCombinesClauses),
+    ("testFilterWithNilConditionPutsNullInConditions", testFilterWithNilConditionPutsNullInConditions),
+    ("testFilterWithMultipleConditionsCombinesClauses", testFilterWithMultipleConditionsCombinesClauses),
+    ("testFilterWithArrayOfStringsCreatesInClause", testFilterWithArrayOfStringsCreatesInClause),
+    ("testFilterWithDangerousTextInListFiltersText", testFilterWithDangerousTextInListFiltersText),
+    ("testFilterWithArrayOfNumbersCreatesInClause", testFilterWithArrayOfNumbersCreatesInClause),
+    ("testOrderAppendsNewOrdering", testOrderAppendsNewOrdering),
+    ("testOrderWithNoOrderSetsOrdering", testOrderWithNoOrderSetsOrdering),
+    ("testOrderWithComponentsAppendsNewOrdering", testOrderWithComponentsAppendsNewOrdering),
+    ("testLimitWithLowerLimitSetsLimitClause", testLimitWithLowerLimitSetsLimitClause),
+    ("testLimitWithHigherLimitLeavesLimitClause", testLimitWithHigherLimitLeavesLimitClause),
+    ("testLimitWithNoExistingLimitSetsLimitClause", testLimitWithNoExistingLimitSetsLimitClause),
+    ("testSelectReplacesSelectClause", testSelectReplacesSelectClause),
+    ("testJoinWithQueryStringAppendsToJoinClause", testJoinWithQueryStringAppendsToJoinClause),
+    ("testJoinWithQueryStringWithWildcardSelectSpecifiesTableName", testJoinWithQueryStringWithWildcardSelectSpecifiesTableName),
+    ("testJoinWithValidColumnNamesSetsJoinClause", testJoinWithValidColumnNamesSetsJoinClause),
+    ("testJoinWithValidColumnNamesCanFetchResults", testJoinWithValidColumnNamesCanFetchResults),
+    ("testReverseWithNoOrderOrdersByIdDesc", testReverseWithNoOrderOrdersByIdDesc),
+    ("testReverseWithNormalQueryReversesAscendingAndDescending", testReverseWithNormalQueryReversesAscendingAndDescending),
+    ("testReverseWithLowercaseOrderReversesAscendingAndDescending", testReverseWithLowercaseOrderReversesAscendingAndDescending),
+    ("testReverseWithOrderWordsInFieldNamesLeavesFieldNamesIntact", testReverseWithOrderWordsInFieldNamesLeavesFieldNamesIntact),
+    ("testCachedSetsCachedFlagToTrue", testCachedSetsCachedFlagToTrue),
+    ("testToSqlCombinesPartsOfQuery", testToSqlCombinesPartsOfQuery),
+    ("testAllFetchesRecordsUsingQuery", testAllFetchesRecordsUsingQuery),
+    ("testAllWithErrorReturnsEmptyList", testAllWithErrorReturnsEmptyList),
+    ("testFirstGetsFirstMatchingRecord", testFirstGetsFirstMatchingRecord),
+    ("testFirstReturnsNilWithNoMatch", testFirstReturnsNilWithNoMatch),
+    ("testLastGetsLastRecordBasedOnOrdering", testLastGetsLastRecordBasedOnOrdering),
+    ("testFindGetsRecordById", testFindGetsRecordById),
+    ("testFindReturnsNilWithNoMatchingRecord", testFindReturnsNilWithNoMatchingRecord),
+    ("testCountGetsNumberOfMatchingRecords", testCountGetsNumberOfMatchingRecords),
+    ("testCountWithErrorReturnsZero", testCountWithErrorReturnsZero),
+    ("testIsEmptyIsTrueWithMatchingRecords", testIsEmptyIsTrueWithMatchingRecords),
+    ("testFetchAllWithCachingOnCachesResults", testFetchAllWithCachingOnCachesResults),
+    ("testFetchAllWithCachingOnPreservesOriginalOrder", testFetchAllWithCachingOnPreservesOriginalOrder),
+    ("testFetchAllWithInjectionInCacheDoesNotCacheResults", testFetchAllWithInjectionInCacheDoesNotCacheResults),
+    ("testFetchAllWithCachingOffDoesNotCacheResults", testFetchAllWithCachingOffDoesNotCacheResults),
+    ("testQueriesWithSameInformationAreEqual", testQueriesWithSameInformationAreEqual),
+    ("testQueriesWithDifferentSelectClauseAreNotEqual", testQueriesWithDifferentSelectClauseAreNotEqual),
+    ("testQueriesWithDifferentWhereClauseAreNotEqual", testQueriesWithDifferentWhereClauseAreNotEqual),
+    ("testQueriesWithDifferentWhereParametersClauseAreNotEqual", testQueriesWithDifferentWhereParametersClauseAreNotEqual),
+    ("testQueriesWithDifferentOrderClauseAreNotEqual", testQueriesWithDifferentOrderClauseAreNotEqual),
+    ("testQueriesWithDifferentLimitClauseAreNotEqual", testQueriesWithDifferentLimitClauseAreNotEqual),
+    ("testQueriesWithDifferentJoinClauseAreNotEqual", testQueriesWithDifferentJoinClauseAreNotEqual),
+    ("testQueriesWithDifferentTableNameAreNotEqual", testQueriesWithDifferentTableNameAreNotEqual),
+    ("testTypedQueryWithSameInfoAreEqual", testTypedQueryWithSameInfoAreEqual),
+    ("testTYpedQueryWithDifferentWhereClausesAreNotEqual", testTYpedQueryWithDifferentWhereClausesAreNotEqual),
+  ]}
+
+  func setUp() {
     setUpTestCase()
   }
   
@@ -127,8 +182,8 @@ class QueryTests: XCTestCase, TailorTestable {
     let query = baseQuery.filter(["color": "red", "brim_size": "10"])
     
     assert(query.selectClause, equals: baseQuery.selectClause, message: "copies select clause")
-    assert(query.whereClause.query, equals: "hats.store_id=? AND hats.brim_size=? AND hats.color=?", message: "sets where clause")
-    assert(query.whereClause.parameters, equals: [5.serialize, "10".serialize, "red".serialize], message: "sets where clause")
+    assert(query.whereClause.query, equals: "hats.store_id=? AND hats.color=? AND hats.brim_size=?", message: "sets where clause")
+    assert(query.whereClause.parameters, equals: [5.serialize, "red".serialize, "10".serialize], message: "sets where clause")
     assert(query.orderClause.query, equals: baseQuery.orderClause.query, message: "copies order clause")
     assert(query.orderClause.parameters, equals: baseQuery.orderClause.parameters, message: "copies order clause")
     assert(query.limitClause.query, equals: baseQuery.limitClause.query, message: "copies limit clause")

@@ -2,14 +2,19 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class ModelTests: XCTestCase, TailorTestable {
-  
+struct TestModel: XCTestCase, TailorTestable {
   class HatForModel: ModelType {
     
   }
   
-  override func setUp() {
-    super.setUp()
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testModelNameIsTakenFromClassName", testModelNameIsTakenFromClassName),
+    ("testModelAttributeNameSeparatesWords", testModelAttributeNameSeparatesWords),
+    ("testModelAttributeNameCanCapitalizeName", testModelAttributeNameCanCapitalizeName),
+    ("testModelAttributeNameCanGetNameFromLocalization", testModelAttributeNameCanGetNameFromLocalization),
+  ]}
+  
+  func setUp() {
     setUpTestCase()
   }
   

@@ -2,24 +2,27 @@ import Tailor
 import TailorTesting
 import XCTest
 
-class PersistableEnumTests: XCTestCase, TailorTestable {
-  enum Color: String, StringPersistableEnum {
-    case Red
-    case DarkBlue
-    
-    static var cases = [Color.Red, Color.DarkBlue]
-  }
-  
-  enum HatType: String, TablePersistableEnum {
-    case Feathered
-    case WideBrim
-    
-    static var cases = [HatType.Feathered, HatType.WideBrim]
-  }
-  
-  override func setUp() {
-    super.setUp()
+struct TestPersistableEnum: XCTestCase, TailorTestable {
+
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testStringPersistableEnumGetsStringFromFromCaseName", testStringPersistableEnumGetsStringFromFromCaseName),
+    ("testStringPersistableEnumCanGenerateValueFromString", testStringPersistableEnumCanGenerateValueFromString),
+    ("testStringPersistableEnumGetsNilForInvalidCaseName", testStringPersistableEnumGetsNilForInvalidCaseName),
+    ("testStringPersistableEnumGetsNilForIntegerValue", testStringPersistableEnumGetsNilForIntegerValue),
+    ("testDatabasePersistableEnumRecognizesExistingRecord", testDatabasePersistableEnumRecognizesExistingRecord),
+    ("testDatabasePersistableEnumCreatesNewRecord", testDatabasePersistableEnumCreatesNewRecord),
+    ("testDatabasePersistableEnumWithProblemInsertingRecordReturnsZero", testDatabasePersistableEnumWithProblemInsertingRecordReturnsZero),
+    ("testDatabasePersistableEnumWithBadStructureReturnsZero", testDatabasePersistableEnumWithBadStructureReturnsZero),
+    ("testDatabasePersistableEnumCanGenerateValueFromId", testDatabasePersistableEnumCanGenerateValueFromId),
+    ("testDatabasePersistableEnumGetsNilForInvalidId", testDatabasePersistableEnumGetsNilForInvalidId),
+    ("testDatabasePersistableEnumGetsValuesToPersistWithCaseName", testDatabasePersistableEnumGetsValuesToPersistWithCaseName),
+    ("testDatabasePersistableEnumCanBeInitializedFromDatabaseRowWithCaseName", testDatabasePersistableEnumCanBeInitializedFromDatabaseRowWithCaseName),
+  ]}
+
+  func setUp() {
     setUpTestCase() 
+    Application.sharedDatabaseConnection().executeQuery("DROP TABLE hat_types")
+    Application.sharedDatabaseConnection().executeQuery("CREATE TABLE hat_types (id integer PRIMARY KEY, name string)")
   }
   
   func testStringPersistableEnumGetsStringFromFromCaseName() {
@@ -65,6 +68,7 @@ class PersistableEnumTests: XCTestCase, TailorTestable {
     Application.sharedDatabaseConnection().executeQuery("CREATE TABLE hat_types (id integer PRIMARY KEY)")
     let value = HatType.Feathered
     assert(value.serialize, equals: SerializableValue.Integer(0))
+    
   }
   
   func testDatabasePersistableEnumCanGenerateValueFromId() {

@@ -3,12 +3,24 @@ import Tailor
 import TailorTesting
 import XCTest
 
-class PaginatedListTests : XCTestCase, TailorTestable {
+final class TestPaginatedList : XCTestCase, TailorTestable {
   var query = Query<Hat>().filter(["brim_size": 10])
   var list = PaginatedList<Hat>(query: Query<Hat>().filter(["brim_size": 10]), page: 1, pageSize: 10)
   var hats: [Hat] = []
-  override func setUp() {
-    super.setUp()
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testAllGetsPageOfMatchingRecords", testAllGetsPageOfMatchingRecords),
+    ("testAllWithLastPageGetsSubsetOfRecords", testAllWithLastPageGetsSubsetOfRecords),
+    ("testAllBeyondLastPageGetsEmptyList", testAllBeyondLastPageGetsEmptyList),
+    ("testNumberOfPagesGetsPagesRoundedUp", testNumberOfPagesGetsPagesRoundedUp),
+    ("testNumberOfPagesWithExactFitGetsCorrectNumberOfPages", testNumberOfPagesWithExactFitGetsCorrectNumberOfPages),
+    ("testNumberOfPagesWithEmptyResultsIsOne", testNumberOfPagesWithEmptyResultsIsOne),
+    ("testListsWithSameInformationAreEqual", testListsWithSameInformationAreEqual),
+    ("testListsWithDifferentQueryAreNotEqual", testListsWithDifferentQueryAreNotEqual),
+    ("testListsWithDifferentPageAreNotEqual", testListsWithDifferentPageAreNotEqual),
+    ("testListsWithDifferentPageSizeAreNotEqual", testListsWithDifferentPageSizeAreNotEqual),
+  ]}
+  
+  func setUp() {
     setUpTestCase()
     
     Hat(brimSize: 12).save()

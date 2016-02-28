@@ -1,10 +1,36 @@
 @testable import Tailor
 import TailorTesting
 import XCTest
+import Foundation
 
-class CsvParserTests: XCTestCase, TailorTestable {
-  override func setUp() {
-    super.setUp()
+struct TestCsvParser: XCTestCase, TailorTestable {
+
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testInitializeWithNoParametersGivesEmptyRows", testInitializeWithNoParametersGivesEmptyRows),
+    ("testInitializeWithRowsSetsRows", testInitializeWithRowsSetsRows),
+    ("testInitializeWithValidDataParsesData", testInitializeWithValidDataParsesData),
+    ("testInitializeWithQuotedDataParsesData", testInitializeWithQuotedDataParsesData),
+    ("testInitializeWithEscapedQuotesParsesData", testInitializeWithEscapedQuotesParsesData),
+    ("testInitializeWithNewlineInQuotesKeepsNewlineInCell", testInitializeWithNewlineInQuotesKeepsNewlineInCell),
+    ("testInitializeWithUnterminatedQuoteKeepsEverythingInThatCell", testInitializeWithUnterminatedQuoteKeepsEverythingInThatCell),
+    ("testInitializeWithEmptyCellProducesEmptyString", testInitializeWithEmptyCellProducesEmptyString),
+    ("testInitializeWithCustomDelimiterParsesWithThatDelimiter", testInitializeWithCustomDelimiterParsesWithThatDelimiter),
+    ("testInitializeWithPathParsesFile", testInitializeWithPathParsesFile),
+    ("testInitializeWithInvalidPathParsesFile", testInitializeWithInvalidPathParsesFile),
+    ("testParseDoesNotSharedDataWithCopies", testParseDoesNotSharedDataWithCopies),
+    ("testEncodeDataWithSimpleGridCreatesData", testEncodeDataWithSimpleGridCreatesData),
+    ("testEncodeDataPutsQuotesAroundCellWithCommas", testEncodeDataPutsQuotesAroundCellWithCommas),
+    ("testEncodeDataPutsQuotesAroundCellWithQuotes", testEncodeDataPutsQuotesAroundCellWithQuotes),
+    ("testEncodeDataPutsQuotesAroundCellWithNewline", testEncodeDataPutsQuotesAroundCellWithNewline),
+    ("testEncodeDataHandlesRaggedGrid", testEncodeDataHandlesRaggedGrid),
+    ("testEncodeDataWithCustomDelimiterUsesThatDelimiter", testEncodeDataWithCustomDelimiterUsesThatDelimiter),
+    ("testParseReturnsRowsFromParsedData", testParseReturnsRowsFromParsedData),
+    ("testParseWithCustomDelimiterReturnsRowsFromParsedData", testParseWithCustomDelimiterReturnsRowsFromParsedData),
+    ("testEncodeReturnsDataForRows", testEncodeReturnsDataForRows),
+    ("testEncodeWithCustomDelimiterReturnsDataForRows", testEncodeWithCustomDelimiterReturnsDataForRows),
+  ]}
+
+  func setUp() {
     setUpTestCase()
   }
   
@@ -86,8 +112,8 @@ class CsvParserTests: XCTestCase, TailorTestable {
   
   func testInitializeWithPathParsesFile() {
     let data = NSData(bytes: "a,b,c\n1,2,3".utf8)
-    data.writeToFile("test.csv", atomically: true)
-    let parser = CsvParser(path: "test.csv")
+    data.writeToFile("/tmp/test.csv", atomically: true)
+    let parser = CsvParser(path: "/tmp/test.csv")
     assert(parser.rows, equals: [
       ["a", "b", "c"],
       ["1", "2", "3"]
@@ -96,12 +122,12 @@ class CsvParserTests: XCTestCase, TailorTestable {
   
   func testInitializeWithInvalidPathParsesFile() {
     do {
-      try NSFileManager.defaultManager().removeItemAtPath("bad_test.csv")
+      try NSFileManager.defaultManager().removeItemAtPath("/tmp/bad_test.csv")
     }
     catch {
       
     }
-    let parser = CsvParser(path: "bad_test.csv")
+    let parser = CsvParser(path: "/tmp/bad_test.csv")
     assert(parser.rows, equals: [])
   }
   

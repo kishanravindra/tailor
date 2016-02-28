@@ -2,12 +2,28 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class ValidationErrorTests: XCTestCase, TailorTestable {
+final class TestValidationError: XCTestCase, TailorTestable {
+
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testEqualityAcceptsErrorsWithSameInformation", testEqualityAcceptsErrorsWithSameInformation),
+    ("testEqualityRejectsErrorsWithDifferentMessage", testEqualityRejectsErrorsWithDifferentMessage),
+    ("testEqualityRejectsErrorsWithDifferentDataValues", testEqualityRejectsErrorsWithDifferentDataValues),
+    ("testEqualityRejectsErrorsWithDifferentDataKeys", testEqualityRejectsErrorsWithDifferentDataKeys),
+    ("testEqualityRejectsErrorWithDifferentKeys", testEqualityRejectsErrorWithDifferentKeys),
+    ("testEqualityAcceptsErrorsWithDifferentModels", testEqualityAcceptsErrorsWithDifferentModels),
+    ("testLocalizeCanFindContentForModelAndKey", testLocalizeCanFindContentForModelAndKey),
+    ("testLocalizeCanFindContentForModel", testLocalizeCanFindContentForModel),
+    ("testLocalizeCanFindContentForKey", testLocalizeCanFindContentForKey),
+    ("testLocalizeCanFindTopLevelContent", testLocalizeCanFindTopLevelContent),
+    ("testLocalizeCanFallBackToRawMessage", testLocalizeCanFallBackToRawMessage),
+    ("testLocalizeCanUnderscoreKey", testLocalizeCanUnderscoreKey),
+    ("testLocalizeCanInterpolateData", testLocalizeCanInterpolateData),
+  ]}
+
   let error = ValidationError(modelName: "hat", key: "height", message: "tooLow", data: ["value": "7"])
   let localization = PropertyListLocalization(locale: "en")
   
-  override func setUp() {
-    super.setUp()
+  func setUp() {
     setUpTestCase()
     Application.configuration.staticContent = merge(Application.configuration.staticContent, [
       "en.hat.errors.height.too_low": "is too short",

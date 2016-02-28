@@ -9,7 +9,7 @@ func prepareTestSuite() {
   CreateTestDatabaseAlteration.run()
 }
 extension TailorTestable {
-	public func configure() {
+  public func configure() {
     APPLICATION_ARGUMENTS = ("tailor.exit", [:])
     Application.configuration.databaseDriver = { return SqliteConnection(path: "testing.sqlite") }
     Application.configuration.sessionEncryptionKey = "0FC7ECA7AADAD635DCC13A494F9A2EA8D8DAE366382CDB3620190F6F20817124"
@@ -19,7 +19,7 @@ extension TailorTestable {
     Application.configuration.localization = { PropertyListLocalization(locale: $0) }
     Application.configuration.logQueries = false
     resetDatabase()
-	}
+  }
 }
 extension NSObject {
 	class func stubMethod(methodName: String, result: AnyObject?, @noescape body: Void->Void) {
@@ -151,6 +151,16 @@ struct TestUser: UserType, Equatable {
   static let query = Query<TestUser>()
 }
 
+struct TopHat: Persistable {
+  let id: UInt
+  init(deserialize values: SerializableValue) throws {
+    self.id = try values.read("id")
+  }
+  func valuesToPersist() -> [String : SerializationEncodable?] {
+    return [:]
+  }
+}
+
 class StubbedTestCase {
   var failures = [(message: String, file: String, line: UInt)]()
   
@@ -182,9 +192,10 @@ final class StubbedDatabaseConnection : DatabaseDriver {
     let oldConnection: AnyObject? = dictionary["databaseConnection"]
     let newConnection = StubbedDatabaseConnection(config: [:])
     dictionary["databaseConnection"] = newConnection
+    NSThread.currentThread().threadDictionary = dictionary
     block(newConnection)
     dictionary["databaseConnection"] = oldConnection
-    NSThread.currentThread().threadDictionary = dictionary
+    NSThread.currentThread().threadDictionary = dictionary 
   }
   
   func tables() -> [String:String] {

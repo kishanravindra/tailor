@@ -6,9 +6,12 @@ class CommandNameTestTask : TaskType {
   class func runTask() {}
 }
 
-class TaskTests: XCTestCase, TailorTestable {
-  override func setUp() {
-    super.setUp()
+struct TestTask: XCTestCase, TailorTestable {
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testTaskGetsCommandFromClassNames", testTaskGetsCommandFromClassNames),
+  ]}
+
+  func setUp() {
     setUpTestCase()
   }
   

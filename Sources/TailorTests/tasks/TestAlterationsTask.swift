@@ -2,9 +2,12 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class AlterationsTaskTests: XCTestCase, TailorTestable {
-  override func setUp() {
-    super.setUp()
+struct TestAlterationsTask: XCTestCase, TailorTestable {
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testRunTaskRunsPendingAlterations", testRunTaskRunsPendingAlterations),
+  ]}
+
+  func setUp() {
     setUpTestCase()
   }
   

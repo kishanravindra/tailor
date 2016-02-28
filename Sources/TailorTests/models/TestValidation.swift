@@ -2,9 +2,39 @@ import Tailor
 import TailorTesting
 import XCTest
 
-class ValidationTests: XCTestCase, TailorTestable {
-  override func setUp() {
-    super.setUp()
+struct TestValidation: XCTestCase, TailorTestable {
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testInitializationSetsModelNameAndErrors", testInitializationSetsModelNameAndErrors),
+    ("testValidatePresenceOfWithValueGetsError", testValidatePresenceOfWithValueGetsError),
+    ("testValidatePresenceOfWithIntegerGetsNoError", testValidatePresenceOfWithIntegerGetsNoError),
+    ("testValidatePresenceOfWithStringGetsNoError", testValidatePresenceOfWithStringGetsNoError),
+    ("testValidatePresenceOfWithEmptyStringGetsError", testValidatePresenceOfWithEmptyStringGetsError),
+    ("testValidateBoundsWithValueInBoundsGetsNoError", testValidateBoundsWithValueInBoundsGetsNoError),
+    ("testValidateBoundsWithValueBelowBoundsGetsError", testValidateBoundsWithValueBelowBoundsGetsError),
+    ("testValidateBoundsWithValueAtBottomOfOpenIntervalGetsNoError", testValidateBoundsWithValueAtBottomOfOpenIntervalGetsNoError),
+    ("testValidateBoundsWithValueAboveBoundsGetsError", testValidateBoundsWithValueAboveBoundsGetsError),
+    ("testValidateBoundsWithValueAtTopOfOpenIntervalGetsNoError", testValidateBoundsWithValueAtTopOfOpenIntervalGetsNoError),
+    ("testValidateBoundsWithValueAtTopOfClosedIntervalGetsNoError", testValidateBoundsWithValueAtTopOfClosedIntervalGetsNoError),
+    ("testValidateWithMultipleErrorsCollectsErrors", testValidateWithMultipleErrorsCollectsErrors),
+    ("testValidateWithBlockAddsErrors", testValidateWithBlockAddsErrors),
+    ("testValidateUniquenessWithTakenFieldHasError", testValidateUniquenessWithTakenFieldHasError),
+    ("testValidateUniquenessWithNoOthersHasNoError", testValidateUniquenessWithNoOthersHasNoError),
+    ("testValidateUniquenessWithSavedRecordWithNoOthersHasNoError", testValidateUniquenessWithSavedRecordWithNoOthersHasNoError),
+    ("testValidateUniquenessWithSavedRecordWithTakenFieldHasError", testValidateUniquenessWithSavedRecordWithTakenFieldHasError),
+    ("testValidateUniquenessWithMultipleFieldsWithAllTakenHasError", testValidateUniquenessWithMultipleFieldsWithAllTakenHasError),
+    ("testValidateUniquenessWithPartialOverlapHasNoError", testValidateUniquenessWithPartialOverlapHasNoError),
+    ("testValidateUniquenessWithNilValueWithNullTakenReturnsError", testValidateUniquenessWithNilValueWithNullTakenReturnsError),
+    ("testValidateUniquenessWIthNilValueWithRealValueTakenReturnsNoError", testValidateUniquenessWIthNilValueWithRealValueTakenReturnsNoError),
+    ("testValidateUniquenessWithNoFieldHasNoError", testValidateUniquenessWithNoFieldHasNoError),
+    ("testSubscriptReturnsErrorsWithMatchingKey", testSubscriptReturnsErrorsWithMatchingKey),
+    ("testValidationWithNoErrorsIsValid", testValidationWithNoErrorsIsValid),
+    ("testValidationWithErrorIsNotValid", testValidationWithErrorIsNotValid),
+    ("testValidationsAreEqualWithSameInfo", testValidationsAreEqualWithSameInfo),
+    ("testValidationsAreUnequalWithDifferentModels", testValidationsAreUnequalWithDifferentModels),
+    ("testValidationsAreUnequalWithDifferentErrors", testValidationsAreUnequalWithDifferentErrors),
+  ]}
+
+  func setUp() {
     setUpTestCase()
   }
   
