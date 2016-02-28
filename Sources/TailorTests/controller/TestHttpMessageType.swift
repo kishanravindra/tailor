@@ -1,8 +1,9 @@
 import Tailor
 import TailorTesting
 import Foundation
+import XCTest
 
-struct TestHttpMessageType: TailorTestable {
+struct TestHttpMessageType: XCTestCase, TailorTestable {
   struct Message: HttpMessageType {
     var statusLine: String
     var headers: [String:String]

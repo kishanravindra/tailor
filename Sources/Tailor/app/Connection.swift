@@ -115,7 +115,7 @@ public final class Connection {
         
         if connectionDescriptor > 0 {
           dispatch_async(Connection.dispatchQueue) {
-            self.readFromSocket(connectionDescriptor)
+            self.readRequestFromSocket(connectionDescriptor)
           }
         }
         self.listenToSocket()
@@ -355,7 +355,12 @@ public final class Connection {
     _ = getaddrinfo(domain, nil, nil, &addressPointer)
     while addressPointer != nil {
       let address = addressPointer.memory
-      if Int(address.ai_protocol) == IPPROTO_TCP && address.ai_family == PF_INET {
+      #if os(Linux)
+        let serverProtocol = Int(address.ai_protocol)
+      #else
+        let serverProtocol = Int32(address.ai_protocol)
+      #endif
+      if serverProtocol == IPPROTO_TCP && address.ai_family == PF_INET {
         let socketDescriptor = try createSocket()
         
         let ipv4Address = UnsafeMutablePointer<sockaddr_in>(address.ai_addr)
@@ -775,7 +780,6 @@ public final class Connection {
   */
 private var CONNECTION_POOL: [Int32: Connection] = [:]
 
-#if os(Linux)
 /**
   This function listens for incoming connections on a socket descriptor.
 
@@ -852,6 +856,5 @@ func ConnectionReadResponseInThread(pointer: UnsafeMutablePointer<Void>) -> Unsa
   }
   return nil 
 }
-#endif
 
 private var SSL_CONTEXT: UnsafeMutablePointer<SSL_CTX> = nil

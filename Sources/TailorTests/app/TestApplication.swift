@@ -4,7 +4,7 @@ import XCTest
 import TailorTesting
 import TailorSqlite
 
-struct TestApplication : TailorTestable {
+struct TestApplication : XCTestCase, TailorTestable {
   //MARK: Initialization
   
   var application = Application.sharedApplication()

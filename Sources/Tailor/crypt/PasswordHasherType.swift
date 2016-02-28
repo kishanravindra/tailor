@@ -1,7 +1,5 @@
 import Foundation
-#if os(Linux)
-  import COpenSSL
-#endif
+import COpenSSL
 
 /**
   This protocol describes a system for hashing passwords.
@@ -87,30 +85,23 @@ public protocol PasswordHasherType {
 }
 
 extension PasswordHasherType {
-  #if os(Linux)
-    public static func hashData(data: NSData, digest: UnsafePointer<EVP_MD>) -> NSData {
-      var context = EVP_MD_CTX()
-      let digestSize = Int(EVP_MD_size(digest))
-      EVP_MD_CTX_init(&context)
-      EVP_DigestInit_ex(&context, digest, nil)
-      EVP_DigestUpdate(&context, data.bytes, data.length)
-      let buffer = UnsafeMutablePointer<UInt8>(calloc(sizeof(CChar), digestSize))
-      var length = UInt32(0)
-      EVP_DigestFinal_ex(&context, buffer, &length)
-      EVP_MD_CTX_cleanup(&context)
-      let result = NSData(bytes: buffer, length: Int(length))
-      free(buffer)
-      return result
-    }
-  #endif
+  public static func hashData(data: NSData, digest: UnsafePointer<EVP_MD>) -> NSData {
+    var context = EVP_MD_CTX()
+    let digestSize = Int(EVP_MD_size(digest))
+    EVP_MD_CTX_init(&context)
+    EVP_DigestInit_ex(&context, digest, nil)
+    EVP_DigestUpdate(&context, data.bytes, data.length)
+    let buffer = UnsafeMutablePointer<UInt8>(calloc(sizeof(CChar), digestSize))
+    var length = UInt32(0)
+    EVP_DigestFinal_ex(&context, buffer, &length)
+    EVP_MD_CTX_cleanup(&context)
+    let result = NSData(bytes: buffer, length: Int(length))
+    free(buffer)
+    return result
+  }
 
   public static func generateSalt() -> NSData {
-    #if os(Linux)
-      let saltBytes = RandomNumber.generateBytes(16)
-    #else
-      var saltBytes = [UInt8](count: 16, repeatedValue: 0)
-      SecRandomCopyBytes(kSecRandomDefault, saltBytes.count, &saltBytes)
-    #endif
+    let saltBytes = RandomNumber.generateBytes(16)
     return NSData(bytes: saltBytes)
   }
   

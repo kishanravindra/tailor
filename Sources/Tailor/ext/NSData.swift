@@ -1,7 +1,7 @@
 import Foundation
+import COpenSSL
 #if os(Linux)
   import Glibc
-  import COpenSSL
 #endif
 
 public extension NSData {
@@ -65,14 +65,9 @@ public extension NSData {
     FIXME
     */
   public var md5Hash: String {
-    #if os(Linux)
-      let data = ShaPasswordHasher.hashData(self, digest: EVP_md5())
-      let buffer = [UInt8](count: data.length, repeatedValue: 0)
-      data.getBytes(UnsafeMutablePointer<Void>(buffer), length: buffer.count)
-    #else
-      let buffer = [UInt8](count: CC_MD5_DIGEST_LENGTH, repeatedValue: 0)
-      CC_MD5(self.bytes, Int64(self.length), &buffer)
-    #endif
+    let data = ShaPasswordHasher.hashData(self, digest: EVP_md5())
+    let buffer = [UInt8](count: data.length, repeatedValue: 0)
+    data.getBytes(UnsafeMutablePointer<Void>(buffer), length: buffer.count)
     let output = NSMutableString(capacity: 2 * CC_MD5_DIGEST_LENGTH)
     for byte in buffer {
       output.appendString(AesEncryptor.getHexString(byte))

@@ -38,13 +38,15 @@ public struct RandomNumber {
     */
   public static func generateNumber<NumberType: IntegerType>(limit: NumberType) -> NumberType {
     ensureSeed()
-    #if os(Linux)
-      let bytePointer = UnsafeMutablePointer<NumberType>(calloc(sizeof(NumberType.self), 1))
-      repeat {
+    let bytePointer = UnsafeMutablePointer<NumberType>(calloc(sizeof(NumberType.self), 1))
+    repeat {
+      #if os(Linux)
         RAND_bytes(UnsafeMutablePointer<UInt8>(bytePointer), Int32(sizeof(NumberType)))
-      } while bytePointer.memory > limit
-      return bytePointer.memory
-    #endif
+      #else
+        arc4random_buf(UnsafeMutablePointer<Void>(bytePointer), sizeof(NumberType))
+      #endif
+    } while bytePointer.memory > limit
+    return bytePointer.memory
   }
 
   /**
@@ -55,11 +57,13 @@ public struct RandomNumber {
     */
   public static func generateBytes(count: Int) -> [UInt8] {
     ensureSeed()
+    let buffer = [UInt8](count: count, repeatedValue: 0)
     #if os(Linux)
-      let buffer = [UInt8](count: count, repeatedValue: 0)
       RAND_bytes(UnsafeMutablePointer<UInt8>(buffer), Int32(buffer.count))
-      return buffer
+    #else
+      arc4random_buf(UnsafeMutablePointer<Void>(buffer), buffer.count)
     #endif
+    return buffer
   }
 }
 

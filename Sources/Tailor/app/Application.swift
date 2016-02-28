@@ -523,13 +523,6 @@ public final class Application {
     */
   @available(*, deprecated, message="Use TypeInventory instead")
   public func registerSubclasses(types: AnyClass...) {
-    #if os(OSX)
-    for type in types {
-      self.registerSubtypes(type) {
-        return class_getClassMethod($0, Selector("isSubclassOfClass:")) != nil && $0.isSubclassOfClass(type)
-      }
-    }
-    #endif
   }
   
   /**

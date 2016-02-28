@@ -2,7 +2,7 @@ import Tailor
 import TailorTesting
 import XCTest
 
-struct TestMemoryCacheStore: TailorTestable {
+struct TestMemoryCacheStore: XCTestCase, TailorTestable {
   var store = MemoryCacheStore()
   
   func setUp() {

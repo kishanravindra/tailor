@@ -23,9 +23,15 @@ import Foundation
   public dynamic func configure() {
   }
 
-  public required init() {
-  
-  }
+  #if os(Linux)
+    public required init() {
+    
+    }
+  #else
+    public override required init() {
+      super.init()
+    }
+  #endif
   
   /**
     This method resets the test database.
@@ -66,11 +72,19 @@ import Foundation
     will use that task to reload the schema. It will also run any pending
     alterations that have not been saved into the seeds.
     */
-  public func setUp() {
-    Timestamp.freeze()
-    configure()
-    resetDatabase()
-  }
+  #if os(Linux)
+    public func setUp() {
+      Timestamp.freeze()
+      configure()
+      resetDatabase()
+    }
+  #else
+    public override func setUp() {
+      Timestamp.freeze()
+      configure()
+      resetDatabase()
+    }
+  #endif
   
   /**
     This method cleans up after a test case.
@@ -78,9 +92,15 @@ import Foundation
     It will unfreeze the current time, allowing it to proceed normally between
     test cases.
     */
-  public func tearDown() {
-    Timestamp.unfreeze()
-  }
+  #if os(Linux)
+    public func tearDown() {
+      Timestamp.unfreeze()
+    }
+  #else
+    public override func tearDown() {
+      Timestamp.unfreeze()
+    }
+  #endif
 
   /**
     This method asserts that two things are equal.

@@ -1,6 +1,44 @@
 import Foundation
 import CoreFoundation
 
+public extension NSJSONSerialization {
+  public class func dataWithJSONObjectForTailor(obj: Any, options: NSJSONWritingOptions) throws -> NSData {
+    let jsonData = NSMutableData()
+    switch(obj) {
+    case let dictionary as [String:Any]:
+      jsonData.appendBytes("{".utf8)
+      for (key,value) in dictionary {
+        if jsonData.length > 1 {
+          jsonData.appendBytes(",".utf8)
+        }
+        jsonData.appendData(try self.dataWithJSONObjectForTailor(key, options: options))
+        jsonData.appendBytes(":".utf8)
+        jsonData.appendData(try self.dataWithJSONObjectForTailor(value, options: options))
+      }
+      jsonData.appendBytes("}".utf8)
+    case let string as String:
+      let escapedString = "\"" + Sanitizer.sqlSanitizer.sanitizeString(string) + "\""
+      jsonData.appendBytes(escapedString.utf8)
+    case let array as [Any]:
+      jsonData.appendBytes("[".utf8)
+      for value in array {
+        if jsonData.length > 1 {
+          jsonData.appendBytes(",".utf8)
+        }
+        jsonData.appendData(try self.dataWithJSONObjectForTailor(value, options: options))
+      }
+      jsonData.appendBytes("]".utf8)
+    case is NSNull:
+      jsonData.appendBytes("null".utf8)
+    case let number as NSNumber:
+      jsonData.appendBytes(number.description.utf8)
+    default:
+      throw SerializationConversionError.NotValidJsonObject
+    }
+    return jsonData
+  }
+}
+
 #if os(Linux)
   extension NSBundle {
     //FIXME
@@ -61,44 +99,6 @@ import CoreFoundation
         }
       }
       return NSRange(location: NSNotFound, length: NSNotFound)
-    }
-  }
-
-  public extension NSJSONSerialization {
-    public class func dataWithJSONObjectForTailor(obj: Any, options: NSJSONWritingOptions) throws -> NSData {
-      let jsonData = NSMutableData()
-      switch(obj) {
-      case let dictionary as [String:Any]:
-        jsonData.appendBytes("{".utf8)
-        for (key,value) in dictionary {
-          if jsonData.length > 1 {
-            jsonData.appendBytes(",".utf8)
-          }
-          jsonData.appendData(try self.dataWithJSONObjectForTailor(key, options: options))
-          jsonData.appendBytes(":".utf8)
-          jsonData.appendData(try self.dataWithJSONObjectForTailor(value, options: options))
-        }
-        jsonData.appendBytes("}".utf8)
-      case let string as String:
-        let escapedString = "\"" + Sanitizer.sqlSanitizer.sanitizeString(string) + "\""
-        jsonData.appendBytes(escapedString.utf8)
-      case let array as [Any]:
-        jsonData.appendBytes("[".utf8)
-        for value in array {
-          if jsonData.length > 1 {
-            jsonData.appendBytes(",".utf8)
-          }
-          jsonData.appendData(try self.dataWithJSONObjectForTailor(value, options: options))
-        }
-        jsonData.appendBytes("]".utf8)
-      case is NSNull:
-        jsonData.appendBytes("null".utf8)
-      case let number as NSNumber:
-        jsonData.appendBytes(number.description.utf8)
-      default:
-        throw SerializationConversionError.NotValidJsonObject
-      }
-      return jsonData
     }
   }
 

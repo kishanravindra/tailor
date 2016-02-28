@@ -3,7 +3,7 @@ import Tailor
 import TailorTesting
 import Foundation
 
-final class TestResponse: TailorTestable {
+final class TestResponse: XCTestCase, TailorTestable {
   var response = Response()
   
   var responseLines: [String] { get {

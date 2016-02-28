@@ -4,7 +4,7 @@ import XCTest
 import TailorTesting
 import TailorSqlite
 
-final class TestTypeInventory : TailorTestable {
+final class TestTypeInventory : XCTestCase, TailorTestable {
   var allTests: [(String, () throws -> Void)] { return [
     ("testCanRegisterTasks", testCanRegisterTasks),
     ("testSubtypeFetchingExcludesInvalidTypes", testSubtypeFetchingExcludesInvalidTypes),

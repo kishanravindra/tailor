@@ -93,9 +93,15 @@ extension ControllerTestable {
     var path = routes.pathFor(TestedControllerType.self, actionName: actionName, parameters: actionParams)
     
     if let queryStringLocation = path?.bridge().rangeOfString("?", options: NSStringCompareOptions.BackwardsSearch) {
-      if queryStringLocation.location != NSNotFound {
-        path = path?.bridge().substringToIndex(queryStringLocation.location)
-      }
+      #if os(Linux)
+        if queryStringLocation.location != NSNotFound {
+          path = path?.bridge().substringToIndex(queryStringLocation.location)
+        }
+      #else
+        if queryStringLocation.startIndex != NSNotFound {
+          path = path?.bridge().substringToIndex(queryStringLocation.startIndex)
+        }
+      #endif
     }
     
     let method = routes.routes.filter {

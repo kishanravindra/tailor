@@ -55,7 +55,11 @@ extension TypeInventoryGenerator {
       let fileManager = NSFileManager.defaultManager()
       for file in try fileManager.contentsOfDirectoryAtPath(directory) {
         let path = "\(directory)/\(file)"
-        var isDirectory = false
+        #if os(Linux)
+          var isDirectory = false
+        #else
+          var isDirectory: ObjCBool = false
+        #endif
         guard fileManager.fileExistsAtPath(path, isDirectory: &isDirectory) else { continue }
         if isDirectory {
           types.appendContentsOf(typesFromDirectory(path))

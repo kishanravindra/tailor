@@ -1,7 +1,5 @@
 import Foundation
-#if os(Linux)
-  import COpenSSL
-#endif
+import COpenSSL
 
 /**
   This class provides a Swift wrapper for hashing a password with SHA-512.
@@ -65,12 +63,8 @@ public struct ShaPasswordHasher: PasswordHasherType {
     let saltedInput = encodedSalt + input
     let inputBytes = NSData(bytes: saltedInput.utf8)
     let hashBytes = [UInt8](count: ShaPasswordHasher.saltLength, repeatedValue: 0)
-    #if os(Linux)
-      let data = ShaPasswordHasher.hashData(inputBytes, digest: EVP_sha512())
-      data.getBytes(UnsafeMutablePointer<Void>(hashBytes), length: hashBytes.count)
-    #else
-      CC_SHA512(inputBytes.bytes, UInt32(inputBytes.length), UnsafeMutablePointer<UInt8>(hashBytes))
-    #endif
+    let data = ShaPasswordHasher.hashData(inputBytes, digest: EVP_sha512())
+    data.getBytes(UnsafeMutablePointer<Void>(hashBytes), length: hashBytes.count)
     
     let encodedHash = NSData(bytes: hashBytes).base64EncodedStringWithOptions([])
     let countString = String(encodedSalt.characters.count)

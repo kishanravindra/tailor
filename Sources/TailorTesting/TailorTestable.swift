@@ -8,7 +8,7 @@ import Foundation
   It provides helper methods for setting up the application for testing, as well
   as shorthands for making test assertions.
   */
-public protocol TailorTestable: XCTestCase {
+public protocol TailorTestable {
   /**
     This method configures the application for testing.
   

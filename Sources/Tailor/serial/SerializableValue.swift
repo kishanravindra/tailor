@@ -364,9 +364,18 @@ extension SerializableValue {
    */
   public func jsonData() throws -> NSData {
     let object = self.toFoundationJsonObject
-    if !NSJSONSerialization.isValidJSONObject(object) {
-      throw SerializationConversionError.NotValidJsonObject
-    }
+    #if os(Linux)
+      if !NSJSONSerialization.isValidJSONObject(object) {
+        throw SerializationConversionError.NotValidJsonObject
+      }
+    #else
+      guard let object2 = object as? NSObject else {
+        throw SerializationConversionError.NotValidJsonObject
+      }
+      if !NSJSONSerialization.isValidJSONObject(object2) {
+        throw SerializationConversionError.NotValidJsonObject
+      }
+    #endif
     return try NSJSONSerialization.dataWithJSONObjectForTailor(object, options: [])
   }
 

@@ -2,7 +2,7 @@ import Tailor
 import TailorTesting
 import XCTest
 
-struct TestCacheImplementation: TailorTestable {
+struct TestCacheImplementation: XCTestCase, TailorTestable {
   final class TestCacheStore : CacheImplementation {
     var data = [String:String]()
     var expiries = [String:TimeInterval]()
