@@ -2,9 +2,17 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class SanitizedTextTests: XCTestCase, TailorTestable {
-  override func setUp() {
-    super.setUp()
+struct TestSanitizedText: XCTestCase, TailorTestable {
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testCanInitializeWithStringLiteral", testCanInitializeWithStringLiteral),
+    ("testCanInitializeWithGraphemeClusterLiteral", testCanInitializeWithGraphemeClusterLiteral),
+    ("testCanInitializeWithUnicodeScalarLiteral", testCanInitializeWithUnicodeScalarLiteral),
+    ("testSanitizedTextWithSameInformationAreEqual", testSanitizedTextWithSameInformationAreEqual),
+    ("testSanitizedTextWithDifferentTextAreNotEqual", testSanitizedTextWithDifferentTextAreNotEqual),
+    ("testSanitizedTextWithDifferentMappingsAreNotEqual", testSanitizedTextWithDifferentMappingsAreNotEqual),
+  ]}
+
+  func setUp() {
     setUpTestCase()
   }
   

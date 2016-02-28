@@ -3,9 +3,8 @@ import TailorTesting
 import XCTest
 import Foundation
 
-@available(*, deprecated)
 struct TestJsonPrimitive: XCTestCase, TailorTestable {
-
+  @available(*, deprecated)
   var allTests: [(String, () throws -> Void)] { return [
     ("testFoundationJsonObjectForStringIsString", testFoundationJsonObjectForStringIsString),
     ("testFoundationJsonObjectForArrayOfStringsIsArrayOfStrings", testFoundationJsonObjectForArrayOfStringsIsArrayOfStrings),
@@ -83,7 +82,8 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
   
   //MARK: - Converting to JSON
   
-  var complexJsonDictionary: [String:JsonPrimitive] = [
+  @available(*, deprecated)
+  var complexJsonDictionary: [String:JsonPrimitive] { return [
     "key1": JsonPrimitive.String("value1"),
     "key2": JsonPrimitive.Array([
       JsonPrimitive.String("value2"),
@@ -95,12 +95,15 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
       ]),
     "nullKey": JsonPrimitive.Null,
     "numberKey": JsonPrimitive.Integer(12)
-  ]
+  ] }
+
+  @available(*, deprecated)
   func testFoundationJsonObjectForStringIsString() {
     let primitive = JsonPrimitive.String("Hello")
     assert(primitive.toFoundationJsonObject as? String, equals: "Hello")
   }
   
+  @available(*, deprecated)
   func testFoundationJsonObjectForArrayOfStringsIsArrayOfStrings() {
     let primitive = JsonPrimitive.Array([
       JsonPrimitive.String("A"),
@@ -116,6 +119,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testFoundationJsonObjectForDictionaryOfStringsIsDictionaryOfStrings() {
     let primitive = JsonPrimitive.Dictionary([
       "key1": JsonPrimitive.String("value1"),
@@ -133,6 +137,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testFoundationJsonObjectForHeterogeneousArrayMapsInnerArray() {
     let primitive = JsonPrimitive.Array([
       JsonPrimitive.String("A"),
@@ -159,6 +164,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testFoundationJsonObjectForHeterogeneousDictionaryMapsInnerDictionary() {
     let primitive = JsonPrimitive.Dictionary([
       "aKey1": JsonPrimitive.String("value1"),
@@ -195,18 +201,21 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testFoundationJsonObjectForNullIsNsNull() {
     let primitive = JsonPrimitive.Null
     let object = primitive.toFoundationJsonObject
     assert(object is NSNull)
   }
   
+  @available(*, deprecated)
   func testFoundationJsonObjectForNumberIsNsNumber() {
     let primitive = JsonPrimitive.Double(11.5)
     let object = primitive.toFoundationJsonObject
     assert(object as? NSNumber, equals: NSNumber(double: 11.5))
   }
   
+  @available(*, deprecated)
   func testJsonDataForStringGetsThrowsException() {
     let primitive = JsonPrimitive.String("Hello")
     do {
@@ -218,6 +227,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testJsonDataForDictionaryOfStringsGetsData() {
     let primitive = JsonPrimitive.Dictionary([
       "key1": JsonPrimitive.String("value1"),
@@ -233,6 +243,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testJsonDataForArrayOfStringsGetsData() {
     let primitive = JsonPrimitive.Array([
       JsonPrimitive.String("value1"),
@@ -248,6 +259,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testJsonDataForHeterogeneousDictionaryGetsData() {
     
     let primitive = JsonPrimitive.Dictionary([
@@ -268,6 +280,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testJsonDataForDictionaryWithNullGetsData() {
     
     let primitive = JsonPrimitive.Dictionary([
@@ -285,6 +298,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testJsonDataForDictionaryWithNumbersGetsData() {
     
     let primitive = JsonPrimitive.Dictionary([
@@ -305,6 +319,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
   
   //MARK: - Parsing from JSON
   
+  @available(*, deprecated)
   func testInitWithJsonStringBuildsString() {
     let object = "Hello"
     do {
@@ -316,6 +331,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testInitWithJsonDictionaryOfStringsBuildsDictionaryOfStrings() {
     let object: [String: Any] = [
       "key1": "value1",
@@ -333,6 +349,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testInitWithJsonArrayOfStringsBuildsArrayOfStrings() {
     let object: [Any] = ["value1", "value2"]
     
@@ -348,6 +365,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testInitWithNsNullGetsNull() {
     let object = NSNull()
     do {
@@ -359,6 +377,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testInitWithIntegerGetsNumber() {
     let object = 823
     do {
@@ -370,6 +389,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testInitWithDoubleGetsNumber() {
     let object = 61.4
     do {
@@ -381,6 +401,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testInitWithJsonObjectWithUnsupportedTypeThrowsException() {
     let object = NSObject()
     
@@ -396,6 +417,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testInitWithJsonDataForDictionaryCreatesDictionary() {
     
     let data = NSData(bytes: "{\"aKey1\":\"value1\",\"aKey2\":{\"bKey1\":\"value2\",\"bKey2\":\"value3\"}}".utf8)
@@ -415,6 +437,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testInitWithPlistWithValidPathGetsData() {
     do {
       let path = Application.configuration.resourcePath + "/config/goodPlist.plist"
@@ -433,6 +456,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testInitWithPlistWithInvalidPathThrowsException() {
     do {
       let path = Application.configuration.resourcePath + "/config/missingPath.plist"
@@ -447,6 +471,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testInitWithPlistWithInvalidPlistThrowsException() {
     do {
       let path = Application.configuration.resourcePath + "/config/invalidPlist.plist"
@@ -457,6 +482,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadStringWithStringGetsString() {
     let primitive = JsonPrimitive.String("Hello")
     do {
@@ -468,6 +494,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadStringWithArrayThrowsException() {
     let primitive = JsonPrimitive.Array([JsonPrimitive.String("A"), JsonPrimitive.String("B")])
     do {
@@ -484,6 +511,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadArrayWithArrayGetsArray() {
     let array = [
       JsonPrimitive.String("A"),
@@ -499,6 +527,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadArrayWithDictionaryThrowsError() {
     let primitive = JsonPrimitive.Dictionary([
       "key1": JsonPrimitive.String("value1"),
@@ -518,6 +547,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadDictionaryWithDictionaryGetsDictionary() {
     let dictionary = [
       "key1": JsonPrimitive.String("value1"),
@@ -533,6 +563,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadDictionaryWithNullThrowsError() {
     let primitive = JsonPrimitive.Null
     do {
@@ -549,6 +580,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadIntWithIntGetsInt() {
     let primitive = JsonPrimitive.Integer(95)
     do {
@@ -560,6 +592,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadIntWithDoubleGetsDouble() {
     let primitive = JsonPrimitive.Integer(95)
     do {
@@ -571,6 +604,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadDoubleWithDoubleGetsDouble() {
     let primitive = JsonPrimitive.Double(123.3)
     do {
@@ -582,6 +616,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadDoubleWithIntGetsInt() {
     let primitive = JsonPrimitive.Double(81.45)
     do {
@@ -593,6 +628,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadStringValueWithStringGetsString() {
     let primitive = JsonPrimitive.Dictionary(complexJsonDictionary)
     do {
@@ -604,6 +640,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadStringValueWithArrayThrowsException() {
     let primitive = JsonPrimitive.Dictionary(complexJsonDictionary)
     do {
@@ -620,6 +657,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadArrayValueWithArrayGetsArray() {
     let primitive = JsonPrimitive.Dictionary(complexJsonDictionary)
     do {
@@ -631,6 +669,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadArrayValueWithDictionaryThrowsException() {
     let primitive = JsonPrimitive.Dictionary(complexJsonDictionary)
     do {
@@ -647,6 +686,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadDictionaryValueWithDictionaryReturnsDictionary() {
     let primitive = JsonPrimitive.Dictionary(complexJsonDictionary)
     do {
@@ -658,6 +698,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadIntValueWithIntGetsInt() {
     let primitive = JsonPrimitive.Dictionary(complexJsonDictionary)
     do {
@@ -669,6 +710,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadIntValueWithArrayThrowsException() {
     let primitive = JsonPrimitive.Dictionary(complexJsonDictionary)
     do {
@@ -685,6 +727,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadDictionaryValueWithStringThrowsException() {
     let primitive = JsonPrimitive.Dictionary(complexJsonDictionary)
     do {
@@ -701,6 +744,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadValueWithNonDictionaryPrimitiveThrowsException() {
     let primitive = JsonPrimitive.String("Hello")
     do {
@@ -717,6 +761,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadValueWithMissingKeyThrowsException() {
     let primitive = JsonPrimitive.Dictionary(complexJsonDictionary)
     
@@ -732,6 +777,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadValueWithJsonPrimitiveGetsPrimitive() {
     let primitive = JsonPrimitive.Dictionary(complexJsonDictionary)
     
@@ -744,6 +790,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadValueWithJsonPrimitiveWithMissingKeyThrowsException() {
     let primitive = JsonPrimitive.Dictionary(complexJsonDictionary)
     
@@ -759,6 +806,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadIntoConvertiblePopulatesValues() {
     struct MyStruct: JsonConvertible {
       let value1: String
@@ -788,6 +836,7 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
     }
   }
   
+  @available(*, deprecated)
   func testReadIntoConvertibleWithErrorAddsOuterKeyToError() {
     struct MyStruct: JsonConvertible {
       let value1: String
@@ -821,89 +870,104 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
   
   //MARK: - Equality
   
+  @available(*, deprecated)
   func testStringsWithSameContentsAreEqual() {
     let value1 = JsonPrimitive.String("Hello")
     let value2 = JsonPrimitive.String("Hello")
     assert(value1, equals: value2)
   }
   
+  @available(*, deprecated)
   func testStringsWithDifferentContentsAreNotEqual() {
     let value1 = JsonPrimitive.String("Hello")
     let value2 = JsonPrimitive.String("Goodbye")
     assert(value1, doesNotEqual: value2)
   }
   
+  @available(*, deprecated)
   func testStringDoesNotEqualDictionary() {
     let value1 = JsonPrimitive.String("Hello")
     let value2 = JsonPrimitive.Dictionary(["key1": JsonPrimitive.String("value1"), "key2": JsonPrimitive.String("value2")])
     assert(value1, doesNotEqual: value2)
   }
   
+  @available(*, deprecated)
   func testDictionaryWithSameContentsAreEqual() {
     let value1 = JsonPrimitive.Dictionary(["key1": JsonPrimitive.String("value1"), "key2": JsonPrimitive.String("value2")])
     let value2 = JsonPrimitive.Dictionary(["key1": JsonPrimitive.String("value1"), "key2": JsonPrimitive.String("value2")])
     assert(value1, equals: value2)
   }
   
+  @available(*, deprecated)
   func testDictionaryWithDifferentKeysAreNotEqual() {
     let value1 = JsonPrimitive.Dictionary(["key1": JsonPrimitive.String("value1"), "key2": JsonPrimitive.String("value2")])
     let value2 = JsonPrimitive.Dictionary(["key1": JsonPrimitive.String("value1"), "key3": JsonPrimitive.String("value2")])
     assert(value1, doesNotEqual: value2)
   }
   
+  @available(*, deprecated)
   func testDictionaryWithDifferentValuesAreNotEqual() {
     let value1 = JsonPrimitive.Dictionary(["key1": JsonPrimitive.String("value1"), "key2": JsonPrimitive.String("value2")])
     let value2 = JsonPrimitive.Dictionary(["key1": JsonPrimitive.String("value1"), "key2": JsonPrimitive.String("value3")])
     assert(value1, doesNotEqual: value2)
   }
   
+  @available(*, deprecated)
   func testDictionaryDoesNotEqualArray() {
     let value1 = JsonPrimitive.Dictionary(["key1": JsonPrimitive.String("value1"), "key2": JsonPrimitive.String("value2")])
     let value2 = JsonPrimitive.Array([JsonPrimitive.String("value1"), JsonPrimitive.String("value2")])
     assert(value1, doesNotEqual: value2)
   }
   
+  @available(*, deprecated)
   func testArrayWithSameContentsAreEqual() {
     let value1 = JsonPrimitive.Array([JsonPrimitive.String("value1"), JsonPrimitive.String("value2")])
     let value2 = JsonPrimitive.Array([JsonPrimitive.String("value1"), JsonPrimitive.String("value2")])
     assert(value1, equals: value2)
   }
   
+  @available(*, deprecated)
   func testArrayWithDifferentContentsAreNotEqual() {
     let value1 = JsonPrimitive.Array([JsonPrimitive.String("value1"), JsonPrimitive.String("value2")])
     let value2 = JsonPrimitive.Array([JsonPrimitive.String("value1"), JsonPrimitive.String("value3")])
     assert(value1, doesNotEqual: value2)
   }
   
+  @available(*, deprecated)
   func testArrayDoesNotEqualString() {
     let value1 = JsonPrimitive.Array([JsonPrimitive.String("value1"), JsonPrimitive.String("value2")])
     let value2 = JsonPrimitive.String("[value1,value2]")
     assert(value1, doesNotEqual: value2)
   }
   
+  @available(*, deprecated)
   func testNullEqualsOtherNull() {
     let value1 = JsonPrimitive.Null
     let value2 = JsonPrimitive.Null
     assert(value1, equals: value2)
   }
   
+  @available(*, deprecated)
   func testNullDoesNotEqualString() {
     let value1 = JsonPrimitive.Null
     let value2 = JsonPrimitive.String("[value1,value2]")
     assert(value1, doesNotEqual: value2)
   }
+  @available(*, deprecated)
   func testNumberWithSameContentsAreEqual() {
     let value1 = JsonPrimitive.Integer(93)
     let value2 = JsonPrimitive.Integer(93)
     assert(value1, equals: value2)
   }
   
+  @available(*, deprecated)
   func testNumbersWithDifferentContentsAreNotEqual() {
     let value1 = JsonPrimitive.Integer(93)
     let value2 = JsonPrimitive.Integer(92)
     assert(value1, doesNotEqual: value2)
   }
   
+  @available(*, deprecated)
   func testNumberDoesNotEqualDictionary() {
     let value1 = JsonPrimitive.Integer(93)
     let value2 = JsonPrimitive.Dictionary(["key1": JsonPrimitive.String("value1"), "key2": JsonPrimitive.String("value2")])
@@ -912,26 +976,31 @@ struct TestJsonPrimitive: XCTestCase, TailorTestable {
 
   //MARK: - Description
   
+  @available(*, deprecated)
   func testDescriptionForStringIsString() {
     let value = JsonPrimitive.String("Hello")
     assert(value.valueDescription, equals: "Hello")
   }
   
+  @available(*, deprecated)
   func testDescriptionForNumberIsNumber() {
     let value = JsonPrimitive.Integer(89)
     assert(value.valueDescription, equals: "89")
   }
   
+  @available(*, deprecated)
   func testDescriptionForArrayIsArrayDescription() {
     let value = JsonPrimitive.Array([JsonPrimitive.String("A"), JsonPrimitive.String("B")])
     assert(value.valueDescription, equals: "[\"A\", \"B\"]")
   }
   
+  @available(*, deprecated)
   func testDescriptionForDictionaryIsDictionaryDescription() {
     let value = JsonPrimitive.Dictionary(["key1": JsonPrimitive.Integer(891), "key2": JsonPrimitive.String("C")])
     assert(value.valueDescription, equals: "[\"key1\": \"891\", \"key2\": \"C\"]")
   }
   
+  @available(*, deprecated)
   func testDescriptionForNullIsNull() {
     let value = JsonPrimitive.Null
     assert(value.valueDescription, equals: "NULL")

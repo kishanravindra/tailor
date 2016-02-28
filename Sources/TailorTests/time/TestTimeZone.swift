@@ -2,9 +2,26 @@ import Tailor
 import TailorTesting
 import XCTest
 
-class TimeZoneTests: XCTestCase, TailorTestable {
-  override func setUp() {
-    super.setUp()
+struct TestTimeZone: XCTestCase, TailorTestable {
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testPolicyDescriptionGetsInformation", testPolicyDescriptionGetsInformation),
+    ("testInitializeWithListOfPoliciesSetsPolicies", testInitializeWithListOfPoliciesSetsPolicies),
+    ("testInitializeWithPositiveOffsetSetsNameAndSinglePolicy", testInitializeWithPositiveOffsetSetsNameAndSinglePolicy),
+    ("testInitializeWithNegativeOffsetSetsNameAndSinglePolicy", testInitializeWithNegativeOffsetSetsNameAndSinglePolicy),
+    ("testInitializeWithoutListOfPoliciesReadsPoliciesFromDisk", testInitializeWithoutListOfPoliciesReadsPoliciesFromDisk),
+    ("testPolicyWithTimestampInMiddleGetsLastPolicyBeginningBeforeTimestamp", testPolicyWithTimestampInMiddleGetsLastPolicyBeginningBeforeTimestamp),
+    ("testPolicyWithTimestampBeforeFirstPolicyGetsFirstPolicy", testPolicyWithTimestampBeforeFirstPolicyGetsFirstPolicy),
+    ("testPolicyWithTimestampAfterLastPolicyGetsLastPolicy", testPolicyWithTimestampAfterLastPolicyGetsLastPolicy),
+    ("testPolicyWithTimestampAtBeginningOfPolicyGetsThatPolicy", testPolicyWithTimestampAtBeginningOfPolicyGetsThatPolicy),
+    ("testPolicyWithIndicesAfterPolicyCountReturnsNil", testPolicyWithIndicesAfterPolicyCountReturnsNil),
+    ("testPolicyWithForEmptyPolicyListGetsUtc", testPolicyWithForEmptyPolicyListGetsUtc),
+    ("testDescriptionIncludesNameAndPolicies", testDescriptionIncludesNameAndPolicies),
+    ("testTimeZonesWithSameNameAndPoliciesAreEqual", testTimeZonesWithSameNameAndPoliciesAreEqual),
+    ("testTimeZonesWithDifferentPoliciesAreUnequal", testTimeZonesWithDifferentPoliciesAreUnequal),
+    ("testTimeZonesWithDifferentNamesAreUnequal", testTimeZonesWithDifferentNamesAreUnequal),
+  ]}
+
+  func setUp() {
     setUpTestCase()
   }
   

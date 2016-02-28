@@ -174,13 +174,10 @@ public struct TimeZone: Equatable,CustomStringConvertible {
   }
   
   static func loadTimeZones() -> [String: [TimeZone.Policy]] {
-    #if os(Linux)
-      return [:] //FIXME
-    #else
     guard let enumerator = NSFileManager.defaultManager().enumeratorAtPath(TimeZoneReader.zoneInfoPath) else { return [:] }
     var zones: [String: [TimeZone.Policy]] = [:]
     for element in enumerator {
-      guard let path = element as? String else { continue }
+      guard let path = (element as? NSString)?.bridge() else { continue }
       let policies = TimeZoneReader(name: path).read()
       guard !policies.isEmpty else { continue }
       zones[path] = policies
@@ -191,7 +188,6 @@ public struct TimeZone: Equatable,CustomStringConvertible {
       }
     }
     return zones
-    #endif
   }
 }
 

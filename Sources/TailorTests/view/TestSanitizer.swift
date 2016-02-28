@@ -2,9 +2,21 @@ import XCTest
 import Tailor
 import TailorTesting
 
-class SanitizerTests: XCTestCase, TailorTestable {
-  override func setUp() {
-    super.setUp()
+struct TestSanitizer: XCTestCase, TailorTestable {
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testIsSanitizedIsTrueWhenSanitizerIsApplied", testIsSanitizedIsTrueWhenSanitizerIsApplied),
+    ("testSanitizeStringMethodReplacesCharactersWithSubstitutions", testSanitizeStringMethodReplacesCharactersWithSubstitutions),
+    ("testSanitizeMethodReplacesCharacters", testSanitizeMethodReplacesCharacters),
+    ("testSanitizeMethodFlagsTextAsSanitized", testSanitizeMethodFlagsTextAsSanitized),
+    ("testSanitizeMethodDoesNotRunReplacementsTwice", testSanitizeMethodDoesNotRunReplacementsTwice),
+    ("testAcceptMethodFlagsTextAsSanitizedWithoutModification", testAcceptMethodFlagsTextAsSanitizedWithoutModification),
+    ("testHtmlSanitizerHasMappingForEscapeCharacters", testHtmlSanitizerHasMappingForEscapeCharacters),
+    ("testSqlSanitizerReplacesSqlEscapeCharacters", testSqlSanitizerReplacesSqlEscapeCharacters),
+    ("testSanitizersAreEqualWithSameMapping", testSanitizersAreEqualWithSameMapping),
+    ("testSanitizersAreEqualWithDifferentMapping", testSanitizersAreEqualWithDifferentMapping),
+  ]}
+
+  func setUp() {
     setUpTestCase()
   }
   

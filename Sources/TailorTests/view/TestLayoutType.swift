@@ -2,9 +2,12 @@ import TailorTesting
 import Tailor
 import XCTest
 
-class LayoutTypeTests: XCTestCase, TailorTestable {
-  override func setUp() {
-    super.setUp()
+struct TestLayoutType: XCTestCase, TailorTestable {
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testEmptyLayoutRendersInnerTemplate", testEmptyLayoutRendersInnerTemplate),
+  ]}
+  
+  func setUp() {
     setUpTestCase()
   }
   

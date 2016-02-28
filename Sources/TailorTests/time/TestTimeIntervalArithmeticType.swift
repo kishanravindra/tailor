@@ -3,9 +3,14 @@ import Tailor
 import TailorTesting
 import XCTest
 
-class TimeIntervalArithmeticType : XCTestCase, TailorTestable {
-  override func setUp() {
-    super.setUp()
+struct TestTimeIntervalArithmeticType : XCTestCase, TailorTestable {
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testAdditionAddsInterval", testAdditionAddsInterval),
+    ("testSubtractionSubtractsInterval", testSubtractionSubtractsInterval),
+    ("testSubtractionBetweenTimestampsGetsIntervalBetweenTimestamps", testSubtractionBetweenTimestampsGetsIntervalBetweenTimestamps),
+  ]}
+
+  func setUp() {
     setUpTestCase()
   }
   

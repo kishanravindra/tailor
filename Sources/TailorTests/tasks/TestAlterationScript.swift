@@ -8,11 +8,6 @@ struct TestAlterationScript: XCTestCase, TailorTestable {
     ("testPendingAlterationsFindsAlterationsThatAreNotInTable", testPendingAlterationsFindsAlterationsThatAreNotInTable),
   ]}
 
-  func setUp() {
-    setUpTestCase()
-    TypeInventory.shared.registerSubtypes(AlterationScript.self, subtypes: [FirstAlteration.self, SecondAlteration.self, ThirdAlteration.self])
-  }
-  
   class FirstAlteration: AlterationScript {
     static let identifier = "1"
     static func run() {
@@ -32,6 +27,11 @@ struct TestAlterationScript: XCTestCase, TailorTestable {
     static func run() {
       Application.sharedDatabaseConnection().executeQuery("ALTER TABLE `alteration_tests` add column `colour` varchar(250)")
     }
+  }
+  
+  func setUp() {
+    setUpTestCase()
+    TypeInventory.shared.registerSubtypes(AlterationScript.self, subtypes: [FirstAlteration.self, SecondAlteration.self, ThirdAlteration.self])
   }
   
   func tearDown() {

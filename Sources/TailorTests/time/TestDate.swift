@@ -2,9 +2,32 @@ import Tailor
 import TailorTesting
 import XCTest
 
-class DateTests: XCTestCase, TailorTestable {
-  override func setUp() {
-    super.setUp()
+struct TestDate: XCTestCase, TailorTestable {
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testDatesAreEqualWithSameInfo", testDatesAreEqualWithSameInfo),
+    ("testDatesAreInequalWithDifferentYears", testDatesAreInequalWithDifferentYears),
+    ("testDatesAreInequalWithDifferentMonths", testDatesAreInequalWithDifferentMonths),
+    ("testDatesAreInequalWithDifferentDays", testDatesAreInequalWithDifferentDays),
+    ("testDatesAreInequalWithDifferentCalendars", testDatesAreInequalWithDifferentCalendars),
+    ("testDateIsBeforeDateWithLaterYear", testDateIsBeforeDateWithLaterYear),
+    ("testDateIsAfterDateWithEarlierYear", testDateIsAfterDateWithEarlierYear),
+    ("testDateIsBeforeDateWithLaterMonth", testDateIsBeforeDateWithLaterMonth),
+    ("testDateIsBeforeDateWithLaterDay", testDateIsBeforeDateWithLaterDay),
+    ("testDateIsAfterDateWithLaterDayInEarlierMonth", testDateIsAfterDateWithLaterDayInEarlierMonth),
+    ("testDateIsAfterDateWithLaterMonthInEarlierYear", testDateIsAfterDateWithLaterMonthInEarlierYear),
+    ("testDescriptionGetsFormattedDate", testDescriptionGetsFormattedDate),
+    ("testBeginningOfDayGetsTimestampAtZeroHour", testBeginningOfDayGetsTimestampAtZeroHour),
+    ("testEndOfDayGetsTimestampAtLastHour", testEndOfDayGetsTimestampAtLastHour),
+    ("testTodayGetsCurrentDate", testTodayGetsCurrentDate),
+    ("testByAddingIntervalCanAddSimpleInterval", testByAddingIntervalCanAddSimpleInterval),
+    ("testByAddingIntervalCanAddNegativeInterval", testByAddingIntervalCanAddNegativeInterval),
+    ("testByAddingIntervalCanHandleOverruns", testByAddingIntervalCanHandleOverruns),
+    ("testIntervalSinceCanGetInterval", testIntervalSinceCanGetInterval),
+    ("testIntervalSinceCanGetMixedInterval", testIntervalSinceCanGetMixedInterval),
+    ("testSupportsArithmeticOperators", testSupportsArithmeticOperators),
+  ]}
+
+  func setUp() {
     setUpTestCase()
   }
   

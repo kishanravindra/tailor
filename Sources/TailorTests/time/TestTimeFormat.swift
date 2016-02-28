@@ -1,23 +1,153 @@
 import XCTest
 import TailorTesting
 import Tailor
+import Foundation
 
-class TimeFormatTests: XCTestCase, TailorTestable {
+final class TestTimeFormat: XCTestCase, TailorTestable {
   var timestampSeconds = 1431788231.0
   var timestamp: Timestamp { return Timestamp(epochSeconds: timestampSeconds, timeZone: TimeZone(name: "UTC")) }
   var formatter: TimeFormatter! = nil
+  
   var formatted: String? { return formatter?.format(timestamp) }
   
-  override func setUp() {
-    super.setUp()
+  @available(*, deprecated)
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testTimeFormatComponentWithLiteralGetsLiteral", testTimeFormatComponentWithLiteralGetsLiteral),
+    ("testTimeFormatComponentWithYearGetsFourDigitYear", testTimeFormatComponentWithYearGetsFourDigitYear),
+    ("testTimeFormatComponentWithSixDigitYearPadsYear", testTimeFormatComponentWithSixDigitYearPadsYear),
+    ("testFormatComponentWithTwoDigitYearTruncatesYear", testFormatComponentWithTwoDigitYearTruncatesYear),
+    ("testFormatComponentWithYearWithNilPaddingDoesNotPadYear", testFormatComponentWithYearWithNilPaddingDoesNotPadYear),
+    ("testFormatComponentWithMonthGetsTwoDigitMonth", testFormatComponentWithMonthGetsTwoDigitMonth),
+    ("testFormatComponentWithMonthWithNilPaddingDoesNotPadMonth", testFormatComponentWithMonthWithNilPaddingDoesNotPadMonth),
+    ("testFormatComponentWithSpacePaddingPadsMonth", testFormatComponentWithSpacePaddingPadsMonth),
+    ("testFormatComponentWithMonthNameGetsFullName", testFormatComponentWithMonthNameGetsFullName),
+    ("testFormatComponentWithAbbreviateMonthNameGetsAbbreviatedName", testFormatComponentWithAbbreviateMonthNameGetsAbbreviatedName),
+    ("testFormatComponentsWithMonthNameWithUntranslatedMonthGetsEnglishMonthName", testFormatComponentsWithMonthNameWithUntranslatedMonthGetsEnglishMonthName),
+    ("testFormatComponentsWithAbbreviatedMonthNameWithUntranslatedMonthGetsEnglishMonthName", testFormatComponentsWithAbbreviatedMonthNameWithUntranslatedMonthGetsEnglishMonthName),
+    ("testFormatComponentsWithMonthNameWithUntranslatedIslamicMonthGetsDefaultMonthName", testFormatComponentsWithMonthNameWithUntranslatedIslamicMonthGetsDefaultMonthName),
+    ("testFormatComponentsWithMonthNameWithUntranslateHebrewMonthGetsDefaultMonthName", testFormatComponentsWithMonthNameWithUntranslateHebrewMonthGetsDefaultMonthName),
+    ("testFormatComponentsWithMonthNameWithUntranslateHebrewLeapMonthGetsDefaultMonthName", testFormatComponentsWithMonthNameWithUntranslateHebrewLeapMonthGetsDefaultMonthName),
+    ("testFormatComponentsWithMonthNameBeyondBoundsGetsMonthNumber", testFormatComponentsWithMonthNameBeyondBoundsGetsMonthNumber),
+    ("testFormatComponentWithTwoDigitMonthGetsTwoDigitMonth", testFormatComponentWithTwoDigitMonthGetsTwoDigitMonth),
+    ("testFormatComponentWithDayGetsTwoDigitDay", testFormatComponentWithDayGetsTwoDigitDay),
+    ("testFormatComponentWithDayWithNilPaddingDoesNotPadDay", testFormatComponentWithDayWithNilPaddingDoesNotPadDay),
+    ("testFormatComponentWithDayWithSpacePaddingPadsDay", testFormatComponentWithDayWithSpacePaddingPadsDay),
+    ("testFormatComponentWithTwoDigitDayDoesNotPadDay", testFormatComponentWithTwoDigitDayDoesNotPadDay),
+    ("testFormatComponentWithHourGets24HourTime", testFormatComponentWithHourGets24HourTime),
+    ("testFormatComponentWithHourBeforeNoonIsZeroPadded", testFormatComponentWithHourBeforeNoonIsZeroPadded),
+    ("testFormatComponentWithHourWithTwelveHourTimeUsesTwelveHourTime", testFormatComponentWithHourWithTwelveHourTimeUsesTwelveHourTime),
+    ("testFormatComponentWithHourWithTwelveHourTimeWithZeroUses12", testFormatComponentWithHourWithTwelveHourTimeWithZeroUses12),
+    ("testFormatComponentWithHourWithNilPaddingDoesNotPad", testFormatComponentWithHourWithNilPaddingDoesNotPad),
+    ("testFormatComponentWithMinuteGetsTwoDigitMinute", testFormatComponentWithMinuteGetsTwoDigitMinute),
+    ("testFormatComponentWithSecondGetsTwoDigitSecond", testFormatComponentWithSecondGetsTwoDigitSecond),
+    ("testFormatComponentWithWeekDayGetsWeekDay", testFormatComponentWithWeekDayGetsWeekDay),
+    ("testFormatComponentWithWeekDayNameGetsFullName", testFormatComponentWithWeekDayNameGetsFullName),
+    ("testFormatComponentsWithWeekDayNameWithUntranslatedNameGetsEnglishName", testFormatComponentsWithWeekDayNameWithUntranslatedNameGetsEnglishName),
+    ("testFormatComponentWithAbbreviatedWeekDayNameGetsAbbreviatedName", testFormatComponentWithAbbreviatedWeekDayNameGetsAbbreviatedName),
+    ("testFormatComponentsWithAbbreviatedWeekDayNameWithUntranslatedNameGetsEnglishName", testFormatComponentsWithAbbreviatedWeekDayNameWithUntranslatedNameGetsEnglishName),
+    ("testFormatComponentsWithAbbreviatedWeekDayNameWithDayOutsideBoundsGetsDayNumber", testFormatComponentsWithAbbreviatedWeekDayNameWithDayOutsideBoundsGetsDayNumber),
+    ("testFormatComponentWithEpochSecondsGetsFullTimestamp", testFormatComponentWithEpochSecondsGetsFullTimestamp),
+    ("testFormatComponentWithTimeZoneGetsAbbreviation", testFormatComponentWithTimeZoneGetsAbbreviation),
+    ("testFormatComponentWithTimeZoneOffsetGetsOffset", testFormatComponentWithTimeZoneOffsetGetsOffset),
+    ("testFormatComponentWithMeridianGetsAmOrPm", testFormatComponentWithMeridianGetsAmOrPm),
+    ("testFormatWithMultipleComponentsCombinesResults", testFormatWithMultipleComponentsCombinesResults),
+    ("testFormatWithMultipleComponentsWithOldMethodCombinesResults", testFormatWithMultipleComponentsWithOldMethodCombinesResults),
+    ("testFormatWithDatabaseFormatGetsProperFormat", testFormatWithDatabaseFormatGetsProperFormat),
+    ("testFormatDateWithDatabaseFormatGetsProperFormat", testFormatDateWithDatabaseFormatGetsProperFormat),
+    ("testFormatTimeWithDatabaseFormatGetsProperFormat", testFormatTimeWithDatabaseFormatGetsProperFormat),
+    ("testFormatWithCookieFormatGetsProperFormat", testFormatWithCookieFormatGetsProperFormat),
+    ("testFormatWithFullFormatGetsHumanReadableDateAndTime", testFormatWithFullFormatGetsHumanReadableDateAndTime),
+    ("testFormatWithFullUsGetsHumanReadableDateAndTime", testFormatWithFullUsGetsHumanReadableDateAndTime),
+    ("testFormatWithFullDateGetsHumanReadableDate", testFormatWithFullDateGetsHumanReadableDate),
+    ("testFormatWithFullDateUsGetsHumanReadableDate", testFormatWithFullDateUsGetsHumanReadableDate),
+    ("testFormatWithFullTimeGetsHumanReadableTime", testFormatWithFullTimeGetsHumanReadableTime),
+    ("testFormatWithFullTimeUsGetsHumanReadableTime", testFormatWithFullTimeUsGetsHumanReadableTime),
+    ("testFormatWithRfc2822GetsProperFormat", testFormatWithRfc2822GetsProperFormat),
+    ("testFormatWithStrftimeUsesStrftimeFormat", testFormatWithStrftimeUsesStrftimeFormat),
+    ("testFormatWithStrftimeWithUnsupportedComponentsIsEmpty", testFormatWithStrftimeWithUnsupportedComponentsIsEmpty),
+    ("testFormatWithStringLiteralIsLiteral", testFormatWithStringLiteralIsLiteral),
+    ("testFormatWithUnicodeScalarLiteralIsLiteral", testFormatWithUnicodeScalarLiteralIsLiteral),
+    ("testFormatWithExtendedGraphemeLiteralIsLiteral", testFormatWithExtendedGraphemeLiteralIsLiteral),
+    ("testParseTimeComponentWithLiteralComponentLeavesTimeAlone", testParseTimeComponentWithLiteralComponentLeavesTimeAlone),
+    ("testParseTimeComponentWithFullMatchReturnsEmptyString", testParseTimeComponentWithFullMatchReturnsEmptyString),
+    ("testParseTimeComponentWithLiteralComponentWithNonMatchingStringReturnsNil", testParseTimeComponentWithLiteralComponentWithNonMatchingStringReturnsNil),
+    ("testParseTimeComponentWithYearGetsYear", testParseTimeComponentWithYearGetsYear),
+    ("testParseTimeComponentWithYearWithPaddingGetsYear", testParseTimeComponentWithYearWithPaddingGetsYear),
+    ("testParseTimeComponentWithYearWithNonNumericCharacterReturnsNil", testParseTimeComponentWithYearWithNonNumericCharacterReturnsNil),
+    ("testParseTimeComponentWithYearWithTooFewCharactersReturnsNil", testParseTimeComponentWithYearWithTooFewCharactersReturnsNil),
+    ("testParseTimeComponentWithTwoDigitYearPutsYearIn1900s", testParseTimeComponentWithTwoDigitYearPutsYearIn1900s),
+    ("testParseTimeComponentWithMonthGetsMonth", testParseTimeComponentWithMonthGetsMonth),
+    ("testParseTimeComponentWithPaddedMonthGetsMonth", testParseTimeComponentWithPaddedMonthGetsMonth),
+    ("testParseTimeComponentWithNonNumericValueIsNil", testParseTimeComponentWithNonNumericValueIsNil),
+    ("testParseTimeComponentWithMonthNameGetsMonth", testParseTimeComponentWithMonthNameGetsMonth),
+    ("testParseTimeComponentWithAbbreviatedMonthNameGetsMonth", testParseTimeComponentWithAbbreviatedMonthNameGetsMonth),
+    ("testParseTimeComponentWithNoTranslationParsesEnglishMonth", testParseTimeComponentWithNoTranslationParsesEnglishMonth),
+    ("testParseTimeComponentWithAbbreviatedMonthNameWithNoTranslationParsesEnglishMonth", testParseTimeComponentWithAbbreviatedMonthNameWithNoTranslationParsesEnglishMonth),
+    ("testParseTimeComponentWithMonthOutsideBoundsParsesMonthNumber", testParseTimeComponentWithMonthOutsideBoundsParsesMonthNumber),
+    ("testParseTimeComponentWithInvalidMonthNameIsNil", testParseTimeComponentWithInvalidMonthNameIsNil),
+    ("testParseTimeComponentWithMonthNumberWithinBoundsIsNil", testParseTimeComponentWithMonthNumberWithinBoundsIsNil),
+    ("testParseTimeComponentWithDayGetsDay", testParseTimeComponentWithDayGetsDay),
+    ("testParseTimeComponentWithPaddedDayGetsDay", testParseTimeComponentWithPaddedDayGetsDay),
+    ("testParseTimeComponentWithInvalidDayIsNil", testParseTimeComponentWithInvalidDayIsNil),
+    ("testParseTimeWith24HourTimeGetsHour", testParseTimeWith24HourTimeGetsHour),
+    ("testParseTimeWithPaddedHourTimeGetsHour", testParseTimeWithPaddedHourTimeGetsHour),
+    ("testParseTimeWithTwelveHourTimeGetsHour", testParseTimeWithTwelveHourTimeGetsHour),
+    ("testParseTimeWithMonthWithInvalidTextReturnsNil", testParseTimeWithMonthWithInvalidTextReturnsNil),
+    ("testParseTimeWithMinuteGetsMinute", testParseTimeWithMinuteGetsMinute),
+    ("testParseTimeWithPaddedMinuteGetsMinute", testParseTimeWithPaddedMinuteGetsMinute),
+    ("testParseTimeWithMinuteWithInvalidTextReturnsNil", testParseTimeWithMinuteWithInvalidTextReturnsNil),
+    ("testParseTimeWithSecondGetsSecond", testParseTimeWithSecondGetsSecond),
+    ("testParseTimeWithPaddedSecondGetsSecond", testParseTimeWithPaddedSecondGetsSecond),
+    ("testParseTimeWithSecondWithInvalidTextReturnsNil", testParseTimeWithSecondWithInvalidTextReturnsNil),
+    ("testParseTimeWithWeekdayWithNumberTextDoesNotChangeTime", testParseTimeWithWeekdayWithNumberTextDoesNotChangeTime),
+    ("testParseTimeWithWeekDayWithInvalidTextReturnsNil", testParseTimeWithWeekDayWithInvalidTextReturnsNil),
+    ("testParseTimeWithWeekDayNameWithValidNameDoesNotChangeTime", testParseTimeWithWeekDayNameWithValidNameDoesNotChangeTime),
+    ("testParseTimeWithWeekDayNameWithValidNameWithNoTranslationDoesNotChangeTime", testParseTimeWithWeekDayNameWithValidNameWithNoTranslationDoesNotChangeTime),
+    ("testParseTimeWithWeekDayNameWithInvalidNameReturnsNil", testParseTimeWithWeekDayNameWithInvalidNameReturnsNil),
+    ("testParseTimeWithWeekDayNameWithAbbreviatedNameOnlyConsumesAbbreviatedName", testParseTimeWithWeekDayNameWithAbbreviatedNameOnlyConsumesAbbreviatedName),
+    ("testParseTimeWithWeekDayNameWithAbbreviatedNameWithNoTranslationOnlyConsumesAbbreviatedName", testParseTimeWithWeekDayNameWithAbbreviatedNameWithNoTranslationOnlyConsumesAbbreviatedName),
+    ("testParseTimeWithEpochSecondsReturnsNil", testParseTimeWithEpochSecondsReturnsNil),
+    ("testParseTimeWithTimeZoneSetsTimeZone", testParseTimeWithTimeZoneSetsTimeZone),
+    ("testParseTimeWithTimeZoneWithUnderThreeCharactersReturnsNil", testParseTimeWithTimeZoneWithUnderThreeCharactersReturnsNil),
+    ("testParseTimeWithTimeZoneOffsetDoesNotModifyTime", testParseTimeWithTimeZoneOffsetDoesNotModifyTime),
+    ("testParseTimeWithNegativeTimeZoneOffsetDoesNotModifyTime", testParseTimeWithNegativeTimeZoneOffsetDoesNotModifyTime),
+    ("testParseTimeWithTimeZoneOffsetWithInvalidOffsetReturnsNil", testParseTimeWithTimeZoneOffsetWithInvalidOffsetReturnsNil),
+    ("testParseTimeWithTimeZoneOffsetWithBadStringReturnsNil", testParseTimeWithTimeZoneOffsetWithBadStringReturnsNil),
+    ("testParseTimeWithTimeZoneOffsetWithNonNumericHourReturnsNil", testParseTimeWithTimeZoneOffsetWithNonNumericHourReturnsNil),
+    ("testParseTimeWithMeridianWithAMLeavesHourIntact", testParseTimeWithMeridianWithAMLeavesHourIntact),
+    ("testParseTimeWithMeridianWithPMAddsTwelveToHour", testParseTimeWithMeridianWithPMAddsTwelveToHour),
+    ("testParseTimeWithMeridianWithBadMeridianReturnsNil", testParseTimeWithMeridianWithBadMeridianReturnsNil),
+    ("testParseTimeWithMeridianWithOneLetterReturnsNil", testParseTimeWithMeridianWithOneLetterReturnsNil),
+    ("testParseTimeWithMultipleComponentsParsesAllComponents", testParseTimeWithMultipleComponentsParsesAllComponents),
+    ("testParseTimeWithMultipleComponentsWithOldMethodParsesAllComponents", testParseTimeWithMultipleComponentsWithOldMethodParsesAllComponents),
+    ("testParseTimeWithMultipleComponentsWithMissingComponentsReturnsNil", testParseTimeWithMultipleComponentsWithMissingComponentsReturnsNil),
+    ("testParseTimestampBuildsTimestamp", testParseTimestampBuildsTimestamp),
+    ("testParseDateBuildsDate", testParseDateBuildsDate),
+    ("testParseTimeBuildsTime", testParseTimeBuildsTime),
+    ("testParseTimeAsTimestampBuildsTimestamp", testParseTimeAsTimestampBuildsTimestamp),
+    ("testParseTimeToTimestampWithTimeZoneInFormatUsesThatTimeZone", testParseTimeToTimestampWithTimeZoneInFormatUsesThatTimeZone),
+    ("testParseTimestampWithInvalidStringReturnsNil", testParseTimestampWithInvalidStringReturnsNil),
+    ("testParseDateWithInvalidStringReturnsNil", testParseDateWithInvalidStringReturnsNil),
+    ("testParseTimeWithInvalidStringReturnsNil", testParseTimeWithInvalidStringReturnsNil),
+    ("testParseTimeWithDatabaseFormatCanParseValidTime", testParseTimeWithDatabaseFormatCanParseValidTime),
+    ("testParseTimeWithCookieFormatCanParseValidTime", testParseTimeWithCookieFormatCanParseValidTime),
+    ("testParseTimeWithRfc822CanParseValidTime", testParseTimeWithRfc822CanParseValidTime),
+    ("testParseTimeWithRfc850CanParseValidTime", testParseTimeWithRfc850CanParseValidTime),
+    ("testParseTimeWithPosixFormatCanParseValidTime", testParseTimeWithPosixFormatCanParseValidTime),
+  ]}
+
+  func setUp() {
     setUpTestCase()
+    timestampSeconds = 1431788231.0
+    formatter = nil
+    timeComponents = (year: 0, month: 0, day: 0, weekDay: 0, hour: 0, minute: 0, second: 0, nanosecond: 0.0, epochSeconds: 0.0, calendar: GregorianCalendar(), timeZone: TimeZone(name: "UTC"))
+  
     Application.configuration.localization = { PropertyListLocalization(locale: $0) }
   }
   
-  override func tearDown() {
+  func tearDown() {
     Application.configuration.staticContent = [:]
     Application.configuration.loadDefaultContent()
-    super.tearDown()
   }
   
   struct WeirdCalendar: Calendar {
@@ -357,7 +487,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
   }
   
   func testFormatWithStrftimeUsesStrftimeFormat() {
-    let formats = ["%A", "%a", "%B", "%b", "%d", "%D", "%e", "%F", "%G", "%g", "%h", "%H", "%I", "%k", "%l", "%M", "%m", "%n", "%p", "%r", "%R", "%s", "%S", "%t", "%T", "%v", "%y", "%Y", "%z", "%Z", "%%", "%Y-%m-%d", "%I%n%m"]
+    let formats = ["%A", "%a", "%B", "%b", "%d", "%D", "%e", "%F", "%G", "%g", "%h", "%H", "%I", "%k", "%l", "%M", "%m", "%n", "%p", "%r", "%R", "%s", "%S", "%t", "%T", "%y", "%Y", "%z", "%Z", "%%", "%Y-%m-%d", "%I%n%m"]
     var cString = [CChar](count: 1024, repeatedValue: 0)
     let timeZone = TimeZone(name: NSTimeZone.systemTimeZone().name)
     
@@ -369,7 +499,7 @@ class TimeFormatTests: XCTestCase, TailorTestable {
       for format in formats {
         var cFormat = format.cStringUsingEncoding(NSASCIIStringEncoding)!
         strftime(&cString, 1024, &cFormat, &cLocalTime)
-        let foundationString = NSString(CString: cString, encoding: NSASCIIStringEncoding)!
+        let foundationString = NSString(CString: cString, encoding: NSASCIIStringEncoding)!.bridge()
         let string = localTimestamp.format(TimeFormat(strftime: format))
         assert(string, equals: foundationString, message: "Got right result for format \(format)")
       }

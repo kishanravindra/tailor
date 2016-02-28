@@ -1,11 +1,34 @@
 import XCTest
 import Tailor
 import TailorTesting
+import Foundation
 
-class CalendarTests: XCTestCase, TailorTestable {
-  
-  override func setUp() {
-    super.setUp()
+struct TestCalendar: XCTestCase, TailorTestable {
+  //FIXME: Re-enable disabled tests
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testGregorianCalendarIsLeapYearForMultiplesOfFour", testGregorianCalendarIsLeapYearForMultiplesOfFour),
+    ("testGregorianCalendarIsNotLeapYearForMultiplesOfOneHundred", testGregorianCalendarIsNotLeapYearForMultiplesOfOneHundred),
+    ("testGregorianCalendarIsLeapYearForMultiplesOfFourHundred", testGregorianCalendarIsLeapYearForMultiplesOfFourHundred),
+    ("testGregorianCalendarHasTwelveMonths", testGregorianCalendarHasTwelveMonths),
+    ("testGregorianCalendarHasCorrectDayCounts", testGregorianCalendarHasCorrectDayCounts),
+    ("testGregorianCalendarHasCorrectMonthsInNormalYear", testGregorianCalendarHasCorrectMonthsInNormalYear),
+    ("testGregorianCalendarHasCorrectMonthsInLeapYear", testGregorianCalendarHasCorrectMonthsInLeapYear),
+    ("testGregorianCalendarGetsZeroForInvalidMonths", testGregorianCalendarGetsZeroForInvalidMonths),
+    ("testGregorianCalendarGetsCorrectLocalTimes", testGregorianCalendarGetsCorrectLocalTimes),
+    ("testGregorianCalendarGetsCorrectTimestamps", testGregorianCalendarGetsCorrectTimestamps),
+    ("testIslamicCalendarIsLeapYearForCorrectYearsInCycle", testIslamicCalendarIsLeapYearForCorrectYearsInCycle),
+    ("testIslamicCalendarHasCorrectDaysForNormalYear", testIslamicCalendarHasCorrectDaysForNormalYear),
+    ("testIslamicCalendarHasCorrectDaysForLeapYear", testIslamicCalendarHasCorrectDaysForLeapYear),
+    //("testIslamicCalendarGetsCorrectLocalTimes", testIslamicCalendarGetsCorrectLocalTimes),
+    //("testIslamicCalendarGetsCorrectTimestamps", testIslamicCalendarGetsCorrectTimestamps),
+    ("testHebrewCalendarGetsCorrectLocalTimes", testHebrewCalendarGetsCorrectLocalTimes),
+    ("testHebrewCalendarGetsCorrectTimestamps", testHebrewCalendarGetsCorrectTimestamps),
+    ("testIdenticalCalendarsAreEqual", testIdenticalCalendarsAreEqual),
+    ("testCalendarsForDifferentTypesAreNotEqual", testCalendarsForDifferentTypesAreNotEqual),
+    ("testCalendarsForDifferentYearsAreUnequal", testCalendarsForDifferentYearsAreUnequal),
+  ]}
+
+  func setUp() {
     setUpTestCase()
   }
   
@@ -16,7 +39,7 @@ class CalendarTests: XCTestCase, TailorTestable {
     
     for number in timestamps {
       let foundationDate = NSDate(timeIntervalSince1970: Double(number))
-      let foundationDateComponents = foundationCalendar.components([.Year, .Month, .Day, .Hour, .Minute, .Second, .Weekday], fromDate: foundationDate)
+      let foundationDateComponents = foundationCalendar.components([.Year, .Month, .Day, .Hour, .Minute, .Second, .Weekday], fromDate: foundationDate)!
       if calendar is HebrewCalendar && calendar.inYear(foundationDateComponents.year).months == 12 && foundationDateComponents.month > 6 {
         foundationDateComponents.month -= 1
       }
@@ -33,7 +56,7 @@ class CalendarTests: XCTestCase, TailorTestable {
           let gregorianTimestamp = timestamp.inCalendar(GregorianCalendar())
           description += " \(gregorianTimestamp.format(TimeFormat.Database)): "
           description += "Expected \(foundationDescription), but got \(timestamp.format(TimeFormat.Database)) (\(timestamp.weekDay))"
-          self.recordFailureWithDescription(description, inFile: file, atLine: line, expected: true)
+          assert(false, message: description)
       }
     }
   }
@@ -64,7 +87,7 @@ class CalendarTests: XCTestCase, TailorTestable {
         var description = "Incorrect timestamp for \(foundationDescription): "
         description += "Expected \(foundationDate.timeIntervalSince1970), "
         description += "but got \(timestamp.epochSeconds)"
-        self.recordFailureWithDescription(description, inFile: file, atLine: line, expected: true)
+        assert(false, message: description)
       }
     }
   }

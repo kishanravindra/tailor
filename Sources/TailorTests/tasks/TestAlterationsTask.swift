@@ -10,6 +10,10 @@ struct TestAlterationsTask: XCTestCase, TailorTestable {
   func setUp() {
     setUpTestCase()
   }
+
+  func tearDown() {
+    Application.sharedDatabaseConnection().executeQuery("DROP TABLE IF EXISTS alteration_tests")
+  }
   
   func testRunTaskRunsPendingAlterations() {
     Application.sharedDatabaseConnection().executeQuery("DROP TABLE IF EXISTS tailor_alterations")

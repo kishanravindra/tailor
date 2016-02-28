@@ -2,7 +2,7 @@ import Tailor
 import TailorTesting
 import XCTest
 
-class TemplateFormTests: XCTestCase, TailorTestable {
+final class TestTemplateForm: XCTestCase, TailorTestable {
   var form: TemplateForm!
   var template : TemplateType { return form.template }
   var controller: ControllerType!
@@ -23,8 +23,21 @@ class TemplateFormTests: XCTestCase, TailorTestable {
     }
   }
   
-  override func setUp() {
-    super.setUp()
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testInputCallsInputBuilder", testInputCallsInputBuilder),
+    ("testDefaultInputBuilderAddsLabelAndTextField", testDefaultInputBuilderAddsLabelAndTextField),
+    ("testDefaultInputBuilderWithMultiWordNamesAddsLabelAndTextField", testDefaultInputBuilderWithMultiWordNamesAddsLabelAndTextField),
+    ("testFormWithNeitherNameNorTypeHasNameModel", testFormWithNeitherNameNorTypeHasNameModel),
+    ("testFormWithCsrfKeyPutsKeyInTemplate", testFormWithCsrfKeyPutsKeyInTemplate),
+    ("testDropdownBuildsSelectTag", testDropdownBuildsSelectTag),
+    ("testDropdownWithSelectedValueSelectsValue", testDropdownWithSelectedValueSelectsValue),
+    ("testDropdownWithSingleValueListBuildsSelectTag", testDropdownWithSingleValueListBuildsSelectTag),
+    ("testRadioButtonsBuildsInputTags", testRadioButtonsBuildsInputTags),
+    ("testRadioButtonWithSelectedValueSelectsValue", testRadioButtonWithSelectedValueSelectsValue),
+    ("testFormTemplateHasEmptyBody", testFormTemplateHasEmptyBody),
+  ]}
+
+  func setUp() {
     setUpTestCase()
     controller = TestController(state: ControllerState(request: Request(), response: Response(), actionName: "index", callback: {response in }))
     form = TemplateForm(controller: controller, name: "hat")

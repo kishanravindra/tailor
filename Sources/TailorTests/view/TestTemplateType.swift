@@ -1,8 +1,9 @@
 import XCTest
 import Tailor
 import TailorTesting
+import Foundation
 
-class TemplateTypeTests: XCTestCase, TailorTestable {
+final class TestTemplateType: XCTestCase, TailorTestable {
   var controller: TestController!
   var template: TemplateType!
   
@@ -20,8 +21,47 @@ class TemplateTypeTests: XCTestCase, TailorTestable {
     var state: TemplateState
     func body() {}
   }
-  override func setUp() {
-    super.setUp()
+  
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testGenerateCallsBodyAndReturnsBuffer", testGenerateCallsBodyAndReturnsBuffer),
+    ("testGenerateErasesExistingContents", testGenerateErasesExistingContents),
+    ("testLocalizationPrefixHasClassName", testLocalizationPrefixHasClassName),
+    ("testLocalizeMethodGetsLocalizationFromController", testLocalizeMethodGetsLocalizationFromController),
+    ("testLocalizeMethodAddsInterpolationsToText", testLocalizeMethodAddsInterpolationsToText),
+    ("testLocalizeMethodPrependsPrefixForKeyWithDot", testLocalizeMethodPrependsPrefixForKeyWithDot),
+    ("testTextMethodAddsTextToTemplate", testTextMethodAddsTextToTemplate),
+    ("testTextMethodSanitizesText", testTextMethodSanitizesText),
+    ("testTextMethodLocalizesText", testTextMethodLocalizesText),
+    ("testTextMethodAddsInterpolationsToText", testTextMethodAddsInterpolationsToText),
+    ("testTextMethodDoesNotLocalizeTextWhenFlagIsSetToFalse", testTextMethodDoesNotLocalizeTextWhenFlagIsSetToFalse),
+    ("testRawMethodAddsTextWithoutSanitization", testRawMethodAddsTextWithoutSanitization),
+    ("testRawMethodLocalizesText", testRawMethodLocalizesText),
+    ("testRawMethodDoesNotLocalizeTextWhenFlagIsFalse", testRawMethodDoesNotLocalizeTextWhenFlagIsFalse),
+    ("testAddSanitizedTextAddsHtmlSanitizedText", testAddSanitizedTextAddsHtmlSanitizedText),
+    ("testAddSanitizedTextSanitizesTextThatHasNotBeenSanitized", testAddSanitizedTextSanitizesTextThatHasNotBeenSanitized),
+    ("testTagMethodPutsTagInBuffer", testTagMethodPutsTagInBuffer),
+    ("testTagMethodWithNoContentsPutsTagInBuffer", testTagMethodWithNoContentsPutsTagInBuffer),
+    ("testTagMethodWithoutAttributesPutsTagInBuffer", testTagMethodWithoutAttributesPutsTagInBuffer),
+    ("testTagWithTextPutsTagInBuffer", testTagWithTextPutsTagInBuffer),
+    ("testTagWithTextAndAttributesPutsTagInBuffer", testTagWithTextAndAttributesPutsTagInBuffer),
+    ("testDivPutsDivTagInBuffer", testDivPutsDivTagInBuffer),
+    ("testLinkPutsLinkTagInBuffer", testLinkPutsLinkTagInBuffer),
+    ("testLinkPutsLinkWithNoContentsTagInBuffer", testLinkPutsLinkWithNoContentsTagInBuffer),
+    ("testLinkWithNoControllerTypePutsLinkToCurrentControllerInBuffer", testLinkWithNoControllerTypePutsLinkToCurrentControllerInBuffer),
+    ("testLinkWithNoControllerOrContentsPutsTagInBuffer", testLinkWithNoControllerOrContentsPutsTagInBuffer),
+    ("testLinkWithInvalidRoutePutsEmptyLinkTagInBuffer", testLinkWithInvalidRoutePutsEmptyLinkTagInBuffer),
+    ("testFormMethodBuildsForm", testFormMethodBuildsForm),
+    ("testRenderTemplatePutsTemplateContentsInBuffer", testRenderTemplatePutsTemplateContentsInBuffer),
+    ("testRenderTemplatePutsTemplateInList", testRenderTemplatePutsTemplateInList),
+    ("testCacheWithMissPutsContentsInBody", testCacheWithMissPutsContentsInBody),
+    ("testCacheWithMissPutsContentsInCache", testCacheWithMissPutsContentsInCache),
+    ("testCacheWithHitPutsContentInBody", testCacheWithHitPutsContentInBody),
+    ("testRequestParametersGetsKeysFromRequest", testRequestParametersGetsKeysFromRequest),
+    ("testRequestParameterGetsKeyFromRequest", testRequestParameterGetsKeyFromRequest),
+    ("testAttributeNameGetsNameFromModel", testAttributeNameGetsNameFromModel),
+  ]}
+
+  func setUp() {
     setUpTestCase()
     let request = Request(clientAddress: "1.1.1.1", data: NSData())
     let callback = {
@@ -84,7 +124,7 @@ class TemplateTypeTests: XCTestCase, TailorTestable {
   func testLocalizationPrefixHasClassName() {
     let prefix = template.localizationPrefix
     
-    assert(prefix, equals: "tailor_tests.template_type_tests.empty_template", message: "has the underscored class name")
+    assert(prefix, equals: "tailor_tests.test_template_type.empty_template", message: "has the underscored class name")
   }
   
   func testLocalizeMethodGetsLocalizationFromController() {
@@ -98,7 +138,7 @@ class TemplateTypeTests: XCTestCase, TailorTestable {
   }
   
   func testLocalizeMethodPrependsPrefixForKeyWithDot() {
-    Application.configuration.staticContent["en.tailor_tests.template_type_tests.empty_template.prefix_test"] = "Localized Text with Prefix"
+    Application.configuration.staticContent["en.tailor_tests.test_template_type.empty_template.prefix_test"] = "Localized Text with Prefix"
     let result = template.localize(".prefix_test")
     assert(result, equals: "Localized Text with Prefix", message: "gets the text that ")
   }
@@ -455,7 +495,7 @@ class TemplateTypeTests: XCTestCase, TailorTestable {
           self.tag("body") {
             self.cache("cache.test") {
               self.tag("p") {
-                XCTFail("Does not call the block")
+                XCTest.XCTFail("Does not call the block")
                 self.text("cached content", localize: false)
               }
             }

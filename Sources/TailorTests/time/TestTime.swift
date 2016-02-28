@@ -2,9 +2,34 @@ import Tailor
 import TailorTesting
 import XCTest
 
-class TimeTests: XCTestCase, TailorTestable {
-  override func setUp() {
-    super.setUp()
+struct TestTime: XCTestCase, TailorTestable {
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testTimesAreEqualWithSameInfo", testTimesAreEqualWithSameInfo),
+    ("testTimesWithDifferentHoursAreUnequal", testTimesWithDifferentHoursAreUnequal),
+    ("testTimesWithDifferentMinutesAreUnequal", testTimesWithDifferentMinutesAreUnequal),
+    ("testTimesWithDifferentSecondsAreUnequal", testTimesWithDifferentSecondsAreUnequal),
+    ("testTimesWithDifferentNanosecondsAreUnequal", testTimesWithDifferentNanosecondsAreUnequal),
+    ("testTimesWithDifferentTimeZonesAreUnequal", testTimesWithDifferentTimeZonesAreUnequal),
+    ("testTimeIsLessThanTimeWithLargerHour", testTimeIsLessThanTimeWithLargerHour),
+    ("testTimeIsLessThanTimeWithLargerMinute", testTimeIsLessThanTimeWithLargerMinute),
+    ("testTimeIsLessThanTimeWithLargerSecond", testTimeIsLessThanTimeWithLargerSecond),
+    ("testTimeIsLessThanTimeWithLargerNanoecond", testTimeIsLessThanTimeWithLargerNanoecond),
+    ("testTimeIsLessThanTimeWithLargerHourButSmallerSecond", testTimeIsLessThanTimeWithLargerHourButSmallerSecond),
+    ("testTimeIsLessThanTimeWithLargerMinuteButSmallerSecond", testTimeIsLessThanTimeWithLargerMinuteButSmallerSecond),
+    ("testTodayGetsCurrentDateWithSpecifiedTime", testTodayGetsCurrentDateWithSpecifiedTime),
+    ("testDescriptionGetsDescription", testDescriptionGetsDescription),
+    ("testOClockGetsTimePastHour", testOClockGetsTimePastHour),
+    ("testThirtyGetsTimePastHour", testThirtyGetsTimePastHour),
+    ("testAddingIntervalCanAddSimpleInterval", testAddingIntervalCanAddSimpleInterval),
+    ("testAddingIntervalCanRollOverIntervals", testAddingIntervalCanRollOverIntervals),
+    ("testAddingIntervalCanHandleNegativeInterval", testAddingIntervalCanHandleNegativeInterval),
+    ("testIntervalSinceCanGetPositiveInterval", testIntervalSinceCanGetPositiveInterval),
+    ("testIntervalSinceCanGetMixedInterval", testIntervalSinceCanGetMixedInterval),
+    ("testIntervalSinceCanGetNegativeInterval", testIntervalSinceCanGetNegativeInterval),
+    ("testTimeSupportsArithmeticOperators", testTimeSupportsArithmeticOperators),
+  ]}
+  
+  func setUp() {
     setUpTestCase()
   }
   
@@ -101,7 +126,7 @@ class TimeTests: XCTestCase, TailorTestable {
   
   func testDescriptionGetsDescription() {
     let time1 = Time(hour: 17, minute: 22, second: 15, nanosecond: 1.5, timeZone: TimeZone(name: "US/Eastern"))
-    assert(time1.description, equals: "17:22:15 US/Eastern")
+    assert(time1.description, equals: "17:22:15 EST")
   }
   
   func testOClockGetsTimePastHour() {
