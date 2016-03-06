@@ -6,8 +6,6 @@ import COpenSSL
 
 /**
   This class represents a connection with a client.
-
-  TODO: Improve thread management
   */
 public final class Connection {
   
@@ -44,8 +42,6 @@ public final class Connection {
       This error is thrown when we fail to establish a connection with another server.
       
       The parameter is the 32-bit integer with the IP address we tried to connect to.
-      
-      TODO: Make this parameter more user friendly.
       */
     case CouldNotConnectToServer(UInt32)
     

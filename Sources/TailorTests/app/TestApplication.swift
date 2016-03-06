@@ -10,11 +10,8 @@ struct TestApplication : XCTestCase, TailorTestable {
   var application = Application.sharedApplication()
 
   var allTests: [(String, () throws -> Void)] {
-    // FIXME: Some tests are currently disabled because they rely on mechanisms
-    // that are not available on the Swift runtime
     return [      
       ("testInitializationWithSharedArgumentsSetsArguments", testInitializationWithSharedArgumentsSetsArguments),
-      // ("testInitializationWithTestBundleLocationRunsTests", testInitializationWithTestBundleLocationRunsTests),
       // ("testInitializationWithoutSharedArgumentsReadsFromPrompt", testInitializationWithoutSharedArgumentsReadsFromPrompt),
       ("testDefaultConfigurationHasDefaultIpAddress", testDefaultConfigurationHasDefaultIpAddress),
       ("testDefaultConfigurationHasDefaultPort", testDefaultConfigurationHasDefaultPort),
@@ -35,7 +32,7 @@ struct TestApplication : XCTestCase, TailorTestable {
       ("testConfigurationFromFileWithNonPlistFileGetsEmptyDictionary", testConfigurationFromFileWithNonPlistFileGetsEmptyDictionary),
       ("testConfigurationFromFileWithNonDictionaryFileGetsEmptyDictionary", testConfigurationFromFileWithNonDictionaryFileGetsEmptyDictionary),
       ("testSharedApplicationReusesApplication", testSharedApplicationReusesApplication),
-      // ("testStartMethodRunsTaskFromCommand", testStartMethodRunsTaskFromCommand),
+      ("testStartMethodRunsTaskFromCommand", testStartMethodRunsTaskFromCommand),
       // ("testClassStartMethodRunsTaskOnSharedApplication", testClassStartMethodRunsTaskOnSharedApplication),
       // ("testParseArgumentsRepeatedlyPromptsUntilValidTaskAppears", testParseArgumentsRepeatedlyPromptsUntilValidTaskAppears),
       // ("testParseArgumentsWithSpacesInQuotesKeepsQuotedSectionTogether", testParseArgumentsWithSpacesInQuotesKeepsQuotedSectionTogether),
@@ -43,13 +40,6 @@ struct TestApplication : XCTestCase, TailorTestable {
       // ("testPromptForCommandGetsCommandByName", testPromptForCommandGetsCommandByName),
       // ("testPromptForCommandGetsCommandByNumber", testPromptForCommandGetsCommandByNumber),
       // ("testPromptForCommandWithInvalidDataReturnsEmptyString", testPromptForCommandWithInvalidDataReturnsEmptyString),
-      // ("testCanRegisterCustomSubclasses", testCanRegisterCustomSubclasses),
-      // ("testRegisteredAlterationsGetsAlterations", testRegisteredAlterationsGetsAlterations),
-      // ("testRegisteredAlterationsWithNoAlterationsRegisteredGetsEmptyList", testRegisteredAlterationsWithNoAlterationsRegisteredGetsEmptyList),
-      // ("testRegisteredTasksGetsTasks", testRegisteredTasksGetsTasks),
-      // ("testRegisteredTasksWithNoTasksRegisteredGetsEmptyList", testRegisteredTasksWithNoTasksRegisteredGetsEmptyList),
-      // ("testRegisteredSubtypeListGetsSubtypes", testRegisteredSubtypeListGetsSubtypes),
-      // ("testRegisteredSubtypeListWithNoTypesRegisteredGetsEmptyList", testRegisteredSubtypeListWithNoTypesRegisteredGetsEmptyList),
       ("testLocalizationWithNoSettingIsPropertyListLocalization", testLocalizationWithNoSettingIsPropertyListLocalization),
     ]
   }
@@ -93,14 +83,6 @@ struct TestApplication : XCTestCase, TailorTestable {
     let application = Application()
     self.assert(application.command, equals: "tailor.exit")
     self.assert(application.flags, equals: ["a": "25"])
-  }
-  
-  func testInitializationWithTestBundleLocationRunsTests() {
-    NSProcessInfo.stubMethod("environment", result: ["TestBundleLocation": "/test/path"].bridge()) {
-      let application = Application()
-      self.assert(application.command, equals: "run_tests")
-      self.assert(application.flags, equals: [:])
-    }
   }
   
   func testInitializationWithoutSharedArgumentsReadsFromPrompt() {
@@ -253,8 +235,9 @@ struct TestApplication : XCTestCase, TailorTestable {
       }
     }
     APPLICATION_ARGUMENTS = ("application_test_task_1", [:])
-    //let application = Application()
-    //application.start()
+    TypeInventory.shared.registerSubtypes(TaskType.self, subtypes: [TestTask.self])
+    let application = Application()
+    application.start()
     assert(TestTask.hasRun)
   }
   
@@ -326,83 +309,6 @@ struct TestApplication : XCTestCase, TailorTestable {
       standardInput.fileHandleForWriting.closeFile()
       assert(application.promptForCommand(), equals: "")
     }
-  }
-  
-  //MARK: Getting Subclasses
-  
-  @available(*, deprecated)
-  func testCanRegisterCustomSubclasses() {
-    class TestClassWithSubclasses {
-      class func id() -> Int { return 1 }
-    }
-    
-    class TestSubclass1 : TestClassWithSubclasses {
-      override class func id() -> Int { return 2 }
-    }
-    
-    class TestSubclass2 : TestClassWithSubclasses {
-      override class func id() -> Int { return 3 }
-    }
-    
-    application.registerSubclasses(TestClassWithSubclasses)
-    let types = application.registeredSubtypeList(TestClassWithSubclasses)
-    let ids = types.map { $0.id() }
-    self.assert(ids.sort(), equals: [1, 2, 3], message: "registers all subclasses of the type given, including the type itself")
-  }
-
-  @available(*, deprecated)  
-  func testRegisteredAlterationsGetsAlterations() {
-    let alterations = application.registeredAlterations().map { $0.name }
-    assert(alterations.contains("TailorTests.AlterationScriptTests.FirstAlteration"))
-  }
-
-  @available(*, deprecated)  
-  func testRegisteredAlterationsWithNoAlterationsRegisteredGetsEmptyList() {
-    application.clearRegisteredSubtypes()
-    assert(application.registeredAlterations().isEmpty)
-  }
-
-  @available(*, deprecated)  
-  func testRegisteredTasksGetsTasks() {
-    let tasks = application.registeredTasks().map { $0.commandName }
-    assert(tasks.contains("run_tests"))
-  }
-
-  @available(*, deprecated)  
-  func testRegisteredTasksWithNoTasksRegisteredGetsEmptyList() {
-    application.clearRegisteredSubtypes()
-    let tasks = application.registeredTasks().map { $0.commandName }
-    assert(tasks.isEmpty)
-  }
-
-  @available(*, deprecated)  
-  func testRegisteredSubtypeListGetsSubtypes() {
-    class TestClassOne {
-      class func name() -> String {
-        return NSStringFromClass(self)
-      }
-    }
-    class TestClassTwo: TestClassOne {
-      
-    }
-    application.registerSubclasses(TestClassOne.self)
-    let names = application.registeredSubtypeList(TestClassOne.self).map { $0.name() }.sort()
-    assert(names, equals: [TestClassOne.name(), TestClassTwo.name()])
-  }
-
-  @available(*, deprecated)  
-  func testRegisteredSubtypeListWithNoTypesRegisteredGetsEmptyList() {
-    class TestClassOne {
-      class func name() -> String {
-        return NSStringFromClass(self)
-      }
-    }
-    class TestClassTwo: TestClassOne {
-      
-    }
-    application.clearRegisteredSubtypes()
-    let names = application.registeredSubtypeList(TestClassOne.self).map { $0.name() }.sort()
-    assert(names.isEmpty)
   }
   
   //MARK: - Configuration

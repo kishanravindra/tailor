@@ -49,9 +49,7 @@ extension TailorTestable {
   public func resetDatabase() {
     if !TAILOR_TESTABLE_DATABASE_RESET {
       Application.removeSharedDatabaseConnection()
-      /*
-      FIXME
-      for task in Application.sharedApplication().registeredTasks() {
+      for task in TypeInventory.shared.registeredTasks {
         if let seedTask = task as? SeedTaskType.Type {
           seedTask.loadSchema()
           seedTask.loadTable("tailor_alterations")
@@ -59,7 +57,6 @@ extension TailorTestable {
       }
       
       AlterationsTask.runTask()
-      */
       TAILOR_TESTABLE_DATABASE_RESET = true
     }
     Application.truncateTables()
@@ -434,8 +431,6 @@ extension TailorTestable {
   /**
     This method asserts that a block does not throw an exception.
 
-    FIXME: Include exceptions in the error message.
-
     - parameter message:            The message to show if the assertion fails.
     - parameter file:               The file that the assertion is coming from.
                                     You should generally omit this, since it
@@ -458,8 +453,6 @@ extension TailorTestable {
   
   /**
     This method asserts that a block throws a certain exception.
-
-    FIXME: Include exceptions in the error message.
    
     - parameter exception:          The exception that we are expecting to see.
     - parameter message:            The message to show if the assertion fails.

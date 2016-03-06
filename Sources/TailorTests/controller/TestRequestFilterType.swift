@@ -13,8 +13,7 @@ struct TestRequestFilterType : XCTestCase, TailorTestable {
       
     }
   }
-
-  //FIXME: Re-enable disabled tests
+  
   var allTests: [(String, () throws -> Void)] { return [
     ("testPreProcessWithBlockWithNoErrorContinuesProcessing", testPreProcessWithBlockWithNoErrorContinuesProcessing),
     ("testPreProcessWithBlockWithControllerErrorHaltsProcessing", testPreProcessWithBlockWithControllerErrorHaltsProcessing),

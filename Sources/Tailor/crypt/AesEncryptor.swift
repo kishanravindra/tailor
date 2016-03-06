@@ -6,8 +6,6 @@ import Glibc
 
 /**
   This class provides a high-level interface for doing AES encryption.
-  FIXME: Audit this more thoroughly.
-  TODO: Look into switching to LibreSSL.
   */
 public final class AesEncryptor {
   /** The low-level key for the encryption. */

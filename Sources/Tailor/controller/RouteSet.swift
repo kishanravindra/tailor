@@ -615,7 +615,6 @@ public class RouteSet {
         
         let mimeType: String
         if let contents = NSFileManager.defaultManager().contentsAtPath(fullPath) {
-          //FIXME
           #if os(Linux)
             switch(assetName.pathExtension) {
               case "css": mimeType = "text/css"

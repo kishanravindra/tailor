@@ -16,8 +16,7 @@ final class TestTailorTestable : XCTestCase {
   }
   
   var testCase = TestCase()
-
-  //FIXME: Re-enable commented-out tests
+  
   var allTests: [(String, () throws -> Void)] { return [
     ("testResetDatabaseTruncatesTables", testResetDatabaseTruncatesTables),
     //("testResetDatabaseRunsAlterations", testResetDatabaseRunsAlterations),
@@ -42,7 +41,7 @@ final class TestTailorTestable : XCTestCase {
 
   func setUp() {
     APPLICATION_ARGUMENTS = ("tailor.exit", [:])
-    Application.configuration.databaseDriver = { return SqliteConnection(path: "testing.sqlite") }
+    Application.configuration.databaseDriver = { return SqliteConnection(path: "./TestResources/testing.sqlite") }
     AlterationsTask.runTask()
     Application.truncateTables()
     testCase = TestCase()

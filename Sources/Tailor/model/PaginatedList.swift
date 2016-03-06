@@ -1,7 +1,5 @@
 /**
   This type provides a paginated list of records from a query.
-
-  TODO: better support for nonsensical pages and page size
   */
 public struct PaginatedList<RecordType: Persistable>: Equatable {
   /** The query that returns the full list of records. */

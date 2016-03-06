@@ -4,8 +4,6 @@ import XCTest
 import Foundation
 
 struct TestSerializationError: XCTestCase, TailorTestable {
-
-  //FIXME: Re-enable disabled tests
   var allTests: [(String, () throws -> Void)] { return [
     ("testUnsupportedTypeErrorsWithSameTypeAreEqual", testUnsupportedTypeErrorsWithSameTypeAreEqual),
     ("testUnsupportedTypeErrorsWithDifferentTypesAreEqual", testUnsupportedTypeErrorsWithDifferentTypesAreEqual),

@@ -220,7 +220,6 @@ public struct TimeFormat: TimeFormatter {
     This initializer creates a time format from a strftime-style format string.
   
     - parameter formatString:    The format string.
-    :todo:                  Support more formats.
     */
   public init(strftime formatString: String) {
     var workingString = ""
@@ -642,8 +641,6 @@ public enum TimeFormatComponent: TimeFormatter {
     - parameter container:    The container for the time information.
     - parameter calendar:     The calendar that the date is formatted in.
     - returns:                The remaining string.
-  
-    **TODO:** Parsing more types of components.
     */
   public func parse(from string: String, inout into container: TimeFormat.TimeComponentContainer) -> String? {
     switch(self) {

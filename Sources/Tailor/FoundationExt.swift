@@ -41,20 +41,17 @@ public extension NSJSONSerialization {
 
 #if os(Linux)
   extension NSBundle {
-    //FIXME
     class func allBundles() -> [NSBundle] {
       return []
     }
   }
 
-  //FIXME
   extension NSPropertyListMutabilityOptions {
       public static let Immutable = NSPropertyListMutabilityOptions(rawValue: 0)
       public static let MutableContainers = NSPropertyListMutabilityOptions(rawValue: 1)
       public static let MutableContainersAndLeaves = NSPropertyListMutabilityOptions(rawValue: 2)
   }
 
-  //FIXME
     public func NSLog(format: String) {
       NSLog(format, "")
     }
@@ -78,7 +75,6 @@ public extension NSJSONSerialization {
 
 
   public extension NSData {
-    //FIXME
     public func rangeOfData(dataToFind: NSData, options mask: NSDataSearchOptions, range searchRange: NSRange) -> NSRange {
       if searchRange.length < dataToFind.length { return NSRange(location: NSNotFound, length: NSNotFound) }
 

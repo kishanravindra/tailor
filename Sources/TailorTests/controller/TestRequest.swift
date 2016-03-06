@@ -10,7 +10,6 @@ final class TestRequest: XCTestCase, TailorTestable {
   var request : Request { get { return Request(clientAddress: clientAddress, data: requestData) } }
   var requestData : NSData { get { return NSData(bytes: requestString.utf8) } }
   
-  //FIXME: Re-enable commented out tests
   var allTests: [(String, () throws -> Void)] { return [
     ("testInitializationSetsClientAddressOnRequest", testInitializationSetsClientAddressOnRequest),
     ("testInitializationSetsMethod", testInitializationSetsMethod),

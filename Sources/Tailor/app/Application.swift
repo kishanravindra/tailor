@@ -115,7 +115,6 @@ public final class Application {
       values.
       */
     public init() {
-      //FIXME
       //self.configure()
     }
     
@@ -423,7 +422,6 @@ public final class Application {
     for (index,task) in tasks.enumerate() {
       print("\(index + 1). \(task.commandName)\n", terminator: "")
     }
-    //FIXME
     //let keyboard = NSFileHandle.fileHandleWithStandardInput()
     //let inputData = keyboard.availableData
     //let commandLine = NSString(data: inputData, encoding:NSUTF8StringEncoding)?.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()) ?? ""

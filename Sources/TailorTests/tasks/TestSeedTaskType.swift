@@ -4,7 +4,6 @@ import XCTest
 import Foundation
 
 struct TestSeedTaskType: XCTestCase, TailorTestable {
-  // FIXME: Enable commented-out tests
   var allTests: [(String, () throws -> Void)] { return [
     ("testSeedFolderIsPathInConfigInResourceFolder", testSeedFolderIsPathInConfigInResourceFolder),
     ("testPathForFileGetsPathInSeedFolder", testPathForFileGetsPathInSeedFolder),
@@ -18,13 +17,13 @@ struct TestSeedTaskType: XCTestCase, TailorTestable {
     ("testLoadSchemaWithShortRowDoesNotCreateTable", testLoadSchemaWithShortRowDoesNotCreateTable),
     ("testLoadModelLoadsRecordsFromModel", testLoadModelLoadsRecordsFromModel),
     ("testLoadModelWithEmptyFileDoesNotLoadAnyRecords", testLoadModelWithEmptyFileDoesNotLoadAnyRecords),
-    // ("testRunTaskWithNoArgumentsDoesNothing", testRunTaskWithNoArgumentsDoesNothing),
-    // ("testRunTaskWithLoadCommandLoadsSchema", testRunTaskWithLoadCommandLoadsSchema),
-    // ("testRunTaskWithLoadCommandLoadsModels", testRunTaskWithLoadCommandLoadsModels),
-    // ("testRunTaskWithLoadCommandLoadsAlterations", testRunTaskWithLoadCommandLoadsAlterations),
-    // ("testRunTaskWithSaveCommandSavesSchema", testRunTaskWithSaveCommandSavesSchema),
-    // ("testRunTaskWithSaveCommandSavesAlterations", testRunTaskWithSaveCommandSavesAlterations),
-    // ("testRunTaskWithSaveCommandSaveModels", testRunTaskWithSaveCommandSaveModels),
+    ("testRunTaskWithNoArgumentsDoesNothing", testRunTaskWithNoArgumentsDoesNothing),
+    ("testRunTaskWithLoadCommandLoadsSchema", testRunTaskWithLoadCommandLoadsSchema),
+    ("testRunTaskWithLoadCommandLoadsModels", testRunTaskWithLoadCommandLoadsModels),
+    ("testRunTaskWithLoadCommandLoadsAlterations", testRunTaskWithLoadCommandLoadsAlterations),
+    ("testRunTaskWithSaveCommandSavesSchema", testRunTaskWithSaveCommandSavesSchema),
+    ("testRunTaskWithSaveCommandSavesAlterations", testRunTaskWithSaveCommandSavesAlterations),
+    ("testRunTaskWithSaveCommandSaveModels", testRunTaskWithSaveCommandSaveModels),
     ("testCommandNameIsSeeds", testCommandNameIsSeeds),
   ]}
   
@@ -41,6 +40,7 @@ struct TestSeedTaskType: XCTestCase, TailorTestable {
   
   func setUp() {
     setUpTestCase()
+    TypeInventory.shared.registerSubtypes(TaskType.self, subtypes: [SeedTask.self])
     do {
       for file in ["tables", "hats", "shelfs"] {
         try NSFileManager.defaultManager().removeItemAtPath(SeedTask.pathForFile(file))
@@ -48,6 +48,8 @@ struct TestSeedTaskType: XCTestCase, TailorTestable {
     }
     catch {}
     CreateTestDatabaseAlteration.run()
+    AlterationsTask.runTask()
+    NSLog("Table names are \(Application.sharedDatabaseConnection().tableNames())")
   }
   
   func tearDown() {
@@ -241,7 +243,7 @@ struct TestSeedTaskType: XCTestCase, TailorTestable {
     APPLICATION_ARGUMENTS = ("seeds", ["load": "1"])
     NSThread.currentThread().threadDictionary.removeValueForKey("SHARED_APPLICATION")
     Application.start()
-    assert(Application.sharedDatabaseConnection().tableNames(), equals: ["hats", "shelfs", "tailor_alterations"])
+    assert(Application.sharedDatabaseConnection().tableNames(), equals: ["hats", "tailor_alterations", "shelfs"])
   }
   
   func testRunTaskWithLoadCommandLoadsModels() {
@@ -298,14 +300,11 @@ struct TestSeedTaskType: XCTestCase, TailorTestable {
     let tables = CsvParser(path: SeedTask.pathForFile("tables")).rows
     assert(tables, equals: [
       ["table","sql"],
-      ["alteration_tests",
-        "CREATE TABLE `alteration_tests` (id integer primary key, `material` varchar(255), `colour` varchar(250))"
-      ],
       ["hat_types","CREATE TABLE `hat_types` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255))"],
       ["hats","CREATE TABLE `hats` ( `id` integer NOT NULL PRIMARY KEY, `color` varchar(255), `brim_size` integer, shelf_id integer, `created_at` timestamp, `updated_at` timestamp)"],
       ["shelfs","CREATE TABLE `shelfs` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255), `store_id` integer)"],
       ["stores", "CREATE TABLE `stores` ( `id` integer NOT NULL PRIMARY KEY, `name` varchar(255))"],
-      ["tailor_alterations", "CREATE TABLE tailor_alterations ( id varchar(255) PRIMARY KEY )"],
+      ["tailor_alterations", "CREATE TABLE `tailor_alterations` ( `id` varchar(255) NOT NULL PRIMARY KEY)"],
       ["tailor_translations","CREATE TABLE `tailor_translations` ( `id` integer NOT NULL PRIMARY KEY, `translation_key` varchar(255), `locale` varchar(255), `translated_text` varchar(255))"],
       ["users", "CREATE TABLE `users` ( `id` integer NOT NULL PRIMARY KEY, `email_address` varchar(255), `encrypted_password` varchar(255))"]
     ])

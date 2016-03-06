@@ -4,7 +4,6 @@ import XCTest
 import Foundation
 
 struct TestExternalProcess: XCTestCase, TailorTestable {
-  //FIXME: Re-enable disabled tests
   var allTests: [(String, () throws -> Void)] { return [
     ("testInitializationSetsLaunchPathAndArguments", testInitializationSetsLaunchPathAndArguments),
     ("testInitializationWithoutArgumentsSetsEmptyArguments", testInitializationWithoutArgumentsSetsEmptyArguments),

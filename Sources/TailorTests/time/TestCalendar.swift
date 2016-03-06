@@ -4,7 +4,6 @@ import TailorTesting
 import Foundation
 
 struct TestCalendar: XCTestCase, TailorTestable {
-  //FIXME: Re-enable disabled tests
   var allTests: [(String, () throws -> Void)] { return [
     ("testGregorianCalendarIsLeapYearForMultiplesOfFour", testGregorianCalendarIsLeapYearForMultiplesOfFour),
     ("testGregorianCalendarIsNotLeapYearForMultiplesOfOneHundred", testGregorianCalendarIsNotLeapYearForMultiplesOfOneHundred),

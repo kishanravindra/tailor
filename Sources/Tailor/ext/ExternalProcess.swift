@@ -63,7 +63,6 @@ internal struct ExternalProcess: Equatable {
       task.standardError = self.output
       task.terminationHandler = {
         (task: NSTask) -> Void in
-        //FIXME
         self.callback(Int(task.terminationStatus), NSData()) //self.output.fileHandleForReading.availableData)
       }
       task.launch()
@@ -74,7 +73,6 @@ internal struct ExternalProcess: Equatable {
     This method gets the data that we have written to the process's input.
     */
   internal var writtenData: NSData {
-    //FIXME
     //return input.fileHandleForReading.availableData
     return NSData()
   }
@@ -96,7 +94,6 @@ internal struct ExternalProcess: Equatable {
     - returns: The latest unread data.
     */
   internal func readData() -> NSData {
-    //FIXME
     //return output.fileHandleForReading.availableData
     return NSData()
   }

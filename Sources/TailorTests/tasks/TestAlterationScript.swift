@@ -25,13 +25,12 @@ struct TestAlterationScript: XCTestCase, TailorTestable {
   class ThirdAlteration: AlterationScript {
     static let identifier = "3"
     static func run() {
-      Application.sharedDatabaseConnection().executeQuery("ALTER TABLE `alteration_tests` add column `colour` varchar(250)")
+      Application.sharedDatabaseConnection().executeQuery("DROP TABLE `alteration_tests`")
     }
   }
   
   func setUp() {
     setUpTestCase()
-    TypeInventory.shared.registerSubtypes(AlterationScript.self, subtypes: [FirstAlteration.self, SecondAlteration.self, ThirdAlteration.self])
   }
   
   func tearDown() {

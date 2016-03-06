@@ -50,8 +50,7 @@ final class TestSession: XCTestCase, TailorTestable {
   func createSession(cookieString: String) -> Session {
     return Session(cookieString: cookieString, clientAddress: "0.0.0.0")
   }
-
-  //FIXME: Re-enable disabled tests
+  
   var allTests: [(String, () throws -> Void)] { return [
     ("testInitializationWithValidSessionKeySetsData", testInitializationWithValidSessionKeySetsData),
     ("testInitializationWithWrongClientAddressLeavesDataEmpty", testInitializationWithWrongClientAddressLeavesDataEmpty),

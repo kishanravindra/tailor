@@ -204,7 +204,7 @@ final class TestRouteSet: XCTestCase, TailorTestable {
   func testCanHandleRequestThatIsPercentEncoded() {
     let route = createTestRoute("/test/route/[A-Z]*")
     XCTAssertTrue(route.canHandleRequest(createTestRequest("/test/route/AB%50")), "can handle percent-encoded")
-    //FIXME: XCTAssertFalse(route.canHandleRequest(createTestRequest("/test/route/AB%FF")), "cannot handle request with invalid percent-encoding")
+    // XCTAssertFalse(route.canHandleRequest(createTestRequest("/test/route/AB%FF")), "cannot handle request with invalid percent-encoding")
   }
   
   func testHandleRequestCallsHandler() {
@@ -847,12 +847,11 @@ final class TestRouteSet: XCTestCase, TailorTestable {
       let body = response.bodyText
       self.assert(body, equals: "Request 1", message: "calls appropriate request")
     }
-    /* FIXME:
-    routeSet.handleRequest(createTestRequest("/hat%ff")) {
-      response in
-      self.assert(response.responseCode, equals: .NotFound)
-    }
-    */
+    
+    // routeSet.handleRequest(createTestRequest("/hat%ff")) {
+    //  response in
+    //  self.assert(response.responseCode, equals: .NotFound)
+    // }
     waitForExpectationsWithTimeout(0, handler: nil)
   }
   

@@ -5,13 +5,19 @@ import XCTest
 import Foundation
 
 func prepareTestSuite() {
-  Application.configuration.databaseDriver = { return SqliteConnection(path: "testing.sqlite") }
+  Application.configuration.databaseDriver = { return SqliteConnection(path: "./TestResources/testing.sqlite") }
+  TypeInventory.shared.registerSubtypes(AlterationScript.self, subtypes: [
+    CreateTestDatabaseAlteration.self,
+    TestAlterationScript.FirstAlteration.self,
+    TestAlterationScript.SecondAlteration.self,
+    TestAlterationScript.ThirdAlteration.self
+  ])
   CreateTestDatabaseAlteration.run()
 }
 extension TailorTestable {
   public func configure() {
     APPLICATION_ARGUMENTS = ("tailor.exit", [:])
-    Application.configuration.databaseDriver = { return SqliteConnection(path: "testing.sqlite") }
+    Application.configuration.databaseDriver = { return SqliteConnection(path: "./TestResources/testing.sqlite") }
     Application.configuration.sessionEncryptionKey = "0FC7ECA7AADAD635DCC13A494F9A2EA8D8DAE366382CDB3620190F6F20817124"
     Application.configuration.resourcePath = "./TestResources"
     Application.configuration.userType = TestUser.self

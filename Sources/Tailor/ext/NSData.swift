@@ -61,8 +61,6 @@ public extension NSData {
   
   /**
     This method gets an MD5 hash of the data.
-   
-    FIXME
     */
   public var md5Hash: String {
     let data = ShaPasswordHasher.hashData(self, digest: EVP_md5())

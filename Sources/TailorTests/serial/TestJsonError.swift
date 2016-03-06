@@ -5,7 +5,6 @@ import Foundation
 
 struct TestJsonError: XCTestCase, TailorTestable {
   @available(*, deprecated)
-  //FIXME: Re-enable disabled test cases
   var allTests: [(String, () throws -> Void)] { return [
     ("testUnsupportedTypeErrorsWithSameTypeAreEqual", testUnsupportedTypeErrorsWithSameTypeAreEqual),
     ("testUnsupportedTypeErrorsWithDifferentTypesAreEqual", testUnsupportedTypeErrorsWithDifferentTypesAreEqual),

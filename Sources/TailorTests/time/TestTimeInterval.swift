@@ -3,7 +3,6 @@ import TailorTesting
 import Tailor
 
 struct TestTimeInterval: XCTestCase, TailorTestable {
-  //FIXME: Re-enable disabled tests
   var allTests: [(String, () throws -> Void)] { return [
     ("testInvertInvertsAllComponents", testInvertInvertsAllComponents),
     ("testCanAddTwoTimeIntervals", testCanAddTwoTimeIntervals),

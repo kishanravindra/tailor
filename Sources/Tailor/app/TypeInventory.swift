@@ -5,10 +5,6 @@
   methods, and you can fetch a list of the registered types by calling
   `registeredSubtypes`, or one of the other `registered` methods.
 
-  TODO: Add a way of registering subtypes without explicitly listing the parent
-  type.
-
-  TODO: Find a way to register all the subtypes automatically.
   */
 public struct TypeInventory {
   /** A dictionary mapping the name of a type to its subtypes. */
@@ -23,8 +19,6 @@ public struct TypeInventory {
 
   /**
     This method gets the subtypes that we have registered of another type.
-
-    TODO: Figure out why this doesn't seem to work with protocol types.
 
     - parameter parent:   The parent type
     - returns:            The registered subtypes of the parent type.

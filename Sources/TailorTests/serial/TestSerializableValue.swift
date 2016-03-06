@@ -5,7 +5,6 @@ import Foundation
 
 struct TestSerializableValue: XCTestCase, TailorTestable {
   @available(*, deprecated)
-  //FIXME: Re-enable commented out tests
   var allTests: [(String, () throws -> Void)] { return [
     ("testFoundationJsonObjectForStringIsString", testFoundationJsonObjectForStringIsString),
     ("testFoundationJsonObjectForArrayOfStringsIsArrayOfStrings", testFoundationJsonObjectForArrayOfStringsIsArrayOfStrings),

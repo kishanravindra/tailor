@@ -4,7 +4,6 @@ import XCTest
 import Foundation
 
 struct TestJobSchedulingTaskType: XCTestCase, TailorTestable {
-  // FIXME: Enable commented-out tests
   var allTests: [(String, () throws -> Void)] { return [
     ("testRunMethodAddsEntryToList", testRunMethodAddsEntryToList),
     ("testRunMethodWithNoStartTimeUsesDefault", testRunMethodWithNoStartTimeUsesDefault),
@@ -32,9 +31,9 @@ struct TestJobSchedulingTaskType: XCTestCase, TailorTestable {
     ("testWriteCrontabWithExistingCrontabWithTailorSectionReplacesJustTailorSection", testWriteCrontabWithExistingCrontabWithTailorSectionReplacesJustTailorSection),
     ("testWriteCrontabWithEmptyExistingCrontabWithTailorSectionWritesJustTailorSection", testWriteCrontabWithEmptyExistingCrontabWithTailorSectionWritesJustTailorSection),
     ("testClearCrontabWithExistingCrontabWithTailorSectionRemovesJustTailorSection", testClearCrontabWithExistingCrontabWithTailorSectionRemovesJustTailorSection),
-    //("testRunTaskWithWriteCommandWritesCrontab", testRunTaskWithWriteCommandWritesCrontab),
-    //("testRunTaskWithClearCommandClearsCrontab", testRunTaskWithClearCommandClearsCrontab),
-    //("testRunTaskWithInvalidCommandDoesNotStartProcess", testRunTaskWithInvalidCommandDoesNotStartProcess),
+    ("testRunTaskWithWriteCommandWritesCrontab", testRunTaskWithWriteCommandWritesCrontab),
+    ("testRunTaskWithClearCommandClearsCrontab", testRunTaskWithClearCommandClearsCrontab),
+    ("testRunTaskWithInvalidCommandDoesNotStartProcess", testRunTaskWithInvalidCommandDoesNotStartProcess),
     ("testEntriesWithSameInformationAreEqual", testEntriesWithSameInformationAreEqual),
     ("testEntriesWithDifferentFrequenciesAreNotEqual", testEntriesWithDifferentFrequenciesAreNotEqual),
     ("testEntriesWithDifferentStartTimesAreNotEqual", testEntriesWithDifferentStartTimesAreNotEqual),
@@ -53,6 +52,7 @@ struct TestJobSchedulingTaskType: XCTestCase, TailorTestable {
   
   func setUp() {
     setUpTestCase()
+    TypeInventory.shared.registerSubtypes(TaskType.self, subtypes: [TestTask.self])
     NSThread.currentThread().threadDictionary = [:]
   }
   
@@ -365,7 +365,6 @@ struct TestJobSchedulingTaskType: XCTestCase, TailorTestable {
     
     APPLICATION_ARGUMENTS = ("scheduled_jobs", ["clear": "1"])
     TestTask.runTask()
-    ExternalProcess.stopStubbing()
     guard let process = ExternalProcess.stubs.first else {
       assert(false, message: "did not start any processes")
       return
@@ -380,6 +379,7 @@ struct TestJobSchedulingTaskType: XCTestCase, TailorTestable {
     assert(process2.arguments, equals: ["/tmp/tailor_crons.txt"])
     let writtenContents = NSString(data: NSData(contentsOfFile: "/tmp/tailor_crons.txt") ?? NSData(), encoding: NSUTF8StringEncoding)?.bridge()
     assert(writtenContents, equals: resultCrontab + "\n")
+    ExternalProcess.stopStubbing()
     
   }
   

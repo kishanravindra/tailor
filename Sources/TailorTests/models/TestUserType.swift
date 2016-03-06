@@ -80,6 +80,7 @@ final class TestUserType: XCTestCase, TailorTestable {
   
   func setUp() {
     setUpTestCase()
+    CreateTestDatabaseAlteration.run()
     user = TestUser()
     user.emailAddress = "test@test.com"
     user.password = "Monkey"

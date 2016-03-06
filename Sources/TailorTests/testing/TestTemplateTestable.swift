@@ -19,7 +19,6 @@ final class TestTemplateTestable : XCTestCase {
     testCase = TestCase()
   }
 
-  //FIXME: Re-enable commented-out tests
   var allTests: [(String, () throws -> Void)] { return [
     ("testAssertXmlContainsElementWithMatchingElementDoesNotRegisterFailure", testAssertXmlContainsElementWithMatchingElementDoesNotRegisterFailure),
     ("testAssertXmlContainsElementWithNonMatchingElementNameRegistersFailure", testAssertXmlContainsElementWithNonMatchingElementNameRegistersFailure),

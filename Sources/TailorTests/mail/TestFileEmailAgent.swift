@@ -4,7 +4,6 @@ import XCTest
 import Foundation
 
 struct TestFileEmailAgent: XCTestCase, TailorTestable {
-  //FIXME: Re-enable disabled tests
   var allTests: [(String, () throws -> Void)] { return [
     ("testInitializationWithFullConfigSetsFields", testInitializationWithFullConfigSetsFields),
     ("testInitializationWithoutPathSetsDefaultPath", testInitializationWithoutPathSetsDefaultPath),
