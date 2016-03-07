@@ -14,29 +14,35 @@
 * Improve discovery of MIME types for static assets
 * Fix reading / writing to external processes
 
+# Support for More Platforms
+
+* Moving test cases to the SwiftPM test runner
+* Building on Mac against Swift Foundation
+* Building on Mac against Objective-C foundation.
+
 # Disabled tests to re-enable
 
 * TestApplication
-  * Requires reading / writing from keyboard
+    * Requires reading / writing from keyboard
 * TestCalendar
-  * Requires Islamic Calendar implementation from Foundation
+    * Requires Islamic Calendar implementation from Foundation
 * TestExternalProcess
-  * Requires reading / writing data to external processes
+    * Requires reading / writing data to external processes
 * TestJsonError
-  * Requires fixes to catching NSError on Linux
+    * Requires fixes to catching NSError on Linux
 * TestRequest
-  * Requires fixes to bad percent-encodings
+    * Requires fixes to bad percent-encodings
 * TestRequestFilterType
-  * Requires fixes for catching NSError on Linux
+    * Requires fixes for catching NSError on Linux
 * TestRouteSet
-  * Requires fixes to bad percent-encodings
+    * Requires fixes to bad percent-encodings
 * TestSendmailEmailAgent
 * TestSerializationError
-  * Requires fixes for catching NSError on Linux
+    * Requires fixes for catching NSError on Linux
 * TestSession
 * TestSmtpEmailAgent
 * TestTailorTestable
-  * Requires fixes for catching NSError in Linux
+    * Requires fixes for catching NSError in Linux
 * TestTimeInterval 
   * Requires fixes for string formatting
 

@@ -34,5 +34,10 @@ let package = Package(
   		.Target(name: "TailorSqlite"),
   		.Target(name: "TailorTesting")
   	]),
+    Target(name: "TailorSqliteTests", dependencies: [
+      .Target(name: "Tailor"),
+      .Target(name: "TailorSqlite"),
+      .Target(name: "TailorTesting"),
+    ])
   ]
 )

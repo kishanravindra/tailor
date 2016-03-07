@@ -2,11 +2,31 @@ import Tailor
 import TailorTesting
 import TailorSqlite
 import XCTest
+import Foundation
 
-class SqliteConnectionTests: XCTestCase, TailorTestable {
-  override func setUp() {
-    super.setUp()
+final class TestSqliteConnection: XCTestCase, TailorTestable {
+  var allTests: [(String, () throws -> Void)] { return [
+    ("testCanExecuteInsertQuery", testCanExecuteInsertQuery),
+    ("testCanGetSingleRowFromSelect", testCanGetSingleRowFromSelect),
+    ("testCanGetUnicodeDataFromSelect", testCanGetUnicodeDataFromSelect),
+    ("testCanGetMultipleRowsFromSelect", testCanGetMultipleRowsFromSelect),
+    ("testCanExecuteUpdateQuery", testCanExecuteUpdateQuery),
+    ("testCanExecuteInsertQueryWithBoundParameters", testCanExecuteInsertQueryWithBoundParameters),
+    ("testCanInsertEmptyString", testCanInsertEmptyString),
+    ("testCanHandleTimestampParameter", testCanHandleTimestampParameter),
+    ("testCanHandleTimeParameter", testCanHandleTimeParameter),
+    ("testCanHandleDateParameter", testCanHandleDateParameter),
+    ("testCanHandleNullParameter", testCanHandleNullParameter),
+    ("testCanHandleDoubleParameter", testCanHandleDoubleParameter),
+    ("testCanHandleDataParameter", testCanHandleDataParameter),
+    ("testCanHandleEmptyDataParameter", testCanHandleEmptyDataParameter),
+    ("testCanHandleBooleanParameter", testCanHandleBooleanParameter),
+    ("testTablesCanGetTableSql", testTablesCanGetTableSql),
+    ]}
+
+  func setUp() {
     setUpTestCase()
+    Application.truncateTables()
   }
   
   lazy var connection: SqliteConnection = Application.sharedDatabaseConnection() as! SqliteConnection
@@ -18,7 +38,7 @@ class SqliteConnectionTests: XCTestCase, TailorTestable {
     assert(results.count, equals: 1)
     if results.count == 1 {
       let result = results[0]
-      assert(result.data["id"], equals: 1.databaseValue)
+      assert(result.data["id"], equals: 1.serialize)
       assert(isNil: result.error)
     }
   }
@@ -29,12 +49,12 @@ class SqliteConnectionTests: XCTestCase, TailorTestable {
     assert(results.count, equals: 1)
     if results.count == 1 {
       let result = results[0]
-      assert(result.data["id"], equals: 1.databaseValue)
-      assert(result.data["color"], equals: "red".databaseValue)
-      assert(result.data["brim_size"], equals: 10.databaseValue)
-      assert(result.data["shelf_id"], equals: DatabaseValue.Null)
-      assert(result.data["created_at"], equals: DatabaseValue.Null)
-      assert(result.data["updated_at"], equals: DatabaseValue.Null)
+      assert(result.data["id"], equals: 1.serialize)
+      assert(result.data["color"], equals: "red".serialize)
+      assert(result.data["brim_size"], equals: 10.serialize)
+      assert(result.data["shelf_id"], equals: SerializableValue.Null)
+      assert(result.data["created_at"], equals: SerializableValue.Null)
+      assert(result.data["updated_at"], equals: SerializableValue.Null)
     }
   }
   
@@ -44,13 +64,13 @@ class SqliteConnectionTests: XCTestCase, TailorTestable {
     assert(results.count, equals: 1)
     if results.count == 1 {
       let result = results[0]
-      assert(result.data["id"], equals: 1.databaseValue)
-      assert(result.data["color"], equals: "red 🎊".databaseValue)
-      assert(result.data["color"]?.stringValue, equals: "red 🎊")
-      assert(result.data["brim_size"], equals: 10.databaseValue)
-      assert(result.data["shelf_id"], equals: DatabaseValue.Null)
-      assert(result.data["created_at"], equals: DatabaseValue.Null)
-      assert(result.data["updated_at"], equals: DatabaseValue.Null)
+      assert(result.data["id"], equals: 1.serialize)
+      assert(result.data["color"], equals: "red 🎊".serialize)
+      assert(result.data["color"].flatMap { try? String(deserialize: $0) }, equals: "red 🎊")
+      assert(result.data["brim_size"], equals: 10.serialize)
+      assert(result.data["shelf_id"], equals: SerializableValue.Null)
+      assert(result.data["created_at"], equals: SerializableValue.Null)
+      assert(result.data["updated_at"], equals: SerializableValue.Null)
     }
   }
   
@@ -60,20 +80,20 @@ class SqliteConnectionTests: XCTestCase, TailorTestable {
     assert(results.count, equals: 2)
     if results.count == 2 {
       var result = results[0]
-      assert(result.data["id"], equals: 1.databaseValue)
-      assert(result.data["color"], equals: "red".databaseValue)
-      assert(result.data["brim_size"], equals: 10.databaseValue)
-      assert(result.data["shelf_id"], equals: DatabaseValue.Null)
-      assert(result.data["created_at"], equals: DatabaseValue.Null)
-      assert(result.data["updated_at"], equals: DatabaseValue.Null)
+      assert(result.data["id"], equals: 1.serialize)
+      assert(result.data["color"], equals: "red".serialize)
+      assert(result.data["brim_size"], equals: 10.serialize)
+      assert(result.data["shelf_id"], equals: SerializableValue.Null)
+      assert(result.data["created_at"], equals: SerializableValue.Null)
+      assert(result.data["updated_at"], equals: SerializableValue.Null)
       
       result = results[1]
-      assert(result.data["id"], equals: 2.databaseValue)
-      assert(result.data["color"], equals: "tan".databaseValue)
-      assert(result.data["brim_size"], equals: 15.databaseValue)
-      assert(result.data["shelf_id"], equals: DatabaseValue.Null)
-      assert(result.data["created_at"], equals: DatabaseValue.Null)
-      assert(result.data["updated_at"], equals: DatabaseValue.Null)
+      assert(result.data["id"], equals: 2.serialize)
+      assert(result.data["color"], equals: "tan".serialize)
+      assert(result.data["brim_size"], equals: 15.serialize)
+      assert(result.data["shelf_id"], equals: SerializableValue.Null)
+      assert(result.data["created_at"], equals: SerializableValue.Null)
+      assert(result.data["updated_at"], equals: SerializableValue.Null)
     }
   }
   
@@ -85,7 +105,7 @@ class SqliteConnectionTests: XCTestCase, TailorTestable {
     assert(selectResults.count, equals: 1)
     if selectResults.count == 1 {
       let result = selectResults[0]
-      assert(result.data["brim_size"], equals: 12.databaseValue)
+      assert(result.data["brim_size"], equals: 12.serialize)
     }
   }
   
@@ -94,7 +114,7 @@ class SqliteConnectionTests: XCTestCase, TailorTestable {
     assert(results.count, equals: 1)
     if results.count == 1 {
       let result = results[0]
-      assert(result.data["id"], equals: 1.databaseValue)
+      assert(result.data["id"], equals: 1.serialize)
       assert(isNil: result.error)
     }
 
@@ -103,8 +123,8 @@ class SqliteConnectionTests: XCTestCase, TailorTestable {
     
     if selectResults.count == 1 {
       let result = selectResults[0]
-      assert(result.data["color"], equals: "red".databaseValue)
-      assert(result.data["brim_size"], equals: 10.databaseValue)
+      assert(result.data["color"], equals: "red".serialize)
+      assert(result.data["brim_size"], equals: 10.serialize)
     }
   }
   
@@ -114,7 +134,7 @@ class SqliteConnectionTests: XCTestCase, TailorTestable {
     assert(results.count, equals: 1)
     if results.count == 1 {
       let result = results[0]
-      assert(result.data["color"], equals: DatabaseValue.String(""))
+      assert(result.data["color"], equals: SerializableValue.String(""))
     }
   }
   
@@ -124,7 +144,7 @@ class SqliteConnectionTests: XCTestCase, TailorTestable {
     assert(results.count, equals: 1)
     if results.count == 1 {
       let result = results[0]
-      assert(result.data["id"], equals: 1.databaseValue)
+      assert(result.data["id"], equals: 1.serialize)
       assert(isNil: result.error)
     }
     
@@ -133,7 +153,7 @@ class SqliteConnectionTests: XCTestCase, TailorTestable {
     
     if selectResults.count == 1 {
       let result = selectResults[0]
-      let timestamp2 = result.data["created_at"]?.timestampValue
+      let timestamp2 = result.data["created_at"].flatMap { try? Timestamp(deserialize: $0) }
       assert(timestamp2?.epochSeconds, within: 1, of: timestamp.epochSeconds)
     }
   }
@@ -145,7 +165,7 @@ class SqliteConnectionTests: XCTestCase, TailorTestable {
     assert(results.count, equals: 1)
     if results.count == 1 {
       let result = results[0]
-      assert(result.data["id"], equals: 1.databaseValue)
+      assert(result.data["id"], equals: 1.serialize)
       assert(isNil: result.error)
     }
     
@@ -154,7 +174,7 @@ class SqliteConnectionTests: XCTestCase, TailorTestable {
     
     if selectResults.count == 1 {
       let result = selectResults[0]
-      let time2 = result.data["start_time"]?.timeValue
+      let time2 = result.data["start_time"].flatMap { try? Time(deserialize: $0) }
       assert(time2?.hour, equals: time.hour)
       assert(time2?.minute, equals: time.minute)
       assert(time2?.second, equals: time.second)
@@ -170,7 +190,7 @@ class SqliteConnectionTests: XCTestCase, TailorTestable {
     assert(results.count, equals: 1)
     if results.count == 1 {
       let result = results[0]
-      assert(result.data["id"], equals: 1.databaseValue)
+      assert(result.data["id"], equals: 1.serialize)
       assert(isNil: result.error)
     }
     
@@ -179,7 +199,7 @@ class SqliteConnectionTests: XCTestCase, TailorTestable {
     
     if selectResults.count == 1 {
       let result = selectResults[0]
-      let date2 = result.data["start_date"]?.dateValue
+      let date2 = result.data["start_date"].flatMap { try? Date(deserialize: $0) }
       assert(date2?.year, equals: date.year)
       assert(date2?.month, equals: date.month)
       assert(date2?.day, equals: date.day)
@@ -190,14 +210,14 @@ class SqliteConnectionTests: XCTestCase, TailorTestable {
   
   func testCanHandleNullParameter() {
     connection.executeQuery("INSERT INTO `hats` (`color`) VALUES (\"red\")")
-    connection.executeQuery("UPDATE `hats` SET `color`=?", parameters: [DatabaseValue.Null])
+    connection.executeQuery("UPDATE `hats` SET `color`=?", parameters: [SerializableValue.Null])
     let results = connection.executeQuery("SELECT * FROM hats")
     assert(results.count, equals: 1)
     
     if results.count == 1 {
       let result = results[0]
       let field = result.data["color"]
-      assert(field, equals: DatabaseValue.Null)
+      assert(field, equals: SerializableValue.Null)
     }
   }
   
@@ -208,7 +228,7 @@ class SqliteConnectionTests: XCTestCase, TailorTestable {
     assert(results.count, equals: 1)
     if results.count == 1 {
       let result = results[0]
-      assert(result.data["id"], equals: 1.databaseValue)
+      assert(result.data["id"], equals: 1.serialize)
       assert(isNil: result.error)
     }
     
@@ -217,7 +237,7 @@ class SqliteConnectionTests: XCTestCase, TailorTestable {
     
     if selectResults.count == 1 {
       let result = selectResults[0]
-      let value2 = result.data["size"]?.doubleValue
+      let value2 = result.data["size"].flatMap { try? Double(deserialize: $0) }
       assert(value2, within: 0.1, of: value)
     }
     
@@ -231,7 +251,7 @@ class SqliteConnectionTests: XCTestCase, TailorTestable {
     assert(results.count, equals: 1)
     if results.count == 1 {
       let result = results[0]
-      assert(result.data["id"], equals: 1.databaseValue)
+      assert(result.data["id"], equals: 1.serialize)
       assert(isNil: result.error)
     }
     
@@ -240,7 +260,10 @@ class SqliteConnectionTests: XCTestCase, TailorTestable {
     
     if selectResults.count == 1 {
       let result = selectResults[0]
-      let data2 = result.data["image"]?.dataValue
+      guard let value = result.data["image"],
+        case let .Data(data2) = value else {
+          return assert(false, message: "Did not have data")
+      }
       assert(data2, equals: data)
     }
     
@@ -254,7 +277,7 @@ class SqliteConnectionTests: XCTestCase, TailorTestable {
     assert(results.count, equals: 1)
     if results.count == 1 {
       let result = results[0]
-      assert(result.data["id"], equals: 1.databaseValue)
+      assert(result.data["id"], equals: 1.serialize)
       assert(isNil: result.error)
     }
     
@@ -263,7 +286,10 @@ class SqliteConnectionTests: XCTestCase, TailorTestable {
     
     if selectResults.count == 1 {
       let result = selectResults[0]
-      let data2 = result.data["image"]?.dataValue
+      guard let value = result.data["image"],
+        case let .Data(data2) = value else {
+          return assert(false, message: "Did not have data")
+      }
       assert(data2, equals: data)
     }
     
@@ -277,7 +303,7 @@ class SqliteConnectionTests: XCTestCase, TailorTestable {
     assert(results.count, equals: 1)
     if results.count == 1 {
       let result = results[0]
-      assert(result.data["id"], equals: 1.databaseValue)
+      assert(result.data["id"], equals: 1.serialize)
       assert(isNil: result.error)
     }
     
@@ -286,7 +312,7 @@ class SqliteConnectionTests: XCTestCase, TailorTestable {
     
     if selectResults.count == 1 {
       let result = selectResults[0]
-      let flag2 = result.data["flag"]?.boolValue
+      let flag2 = result.data["flag"].flatMap { try? Bool(deserialize: $0) }
       assert(flag2, equals: flag)
     }
     
